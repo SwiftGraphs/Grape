@@ -56,7 +56,7 @@ public class CenterForce<VID> : Force where VID : Hashable {
 extension Simulation{
 
     @discardableResult
-    public func createCenterForce(x: Float, y: Float, strength: Float = 0.1, name: String = "center") -> CenterForce<NodeID> {
+    public func createCenterForce(name: String, x: Float, y: Float, strength: Float = 0.1) -> CenterForce<NodeID> {
         let f = CenterForce<NodeID>(x: x, y: y, strength: strength)
         f.simulation = self
         self.forces[name] = f
@@ -64,7 +64,7 @@ extension Simulation{
     }
     
     @discardableResult
-    public func createCenterForce(center: Vector2f, strength: Float = 0.1, name: String = "center") -> CenterForce<NodeID> {
+    public func createCenterForce(name: String, center: Vector2f, strength: Float = 0.1) -> CenterForce<NodeID> {
         let f = CenterForce<NodeID>(center: center, strength: strength)
         f.simulation = self
         self.forces[name] = f

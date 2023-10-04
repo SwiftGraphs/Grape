@@ -18,13 +18,13 @@ public class PositionForce<VID> : Force where VID : Hashable {
         self.strength = strength
     }
 
-    var simulation: Simulation<VID>?
+    weak var simulation: Simulation<VID>?
 
-    func apply(alpha: Float) {
+    public func apply(alpha: Float) {
         
     }
 
-    func initialize() {
+    public func initialize() {
         
     }
 

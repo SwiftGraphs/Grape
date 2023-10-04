@@ -6,13 +6,13 @@
 //
 
 public class RadialForce<VID> : Force where VID : Hashable {
-    var simulation: Simulation<VID>?
+    weak var simulation: Simulation<VID>?
 
-    func apply(alpha: Float) {
+    public func apply(alpha: Float) {
         
     }
 
-    func initialize() {
+    public func initialize() {
         
     }
 

@@ -65,10 +65,10 @@ public struct SimulationEdge<VID>: Identifiable where VID: Hashable {
 }
 
 
-protocol Force {
+public protocol Force {
     associatedtype VID: Hashable
-    var simulation: Simulation<VID>? { get }
-    func apply(alpha: Float)
-    func initialize()
+    // private var simulation: Simulation<VID>? { get }
+    public func apply(alpha: Float)
+    public func initialize()
     // func update(randomGenerator: @escaping () -> Float)
 }

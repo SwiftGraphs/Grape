@@ -23,12 +23,12 @@ public class Simulation<NodeID> where NodeID: Hashable/*, E: EdgeLike, E.VertexI
     public var velocityDecay: Float
     
 
-    var forces: Dictionary<String, any Force> = [:]
+    public var forces: Dictionary<String, any Force> = [:]
 
-    var nodeIndexLookup: Dictionary<NodeID, Int> = [:] 
-    var simulationNodes: ContiguousArray<SimulationNode<NodeID>>
+    public var nodeIndexLookup: Dictionary<NodeID, Int> = [:] 
+    public var simulationNodes: ContiguousArray<SimulationNode<NodeID>>
     
-    private var randomGenerator: RandomFloatGenerator // TODO: move to force?
+    // internal var randomGenerator: RandomFloatGenerator // TODO: move to force?
 
     
     init(nodeIds: [NodeID] = [],
@@ -37,7 +37,7 @@ public class Simulation<NodeID> where NodeID: Hashable/*, E: EdgeLike, E.VertexI
          alphaDecay: Float? = nil,
          alphaTarget: Float = 0.0,
          velocityDecay: Float = 0.6,
-         randomGenerator: some RandomFloatGenerator = LinearCongruentialGenerator(),
+        //  randomGenerator: some RandomFloatGenerator = LinearCongruentialGenerator(),
          
          setInitialStatus: ( (inout SimulationNode<NodeID>)->Void )? = nil
     ) {
@@ -58,8 +58,6 @@ public class Simulation<NodeID> where NodeID: Hashable/*, E: EdgeLike, E.VertexI
                 setInitialStatus(&simulationNodes[i])
             }
         }
-        
-        self.randomGenerator = randomGenerator
         
     }
     
@@ -89,43 +87,47 @@ public class Simulation<NodeID> where NodeID: Hashable/*, E: EdgeLike, E.VertexI
         }
     }
 
-    // @inlinable public func getNode(_ nodeId: NodeID) -> SimulationNode<NodeID>? {
-    //     guard let index = nodeIndexLookup[nodeId] else { return nil }
-    //     return simulationNodes[index]
-    // }
+    @inlinable public func getNode(_ nodeId: NodeID) -> SimulationNode<NodeID>? {
+        guard let index = nodeIndexLookup[nodeId] else { return nil }
+        return simulationNodes[index]
+    }
 
-    // @inlinable public func setNode(_ nodeId: NodeID, to simulationNode: SimulationNode<NodeID>) {
-    //     guard let index = nodeIndexLookup[nodeId] else { return }
-    //     simulationNodes[index] = simulationNode
-    // } 
+    @inlinable public func updateNode(_ nodeId: NodeID, update: (inout SimulationNode<NodeID>) -> Void) {
+        guard let index = nodeIndexLookup[nodeId] else { return }
+        update(&simulationNodes[index])
+    } 
 
 }
 
 
 func dxTest() {
     let sim = Simulation<Int>()
-    let centerForce = sim.createCenterForce(x: 0, y: 0, strength: 0.2)
-    let linkForce = sim.createLinkForce([(0, 2)])
+    let centerForce = sim.createCenterForce(name: "center", x: 0, y: 0, strength: 0.2)
+    let linkForce = sim.createLinkForce(name: "link", links: [(0, 2)])
 
 }
 
 
-extension Simulation {
-    subscript (node node: NodeID) -> SimulationNode<NodeID> {
-        get {
-            guard let index = nodeIndexLookup[nodeId] else { 
-                throw SimulationError.subscriptionToNonexistentNode
-            }
-            return simulationNodes[index]
-        }
-        set {
-            guard let newValue else { 
-                throw SimulationError.subscriptionToNonexistentNode
-            }
-            guard let index = nodeIndexLookup[nodeId] else { 
-                throw SimulationError.subscriptionToNonexistentNode
-            }
-            simulationNodes[index] = newValue
-        }
-    }
-}
+// extension Simulation {
+    
+//     subscript (dangerouslyGetById nodeId: NodeID) -> SimulationNode<NodeID> {
+//         get {
+//             // guard let index = nodeIndexLookup[nodeId] else { 
+//             //     return nil
+//             //     // throw SimulationError.subscriptionToNonexistentNode
+//             // }
+//             return simulationNodes[nodeIndexLookup[nodeId]]
+//         }
+//         set {
+//             guard let newValue else { 
+//                 return
+//                 // throw SimulationError.subscriptionToNonexistentNode
+//             }
+//             guard let index = nodeIndexLookup[nodeId] else { 
+//                 return
+//                 // throw SimulationError.subscriptionToNonexistentNode
+//             }
+//             simulationNodes[index] = newValue
+//         }
+//     }
+// }

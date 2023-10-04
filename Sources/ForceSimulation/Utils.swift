@@ -4,13 +4,13 @@
 //
 //  Created by li3zhen1 on 10/1/23.
 //
+import QuadTree
 
-
-protocol RandomFloatGenerator {
+public protocol RandomFloatGenerator {
     mutating func nextFloat() -> Float
 }
 
-struct LinearCongruentialGenerator: RandomFloatGenerator {
+class LinearCongruentialGenerator: RandomFloatGenerator {
 
     private var seed: UInt32
     private let a: UInt32 = 1664525
@@ -21,7 +21,7 @@ struct LinearCongruentialGenerator: RandomFloatGenerator {
         self.seed = seed
     }
 
-    mutating func nextFloat() -> Float {
+    /*mutating*/ func nextFloat() -> Float {
         seed = (a * seed + c) & m // Note: `& m` is used instead of `% m` for performance and because m is 2^32
         let normalizedValue = Float(seed) / Float(m)
         return normalizedValue
@@ -29,8 +29,30 @@ struct LinearCongruentialGenerator: RandomFloatGenerator {
     
 }
 
-func jiggle(random: () -> Float) -> Float {
-    return (random() - 0.5) * 1e-6
+extension Float {
+    @inlinable func jiggled(with random: () -> Float) -> Float {
+        if self == 0 || self == .nan {
+            return (random() - 0.5) * 1e-6
+        }
+        return self
+    }
+
+    @inlinable func jiggled(with randomGenerator: inout some RandomFloatGenerator) -> Float {
+        if self == 0 || self == .nan {
+            return (randomGenerator.nextFloat() - 0.5) * 1e-6
+        }
+        return self
+    }
+}
+
+extension Vector2f {
+    @inlinable func jiggled(with random: () -> Float) -> Vector2f {
+        return Vector2f(x.jiggled(with: random), y.jiggled(with: random))
+    }
+
+    @inlinable func jiggled(with randomGenerator: inout some RandomFloatGenerator) -> Vector2f {
+        return Vector2f(x.jiggled(with: &randomGenerator), y.jiggled(with: &randomGenerator))
+    }
 }
 
 

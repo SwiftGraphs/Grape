@@ -7,25 +7,23 @@
 import simd
 // #endif
 
-/**
-    Only keep N.ID
- */
-final public class QuadTreeNode<N: Identifiable> {
+
+final public class QuadTreeNode<NodeID: Hashable> {
     
     public private(set) var quad: Quad
     
-    public private(set) var nodes: [N.ID: Vector2f] = [:]  // TODO: merge nodes if close enough
+    public private(set) var nodes: [NodeID: Vector2f] = [:]  // TODO: merge nodes if close enough
 
     final public class Children {
-        public private(set) var northWest: QuadTreeNode<N>
-        public private(set) var northEast: QuadTreeNode<N>
-        public private(set) var southWest: QuadTreeNode<N>
-        public private(set) var southEast: QuadTreeNode<N>
+        public private(set) var northWest: QuadTreeNode<NodeID>
+        public private(set) var northEast: QuadTreeNode<NodeID>
+        public private(set) var southWest: QuadTreeNode<NodeID>
+        public private(set) var southEast: QuadTreeNode<NodeID>
         internal init(
-            _ northWest: QuadTreeNode<N>,
-            _ northEast: QuadTreeNode<N>,
-            _ southWest: QuadTreeNode<N>,
-            _ southEast: QuadTreeNode<N>
+            _ northWest: QuadTreeNode<NodeID>,
+            _ northEast: QuadTreeNode<NodeID>,
+            _ southWest: QuadTreeNode<NodeID>,
+            _ southEast: QuadTreeNode<NodeID>
         ) {
             self.northWest = northWest
             self.northEast = northEast
@@ -38,8 +36,6 @@ final public class QuadTreeNode<N: Identifiable> {
     
     public private(set) var children: Children?
     
-
-    
     public let clusterDistance: Float
     
     internal init(
@@ -50,7 +46,7 @@ final public class QuadTreeNode<N: Identifiable> {
         self.clusterDistance = clusterDistance
     }
     
-    public func add(_ node: N.ID, at point: Vector2f) {
+    public func add(_ node: NodeID, at point: Vector2f) {
         cover(point)
         
         guard let children = self.children else {
@@ -86,21 +82,21 @@ final public class QuadTreeNode<N: Identifiable> {
         children[at: direction].add(node, at: point)
     }
 
-    public func traverse(_ body: @escaping (QuadTreeNode<N>) -> Void) {
+    public func traverse(_ body: @escaping (QuadTreeNode<NodeID>) -> Void) {
         body(self)
         children?.forEach { child, _ in
             child.traverse(body)
         }
     }
 
-    public func addAll(_ nodesAndPoints: Dictionary<N.ID, Vector2f>) {
+    public func addAll(_ nodesAndPoints: Dictionary<NodeID, Vector2f>) {
         for (n, p) in nodes {
             add(n, at: p)
         }
     }
     
     @discardableResult
-    public func remove(_ node: N.ID) -> Bool {
+    public func remove(_ node: NodeID) -> Bool {
         if nodes.removeValue(forKey: node) != nil {
             return true
         }
@@ -170,10 +166,10 @@ final public class QuadTreeNode<N: Identifiable> {
     
     private static func divide(quad: Quad, clusterDistance: Float) -> Children {
         let divided = quad.divide()
-        let northWest = QuadTreeNode<N>(quad: divided.northWest, clusterDistance: clusterDistance)
-        let northEast = QuadTreeNode<N>(quad: divided.northEast, clusterDistance: clusterDistance)
-        let southWest = QuadTreeNode<N>(quad: divided.southWest, clusterDistance: clusterDistance)
-        let southEast = QuadTreeNode<N>(quad: divided.southEast, clusterDistance: clusterDistance)
+        let northWest = QuadTreeNode<NodeID>(quad: divided.northWest, clusterDistance: clusterDistance)
+        let northEast = QuadTreeNode<NodeID>(quad: divided.northEast, clusterDistance: clusterDistance)
+        let southWest = QuadTreeNode<NodeID>(quad: divided.southWest, clusterDistance: clusterDistance)
+        let southEast = QuadTreeNode<NodeID>(quad: divided.southEast, clusterDistance: clusterDistance)
         return Children(northWest, northEast, southWest, southEast)
         
         // for (n, p) in nodes {
@@ -189,8 +185,8 @@ final public class QuadTreeNode<N: Identifiable> {
     /**
      *  Copy object while holding the same reference to children
      */
-    private func shallowCopy() -> QuadTreeNode<N> {
-        let copy = QuadTreeNode<N>(quad: quad, clusterDistance: clusterDistance)
+    private func shallowCopy() -> QuadTreeNode<NodeID> {
+        let copy = QuadTreeNode<NodeID>(quad: quad, clusterDistance: clusterDistance)
         copy.nodes = nodes
         copy.children = children
         return copy
@@ -215,9 +211,10 @@ enum QuadTreeError: Error {
     case noNodeProvidedError
 }
 
-final public class QuadTree<N: Identifiable> {
-    public private(set) var root: QuadTreeNode<N>
-    public private(set) var nodeLookup: Dictionary<N.ID, N>
+final public class QuadTree<NodeID: Hashable> {
+    public private(set) var root: QuadTreeNode<NodeID>
+    private var nodeIds: Set<NodeID> = []
+    
     public let clusterDistance: Float
 
     public init(
@@ -225,45 +222,44 @@ final public class QuadTree<N: Identifiable> {
         clusterDistance: Float = 1e-6
     ) {
         self.clusterDistance = clusterDistance
-        self.root = QuadTreeNode<N>(quad: quad, clusterDistance: clusterDistance)
-        self.nodeLookup = [:]
+        self.root = QuadTreeNode<NodeID>(quad: quad, clusterDistance: clusterDistance)
     }
 
     public init(
-        nodes: [(N, Vector2f)],
+        nodes: [(NodeID, Vector2f)],
         clusterDistance: Float = 1e-6
     ) throws {
         guard let firstEntry = nodes.first else {
             throw QuadTreeError.noNodeProvidedError
         }
         self.clusterDistance = clusterDistance
-        self.root = QuadTreeNode<N>(
+        self.root = QuadTreeNode<NodeID>(
             quad: Quad.cover(firstEntry.1),
             clusterDistance: clusterDistance
         )
-        self.nodeLookup = [:]
         self.addAll(nodes)
     }
 
-    public func add(_ node: N, at point: Vector2f) {
-        root.add(node.id, at: point)
-        nodeLookup[node.id] = node
+    public func add(_ nodeId: NodeID, at point: Vector2f) {
+        root.add(nodeId, at: point)
+        nodeIds.insert(nodeId)
     }
 
-    public func addAll(_ nodesAndPoints: [(N, Vector2f)]) {
+    public func addAll(_ nodesAndPoints: [(NodeID, Vector2f)]) {
         for (n, p) in nodesAndPoints {
             add(n, at: p)
         }
     }
 
-    public func remove(_ nodeID: N.ID) {
+    public func remove(_ nodeID: NodeID) {
         root.remove(nodeID)
-        self.nodeLookup.removeValue(forKey: nodeID)
+        nodeIds.remove(nodeID)
+        // self.nodeLookup.removeValue(forKey: nodeID)
     }
 
     public func removeAll() {
-        self.nodeLookup = [:]
         root.removeAll()
+        nodeIds = []
     }
 
     public var centroid : Vector2f? {
@@ -272,8 +268,8 @@ final public class QuadTree<N: Identifiable> {
         }
     }
 
-    static public func create(startingWith node: N, at point: Vector2f, clusterDistance: Float = 1e-6) -> QuadTree<N> {
-        let tree = QuadTree<N>(
+    static public func create(startingWith node: NodeID, at point: Vector2f, clusterDistance: Float = 1e-6) -> QuadTree<NodeID> {
+        let tree = QuadTree<NodeID>(
             quad: Quad.cover(point),
             clusterDistance: clusterDistance
         )
@@ -286,7 +282,7 @@ final public class QuadTree<N: Identifiable> {
 
 extension QuadTreeNode.Children {
     
-        public subscript(at quadrant: Quadrant) -> QuadTreeNode<N> {
+        public subscript(at quadrant: Quadrant) -> QuadTreeNode<NodeID> {
             get {
                 switch quadrant {
                 case .northWest:
@@ -313,14 +309,14 @@ extension QuadTreeNode.Children {
             }
         }
     
-    public func forEach(_ body: @escaping (QuadTreeNode<N>, Quadrant) -> Void) {
+    public func forEach(_ body: @escaping (QuadTreeNode<NodeID>, Quadrant) -> Void) {
         body(northWest, .northWest)
         body(northEast, .northEast)
         body(southWest, .southWest)
         body(southEast, .southEast)
     }
 
-    public func forEachMutating(_ body: @escaping (inout QuadTreeNode<N>, Quadrant) -> Void) {
+    public func forEachMutating(_ body: @escaping (inout QuadTreeNode<NodeID>, Quadrant) -> Void) {
         body(&northWest, .northWest)
         body(&northEast, .northEast)
         body(&southWest, .southWest)
@@ -328,14 +324,14 @@ extension QuadTreeNode.Children {
     }
 
     @discardableResult
-    public func anyMutating(_ predicate: @escaping (inout QuadTreeNode<N>, Quadrant) -> Bool) -> Bool {
+    public func anyMutating(_ predicate: @escaping (inout QuadTreeNode<NodeID>, Quadrant) -> Bool) -> Bool {
         return predicate(&northWest, .northWest)
             || predicate(&northEast, .northEast)
             || predicate(&southWest, .southWest)
             || predicate(&southEast, .southEast)
     }
 
-    public func any(_ predicate: @escaping (QuadTreeNode<N>, Quadrant) -> Bool) -> Bool {
+    public func any(_ predicate: @escaping (QuadTreeNode<NodeID>, Quadrant) -> Bool) -> Bool {
         return predicate(northWest, .northWest)
             || predicate(northEast, .northEast)
             || predicate(southWest, .southWest)
