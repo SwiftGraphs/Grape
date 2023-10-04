@@ -13,8 +13,9 @@ enum SimulationError: Error {
 }
 
 
-public class Simulation<NodeID> where NodeID: Hashable/*, E: EdgeLike, E.VertexID == V*/ {
+public class Simulation<N> where N: Identifiable/*, E: EdgeLike, E.VertexID == V*/ {
     
+    public typealias NodeID = N.ID
     
     public var alpha: Float
     public var alphaMin: Float
@@ -26,20 +27,17 @@ public class Simulation<NodeID> where NodeID: Hashable/*, E: EdgeLike, E.VertexI
     public var forces: Dictionary<String, any Force> = [:]
 
     public var nodeIndexLookup: Dictionary<NodeID, Int> = [:] 
-    public var simulationNodes: ContiguousArray<SimulationNode<NodeID>>
-    
-    // internal var randomGenerator: RandomFloatGenerator // TODO: move to force?
+    public var simulationNodes: [SimulationNode<NodeID>]
 
     
-    init(nodeIds: [NodeID] = [],
+    init(nodes: [N] = [],
          alpha: Float = 1,
          alphaMin: Float = 1e-3,
          alphaDecay: Float? = nil,
          alphaTarget: Float = 0.0,
          velocityDecay: Float = 0.6,
-        //  randomGenerator: some RandomFloatGenerator = LinearCongruentialGenerator(),
          
-         setInitialStatus: ( (inout SimulationNode<NodeID>)->Void )? = nil
+         setInitialStatus: ( (inout SimulationNode<NodeID>, [SimulationNode<NodeID>].Index)->Void )? = nil
     ) {
         self.alpha = alpha
         self.alphaMin = alphaMin
@@ -48,14 +46,14 @@ public class Simulation<NodeID> where NodeID: Hashable/*, E: EdgeLike, E.VertexI
         
         self.velocityDecay = velocityDecay
 
-        self.simulationNodes = ContiguousArray(nodeIds.map { n in
-            SimulationNode(id: n, position: .zero, velocity: .zero)
-        })
+        self.simulationNodes = nodes.map { n in
+            SimulationNode(id: n.id, position: .zero, velocity: .zero)
+        }
         self.nodeIndexLookup = Dictionary(uniqueKeysWithValues: simulationNodes.enumerated().map { ($0.1.id, $0.0) })
 
         if let setInitialStatus {
             for i in self.simulationNodes.indices {
-                setInitialStatus(&simulationNodes[i])
+                setInitialStatus(&simulationNodes[i], i)
             }
         }
         
@@ -92,20 +90,23 @@ public class Simulation<NodeID> where NodeID: Hashable/*, E: EdgeLike, E.VertexI
         return simulationNodes[index]
     }
 
-    @inlinable public func updateNode(_ nodeId: NodeID, update: (inout SimulationNode<NodeID>) -> Void) {
+    @inlinable public func updateNode(nodeId: NodeID, update: (inout SimulationNode<NodeID>) -> Void) {
         guard let index = nodeIndexLookup[nodeId] else { return }
         update(&simulationNodes[index])
     } 
 
+    @inlinable public func updateNode(index: [SimulationNode<NodeID>].Index, update: (inout SimulationNode<NodeID>) -> Void) {
+        update(&simulationNodes[index])
+    }
 }
 
 
-func dxTest() {
-    let sim = Simulation<Int>()
-    let centerForce = sim.createCenterForce(name: "center", x: 0, y: 0, strength: 0.2)
-    let linkForce = sim.createLinkForce(name: "link", links: [(0, 2)])
-
-}
+//func dxTest() {
+//    let sim = Simulation<Int>()
+//    let centerForce = sim.createCenterForce(name: "center", x: 0, y: 0, strength: 0.2)
+//    let linkForce = sim.createLinkForce(name: "link", links: [(0, 2)])
+//
+//}
 
 
 // extension Simulation {

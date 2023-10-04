@@ -8,15 +8,15 @@
 import Foundation
 
 
-public class CollideForce<VID> : Force where VID : Hashable {
+public class CollideForce<N> : Force where N : Identifiable {
 
     public enum CollideRadius {
         case constant(Float)
-        case varied( (VID) -> Float )
-        case polarCoordinatesOnRad( (Float, VID) -> Float )
+        case varied( (N.ID) -> Float )
+        case polarCoordinatesOnRad( (Float, N.ID) -> Float )
     }
 
-    weak var simulation: Simulation<VID>?
+    weak var simulation: Simulation<N>?
 
     public func apply(alpha: Float) {
         

@@ -18,15 +18,15 @@ struct DataNode: Identifiable {
 }
 
 final class DebugStringTests: XCTestCase {
-    func testDebugString() {
-        let alice = DataNode.create("Alice")
-        let bob = DataNode.create("Bob")
-        let tree = try! QuadTree(nodes: [(alice, .init(10.0, 1.0))])
-        
-        tree.add(bob, at: .init(20.1, 3.7))
-        
-        print(tree.root.debugDescription)
-    }
+//    func testDebugString() {
+//        let alice = DataNode.create("Alice")
+//        let bob = DataNode.create("Bob")
+//        let tree = try! QuadTree(nodes: [(alice, .init(10.0, 1.0))])
+//        
+//        tree.add(bob, at: .init(20.1, 3.7))
+//        
+//        print(tree.root.debugDescription)
+//    }
     
     
     

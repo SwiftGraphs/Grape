@@ -6,52 +6,20 @@
 //
 import QuadTree
 
-public protocol RandomFloatGenerator {
-    mutating func nextFloat() -> Float
-}
-
-class LinearCongruentialGenerator: RandomFloatGenerator {
-
-    private var seed: UInt32
-    private let a: UInt32 = 1664525
-    private let c: UInt32 = 1013904223
-    private let m: UInt32 = UInt32.max  // 2^32 - 1
-
-    init(_ seed: UInt32 = 1) {
-        self.seed = seed
-    }
-
-    /*mutating*/ func nextFloat() -> Float {
-        seed = (a * seed + c) & m // Note: `& m` is used instead of `% m` for performance and because m is 2^32
-        let normalizedValue = Float(seed) / Float(m)
-        return normalizedValue
-    }
-    
-}
 
 extension Float {
-    @inlinable func jiggled(with random: () -> Float) -> Float {
-        if self == 0 || self == .nan {
-            return (random() - 0.5) * 1e-6
-        }
-        return self
-    }
 
-    @inlinable func jiggled(with randomGenerator: inout some RandomFloatGenerator) -> Float {
+    @inlinable func jiggled() -> Float {
         if self == 0 || self == .nan {
-            return (randomGenerator.nextFloat() - 0.5) * 1e-6
+            return Float.random(in: -0.5..<0.5) * 1e-6
         }
         return self
     }
 }
 
 extension Vector2f {
-    @inlinable func jiggled(with random: () -> Float) -> Vector2f {
-        return Vector2f(x.jiggled(with: random), y.jiggled(with: random))
-    }
-
-    @inlinable func jiggled(with randomGenerator: inout some RandomFloatGenerator) -> Vector2f {
-        return Vector2f(x.jiggled(with: &randomGenerator), y.jiggled(with: &randomGenerator))
+    @inlinable func jiggled() -> Vector2f {
+        return Vector2f(x.jiggled(), y.jiggled())
     }
 }
 
@@ -149,3 +117,28 @@ struct ContiguousArrayWithLookupTable<Key, Value>: Collection where Key: Hashabl
 
 
 }
+
+
+struct CartesianProduct<A, B>: AdditiveArithmetic where A: AdditiveArithmetic, B: AdditiveArithmetic {
+    static var zero: CartesianProduct<A, B> {
+        return CartesianProduct(a: A.zero, b: B.zero)
+    }
+    
+    static func - (lhs: CartesianProduct<A, B>, rhs: CartesianProduct<A, B>) -> CartesianProduct<A, B> {
+        return CartesianProduct(a: lhs.a-rhs.a, b: lhs.b-rhs.b)
+    }
+    
+    static func + (lhs: CartesianProduct<A, B>, rhs: CartesianProduct<A, B>) -> CartesianProduct<A, B> {
+        return CartesianProduct(a: lhs.a+rhs.a, b: lhs.b+rhs.b)
+    }
+    
+    let a: A
+    let b: B
+}
+
+
+//extension CartesianProduct where A: DurationProtocol, B: DurationProtocol {
+//    static func / (lhs: CartesianProduct<A,B>, rhs: Int) -> CartesianProduct<A,B> {
+//        return CartesianProduct(a: lhs.a/rhs, b: lhs.b/rhs)
+//    }
+//}

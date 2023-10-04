@@ -158,6 +158,10 @@ public extension Quad {
     var size: Vector2f {
         return x1y1 - x0y0
     }
+    
+    var area: Float {
+        return size.x * size.y
+    }
 
     var center: Vector2f {
         return (x0y0 + x1y1) / 2

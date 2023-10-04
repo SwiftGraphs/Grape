@@ -7,11 +7,11 @@
 
 import QuadTree
 
-public class CenterForce<VID> : Force where VID : Hashable {
+public class CenterForce<N> : Force where N : Identifiable {
 
     public var center: Vector2f
     public var strength: Float
-    weak var simulation: Simulation<VID>?
+    weak var simulation: Simulation<N>?
     
     internal init(center: Vector2f, strength: Float) {
         self.center = center
@@ -56,16 +56,16 @@ public class CenterForce<VID> : Force where VID : Hashable {
 extension Simulation{
 
     @discardableResult
-    public func createCenterForce(name: String, x: Float, y: Float, strength: Float = 0.1) -> CenterForce<NodeID> {
-        let f = CenterForce<NodeID>(x: x, y: y, strength: strength)
+    public func createCenterForce(name: String, x: Float, y: Float, strength: Float = 0.1) -> CenterForce<N> {
+        let f = CenterForce<N>(x: x, y: y, strength: strength)
         f.simulation = self
         self.forces[name] = f
         return f
     }
     
     @discardableResult
-    public func createCenterForce(name: String, center: Vector2f, strength: Float = 0.1) -> CenterForce<NodeID> {
-        let f = CenterForce<NodeID>(center: center, strength: strength)
+    public func createCenterForce(name: String, center: Vector2f, strength: Float = 0.1) -> CenterForce<N> {
+        let f = CenterForce<N>(center: center, strength: strength)
         f.simulation = self
         self.forces[name] = f
         return f

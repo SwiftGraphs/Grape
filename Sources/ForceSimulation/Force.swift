@@ -66,9 +66,18 @@ public struct SimulationEdge<VID>: Identifiable where VID: Hashable {
 
 
 public protocol Force {
-    associatedtype VID: Hashable
-    // private var simulation: Simulation<VID>? { get }
-    public func apply(alpha: Float)
-    public func initialize()
-    // func update(randomGenerator: @escaping () -> Float)
+    associatedtype N: Identifiable
+    
+    func apply(alpha: Float)
+    func initialize()
+}
+
+
+
+
+extension SimulationNode: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        return "\(self.id) [\(self.position.x), \(self.position.y)]"
+    }
+    
 }

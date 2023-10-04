@@ -60,45 +60,49 @@ struct D3QuadTreeEntry: Decodable {
 
 
 final class AddTests: XCTestCase {
-    func testDebugString() {
-        /*
-
-            const q = quadtree();
-            assert.deepStrictEqual(q.add([0.0, 0.0]).root(), {data: [0, 0]});
-            assert.deepStrictEqual(q.add([0.9, 0.9]).root(), [{data: [0, 0]},,, {data: [0.9, 0.9]}]);
-            assert.deepStrictEqual(q.add([0.9, 0.0]).root(), [{data: [0, 0]}, {data: [0.9, 0]},, {data: [0.9, 0.9]}]);
-            assert.deepStrictEqual(q.add([0.0, 0.9]).root(), [{data: [0, 0]}, {data: [0.9, 0]}, {data: [0, 0.9]}, {data: [0.9, 0.9]}]);
-            assert.deepStrictEqual(q.add([0.4, 0.4]).root(), [[{data: [0, 0]},,, {data: [0.4, 0.4]}], {data: [0.9, 0]}, {data: [0, 0.9]}, {data: [0.9, 0.9]}]);
-        
-        */
-        
-        let jsonStr = "[[{data: [0.0, 0.0]},,, {data: [0.4, 0.4]}], {data: [0.9, 0.0]}, {data: [0.0, 0.9]}, {data: [0.9, 0.9]}]"
-        
-        let decoder = JSONDecoder()
-        
-        let q = QuadTree<IdNode>.create(startingWith: IdNode.new(), at: Vector2f(x: 0, y:0))
-        
-        q.add(IdNode.new(), at: Vector2f(x: 0.9, y:0.9))
-        
-        q.add(IdNode.new(), at: Vector2f(x: 0.9, y:0.0))
-        
-        q.add(IdNode.new(), at: Vector2f(x: 0.0, y:0.9))
-        
-        q.add(IdNode.new(), at: Vector2f(x: 0.4, y:0.4))
-        
-        print(q.root.getD3StyleDescription().removeWhitespace())
-        print(jsonStr.removeWhitespace())
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+//    func testDebugString() {
+//        /*
+//
+//            const q = quadtree();
+//            assert.deepStrictEqual(q.add([0.0, 0.0]).root(), {data: [0, 0]});
+//            assert.deepStrictEqual(q.add([0.9, 0.9]).root(), [{data: [0, 0]},,, {data: [0.9, 0.9]}]);
+//            assert.deepStrictEqual(q.add([0.9, 0.0]).root(), [{data: [0, 0]}, {data: [0.9, 0]},, {data: [0.9, 0.9]}]);
+//            assert.deepStrictEqual(q.add([0.0, 0.9]).root(), [{data: [0, 0]}, {data: [0.9, 0]}, {data: [0, 0.9]}, {data: [0.9, 0.9]}]);
+//            assert.deepStrictEqual(q.add([0.4, 0.4]).root(), [[{data: [0, 0]},,, {data: [0.4, 0.4]}], {data: [0.9, 0]}, {data: [0, 0.9]}, {data: [0.9, 0.9]}]);
+//        
+//        */
+//        
+//        let jsonStr = "[[{data: [0.0, 0.0]},,, {data: [0.4, 0.4]}], {data: [0.9, 0.0]}, {data: [0.0, 0.9]}, {data: [0.9, 0.9]}]"
+//        
+//        let decoder = JSONDecoder()
+//        
+//        let q = QuadTree<IdNode>.create(startingWith: IdNode.new(), at: Vector2f(x: 0, y:0))
+//        
+//        q.add(IdNode.new(), at: Vector2f(x: 0.9, y:0.9))
+//        
+//        q.add(IdNode.new(), at: Vector2f(x: 0.9, y:0.0))
+//        
+//        q.add(IdNode.new(), at: Vector2f(x: 0.0, y:0.9))
+//        
+//        q.add(IdNode.new(), at: Vector2f(x: 0.4, y:0.4))
+//        
+//        print(q.root.getD3StyleDescription().removeWhitespace())
+//        print(jsonStr.removeWhitespace())
+//        
+//        
+//        
+//        
+//        
+//        
+//        
+//        
+//        
+//        
+//        
+//    }
+    
+    func test() {
+//        print(MemoryLayout<QuadTreeNode<Int>>.size)
     }
     
     

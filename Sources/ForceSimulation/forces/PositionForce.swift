@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class PositionForce<VID> : Force where VID : Hashable {
+public class PositionForce<N> : Force where N: Identifiable {
     var x: Float
     var y: Float
     var strength: Float
@@ -18,7 +18,7 @@ public class PositionForce<VID> : Force where VID : Hashable {
         self.strength = strength
     }
 
-    weak var simulation: Simulation<VID>?
+    weak var simulation: Simulation<N>?
 
     public func apply(alpha: Float) {
         

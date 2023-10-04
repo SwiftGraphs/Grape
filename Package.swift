@@ -41,6 +41,10 @@ let package = Package(
         
         .testTarget(
             name: "QuadTreeTests",
-            dependencies: ["QuadTree"])
+            dependencies: ["QuadTree"]),
+        
+        .testTarget(
+            name: "ForceSimulationTests",
+            dependencies: ["ForceSimulation","QuadTree"])
     ]
 )
