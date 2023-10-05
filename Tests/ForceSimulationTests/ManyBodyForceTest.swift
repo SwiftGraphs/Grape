@@ -31,15 +31,17 @@ final class ManyBodyForceTests: XCTestCase {
             .make("David")
         ]
         
-        let pos = [(-2,-2), (-2,2), (2,-2), (2,2)]
+        let pos = [(-1,-1), (-1,1), (1,-1), (1, 1)]
         let sim = Simulation(nodes: nodes) { n, i in
             n.position = Vector2f(x: Float(pos[i].0), y: Float(pos[i].1))
         }
         
         
-        let f = sim.createManyBodyForce(name: "f1", strength: -30.0)
+        let f = sim.createManyBodyForce(name: "f1", strength: -20.0)
         
         sim.tick()
+        
+        
         
         sim.simulationNodes.forEach { n in
             print(n)

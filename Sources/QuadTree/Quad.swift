@@ -203,6 +203,7 @@ public extension Quad {
      *
      */
     @inlinable func quadrantOf(_ point: Vector2f) -> Quadrant{
+        
         switch (point.y < center.y, point.x < center.x) {
         case (true, true):
             return .northWest

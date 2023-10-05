@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "name": "Debug GrapePlayground",
+            "program": "${workspaceFolder:Grape}/.build/debug/GrapePlayground",
+            "args": [],
+            "cwd": "${workspaceFolder:Grape}",
+            "preLaunchTask": "swift: Build Debug GrapePlayground"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "name": "Release GrapePlayground",
+            "program": "${workspaceFolder:Grape}/.build/release/GrapePlayground",
+            "args": [],
+            "cwd": "${workspaceFolder:Grape}",
+            "preLaunchTask": "swift: Build Release GrapePlayground"
+        }
+    ]
+}

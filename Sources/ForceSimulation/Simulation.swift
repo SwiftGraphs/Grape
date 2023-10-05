@@ -30,7 +30,7 @@ public class Simulation<N> where N: Identifiable/*, E: EdgeLike, E.VertexID == V
     public var simulationNodes: [SimulationNode<NodeID>]
 
     
-    init(nodes: [N] = [],
+    public init(nodes: [N] = [],
          alpha: Float = 1,
          alphaMin: Float = 1e-3,
          alphaDecay: Float? = nil,

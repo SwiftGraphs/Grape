@@ -19,7 +19,7 @@ extension SimulationNode: HasMassLikeProperty {
 
 public class ManyBodyForce<N> : Force where N : Identifiable {
     
-    var strength: Float = -30
+    var strength: Float = -20
     
     public enum NodeMass {
         case constant(Float)
@@ -29,10 +29,10 @@ public class ManyBodyForce<N> : Force where N : Identifiable {
 
     weak var simulation: Simulation<N>?
 
-    var theta2: Float = 0.9
+    var theta2: Float = 0.001
     var theta: Float { theta2.squareRoot() }
 
-    var distanceMin2: Float = 1.0
+    var distanceMin2: Float = 0.1
     var distanceMax2: Float = Float.infinity
 
     internal init(strength: Float) {
