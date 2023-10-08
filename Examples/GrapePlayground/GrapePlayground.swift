@@ -90,9 +90,9 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView2()
-}
+//#Preview {
+//    ContentView2()
+//}
 
 
 
