@@ -43,15 +43,15 @@ final class ManyBodyForceTests: XCTestCase {
         
         
         
-        sim.simulationNodes.forEach { n in
-            print(n)
-        }
+        // sim.simulationNodes.forEach { n in
+        //     print(n)
+        // }
         
         
-        sim.tick()
-        sim.simulationNodes.forEach { n in
-            print(n)
-        }
+        // sim.tick()
+        // sim.simulationNodes.forEach { n in
+        //     print(n)
+        // }
     }
     
     
