@@ -55,7 +55,6 @@ public class QuadTreeNode<N> where N: Identifiable, N: HasMassLikeProperty {
     public let clusterDistance: Float
     
     
-    
     internal init(
         quad: Quad,
         clusterDistance: Float
@@ -163,11 +162,23 @@ public class QuadTreeNode<N> where N: Identifiable, N: HasMassLikeProperty {
             assert(scaleX > 0 && scaleY > 0)
 #endif
 
-            let expansionTime = Int(ceilf(log2(max(scaleX, scaleY))))
-
+            let expansionTime = Int(ceilf(log2(
+                max(scaleX, scaleY)
+            )))
+            
             for _ in 0..<expansionTime {
                 expand(towards: quadrant)
             }
+            
+            
+            // if point is on the right/bottom bottom, do it again
+            if !self.quad.contains(point) {
+                expand(towards: quadrant)
+            }
+            
+            #if DEBUG
+            assert(self.quad.contains(point), "Point is not covered after expansion")
+            #endif
         }
     }
 
@@ -273,6 +284,11 @@ final public class QuadTree<N: Identifiable> where N: HasMassLikeProperty {
         root.add(node, at: point)
         nodeIds.insert(node.id)
     }
+    
+    public func add(_ node: N, at point: (Float, Float)) {
+        root.add(node, at: Vector2f(point.0, point.1))
+        nodeIds.insert(node.id)
+    }
 
     public func addAll(_ nodes: [(N, Vector2f)]) {
         for (node, position) in nodes {
@@ -305,6 +321,9 @@ final public class QuadTree<N: Identifiable> where N: HasMassLikeProperty {
         tree.add(node, at: point)
         return tree
     }
+    
+    
+    public var quad: Quad { return root.quad }
 }
 
 
@@ -366,6 +385,9 @@ extension QuadTreeNode.Children {
             || predicate(southWest, .southWest)
             || predicate(southEast, .southEast)
     }
+    
+    
+    
 }
 
 

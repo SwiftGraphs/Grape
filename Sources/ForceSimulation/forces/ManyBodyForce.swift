@@ -29,7 +29,7 @@ public class ManyBodyForce<N> : Force where N : Identifiable {
 
     weak var simulation: Simulation<N>?
 
-    var theta2: Float = 0.001
+    var theta2: Float = 0.1
     var theta: Float { theta2.squareRoot() }
 
     var distanceMin2: Float = 0.1

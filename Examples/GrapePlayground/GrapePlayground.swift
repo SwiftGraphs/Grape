@@ -29,7 +29,8 @@ let nodes_: [NamedNode] = [
     .make("David")
 ]
 
-let pos = [(-1,-1), (-1,1), (1,-1), (1, 1)]
+let pos = [(-10,-10), (-10,10), (10,-10), (10, 10)]
+
 
 struct ContentView2: View {
     
@@ -37,7 +38,7 @@ struct ContentView2: View {
         let s = Simulation(nodes: nodes_) { n, i in
             n.position = Vector2f(x: Float(pos[i].0), y: Float(pos[i].1))
         }
-        let f = s.createManyBodyForce(name: "f1", strength: -20.0)
+        let f = s.createManyBodyForce(name: "f1", strength: -10.0)
         return s
     }()
     
