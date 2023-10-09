@@ -23,10 +23,7 @@ public class PositionForce<N> : Force where N: Identifiable {
     public func apply(alpha: Float) {
         
     }
-
-    public func initialize() {
-        
-    }
+    
 
         
 

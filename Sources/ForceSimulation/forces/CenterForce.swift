@@ -46,10 +46,6 @@ public class CenterForce<N> : Force where N : Identifiable {
         }
     }
     
-    public func initialize() {
-        
-    }
-
 }
 
 

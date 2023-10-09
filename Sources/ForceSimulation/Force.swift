@@ -69,7 +69,6 @@ public protocol Force {
     associatedtype N: Identifiable
     
     func apply(alpha: Float)
-    func initialize()
 }
 
 
