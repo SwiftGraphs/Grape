@@ -48,7 +48,7 @@ struct NamedNode: Identifiable, HasMassLikeProperty {
 
 
 
-extension QuadTreeNode {
+extension QuadTreeNode2 {
     var jsStyleDescription: String {
         if let children {
             return "[\(children.northWest.jsStyleDescription), \(children.northEast.jsStyleDescription), \(children.southWest.jsStyleDescription), \(children.southEast.jsStyleDescription)]"
@@ -82,6 +82,6 @@ extension QuadTreeNode {
     }
 }
 
-extension QuadTree {
+extension QuadTree2 {
     var jsStyleDescription: String { return self.root.jsStyleDescription }
 }

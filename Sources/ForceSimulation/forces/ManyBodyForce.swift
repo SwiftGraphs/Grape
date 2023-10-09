@@ -57,7 +57,7 @@ final class MassQuadTreeDelegate<N>: QuadDelegate where N : Identifiable {
     }
 
 
-    func createForExpanded(towards _: Quadrant, from _: Quad, to _: Quad) -> Self {
+    func copy() -> Self {
         return Self(
             initialAccumulatedProperty: self.accumulatedProperty, 
             initialAccumulatedCount: self.accumulatedCount, 
@@ -66,7 +66,7 @@ final class MassQuadTreeDelegate<N>: QuadDelegate where N : Identifiable {
         )
     }
 
-    func stem() -> Self {
+    func createNew() -> Self {
         return Self(massProvider: self.massProvider)
     }
 
