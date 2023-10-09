@@ -17,6 +17,9 @@ public class Simulation<N> where N: Identifiable/*, E: EdgeLike, E.VertexID == V
     
     public typealias NodeID = N.ID
     
+    
+    public let initializedAlpha: Float
+    
     public var alpha: Float
     public var alphaMin: Float
     public var alphaDecay: Float
@@ -40,6 +43,8 @@ public class Simulation<N> where N: Identifiable/*, E: EdgeLike, E.VertexID == V
          setInitialStatus: ( (inout SimulationNode<NodeID>, [SimulationNode<NodeID>].Index)->Void )? = nil
     ) {
         self.alpha = alpha
+        self.initializedAlpha = alpha // record and reload this when restarted
+        
         self.alphaMin = alphaMin
         self.alphaDecay = alphaDecay ?? 1 - pow(alphaMin, 1.0/300.0)
         self.alphaTarget = alphaTarget
@@ -60,11 +65,37 @@ public class Simulation<N> where N: Identifiable/*, E: EdgeLike, E.VertexID == V
     }
     
     
-    private func step() {
+    
+    private var timer: Timer?
+    
+    public func start(
+        intervalPerTick: TimeInterval,
+        startWithAlpha: Float? = nil,
+        onTicked: @escaping([SimulationNode<NodeID>]) -> Void
+    ) {
+        self.alpha = startWithAlpha ?? initializedAlpha
+        
+        self.timer = Timer.scheduledTimer(withTimeInterval: intervalPerTick, repeats: true) { [weak self] timer in
+            guard let self = self else {
+                timer.invalidate()
+                return
+            }
+
+            if self.alpha < self.alphaMin {
+                timer.invalidate()
+                self.timer = nil
+                return
+            }
+            self.tick()
+            onTicked(self.simulationNodes)
+        }
         
     }
     
-    public func tick(_ iterations: Int = 1) {
+    public var isTicking: Bool { return self.timer != nil}
+    
+    
+    internal func tick(_ iterations: Int = 1) {
         for _ in 0..<iterations {
             alpha += (alphaTarget - alpha) * alphaDecay
             

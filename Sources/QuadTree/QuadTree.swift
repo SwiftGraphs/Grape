@@ -143,43 +143,69 @@ public class QuadTreeNode<N> where N: Identifiable, N: HasMassLikeProperty {
     /// Does not add point to the tree
     /// - Parameter point: 
     internal func cover(_ point: Vector2f) {
-        if quad.contains(point) {
-            return
-        }
-        else {
-
-            let quadrant = quad.quadrantOf(point)
-            let nailedCorner = quad.getCorner(of: quadrant.reversed)
-            let expandingCorner = quad.getCorner(of: quadrant)
-
-            let coveredArea = expandingCorner - nailedCorner
-            let uncoveredArea = point - nailedCorner
-
-            let scaleX = uncoveredArea.x / coveredArea.x
-            let scaleY = uncoveredArea.y / coveredArea.y
-
-#if DEBUG
-            assert(scaleX > 0 && scaleY > 0)
-#endif
-
-            let expansionTime = Int(ceilf(log2(
-                max(scaleX, scaleY)
-            )))
+        if quad.contains(point) { return }
+        
+        repeat {
             
-            for _ in 0..<expansionTime {
-                expand(towards: quadrant)
+            /**
+             * (0, 0)
+             *           |    point: .northEast
+             *           |
+             *    ---- quad.x0y0 ----
+             *           |
+             *           |
+             *
+             */
+            let quadrant: Quadrant = switch (point.y < quad.y0, point.x < quad.x0) {
+                case (false, false): .southEast
+                case (false, true): .southWest
+                case (true, true): .northWest
+                case (true, false): .northEast
             }
             
+            expand(towards: quadrant)
             
-            // if point is on the right/bottom bottom, do it again
-            if !self.quad.contains(point) {
-                expand(towards: quadrant)
-            }
-            
-            #if DEBUG
-            assert(self.quad.contains(point), "Point is not covered after expansion")
-            #endif
-        }
+        } while !quad.contains(point)
+        
+        
+        
+//        if quad.contains(point) {
+//            return
+//        }
+//        else {
+//
+//            let quadrant = quad.quadrantOf(point)
+//            let nailedCorner = quad.getCorner(of: quadrant.reversed)
+//            let expandingCorner = quad.getCorner(of: quadrant)
+//
+//            let coveredArea = expandingCorner - nailedCorner
+//            let uncoveredArea = point - nailedCorner
+//
+//            let scaleX = uncoveredArea.x / coveredArea.x
+//            let scaleY = uncoveredArea.y / coveredArea.y
+//
+//#if DEBUG
+//            assert(scaleX > 0 && scaleY > 0)
+//#endif
+//
+//            let expansionTime = Int(ceilf(log2(
+//                max(scaleX, scaleY)
+//            )))
+//            
+//            for _ in 0..<expansionTime {
+//                expand(towards: quadrant)
+//            }
+//            
+//            
+//            // if point is on the right/bottom bottom, do it again
+//            if !self.quad.contains(point) {
+//                expand(towards: quadrant)
+//            }
+//            
+//            #if DEBUG
+//            assert(self.quad.contains(point), "Point is not covered after expansion")
+//            #endif
+//        }
     }
 
 

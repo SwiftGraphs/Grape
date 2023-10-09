@@ -70,12 +70,11 @@ struct ContentView2: View {
                     simNodes = sim.simulationNodes
                 })
             Button {
-                Timer.scheduledTimer(withTimeInterval: 1/120, repeats: true) { t in
-                    
-                    sim.tick()
-                    simNodes = sim.simulationNodes
-                    
-                }
+                
+                    sim.start(intervalPerTick: 1/20, startWithAlpha: 1) { nodes in
+                        simNodes = sim.simulationNodes
+                    }
+                
             } label: {
                 Text("Tick")
             }
@@ -90,9 +89,9 @@ struct ContentView: View {
     }
 }
 
-//#Preview {
-//    ContentView2()
-//}
+#Preview {
+    ContentView2()
+}
 
 
 

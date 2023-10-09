@@ -111,13 +111,13 @@ final class AddTests: XCTestCase {
         assert(q.jsStyleDescription ~= "{data: [0.0, 0.0]}")
         
         q.add(IdNode.new(), at: Vector2f(x: 1, y:0))
-        assert(q.jsStyleDescription ~= "[, , {data: [0.0, 0.0]}, {data: [1.0, 0.0]}]")
+        assert(q.jsStyleDescription ~= "[{data: [0.0, 0.0]}, {data: [1.0, 0.0]}, , ]")
         
         q.add(IdNode.new(), at: Vector2f(x: 0, y:1))
-        assert(q.jsStyleDescription ~= "[, [, , {data: [0.0, 0.0]}, {data: [1.0, 0.0]}], , {data: [0.0, 1.0]}]")
+        assert(q.jsStyleDescription ~= "[{data: [0.0, 0.0]}, {data: [1.0, 0.0]}, {data: [0.0, 1.0]}, ]")
         
         q.add(IdNode.new(), at: Vector2f(x: 0, y:1))
-        assert(q.jsStyleDescription ~= "[, [, , {data: [0.0, 0.0]}, {data: [1.0, 0.0]}], , {data: [0.0, 1.0], next:{data: [0.0, 1.0]}}]")
+        assert(q.jsStyleDescription ~= "[{data: [0.0, 0.0]}, {data: [1.0, 0.0]}, {data: [0.0, 1.0], next:{data: [0.0, 1.0]}}, ]")
     }
 
     // it("quadtree.add(datum) implicitly defines trivial bounds for the first point", () => {
