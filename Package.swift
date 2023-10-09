@@ -16,6 +16,13 @@ let package = Package(
             name: "ForceSimulation",
             targets: ["ForceSimulation"]
         ),
+        
+        .library(
+            name: "Grape",
+            targets: ["Grape"]
+        ),
+        
+        
         .library(
             name: "SimdPolyfill",
             targets: ["SimdPolyfill"]
@@ -34,6 +41,11 @@ let package = Package(
             .target(
                 name: "GrapePlayground", dependencies: ["QuadTree", "ForceSimulation"],
                 path: "Examples/GrapePlayground"
+            ),
+        
+            .target(
+                name: "Grape", dependencies: ["QuadTree", "ForceSimulation"],
+                path: "Sources/Grape"
             ),
         
         .target(
