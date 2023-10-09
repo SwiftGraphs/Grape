@@ -9,12 +9,77 @@ import QuadTree
 import simd
 
 
-enum ManyBodyForceError: Error {
-    case buildQuadTreeBeforeSimulationInitialized
+final class MassQuadTreeDelegate<N>: QuadDelegate where N : Identifiable {
+
+    typealias Node = N
+    typealias Property = Float
+    typealias MassProvider = [N.ID: Float]
+
+    public var accumulatedProperty: Float = 0.0
+    public var accumulatedCount = 0
+    public var weightedAccumulatedNodePositions: Vector2f = .zero
+
+    let massProvider: [N.ID: Float]
+
+    init(
+        massProvider: MassProvider
+    ) {
+        self.massProvider = massProvider
+    }
+
+
+    internal init(
+        initialAccumulatedProperty: Float, 
+        initialAccumulatedCount: Int, 
+        initialWeightedAccumulatedNodePositions: Vector2f, 
+        massProvider: MassProvider
+    ) {
+        self.accumulatedProperty = initialAccumulatedProperty
+        self.accumulatedCount = initialAccumulatedCount
+        self.weightedAccumulatedNodePositions = initialWeightedAccumulatedNodePositions
+        self.massProvider = massProvider
+    }
+    
+    func didAddNode(_ node: N, at position: Vector2f) {
+        let p = massProvider[node.id, default: 0]
+        accumulatedCount += 1
+        accumulatedProperty += p
+        weightedAccumulatedNodePositions += p * position
+    }
+
+    func didRemoveNode(_ node: N, at position: Vector2f) {
+        let p = massProvider[node.id, default: 0]
+        accumulatedCount -= 1
+        accumulatedProperty -= p
+        weightedAccumulatedNodePositions -= p * position
+
+        // TODO: parent removal?
+    }
+
+
+    func createForExpanded(towards _: Quadrant, from _: Quad, to _: Quad) -> Self {
+        return Self(
+            initialAccumulatedProperty: self.accumulatedProperty, 
+            initialAccumulatedCount: self.accumulatedCount, 
+            initialWeightedAccumulatedNodePositions: self.weightedAccumulatedNodePositions, 
+            massProvider: self.massProvider
+        )
+    }
+
+    func stem() -> Self {
+        return Self(massProvider: self.massProvider)
+    }
+
+
+    var centroid : Vector2f? {
+        guard accumulatedCount > 0 else { return nil }
+        return weightedAccumulatedNodePositions / accumulatedProperty
+    }
 }
 
-extension SimulationNode: HasMassLikeProperty {
-    public var property: Float {1.0}
+
+enum ManyBodyForceError: Error {
+    case buildQuadTreeBeforeSimulationInitialized
 }
 
 public class ManyBodyForce<N> : Force where N : Identifiable {
@@ -50,9 +115,7 @@ public class ManyBodyForce<N> : Force where N : Identifiable {
         }
     }
 
-    public func initialize() {
-        
-    }
+
     
     func calculateForce(alpha: Float) throws -> [Vector2f] {
         
@@ -60,13 +123,15 @@ public class ManyBodyForce<N> : Force where N : Identifiable {
             throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized
         }
         
-        let quad = try QuadTree(nodes: sim.simulationNodes.map { ($0, $0.position) })
+        let quad = try QuadTree2(nodes: sim.simulationNodes.map { ($0, $0.position) }) {
+            MassQuadTreeDelegate(massProvider: sim.simulationNodes.reduce(into: [N.ID: Float]()) { $0[$1.id] = 1.0 })
+        }
         
         var forces = Array<Vector2f>(repeating: .zero, count: sim.simulationNodes.count)
         
         for i in sim.simulationNodes.indices {
             quad.visit { quadNode in
-                if let centroid = quadNode.centroid {
+                if let centroid = quadNode.quadDelegate.centroid {
                     let vec = centroid - sim.simulationNodes[i].position
                     
                     var distanceSquared = vec.jiggled()
@@ -82,10 +147,9 @@ public class ManyBodyForce<N> : Force where N : Identifiable {
                         distanceSquared = sqrt(self.distanceMin2 * distanceSquared)
                     }
                     
-                    
-                    if quadNode.isLeaf || distanceSquared * self.theta2 > quadNode.quad.area {
+                    if (quadNode.isLeaf || (distanceSquared * self.theta2 > quadNode.quad.area)) {
                         
-                        forces[i] += self.strength * alpha * quadNode.accumulatedProperty * vec / pow(distanceSquared, 1.5)
+                        forces[i] += self.strength * alpha * quadNode.quadDelegate.accumulatedProperty * vec / pow(distanceSquared, 1.5)
                         
                         return false
                     }

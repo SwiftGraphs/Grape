@@ -185,14 +185,6 @@ public class LinkForce<N> : Force where N : Identifiable {
         }
     }
 
-    public func initialize() {
-        guard let sim = self.simulation else { return }
-        for link in self.links {
-            
-        }
-
-    }
-
 
     public let defaultStiffness: LinkStiffness = .varied { link, lookup in
         1 / Float(
