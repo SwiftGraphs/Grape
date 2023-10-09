@@ -48,18 +48,15 @@ public class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.No
     ) {
         self.quad = quad
         self.clusterDistance = clusterDistance
-        self.quadDelegate = rootQuadDelegate.stem()
+        self.quadDelegate = rootQuadDelegate.createNew()
     }
     
     public func add(_ node: N, at point: Vector2f) {
         cover(point)
         
-        // accumulatedCount += 1
-
-        quadDelegate.didAddNode(node, at: point)
-
-        // accumulatedProperty += QD.getPropertyFor(node)
-        // weightedAccumulatedNodePositions += node.quadDelegate * point
+        defer {
+            quadDelegate.didAddNode(node, at: point)
+        }
         
         guard let children = self.children else {
             if nodes.isEmpty {
@@ -79,6 +76,8 @@ public class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.No
                 if !nodes.isEmpty {
                     let direction = quad.quadrantOf(nodes.first!.value)
                     divided[at: direction].nodes = self.nodes
+                    divided[at: direction].quadDelegate = self.quadDelegate
+                    self.quadDelegate = self.quadDelegate.copy()
                 }
                 self.nodes = [:]
                         
@@ -167,15 +166,15 @@ public class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.No
         self.quad = newRootQuad
         self.children = divided
         self.nodes = [:]
-        self.quadDelegate = quadDelegate.createForExpanded(towards: quadrant, from: copiedCurrentNode.quad, to: newRootQuad)
+        self.quadDelegate = quadDelegate.copy()
     }
     
     private static func divide(quad: Quad, clusterDistance: Float, rootQuadDelegate: QD) -> Children {
         let divided = quad.divide()
         let northWest = QuadTreeNode2(quad: divided.northWest, clusterDistance: clusterDistance, rootQuadDelegate: rootQuadDelegate)
-        let northEast = QuadTreeNode2(quad: divided.northEast, clusterDistance: clusterDistance,rootQuadDelegate:rootQuadDelegate)
-        let southWest = QuadTreeNode2(quad: divided.southWest, clusterDistance: clusterDistance,rootQuadDelegate:rootQuadDelegate)
-        let southEast = QuadTreeNode2(quad: divided.southEast, clusterDistance: clusterDistance,rootQuadDelegate:rootQuadDelegate)
+        let northEast = QuadTreeNode2(quad: divided.northEast, clusterDistance: clusterDistance, rootQuadDelegate: rootQuadDelegate)
+        let southWest = QuadTreeNode2(quad: divided.southWest, clusterDistance: clusterDistance, rootQuadDelegate: rootQuadDelegate)
+        let southEast = QuadTreeNode2(quad: divided.southEast, clusterDistance: clusterDistance, rootQuadDelegate: rootQuadDelegate)
         return Children(northWest, northEast, southWest, southEast)
     }
     
@@ -355,8 +354,8 @@ public protocol QuadDelegate {
 
     mutating func didAddNode(_ node: Node, at position: Vector2f)
     mutating func didRemoveNode(_ node: Node, at position: Vector2f)
-    func createForExpanded(towards: Quadrant, from oldQuad: Quad, to newQuad: Quad) -> Self
-    func stem() -> Self
+    func copy() -> Self
+    func createNew() -> Self
 }
 
 
