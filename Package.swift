@@ -17,18 +17,19 @@ let package = Package(
             targets: ["ForceSimulation"]
         ),
         
-        .library(
-            name: "Grape",
-            targets: ["Grape"]
-        ),
+//        .library(
+//            name: "Grape",
+//            targets: ["Grape"]
+//        ),
+//        
         
+//        .library(
+//            name: "SimdPolyfill",
+//            targets: ["SimdPolyfill"]
+//        ),
         
-        .library(
-            name: "SimdPolyfill",
-            targets: ["SimdPolyfill"]
-        ),
+//        .library(name: "GrapePlayground", targets: ["GrapePlayground"]),
         
-        .library(name: "GrapePlayground", targets: ["GrapePlayground"])
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -38,20 +39,20 @@ let package = Package(
             path: "Sources/QuadTree"
         ),
 
-            .target(
-                name: "GrapePlayground", dependencies: ["QuadTree", "ForceSimulation"],
-                path: "Examples/GrapePlayground"
-            ),
+//            .target(
+//                name: "GrapePlayground", dependencies: ["QuadTree", "ForceSimulation"],
+//                path: "Examples/GrapePlayground"
+//            ),
         
-            .target(
-                name: "Grape", dependencies: ["QuadTree", "ForceSimulation"],
-                path: "Sources/Grape"
-            ),
+//            .target(
+//                name: "Grape", dependencies: ["QuadTree", "ForceSimulation"],
+//                path: "Sources/Grape"
+//            ),
         
-        .target(
-            name: "SimdPolyfill",
-            path: "Sources/SimdPolyfill"
-        ),
+//        .target(
+//            name: "SimdPolyfill",
+//            path: "Sources/SimdPolyfill"
+//        ),
         .target(
             name: "ForceSimulation",
             dependencies: ["QuadTree"],

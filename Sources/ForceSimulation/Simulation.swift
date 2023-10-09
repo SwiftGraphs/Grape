@@ -99,7 +99,10 @@ public class Simulation<N> where N: Identifiable/*, E: EdgeLike, E.VertexID == V
         for _ in 0..<iterations {
             alpha += (alphaTarget - alpha) * alphaDecay
             
-            for (_, f) in forces {
+            for (n, f) in forces {
+//                #if DEBUG
+//                print("Applying force: \(n)")
+//                #endif
                 f.apply(alpha: alpha)
             }
             

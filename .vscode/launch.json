@@ -23,6 +23,30 @@
             "args": [],
             "cwd": "${workspaceFolder:Grape}",
             "preLaunchTask": "swift: Build Release GrapePlayground"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "name": "Debug Grape",
+            "program": "${workspaceFolder:Grape}/.build/debug/Grape",
+            "args": [],
+            "cwd": "${workspaceFolder:Grape}",
+            "preLaunchTask": "swift: Build Debug Grape"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "name": "Release Grape",
+            "program": "${workspaceFolder:Grape}/.build/release/Grape",
+            "args": [],
+            "cwd": "${workspaceFolder:Grape}",
+            "preLaunchTask": "swift: Build Release Grape"
         }
     ]
 }
