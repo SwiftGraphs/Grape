@@ -75,11 +75,11 @@ public protocol NdDirection: RawRepresentable {
     static var entryCount: Int { get }
 }
 
-public extension SIMD<Float> {
-    @inlinable func direction<Direction>(originalPoint point: Self) -> Direction where Direction: NdDirection, Direction.Coordinate == Self {
-        
-    }
-}
+//public extension SIMD<Float> {
+//    @inlinable func direction<Direction>(originalPoint point: Self) -> Direction where Direction: NdDirection, Direction.Coordinate == Self {
+//        
+//    }
+//}
 
 struct OctDirection: NdDirection {
     typealias Coordinate = SIMD3<Float>

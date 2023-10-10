@@ -118,14 +118,13 @@ extension CollideForce: Force {
                     nodes: sim.simulationNodes.map { ($0, $0.position) },
                     getQuadDelegate: {
                         MaxRadiusQuadTreeDelegate {
-                            // switch self.radius {
-                            // case .constant(let r):
-                            //     return r
-                            // case .varied(_):
-                            //     return self.calculatedRadius[$0, default: 0.0]
-                            // }
-                            return self.calculatedRadius[$0, default: 0.0]
-                            // return self.calculatedRadius[$0]!
+                            switch self.radius {
+                            case .constant(let r):
+                                return r
+                            case .varied(_):
+                                return self.calculatedRadius[$0, default: 0.0]
+                            }
+                            // return self.calculatedRadius[$0, default: 0.0]
                         }
                     }
                 )

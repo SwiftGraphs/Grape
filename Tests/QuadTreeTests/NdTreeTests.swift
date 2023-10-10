@@ -1,6 +1,24 @@
 import XCTest
 @testable import QuadTree
 
+extension SIMD3<Float>: ComponentComparable {
+    public static func < (lhs: SIMD3<Scalar>, rhs: SIMD3<Scalar>) -> Bool {
+        return lhs.x < rhs.x && lhs.y < rhs.y && lhs.z < rhs.z
+    }
+
+    public static func > (lhs: SIMD3<Scalar>, rhs: SIMD3<Scalar>) -> Bool {
+        return lhs.x > rhs.x && lhs.y > rhs.y && lhs.z > rhs.z
+    }
+
+    public static func <= (lhs: SIMD3<Scalar>, rhs: SIMD3<Scalar>) -> Bool {
+        return lhs.x <= rhs.x && lhs.y <= rhs.y && lhs.z <= rhs.z
+    }
+
+    public static func >= (lhs: SIMD3<Scalar>, rhs: SIMD3<Scalar>) -> Bool {
+        return lhs.x >= rhs.x && lhs.y >= rhs.y && lhs.z >= rhs.z
+    }
+
+}
 
 final class NdTreeTests: XCTestCase {
     

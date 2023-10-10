@@ -20,14 +20,17 @@ https://github.com/li3zhen1/Grape/assets/45376537/5f57c223-0126-428a-a72d-d9a3ed
 
 #### Features
 
-| Feature | Status |
-| --- | --- |
-| LinkForce | ✅ |
-| ManyBodyForce | ✅ |
-| CenterForce | ✅ |
-| CollideForce | ✅ |
-| PositionForce |  |
-| RadialForce | ✅ |
+|   | Status (2D) | Status (3D) | Metal |
+| --- | --- | --- | --- |
+| **NdTree** | ✅ | 🚧 |  |
+| **Simulation** | ✅ | 🚧 | 🚧 |
+| &emsp;LinkForce | ✅ |   |  |
+| &emsp;ManyBodyForce | ✅ |  |  |
+| &emsp;CenterForce | ✅ |  |  |
+| &emsp;CollideForce | ✅ |  |  |
+| &emsp;PositionForce | ✅ |  |  |
+| &emsp;RadialForce | ✅ |  |  |
+| **SwiftUI View** | 🚧 |  |  |
 
 
 #### Usage

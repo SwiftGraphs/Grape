@@ -195,9 +195,7 @@ final public class ManyBodyForce<N>: Force where N: Identifiable {
         let quad = try QuadTree2(
             nodes: sim.simulationNodes.map { ($0, $0.position) }
         ) {
-            // this switch is only called on root init
-            // but it significantly slows down the performance
-            //
+            // this switch is only called on root init 
             return switch self.mass {
             case .constant(let m):
                 MassQuadTreeDelegate<SimulationNode<N.ID>> { _ in m }
