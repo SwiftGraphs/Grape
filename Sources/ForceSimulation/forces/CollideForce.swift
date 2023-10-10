@@ -118,16 +118,18 @@ extension CollideForce: Force {
                     nodes: sim.simulationNodes.map { ($0, $0.position) },
                     getQuadDelegate: {
                         MaxRadiusQuadTreeDelegate {
-                            switch self.radius {
-                            case .constant(let r):
-                                return r
-                            case .varied(let r):
-                                return r($0)
-                            }
+                            // switch self.radius {
+                            // case .constant(let r):
+                            //     return r
+                            // case .varied(_):
+                            //     return self.calculatedRadius[$0, default: 0.0]
+                            // }
+                            return self.calculatedRadius[$0, default: 0.0]
+                            // return self.calculatedRadius[$0]!
                         }
                     }
                 )
-            else { break }
+            else { return }
 
             for i in sim.simulationNodes.indices {
                 let iNode = sim.simulationNodes[i]
@@ -156,7 +158,6 @@ extension CollideForce: Force {
                                 var l = deltaPosition.jiggled().length()
                                 l = (deltaR - l) / l * self.strength
 
-                                deltaPosition *= l
                                 let jR2 = jR * jR
 
                                 let k = jR2 / (iR2 + jR2)
@@ -171,7 +172,7 @@ extension CollideForce: Force {
                     }
 
                     return
-                        !(quadNode.quad.x0 > iPosition.x + deltaR
+                        !(quadNode.quad.x0 > iPosition.x + deltaR /* True if no overlap */
                         || quadNode.quad.x1 < iPosition.x - deltaR
                         || quadNode.quad.y0 > iPosition.y + deltaR
                         || quadNode.quad.y1 < iPosition.y - deltaR)
@@ -184,7 +185,7 @@ extension CollideForce: Force {
 extension Simulation {
     @discardableResult
     public func createCollideForce(
-        radius: CollideForce<N>.CollideRadius,
+        radius: CollideForce<N>.CollideRadius = .constant(3.0),
         strength: Float = 1.0,
         iterationsPerTick: Int = 1
     ) -> CollideForce<N> {

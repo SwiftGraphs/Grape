@@ -76,6 +76,7 @@ final public class LinkForce<N>: Force where N: Identifiable {
     var calculatedBias: [Float] = []
     weak var simulation: Simulation<N>?
 
+
     var iterations: Int
 
     internal init(

@@ -195,17 +195,17 @@ final public class ManyBodyForce<N>: Force where N: Identifiable {
         let quad = try QuadTree2(
             nodes: sim.simulationNodes.map { ($0, $0.position) }
         ) {
-            // this switch is only called on root init 
+            // this switch is only called on root init
             // but it significantly slows down the performance
-            // 
-            // return switch self.mass {
-            // case .constant(let m):
-            //     MassQuadTreeDelegate<SimulationNode<N.ID>> { _ in m }
-            // case .varied(_):
+            //
+            return switch self.mass {
+            case .constant(let m):
+                MassQuadTreeDelegate<SimulationNode<N.ID>> { _ in m }
+            case .varied(_):
                 MassQuadTreeDelegate<SimulationNode<N.ID>> {
                     self.precalculatedMass[$0, default: 0.0]
                 }
-            // }
+            }
         }
 
         var forces = [Vector2f](repeating: .zero, count: sim.simulationNodes.count)
