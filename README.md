@@ -8,15 +8,13 @@ A visualization-purposed force simulation library.
 
 
 
-![Force Directed Graph](./Assets/ForceDirectedGraph.png)
-
+<img width="712" alt="ForceDirectedGraphLight" src="https://github.com/li3zhen1/Grape/assets/45376537/e0e8049d-25c2-4e5c-9623-6bf43ddddfa5">
 
 #### Examples
 
-This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), running at 120FPS on a SwiftUI Canvas. Take a closer look at the animation! 
+This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), running at 120FPS on a SwiftUI Canvas. Take a closer look at the animation:
 
-https://github.com/li3zhen1/Grape/assets/45376537/0a494ca0-7b98-44d0-a917-6dcc18e2eeae
-
+https://github.com/li3zhen1/Grape/assets/45376537/5f57c223-0126-428a-a72d-d9a3ed38059d
 
 
 
