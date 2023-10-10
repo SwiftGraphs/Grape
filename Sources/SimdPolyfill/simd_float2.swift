@@ -54,4 +54,3 @@ extension simd_float2: DurationProtocol {
         return lhs.x < rhs.x && lhs.y < rhs.y
     }
 }
-

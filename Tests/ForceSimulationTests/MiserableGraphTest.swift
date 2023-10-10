@@ -17,14 +17,14 @@ final class MiserableGraphTest: XCTestCase {
         
         let sim = Simulation(nodes: data.nodes)
         
-        let manybodyForce = sim.createManyBodyForce(name: "manybody1", strength: -30)
+        let manybodyForce = sim.createManyBodyForce(strength: -30)
         
-        let linkForce = sim.createLinkForce(name: "link1", links: data.links.map({ l in
+        let linkForce = sim.createLinkForce(links: data.links.map({ l in
             (l.source, l.target)
         }))
         
-        let centerForce = sim.createCenterForce(name: "center1", center: .zero)
-        
+        let centerForce = sim.createCenterForce(center: .zero)
+        let collideForce = sim.createCollideForce(radius: .constant(5))
 
 //        sim.tick()
         measure {

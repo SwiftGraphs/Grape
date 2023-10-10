@@ -42,13 +42,15 @@ struct ContentView: View {
     
     init() {
         self.data = getData(miserables)
-        self.sim = Simulation(nodes: data.nodes, alphaDecay: 0.001)
+        self.sim = Simulation(nodes: data.nodes, alphaDecay: 0.0005)
         
-        sim.createManyBodyForce(name: "manybody1", strength: -2.5)
+        sim.createManyBodyForce(strength: -30)
         
-        self.linkForce = sim.createLinkForce(name: "link1", links: data.links.map({ l in (l.source, l.target) }), originalLength: .constant(50))
+        self.linkForce = sim.createLinkForce(links: data.links.map({ l in (l.source, l.target) }), originalLength: .constant(35))
         
-        sim.createCenterForce(name: "center1",  center: .zero, strength: 0.3)
+        sim.createCenterForce(center: .zero, strength: 0.1)
+        
+        sim.createCollideForce(radius: .constant(5))
         
     }
     
@@ -79,14 +81,19 @@ struct ContentView: View {
                     let x = 300 + node.position.x
                     let y = 200 + node.position.y
                     
-                    let rect = CGRect(origin: .init(x: CGFloat(x-3.0), y: CGFloat(y-3.0)), size: CGSize(width: 6.0, height: 6.0))
+                    let rect = CGRect(origin: .init(x: CGFloat(x-4.0), y: CGFloat(y-4.0)), size: CGSize(width: 8.0, height: 8.0))
+                    
                     context.fill(Path(ellipseIn: rect), with: colors[self.data.nodes[i].group % colors.count])
+                    
+                    context.stroke(Path(ellipseIn: rect), with: .color(Color(nsColor: .windowBackgroundColor)), style: StrokeStyle(lineWidth: 1.5))
+                    
                 }
             }
             .onAppear {
-                self.sim.start(intervalPerTick: 1/120) { nodes in
-                    self.simulationNodes = nodes
-                }
+                self.simulationNodes = sim.simulationNodes
+//                self.sim.start(intervalPerTick: 1/120) { nodes in
+//                    self.simulationNodes = nodes
+//                }
             }
             .frame(width: 600, height: 400)
             .navigationTitle("Force Directed Graph Example")

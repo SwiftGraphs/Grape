@@ -37,7 +37,7 @@ final class ManyBodyForceTests: XCTestCase {
         }
         
         
-        let f = sim.createManyBodyForce(name: "f1", strength: -20.0)
+        let f = sim.createManyBodyForce(strength: 0.4)
         
         sim.tick()
         

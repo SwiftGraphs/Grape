@@ -7,22 +7,22 @@
 
 import QuadTree
 
-final public class CenterForce<N> : Force where N : Identifiable {
+final public class CenterForce<N>: Force where N: Identifiable {
 
     public var center: Vector2f
     public var strength: Float
     weak var simulation: Simulation<N>?
-    
+
     internal init(center: Vector2f, strength: Float) {
         self.center = center
         self.strength = strength
     }
-    
+
     internal init(x: Float, y: Float, strength: Float) {
         self.center = Vector2f(x, y)
         self.strength = strength
     }
-    
+
     var x: Float {
         get { return center.x }
         set { self.center.x = newValue }
@@ -31,10 +31,10 @@ final public class CenterForce<N> : Force where N : Identifiable {
         get { return center.y }
         set { self.center.y = newValue }
     }
-    
+
     public func apply(alpha: Float) {
         guard let sim = self.simulation else { return }
-        
+
         var meanPosition = Vector2f.zero
         for n in sim.simulationNodes {
             meanPosition += n.position
@@ -45,25 +45,24 @@ final public class CenterForce<N> : Force where N : Identifiable {
             sim.simulationNodes[i].position -= delta
         }
     }
-    
+
 }
 
-
-extension Simulation{
+extension Simulation {
 
     @discardableResult
-    public func createCenterForce(name: String, x: Float, y: Float, strength: Float = 0.1) -> CenterForce<N> {
+    public func createCenterForce(x: Float, y: Float, strength: Float = 0.1) -> CenterForce<N> {
         let f = CenterForce<N>(x: x, y: y, strength: strength)
         f.simulation = self
-        self.forces[name] = f
+        self.forces.append(f)
         return f
     }
-    
+
     @discardableResult
-    public func createCenterForce(name: String, center: Vector2f, strength: Float = 0.1) -> CenterForce<N> {
+    public func createCenterForce(center: Vector2f, strength: Float = 0.1) -> CenterForce<N> {
         let f = CenterForce<N>(center: center, strength: strength)
         f.simulation = self
-        self.forces[name] = f
+        self.forces.append(f)
         return f
     }
 
