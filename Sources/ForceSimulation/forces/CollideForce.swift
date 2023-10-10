@@ -12,8 +12,6 @@ enum CollideForceError: Error {
 }
 
 
-
-
 public class CollideForce<N> where N : Identifiable {
 
     let radius: CollideRadius
@@ -50,5 +48,4 @@ extension CollideForce: Force {
 
         }
     }
-
 }

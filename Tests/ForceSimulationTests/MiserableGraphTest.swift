@@ -27,12 +27,12 @@ final class MiserableGraphTest: XCTestCase {
 
 //        sim.tick()
         measure {
-            for _ in 0..<60{
+            for _ in 0..<120{
                 sim.tick()
             }
         }
         sim.tick()
-        print(sim.simulationNodes)
+//        print(sim.simulationNodes)
         
         
     }
