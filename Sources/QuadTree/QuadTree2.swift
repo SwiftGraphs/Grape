@@ -9,7 +9,7 @@ import simd
 // #endif
 
 // TODO: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwjoh_vKttuBAxUunokEHdchDZAQFnoECBkQAQ&url=https%3A%2F%2Fosf.io%2Fdu6gq%2Fdownload%2F%3Fversion%3D1%26displayName%3Dgove-2018-updating-tree-approximations-2018-06-13T02%253A16%253A17.463Z.pdf&usg=AOvVaw3KFAE5U8cnhTDMN_qrzV6a&opi=89978449
-public class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.Node == N {
+public final class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.Node == N {
 
     public private(set) var quad: Quad
 
