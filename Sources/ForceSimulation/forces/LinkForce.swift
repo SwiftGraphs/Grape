@@ -13,7 +13,7 @@ enum LinkForceError: Error {
     case useBeforeSimulationInitialized
 }
 
-public class LinkForce<N> : Force where N : Identifiable {
+final public class LinkForce<N> : Force where N : Identifiable {
 
     public class LinkLookup {
         public let source: [N.ID: [N.ID]]

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class PositionForce<N> : Force where N: Identifiable {
+final public class PositionForce<N> : Force where N: Identifiable {
     var x: Float
     var y: Float
     var strength: Float
