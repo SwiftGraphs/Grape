@@ -22,7 +22,7 @@ https://github.com/li3zhen1/Grape/assets/45376537/6a1c9510-8af6-4967-9c05-c304b2
 
 #### Features
 
-|   | Status (2D) | Status (3D) | Metal |
+|   | 2D | 3D | Metal |
 | --- | --- | --- | --- |
 | **NdTree** | ✅ | 🚧 |  |
 | **Simulation** | ✅ | 🚧 | 🚧 |
@@ -58,4 +58,4 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/GrapeView) fo
 
 #### Perfomance
 
-Currently it takes 0.046 seconds to iterate 120 times over the example graph (with 77 vertices, 254 edges, with manybody, center and link forces, release build, on a 32GB M1 Max).
+Grape uses simd to calculate position and velocity. Currently it takes 0.046 seconds to iterate 120 times over the example graph (with 77 vertices, 254 edges, with manybody, center and link forces, release build, on a 32GB M1 Max).
