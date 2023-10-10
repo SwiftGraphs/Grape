@@ -40,11 +40,10 @@ https://github.com/li3zhen1/Grape/assets/45376537/6a1c9510-8af6-4967-9c05-c304b2
 ```swift
 import ForceSimulation
 
-// nodes with unique id
-let nodes: [Identifiable] = ... 
+struct Node: Identifiable { ... }
 
-// links with source and target, ID should be the same as the type of the id
-let links: [(ID, ID)] = ... 
+let nodes: [Node] = ... 
+let links: [(Node.ID, Node.ID)] = ... 
 
 let sim = Simulation(nodes: nodes, alphaDecay: 0.0005)
 sim.createManyBodyForce(strength: -30)
