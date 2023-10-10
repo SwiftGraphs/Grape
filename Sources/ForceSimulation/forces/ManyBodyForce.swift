@@ -160,10 +160,10 @@ final public class ManyBodyForce<N>: Force where N: Identifiable {
         }
     }
 
-    var theta2: Float = 0.1
+    var theta2: Float = 0.81
     var theta: Float { theta2.squareRoot() }
 
-    var distanceMin2: Float = 0.1
+    var distanceMin2: Float = 0.01
     var distanceMax2: Float = Float.infinity
 
     internal init(
@@ -227,8 +227,7 @@ final public class ManyBodyForce<N>: Force where N: Identifiable {
                     if quadNode.isLeaf || (distanceSquared * self.theta2 > quadNode.quad.area) {
 
                         forces[i] +=
-                            self.strength * alpha * quadNode.quadDelegate.accumulatedProperty * vec
-                            / pow(distanceSquared, 1.5)
+                            self.strength * alpha * quadNode.quadDelegate.accumulatedProperty * vec / distanceSquared / sqrt(distanceSquared)
 
                         return false
                     } else {
