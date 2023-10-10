@@ -11,7 +11,7 @@ A visualization-purposed force simulation library.
 ![Force Directed Graph](./Assets/ForceDirectedGraph.png)
 
 
-This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), running at 120FPS on a SwiftUI Canvas. Take a closer look at the animation!
+This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), running at 120FPS on a SwiftUI Canvas. Take a closer look at the animation! 
 
 https://github.com/li3zhen1/Grape/assets/45376537/0a494ca0-7b98-44d0-a917-6dcc18e2eeae
 
@@ -25,6 +25,11 @@ https://github.com/li3zhen1/Grape/assets/45376537/0a494ca0-7b98-44d0-a917-6dcc18
 | LinkForce | ✅ |
 | ManyBodyForce | ✅ |
 | CenterForce | ✅ |
-| CollisionForce |  |
+| CollideForce | ✅ |
 | PositionForce |  |
 | RadialForce |  |
+
+
+#### Perfomance
+
+Currently iterating the example graph 120 times in release build takes 0.046 seconds on a 32GB M1 Max. (77 vertices, 254 edges, link, with manybody, center and link forces)

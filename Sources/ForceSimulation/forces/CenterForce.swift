@@ -7,7 +7,7 @@
 
 import QuadTree
 
-public class CenterForce<N> : Force where N : Identifiable {
+final public class CenterForce<N> : Force where N : Identifiable {
 
     public var center: Vector2f
     public var strength: Float

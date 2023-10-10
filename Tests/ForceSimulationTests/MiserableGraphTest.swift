@@ -14,6 +14,7 @@ final class MiserableGraphTest: XCTestCase {
     
     func test() {
         let data = getData()
+        
         let sim = Simulation(nodes: data.nodes)
         
         let manybodyForce = sim.createManyBodyForce(name: "manybody1", strength: -30)

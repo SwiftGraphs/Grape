@@ -132,6 +132,8 @@ public class Simulation<N> where N: Identifiable/*, E: EdgeLike, E.VertexID == V
     @inlinable public func updateNode(index: [SimulationNode<NodeID>].Index, update: (inout SimulationNode<NodeID>) -> Void) {
         update(&simulationNodes[index])
     }
+
+    
 }
 
 
