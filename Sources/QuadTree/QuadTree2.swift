@@ -268,12 +268,6 @@ final public class QuadTree2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.
         nodeIds = []
     }
 
-    // public var centroid : Vector2f? {
-    //     get {
-    //         return root.centroid
-    //     }
-    // }
-
     static public func create(
         startingWith node: N,
         at point: Vector2f,
@@ -355,8 +349,6 @@ extension QuadTreeNode2.Children {
 
 public protocol QuadDelegate {
     associatedtype Node
-    associatedtype Property
-
     mutating func didAddNode(_ node: Node, at position: Vector2f)
     mutating func didRemoveNode(_ node: Node, at position: Vector2f)
     func copy() -> Self
@@ -443,6 +435,7 @@ extension QuadTreeNode2 {
 
 extension QuadTree2 {
 
+    @available(*, deprecated)
     @discardableResult
     public func visitAfter<T>(
         withResult action: @escaping (
@@ -452,6 +445,7 @@ extension QuadTree2 {
         return root.visitAfter(action)
     }
 
+    @available(*, deprecated)
     public func visitAfter(
         _ action: @escaping (
             QuadTreeNode2<N, QD>

@@ -8,16 +8,15 @@
 import QuadTree
 import simd
 
-final class MassQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
+struct MassQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
 
     typealias Node = N
-    typealias Property = Float
 
     public var accumulatedProperty: Float = 0.0
     public var accumulatedCount = 0
     public var weightedAccumulatedNodePositions: Vector2f = .zero
 
-    let massProvider: (N.ID) -> Float
+    @usableFromInline let massProvider: (N.ID) -> Float
 
     init(
         massProvider: @escaping (N.ID) -> Float
@@ -37,23 +36,22 @@ final class MassQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
         self.massProvider = massProvider
     }
 
-    func didAddNode(_ node: N, at position: Vector2f) {
+    @inlinable mutating func didAddNode(_ node: N, at position: Vector2f) {
         let p = massProvider(node.id)
         accumulatedCount += 1
         accumulatedProperty += p
         weightedAccumulatedNodePositions += p * position
     }
 
-    func didRemoveNode(_ node: N, at position: Vector2f) {
+    @inlinable mutating func didRemoveNode(_ node: N, at position: Vector2f) {
         let p = massProvider(node.id)
         accumulatedCount -= 1
         accumulatedProperty -= p
         weightedAccumulatedNodePositions -= p * position
-
         // TODO: parent removal?
     }
 
-    func copy() -> Self {
+    @inlinable func copy() -> Self {
         return Self(
             initialAccumulatedProperty: self.accumulatedProperty,
             initialAccumulatedCount: self.accumulatedCount,
@@ -62,11 +60,11 @@ final class MassQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
         )
     }
 
-    func createNew() -> Self {
+    @inlinable func createNew() -> Self {
         return Self(massProvider: self.massProvider)
     }
 
-    var centroid: Vector2f? {
+    @inlinable var centroid: Vector2f? {
         guard accumulatedCount > 0 else { return nil }
         return weightedAccumulatedNodePositions / accumulatedProperty
     }
@@ -156,9 +154,9 @@ final public class ManyBodyForce<N>: Force where N: Identifiable {
     var precalculatedMass: [N.ID: Float] = [:]
 
     weak var simulation: Simulation<N>? {
-        didSet(newValue) {
-            guard let newValue else { return }
-            self.precalculatedMass = self.mass.calculated(nodes: newValue.simulationNodes)
+        didSet {
+            guard let sim = self.simulation else { return }
+            self.precalculatedMass = self.mass.calculated(nodes: sim.simulationNodes)
         }
     }
 
@@ -197,15 +195,17 @@ final public class ManyBodyForce<N>: Force where N: Identifiable {
         let quad = try QuadTree2(
             nodes: sim.simulationNodes.map { ($0, $0.position) }
         ) {
-            // this switch is only called on root init
-            return switch self.mass {
-            case .constant(let m):
-                MassQuadTreeDelegate<SimulationNode<N.ID>> { _ in m }
-            case .varied(_):
+            // this switch is only called on root init 
+            // but it significantly slows down the performance
+            // 
+            // return switch self.mass {
+            // case .constant(let m):
+            //     MassQuadTreeDelegate<SimulationNode<N.ID>> { _ in m }
+            // case .varied(_):
                 MassQuadTreeDelegate<SimulationNode<N.ID>> {
                     self.precalculatedMass[$0, default: 0.0]
                 }
-            }
+            // }
         }
 
         var forces = [Vector2f](repeating: .zero, count: sim.simulationNodes.count)

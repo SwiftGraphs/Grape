@@ -5,7 +5,6 @@
 //  Created by li3zhen1 on 10/1/23.
 //
 
-import Foundation
 
 final public class PositionForce<N>: Force where N: Identifiable {
     var x: Float

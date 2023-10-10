@@ -13,14 +13,13 @@ enum CollideForceError: Error {
 }
 
 /// A delegate for finding the maximum radius (of nodes) in a quad.
-final class MaxRadiusQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
+public struct MaxRadiusQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
 
-    typealias Node = N
-    typealias Property = Float
+    public typealias Node = N
 
     public var maxNodeRadius: Float
 
-    var radiusProvider: (N.ID) -> Float
+    @usableFromInline var radiusProvider: (N.ID) -> Float
 
     init(
         radiusProvider: @escaping (N.ID) -> Float
@@ -37,26 +36,26 @@ final class MaxRadiusQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
         self.radiusProvider = radiusProvider
     }
 
-    func didAddNode(_ node: N, at position: Vector2f) {
+    @inlinable public mutating func didAddNode(_ node: N, at position: Vector2f) {
         let p = radiusProvider(node.id)
         maxNodeRadius = max(maxNodeRadius, p)
     }
 
-    func didRemoveNode(_ node: N, at position: Vector2f) {
+    @inlinable public mutating func didRemoveNode(_ node: N, at position: Vector2f) {
         if radiusProvider(node.id) >= maxNodeRadius {
             // 🤯 for Collide force, set to 0 is fine (?)
             maxNodeRadius = 0
         }
     }
 
-    func copy() -> Self {
+    public func copy() -> Self {
         return Self(
             initialMaxNodeRadius: self.maxNodeRadius,
             radiusProvider: self.radiusProvider
         )
     }
 
-    func createNew() -> Self {
+    public func createNew() -> Self {
         return Self(
             radiusProvider: self.radiusProvider
         )
@@ -65,19 +64,19 @@ final class MaxRadiusQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
 }
 
 final public class CollideForce<N> where N: Identifiable {
-    var radius: CollideRadius {
-        didSet(newValue) {
-            guard let sim = self.simulation else { return }
-            calculatedRadius = newValue.calculated(sim.simulationNodes)
-        }
-    }
+    var radius: CollideRadius
     var calculatedRadius: [N.ID: Float] = [:]
 
     var strength: Float
 
     let iterationsPerTick: Int
 
-    weak var simulation: Simulation<N>?
+    weak var simulation: Simulation<N>? {
+        didSet {
+            guard let sim = self.simulation else { return }
+            calculatedRadius = radius.calculated(sim.simulationNodes)
+        }
+    }
 
     internal init(
         radius: CollideRadius,
