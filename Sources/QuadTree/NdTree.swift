@@ -14,7 +14,7 @@ public protocol ComponentComparable {
     @inlinable static func >=(lhs: Self, rhs: Self) -> Bool
 }
 
-public struct NdBox<Coordinate> where Coordinate: SIMD<Float>, Coordinate: ComponentComparable {
+public struct NdBox<Coordinate> where Coordinate: SIMD<Double>, Coordinate: ComponentComparable {
     public var p0: Coordinate
     public var p1: Coordinate
     
@@ -34,8 +34,8 @@ public struct NdBox<Coordinate> where Coordinate: SIMD<Float>, Coordinate: Compo
 }
 
 extension NdBox {
-    var area: Float {
-        var result: Float = 1
+    var area: Double {
+        var result: Double = 1
         let delta = p1 - p0
         for i in delta.indices {
             result *= delta[i]
@@ -69,20 +69,20 @@ extension NdBox {
 /// Reversed bit representation for nth dimension
 /// e.g.    for 3d:         0b001 => (x:0, y:0, z:1)
 public protocol NdDirection: RawRepresentable {
-    associatedtype Coordinate: SIMD<Float>
+    associatedtype Coordinate: SIMD<Double>
     var rawValue: Int { get }
     var reversed: Self { get }
     static var entryCount: Int { get }
 }
 
-//public extension SIMD<Float> {
+//public extension SIMD<Double> {
 //    @inlinable func direction<Direction>(originalPoint point: Self) -> Direction where Direction: NdDirection, Direction.Coordinate == Self {
 //        
 //    }
 //}
 
 struct OctDirection: NdDirection {
-    typealias Coordinate = SIMD3<Float>
+    typealias Coordinate = SIMD3<Double>
     let rawValue: Int
     var reversed: OctDirection {
         return OctDirection(rawValue: 7-rawValue)
@@ -90,7 +90,7 @@ struct OctDirection: NdDirection {
     static let entryCount: Int = 8
 }
 
-public struct NdChildren<T, Coordinate> where Coordinate: SIMD<Float> {
+public struct NdChildren<T, Coordinate> where Coordinate: SIMD<Double> {
     @usableFromInline internal let children: [T]
     
     @inlinable public subscript<Direction>(
@@ -111,7 +111,7 @@ public protocol TreeNodeDelegate {
 }
 
 
-public final class NdTree<C, TD> where C:SIMD<Float>, C:ComponentComparable, TD: TreeNodeDelegate {
+public final class NdTree<C, TD> where C:SIMD<Double>, C:ComponentComparable, TD: TreeNodeDelegate {
     
     public typealias Box = NdBox<C>
     public typealias Children = NdChildren<NdTree<C, TD>, C>
@@ -122,12 +122,12 @@ public final class NdTree<C, TD> where C:SIMD<Float>, C:ComponentComparable, TD:
     
     public var nodes: [Index] = []
     public private(set) var children: Children?
-    public let clusterDistance: Float
+    public let clusterDistance: Double
     public var delegate: TD
     
     init(
         box: Box,
-        clusterDistance: Float,
+        clusterDistance: Double,
         rootNodeDelegate: TD
     ) {
         self.box = box

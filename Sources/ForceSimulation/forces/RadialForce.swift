@@ -19,19 +19,19 @@ final public class RadialForce<N>: Force where N: Identifiable {
 
     /// Radius accessor
     public enum Radius {
-        case constant(Float)
-        case varied([N.ID: Float])
+        case constant(Double)
+        case varied([N.ID: Double])
     }
     public var radius: Radius
-    private var calculatedRadius: [N.ID: Float] = [:]
+    private var calculatedRadius: [N.ID: Double] = [:]
 
     /// Strength accessor
     public enum Strength {
-        case constant(Float)
-        case varied([N.ID: Float])
+        case constant(Double)
+        case varied([N.ID: Double])
     }
     public var strength: Strength
-    private var calculatedStrength: [N.ID: Float] = [:]
+    private var calculatedStrength: [N.ID: Double] = [:]
 
 
 
@@ -42,7 +42,7 @@ final public class RadialForce<N>: Force where N: Identifiable {
         self.strength = strength
     }
 
-    public func apply(alpha: Float) {
+    public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
         for i in sim.simulationNodes.indices {
             let nodeId = sim.simulationNodes[i].id
@@ -58,7 +58,7 @@ final public class RadialForce<N>: Force where N: Identifiable {
 }
 
 extension RadialForce.Strength {
-    public func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Float]
+    public func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Double]
     where SimNode: Identifiable, SimNode.ID == N.ID {
         switch self {
         case .constant(let s):
@@ -70,7 +70,7 @@ extension RadialForce.Strength {
 }
 
 extension RadialForce.Radius {
-    public func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Float]
+    public func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Double]
     where SimNode: Identifiable, SimNode.ID == N.ID {
         switch self {
         case .constant(let r):

@@ -61,7 +61,7 @@ public struct SimulationEdge<VID>: Identifiable where VID: Hashable {
 
 public protocol Force {
     associatedtype N: Identifiable
-    func apply(alpha: Float)
+    func apply(alpha: Double)
 }
 
 extension SimulationNode: CustomDebugStringConvertible {

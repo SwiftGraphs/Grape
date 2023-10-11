@@ -15,13 +15,13 @@ public class Simulation<N> where N: Identifiable /*, E: EdgeLike, E.VertexID == 
 
     public typealias NodeID = N.ID
 
-    public let initializedAlpha: Float
+    public let initializedAlpha: Double
 
-    public var alpha: Float
-    public var alphaMin: Float
-    public var alphaDecay: Float
-    public var alphaTarget: Float
-    public var velocityDecay: Float
+    public var alpha: Double
+    public var alphaMin: Double
+    public var alphaDecay: Double
+    public var alphaTarget: Double
+    public var velocityDecay: Double
 
     public internal(set) var forces: [any Force] = []  //Dictionary<String, any Force> = [:]
 
@@ -30,11 +30,11 @@ public class Simulation<N> where N: Identifiable /*, E: EdgeLike, E.VertexID == 
 
     public init(
         nodes: [N] = [],
-        alpha: Float = 1,
-        alphaMin: Float = 1e-3,
-        alphaDecay: Float? = nil,
-        alphaTarget: Float = 0.0,
-        velocityDecay: Float = 0.6,
+        alpha: Double = 1,
+        alphaMin: Double = 1e-3,
+        alphaDecay: Double? = nil,
+        alphaTarget: Double = 0.0,
+        velocityDecay: Double = 0.6,
 
         setInitialStatus: (
             (inout SimulationNode<NodeID>, [SimulationNode<NodeID>].Index) -> Void
@@ -67,7 +67,7 @@ public class Simulation<N> where N: Identifiable /*, E: EdgeLike, E.VertexID == 
 
     public func start(
         intervalPerTick: TimeInterval,
-        startWithAlpha: Float? = nil,
+        startWithAlpha: Double? = nil,
         onTicked: @escaping ([SimulationNode<NodeID>]) -> Void
     ) {
         self.alpha = startWithAlpha ?? initializedAlpha

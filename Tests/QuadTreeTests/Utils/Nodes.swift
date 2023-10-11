@@ -8,7 +8,7 @@
 import QuadTree
 
 
-struct IdNode: Identifiable, HasMassLikeProperty {
+struct IdNode: Identifiable {
     typealias ID = Int
     let id: Int
     
@@ -23,10 +23,10 @@ struct IdNode: Identifiable, HasMassLikeProperty {
         idCounter = 0
     }
     
-    var property: Float = 1
+    var property: Double = 1
 }
 
-struct NamedNode: Identifiable, HasMassLikeProperty {
+struct NamedNode: Identifiable {
     typealias ID = Int
     let id: Int
     let name: String
@@ -41,7 +41,7 @@ struct NamedNode: Identifiable, HasMassLikeProperty {
         idCounter = 0
     }
     
-    var property: Float = 1
+    var property: Double = 1
 }
 
 
