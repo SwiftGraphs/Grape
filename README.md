@@ -1,6 +1,7 @@
 # Grape
 
 ![swift workflow](https://github.com/li3zhen1/Grape/actions/workflows/swift.yml/badge.svg)
+[![Swift support](https://img.shields.io/badge/Swift-5.9-lightgray.svg?colorA=28a745&colorB=4E4E4E)](#swift-versions-support)
 
 
 A visualization-purposed force simulation library.
