@@ -1,7 +1,7 @@
 import XCTest
 @testable import QuadTree
 
-extension SIMD3<Float>: ComponentComparable {
+extension SIMD3<Double>: ComponentComparable {
     public static func < (lhs: SIMD3<Scalar>, rhs: SIMD3<Scalar>) -> Bool {
         return lhs.x < rhs.x && lhs.y < rhs.y && lhs.z < rhs.z
     }
@@ -23,12 +23,12 @@ extension SIMD3<Float>: ComponentComparable {
 final class NdTreeTests: XCTestCase {
     
     func testNdBoxSwap() {
-        let box = NdBox(p0: SIMD3<Float>.one, p1: SIMD3<Float>.zero)
+        let box = NdBox(p0: SIMD3<Double>.one, p1: SIMD3<Double>.zero)
         assert(box.p0 == .zero)
     }
     
     func testNdBoxGetCorner() {
-        let box = NdBox(p0: SIMD3<Float>.one, p1: SIMD3<Float>.zero)
+        let box = NdBox(p0: SIMD3<Double>.one, p1: SIMD3<Double>.zero)
         
         
         

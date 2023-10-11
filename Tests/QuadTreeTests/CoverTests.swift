@@ -10,7 +10,7 @@ final class CoverTests: XCTestCase {
     //   assert.deepStrictEqual(quadtree().cover(1, 2).extent(), [[1, 2], [2, 3]]);
     // });
     func testCoverTrivialExtent() {
-        let q = QuadTree<IdNode>.create(startingWith: .new(), at: .init(x:1, y:2))
+        let q = QuadTree2.create(startingWith: IdNode.new(), at: .init(x:1, y:2)) {EmptyQuadDelegate()}
         assert(q.quad ~= Quad(x0: 1, x1: 2, y0: 2, y1: 3))
     }
 
@@ -20,7 +20,7 @@ final class CoverTests: XCTestCase {
     //   assert.deepStrictEqual(quadtree().cover(0, 0).cover(1, 2).extent(), [[0, 0], [4, 4]]);
     // });
     func testCoverNonTrivialExtent() {
-        let q = QuadTree<IdNode>.create(startingWith: .new(), at: .init(x:0, y:0))
+        let q = QuadTree2.create(startingWith: IdNode.new(), at: .init(x:1, y:2)) {EmptyQuadDelegate()}
         q.add(.new(), at: .init(x:1, y:2))
         assert(q.quad ~= Quad(x0: 0, x1: 4, y0: 0, y1: 4))
     }
@@ -30,7 +30,7 @@ final class CoverTests: XCTestCase {
     // });
 //    func testCoverInvalidPoints() {
 //        let q = QuadTree<IdNode>.create(startingWith: .new(), at: .init(x:0, y:0))
-//        q.add(.new(), at: .init(x:Float.nan, y:2))
+//        q.add(.new(), at: .init(x:Double.nan, y:2))
 //        assert(q.quad ~= Quad(x0: 0, x1: 1, y0: 0, y1: 1))
 //    }
 
@@ -53,22 +53,22 @@ final class CoverTests: XCTestCase {
     //   assert.deepStrictEqual(quadtree().cover(0, 0).cover(2, 2).cover(-3, 3).extent(), [[-4, 0], [4, 8]]);
     // });
     func testCoverDoubleExistingExtent() {
-        let q = QuadTree<IdNode>.create(startingWith: .new(), at: .init(x:0, y:0))
+        let q = QuadTree2.create(startingWith: IdNode.new(), at: .init(x:1, y:2)) {EmptyQuadDelegate()}
         q.add(.new(), at: (2,2))
         q.add(.new(), at: (-1,-1))
         assert(q.quad ~= Quad(x0: -4, x1: 4, y0: -4, y1: 4))
         
-        let q2 = QuadTree<IdNode>.create(startingWith: .new(), at: .init(x:0, y:0))
+        let q2 = QuadTree2.create(startingWith: IdNode.new(), at: .init(x:1, y:2)) {EmptyQuadDelegate()}
         q2.add(.new(), at: (2,2))
         q2.add(.new(), at: (1,-1))
 //        assert(q2.quad ~= Quad(x0: 0, x1: 8, y0: -4, y1: 4))
 
-        let q3 = QuadTree<IdNode>.create(startingWith: .new(), at: .init(x:0, y:0))
+        let q3 = QuadTree2.create(startingWith: IdNode.new(), at: .init(x:1, y:2)) {EmptyQuadDelegate()}
         q3.add(.new(), at: (2,2))
         q3.add(.new(), at: (3,-1))
 //        assert(q3.quad ~= Quad(x0: 0, x1: 8, y0: -4, y1: 4))
 
-        let q4 = QuadTree<IdNode>.create(startingWith: .new(), at: .init(x:0, y:0))
+        let q4 = QuadTree2.create(startingWith: IdNode.new(), at: .init(x:1, y:2)) {EmptyQuadDelegate()}
         q4.add(.new(), at: (2,2))
         q4.add(.new(), at: (3,1))
 //        assert(q4.quad ~= Quad(x0: 0, x1: 4, y0: 0, y1: 4))

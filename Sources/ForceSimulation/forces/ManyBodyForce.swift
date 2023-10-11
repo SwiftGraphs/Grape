@@ -12,23 +12,23 @@ struct MassQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
 
     typealias Node = N
 
-    public var accumulatedProperty: Float = 0.0
+    public var accumulatedProperty: Double = 0.0
     public var accumulatedCount = 0
     public var weightedAccumulatedNodePositions: Vector2f = .zero
 
-    @usableFromInline let massProvider: (N.ID) -> Float
+    @usableFromInline let massProvider: (N.ID) -> Double
 
     init(
-        massProvider: @escaping (N.ID) -> Float
+        massProvider: @escaping (N.ID) -> Double
     ) {
         self.massProvider = massProvider
     }
 
     internal init(
-        initialAccumulatedProperty: Float,
+        initialAccumulatedProperty: Double,
         initialAccumulatedCount: Int,
         initialWeightedAccumulatedNodePositions: Vector2f,
-        massProvider: @escaping (N.ID) -> Float
+        massProvider: @escaping (N.ID) -> Double
     ) {
         self.accumulatedProperty = initialAccumulatedProperty
         self.accumulatedCount = initialAccumulatedCount
@@ -73,14 +73,14 @@ struct MassQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
 //final class MassQuadTreeDelegate<N>: QuadDelegate where N : Identifiable {
 //
 //    typealias Node = N
-//    typealias Property = Float
-//    typealias MassProvider = [N.ID: Float]
+//    typealias Property = Double
+//    typealias MassProvider = [N.ID: Double]
 //
-//    public var accumulatedProperty: Float = 0.0
+//    public var accumulatedProperty: Double = 0.0
 //    public var accumulatedCount = 0
 //    public var weightedAccumulatedNodePositions: Vector2f = .zero
 //
-//    let massProvider: [N.ID: Float]
+//    let massProvider: [N.ID: Double]
 //
 //    init(
 //        massProvider: MassProvider
@@ -90,7 +90,7 @@ struct MassQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
 //
 //
 //    internal init(
-//        initialAccumulatedProperty: Float,
+//        initialAccumulatedProperty: Double,
 //        initialAccumulatedCount: Int,
 //        initialWeightedAccumulatedNodePositions: Vector2f,
 //        massProvider: MassProvider
@@ -144,14 +144,14 @@ enum ManyBodyForceError: Error {
 
 final public class ManyBodyForce<N>: Force where N: Identifiable {
 
-    var strength: Float = -20
+    var strength: Double = -20
 
     public enum NodeMass {
-        case constant(Float)
-        case varied([N.ID: Float])
+        case constant(Double)
+        case varied([N.ID: Double])
     }
     var mass: NodeMass = .constant(1.0)
-    var precalculatedMass: [N.ID: Float] = [:]
+    var precalculatedMass: [N.ID: Double] = [:]
 
     weak var simulation: Simulation<N>? {
         didSet {
@@ -160,21 +160,21 @@ final public class ManyBodyForce<N>: Force where N: Identifiable {
         }
     }
 
-    var theta2: Float = 0.81
-    var theta: Float { theta2.squareRoot() }
+    var theta2: Double = 0.81
+    var theta: Double { theta2.squareRoot() }
 
-    var distanceMin2: Float = 0.01
-    var distanceMax2: Float = Float.infinity
+    var distanceMin2: Double = 0.01
+    var distanceMax2: Double = Double.infinity
 
     internal init(
-        strength: Float,
+        strength: Double,
         nodeMassProvider: NodeMass = .constant(1.0)
     ) {
         self.strength = strength
         self.mass = nodeMassProvider
     }
 
-    public func apply(alpha: Float) {
+    public func apply(alpha: Double) {
         guard let simulation,
             let forces = try? calculateForce(alpha: alpha)
         else { return }
@@ -186,7 +186,7 @@ final public class ManyBodyForce<N>: Force where N: Identifiable {
         }
     }
 
-    func calculateForce(alpha: Float) throws -> [Vector2f] {
+    func calculateForce(alpha: Double) throws -> [Vector2f] {
 
         guard let sim = self.simulation else {
             throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized
@@ -246,7 +246,7 @@ final public class ManyBodyForce<N>: Force where N: Identifiable {
 }
 
 extension ManyBodyForce.NodeMass {
-    func calculated<SimNodes>(nodes: [SimNodes]) -> [N.ID: Float]
+    func calculated<SimNodes>(nodes: [SimNodes]) -> [N.ID: Double]
     where SimNodes: Identifiable, SimNodes.ID == N.ID {
         switch self {
         case .constant(let m):
@@ -261,7 +261,7 @@ extension Simulation {
 
     @discardableResult
     public func createManyBodyForce(
-        strength: Float,
+        strength: Double,
         nodeMassPassProvider: ManyBodyForce<N>.NodeMass = .constant(1.0)
     ) -> ManyBodyForce<N> {
         let manyBodyForce = ManyBodyForce<N>(

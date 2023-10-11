@@ -9,11 +9,11 @@ import QuadTree
 // TODO: impl deterministic random number generator
 // https://forums.swift.org/t/deterministic-randomness-in-swift/20835/5
 
-extension Float {
+extension Double {
 
-    @inlinable func jiggled() -> Float {
+    @inlinable func jiggled() -> Double {
         if self == 0 || self == .nan {
-            return Float.random(in: -0.5..<0.5) * 1e-6
+            return Double.random(in: -0.5..<0.5) * 1e-6
         }
         return self
     }

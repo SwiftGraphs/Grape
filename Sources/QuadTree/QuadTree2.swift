@@ -36,13 +36,13 @@ public final class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate,
 
     public private(set) var children: Children?
 
-    public let clusterDistance: Float
+    public let clusterDistance: Double
 
     public var quadDelegate: QD
 
     internal init(
         quad: Quad,
-        clusterDistance: Float,
+        clusterDistance: Double,
         rootQuadDelegate: QD
     ) {
         self.quad = quad
@@ -166,7 +166,7 @@ public final class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate,
         self.quadDelegate = quadDelegate.copy()
     }
 
-    private static func divide(quad: Quad, clusterDistance: Float, rootQuadDelegate: QD) -> Children
+    private static func divide(quad: Quad, clusterDistance: Double, rootQuadDelegate: QD) -> Children
     {
         let divided = quad.divide()
         let northWest = QuadTreeNode2(
@@ -209,11 +209,11 @@ final public class QuadTree2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.
     public private(set) var root: QuadTreeNode2<N, QD>
     private var nodeIds: Set<N.ID> = []
 
-    public let clusterDistance: Float
+    public let clusterDistance: Double
 
     public init(
         quad: Quad,
-        clusterDistance: Float = 1e-6,
+        clusterDistance: Double = 1e-6,
         getQuadDelegate: @escaping () -> QD
     ) {
         self.clusterDistance = clusterDistance
@@ -226,7 +226,7 @@ final public class QuadTree2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.
 
     public init(
         nodes: [(N, Vector2f)],
-        clusterDistance: Float = 1e-6,
+        clusterDistance: Double = 1e-6,
         getQuadDelegate: @escaping () -> QD
     ) throws {
         guard let firstEntry = nodes.first else {
@@ -246,7 +246,7 @@ final public class QuadTree2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.
         nodeIds.insert(node.id)
     }
 
-    public func add(_ node: N, at point: (Float, Float)) {
+    public func add(_ node: N, at point: (Double, Double)) {
         root.add(node, at: Vector2f(point.0, point.1))
         nodeIds.insert(node.id)
     }
@@ -271,7 +271,7 @@ final public class QuadTree2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.
     static public func create(
         startingWith node: N,
         at point: Vector2f,
-        clusterDistance: Float = 1e-6,
+        clusterDistance: Double = 1e-6,
         getQuadDelegate: @escaping () -> QD
     ) -> QuadTree2<N, QD> where N: Identifiable {
         let tree = QuadTree2<N, QD>(

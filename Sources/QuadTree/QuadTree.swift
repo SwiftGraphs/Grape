@@ -16,7 +16,7 @@ public class QuadTreeNode<N> where N: Identifiable, N: HasMassLikeProperty {
 
     public var nodes: [N.ID: Vector2f] = [:]  // TODO: merge nodes if close enough
 
-    public var accumulatedProperty: Float = 0.0
+    public var accumulatedProperty: Double = 0.0
     public var accumulatedCount = 0
     public var weightedAccumulatedNodePositions: Vector2f = .zero
     public var centroid: Vector2f? {
@@ -47,11 +47,11 @@ public class QuadTreeNode<N> where N: Identifiable, N: HasMassLikeProperty {
 
     public private(set) var children: Children?
 
-    public let clusterDistance: Float
+    public let clusterDistance: Double
 
     internal init(
         quad: Quad,
-        clusterDistance: Float
+        clusterDistance: Double
     ) {
         self.quad = quad
         self.clusterDistance = clusterDistance
@@ -212,7 +212,7 @@ public class QuadTreeNode<N> where N: Identifiable, N: HasMassLikeProperty {
         self.nodes = [:]
     }
 
-    private static func divide(quad: Quad, clusterDistance: Float) -> Children {
+    private static func divide(quad: Quad, clusterDistance: Double) -> Children {
         let divided = quad.divide()
         let northWest = QuadTreeNode<N>(quad: divided.northWest, clusterDistance: clusterDistance)
         let northEast = QuadTreeNode<N>(quad: divided.northEast, clusterDistance: clusterDistance)
@@ -250,7 +250,7 @@ public class QuadTreeNode<N> where N: Identifiable, N: HasMassLikeProperty {
     //    public var centroid: Vector2f? {
     //        get {
     //            if isLeaf {
-    //                return nodes.values.sum() / Float(nodes.count)
+    //                return nodes.values.sum() / Double(nodes.count)
     //            }
     //            return nil
     //        }
@@ -266,11 +266,11 @@ final public class QuadTree<N: Identifiable> where N: HasMassLikeProperty {
     public private(set) var root: QuadTreeNode<N>
     private var nodeIds: Set<N.ID> = []
 
-    public let clusterDistance: Float
+    public let clusterDistance: Double
 
     public init(
         quad: Quad,
-        clusterDistance: Float = 1e-6
+        clusterDistance: Double = 1e-6
     ) {
         self.clusterDistance = clusterDistance
         self.root = QuadTreeNode<N>(
@@ -281,7 +281,7 @@ final public class QuadTree<N: Identifiable> where N: HasMassLikeProperty {
 
     public init(
         nodes: [(N, Vector2f)],
-        clusterDistance: Float = 1e-6
+        clusterDistance: Double = 1e-6
     ) throws {
         guard let firstEntry = nodes.first else {
             throw QuadTreeError.noNodeProvidedError
@@ -299,7 +299,7 @@ final public class QuadTree<N: Identifiable> where N: HasMassLikeProperty {
         nodeIds.insert(node.id)
     }
 
-    public func add(_ node: N, at point: (Float, Float)) {
+    public func add(_ node: N, at point: (Double, Double)) {
         root.add(node, at: Vector2f(point.0, point.1))
         nodeIds.insert(node.id)
     }
@@ -326,7 +326,7 @@ final public class QuadTree<N: Identifiable> where N: HasMassLikeProperty {
     }
 
     static public func create(
-        startingWith node: N, at point: Vector2f, clusterDistance: Float = 1e-6
+        startingWith node: N, at point: Vector2f, clusterDistance: Double = 1e-6
     ) -> QuadTree<N> where N: Identifiable {
         let tree = QuadTree<N>(
             quad: Quad.cover(point),
@@ -578,6 +578,6 @@ extension QuadTree {
 
 public protocol HasMassLikeProperty {
     //    associatedtype Property: MassLikeProperty
-    var property: Float { get }
+    var property: Double { get }
     //    static var propertyZero: Property { get }
 }

@@ -11,32 +11,32 @@ import simd
 
 // #endif
 
-public typealias Vector2f = simd_float2
+public typealias Vector2f = simd_double2
 
 extension Vector2f: AdditiveArithmetic {
 
-    @inlinable public func lengthSquared() -> Float {
+    @inlinable public func lengthSquared() -> Double {
         return x * x + y * y
     }
 
-    @inlinable public func length() -> Float {
+    @inlinable public func length() -> Double {
         return (x * x + y * y).squareRoot()
     }
 
-    @inlinable public func squaredDistanceTo(_ point: Self) -> Float {
+    @inlinable public func squaredDistanceTo(_ point: Self) -> Double {
         return (self - point).lengthSquared()
     }
 
-    @inlinable public func distanceTo(_ point: Self) -> Float {
+    @inlinable public func distanceTo(_ point: Self) -> Double {
         return (self - point).length()
     }
 }
 
 public struct Quad {
-    private var x0y0: simd_float2
-    private var x1y1: simd_float2
+    private var x0y0: Vector2f
+    private var x1y1: Vector2f
 
-    public var x0: Float {
+    public var x0: Double {
         get {
             x0y0.x
         }
@@ -45,7 +45,7 @@ public struct Quad {
         }
     }
 
-    public var x1: Float {
+    public var x1: Double {
         get {
             x1y1.x
         }
@@ -54,7 +54,7 @@ public struct Quad {
         }
     }
 
-    public var y0: Float {
+    public var y0: Double {
         get {
             x0y0.y
         }
@@ -63,7 +63,7 @@ public struct Quad {
         }
     }
 
-    public var y1: Float {
+    public var y1: Double {
         get {
             x1y1.y
         }
@@ -72,7 +72,7 @@ public struct Quad {
         }
     }
 
-    private init(x0y0: simd_float2, x1y1: simd_float2) {
+    private init(x0y0: Vector2f, x1y1: Vector2f) {
         self.x0y0 = x0y0
         self.x1y1 = x1y1
     }
@@ -85,20 +85,20 @@ public struct Quad {
         self.init(x0: x0, x1: x1, y0: y0, y1: y1)
     }
 
-    public init(x0: Float, x1: Float, y0: Float, y1: Float) {
+    public init(x0: Double, x1: Double, y0: Double, y1: Double) {
         switch (x1 < x0, y1 < y0) {
         case (true, true):
-            self.x0y0 = simd_float2(x: x1, y: y1)
-            self.x1y1 = simd_float2(x: x0, y: y0)
+            self.x0y0 = Vector2f(x: x1, y: y1)
+            self.x1y1 = Vector2f(x: x0, y: y0)
         case (true, false):
-            self.x0y0 = simd_float2(x: x1, y: y0)
-            self.x1y1 = simd_float2(x: x0, y: y1)
+            self.x0y0 = Vector2f(x: x1, y: y0)
+            self.x1y1 = Vector2f(x: x0, y: y1)
         case (false, true):
-            self.x0y0 = simd_float2(x: x0, y: y1)
-            self.x1y1 = simd_float2(x: x1, y: y0)
+            self.x0y0 = Vector2f(x: x0, y: y1)
+            self.x1y1 = Vector2f(x: x1, y: y0)
         case (false, false):
-            self.x0y0 = simd_float2(x: x0, y: y0)
-            self.x1y1 = simd_float2(x: x1, y: y1)
+            self.x0y0 = Vector2f(x: x0, y: y0)
+            self.x1y1 = Vector2f(x: x1, y: y1)
         }
     }
 
@@ -157,7 +157,7 @@ extension Quad {
         return x1y1 - x0y0
     }
 
-    public var area: Float {
+    public var area: Double {
         return size.x * size.y
     }
 

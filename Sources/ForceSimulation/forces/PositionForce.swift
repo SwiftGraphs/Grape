@@ -12,18 +12,18 @@ final public class PositionForce<N>: Force where N: Identifiable {
         case y
     }
     public enum TargetOnDirection {
-        case constant(Float)
-        case varied([N.ID: Float])
+        case constant(Double)
+        case varied([N.ID: Double])
     }
     public enum Strength {
-        case constant(Float)
-        case varied([N.ID: Float])
+        case constant(Double)
+        case varied([N.ID: Double])
     }
     public var strength: Strength
     public var direction: Direction
-    public var calculatedStrength: [N.ID: Float] = [:]
+    public var calculatedStrength: [N.ID: Double] = [:]
     public var targetOnDirection: TargetOnDirection
-    public var calculatedTargetOnDirection: [N.ID: Float] = [:]
+    public var calculatedTargetOnDirection: [N.ID: Double] = [:]
 
     internal init(direction: Direction, targetOnDirection: TargetOnDirection, strength: Strength = .constant(1.0)) {
         self.strength = strength
@@ -39,7 +39,7 @@ final public class PositionForce<N>: Force where N: Identifiable {
         }
     }
 
-    public func apply(alpha: Float) {
+    public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
         let vectorIndex = self.direction == .x ? 0 : 1
         for i in sim.simulationNodes.indices {
@@ -52,7 +52,7 @@ final public class PositionForce<N>: Force where N: Identifiable {
 }
 
 extension PositionForce.Strength {
-    func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Float] where SimNode: Identifiable, SimNode.ID == N.ID {
+    func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Double] where SimNode: Identifiable, SimNode.ID == N.ID {
         switch self {
         case .constant(let value):
             return nodes.reduce(into: [:]) { $0[$1.id] = value }
@@ -63,7 +63,7 @@ extension PositionForce.Strength {
 }
 
 extension PositionForce.TargetOnDirection {
-    func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Float] where SimNode: Identifiable, SimNode.ID == N.ID {
+    func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Double] where SimNode: Identifiable, SimNode.ID == N.ID {
         switch self {
         case .constant(let value):
             return nodes.reduce(into: [:]) { $0[$1.id] = value }

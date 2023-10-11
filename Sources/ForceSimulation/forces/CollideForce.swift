@@ -17,20 +17,20 @@ public struct MaxRadiusQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
 
     public typealias Node = N
 
-    public var maxNodeRadius: Float
+    public var maxNodeRadius: Double
 
-    @usableFromInline var radiusProvider: (N.ID) -> Float
+    @usableFromInline var radiusProvider: (N.ID) -> Double
 
     init(
-        radiusProvider: @escaping (N.ID) -> Float
+        radiusProvider: @escaping (N.ID) -> Double
     ) {
         self.radiusProvider = radiusProvider
         self.maxNodeRadius = 0.0
     }
 
     internal init(
-        initialMaxNodeRadius: Float = 0.0,
-        radiusProvider: @escaping (N.ID) -> Float
+        initialMaxNodeRadius: Double = 0.0,
+        radiusProvider: @escaping (N.ID) -> Double
     ) {
         self.maxNodeRadius = initialMaxNodeRadius
         self.radiusProvider = radiusProvider
@@ -65,9 +65,9 @@ public struct MaxRadiusQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
 
 final public class CollideForce<N> where N: Identifiable {
     var radius: CollideRadius
-    var calculatedRadius: [N.ID: Float] = [:]
+    var calculatedRadius: [N.ID: Double] = [:]
 
-    var strength: Float
+    var strength: Double
 
     let iterationsPerTick: Int
 
@@ -80,7 +80,7 @@ final public class CollideForce<N> where N: Identifiable {
 
     internal init(
         radius: CollideRadius,
-        strength: Float = 1.0,
+        strength: Double = 1.0,
         iterationsPerTick: Int = 1
     ) {
         self.radius = radius
@@ -91,13 +91,13 @@ final public class CollideForce<N> where N: Identifiable {
 
 extension CollideForce {
     public enum CollideRadius {
-        case constant(Float)
-        case varied((N.ID) -> Float)
+        case constant(Double)
+        case varied((N.ID) -> Double)
     }
 }
 
 extension CollideForce.CollideRadius {
-    public func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Float]
+    public func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Double]
     where SimNode: Identifiable, SimNode.ID == N.ID {
         switch self {
         case .constant(let r):
@@ -109,7 +109,7 @@ extension CollideForce.CollideRadius {
 }
 
 extension CollideForce: Force {
-    public func apply(alpha: Float) {
+    public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
 
         for _ in 0..<iterationsPerTick {
@@ -185,7 +185,7 @@ extension Simulation {
     @discardableResult
     public func createCollideForce(
         radius: CollideForce<N>.CollideRadius = .constant(3.0),
-        strength: Float = 1.0,
+        strength: Double = 1.0,
         iterationsPerTick: Int = 1
     ) -> CollideForce<N> {
         let f = CollideForce<N>(

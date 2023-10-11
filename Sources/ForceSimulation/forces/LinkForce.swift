@@ -40,8 +40,8 @@ final public class LinkForce<N>: Force where N: Identifiable {
             self.linkLookup = LinkLookup(sources, targets, count)
 
             calculatedBias = links.map { l in
-                Float(linkLookup.count[l.source, default: 0])
-                    / Float(
+                Double(linkLookup.count[l.source, default: 0])
+                    / Double(
                         linkLookup.count[l.target, default: 0]
                             + linkLookup.count[l.source, default: 0]
                     )
@@ -58,22 +58,22 @@ final public class LinkForce<N>: Force where N: Identifiable {
 
     /// Stiffness accessor
     public enum LinkStiffness {
-        case constant(Float)
-        case varied((EdgeID<N.ID>, /*inout*/ LinkLookup) -> Float)
+        case constant(Double)
+        case varied((EdgeID<N.ID>, /*inout*/ LinkLookup) -> Double)
     }
     var stiffness: LinkStiffness
-    var calculatedStiffness: [Float] = []
+    var calculatedStiffness: [Double] = []
 
     /// Length accessor
     public enum LinkLength {
-        case constant(Float)
-        case varied((EdgeID<N.ID>, /*inout*/ LinkLookup) -> Float)
+        case constant(Double)
+        case varied((EdgeID<N.ID>, /*inout*/ LinkLookup) -> Double)
     }
     var length: LinkLength
-    var calculatedLength: [Float] = []
+    var calculatedLength: [Double] = []
 
     /// Bias
-    var calculatedBias: [Float] = []
+    var calculatedBias: [Double] = []
     weak var simulation: Simulation<N>?
 
     var iterations: Int
@@ -101,8 +101,8 @@ final public class LinkForce<N>: Force where N: Identifiable {
         self.linkLookup = LinkLookup(sources, targets, count)
 
         calculatedBias = links.map { l in
-            Float(linkLookup.count[l.source, default: 0])
-                / Float(
+            Double(linkLookup.count[l.source, default: 0])
+                / Double(
                     linkLookup.count[l.target, default: 0] + linkLookup.count[l.source, default: 0]
                 )
         }
@@ -111,11 +111,11 @@ final public class LinkForce<N>: Force where N: Identifiable {
         calculatedStiffness = self.stiffness.calculated(self.links, self.linkLookup)
     }
 
-    public func apply(alpha: Float) {
+    public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
 
         var position: Vector2f
-        var l: Float
+        var l: Double
 
         for _ in 0..<iterations {
 
@@ -173,7 +173,7 @@ final public class LinkForce<N>: Force where N: Identifiable {
 
     public let defaultStiffness: LinkStiffness = .varied { link, lookup in
         1
-            / Float(
+            / Double(
                 min(
                     lookup.count[link.source, default: 0],
                     lookup.count[link.target, default: 0]
@@ -221,8 +221,8 @@ extension Simulation {
     @discardableResult
     public func createLinkForce(
         links: [EdgeID<N.ID>],
-        stiffness: Float,
-        originalLength: Float
+        stiffness: Double,
+        originalLength: Double
     ) -> LinkForce<N> {
         let linkForce = LinkForce<N>(
             links, stiffness: .constant(stiffness), originalLength: .constant(originalLength))
@@ -234,7 +234,7 @@ extension Simulation {
     @discardableResult
     public func createLinkForce(
         links: [(N.ID, N.ID)],
-        stiffness: Float
+        stiffness: Double
     ) -> LinkForce<N> {
         let linkForce = LinkForce<N>.create(links, stiffness: .constant(stiffness))
         linkForce.simulation = self
@@ -245,7 +245,7 @@ extension Simulation {
     @discardableResult
     public func createLinkForce(
         links: [EdgeID<N.ID>],
-        stiffness: LinkForce<N>.LinkStiffness? = nil,  //@escaping(EdgeID<N.ID>, LinkForce<N>.LinkLookup) -> Float,
+        stiffness: LinkForce<N>.LinkStiffness? = nil,  //@escaping(EdgeID<N.ID>, LinkForce<N>.LinkLookup) -> Double,
         originalLength: LinkForce<N>.LinkLength = .constant(30)
     ) -> LinkForce<N> {
         let linkForce = LinkForce<N>(links, stiffness: stiffness, originalLength: originalLength)
@@ -257,7 +257,7 @@ extension Simulation {
     @discardableResult
     public func createLinkForce(
         links: [(N.ID, N.ID)],
-        stiffness: LinkForce<N>.LinkStiffness? = nil,  //@escaping(EdgeID<N.ID>, LinkForce<N>.LinkLookup) -> Float,
+        stiffness: LinkForce<N>.LinkStiffness? = nil,  //@escaping(EdgeID<N.ID>, LinkForce<N>.LinkLookup) -> Double,
         originalLength: LinkForce<N>.LinkLength = .constant(30)
     ) -> LinkForce<N> {
         let linkForce = LinkForce<N>.create(
@@ -270,7 +270,7 @@ extension Simulation {
 }
 
 extension LinkForce.LinkStiffness {
-    func calculated(_ links: [EdgeID<N.ID>], _ linkLookup: LinkForce.LinkLookup) -> [Float] {
+    func calculated(_ links: [EdgeID<N.ID>], _ linkLookup: LinkForce.LinkLookup) -> [Double] {
         switch self {
         case .constant(let value):
             return links.map { _ in value }
@@ -283,7 +283,7 @@ extension LinkForce.LinkStiffness {
 }
 
 extension LinkForce.LinkLength {
-    func calculated(_ links: [EdgeID<N.ID>], _ linkLookup: LinkForce.LinkLookup) -> [Float] {
+    func calculated(_ links: [EdgeID<N.ID>], _ linkLookup: LinkForce.LinkLookup) -> [Double] {
         switch self {
         case .constant(let value):
             return links.map { _ in value }

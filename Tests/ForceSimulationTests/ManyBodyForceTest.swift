@@ -33,7 +33,7 @@ final class ManyBodyForceTests: XCTestCase {
         
         let pos = [(-1,-1), (-1,1), (1,-1), (1, 1)]
         let sim = Simulation(nodes: nodes) { n, i in
-            n.position = Vector2f(x: Float(pos[i].0), y: Float(pos[i].1))
+            n.position = Vector2f(x: Double(pos[i].0), y: Double(pos[i].1))
         }
         
         

@@ -11,34 +11,34 @@ import simd
 
 // #endif
 
-public typealias Vector3f = simd_float3
+public typealias Vector3f = simd_double3
 
 extension Vector3f: AdditiveArithmetic {
 
-    @inlinable public func lengthSquared() -> Float {
+    @inlinable public func lengthSquared() -> Double {
         return x * x + y * y + z * z
     }
 
-    @inlinable public func length() -> Float {
+    @inlinable public func length() -> Double {
         return (x * x + y * y + z * z).squareRoot()
     }
 
-    @inlinable public func squaredDistanceTo(_ point: Self) -> Float {
+    @inlinable public func squaredDistanceTo(_ point: Self) -> Double {
         return (self - point).lengthSquared()
     }
 
-    @inlinable public func distanceTo(_ point: Self) -> Float {
+    @inlinable public func distanceTo(_ point: Self) -> Double {
         return (self - point).length()
     }
 }
 
 public struct Octad {
-    public typealias Coordinate = simd_float3
+    public typealias Coordinate = simd_double3
 
     private var x0y0z0: Coordinate
     private var x1y1z1: Coordinate
 
-    public var x0: Float {
+    public var x0: Double {
         get {
             x0y0z0.x
         }
@@ -47,7 +47,7 @@ public struct Octad {
         }
     }
 
-    public var x1: Float {
+    public var x1: Double {
         get {
             x1y1z1.x
         }
@@ -56,7 +56,7 @@ public struct Octad {
         }
     }
 
-    public var y0: Float {
+    public var y0: Double {
         get {
             x0y0z0.y
         }
@@ -65,7 +65,7 @@ public struct Octad {
         }
     }
 
-    public var y1: Float {
+    public var y1: Double {
         get {
             x1y1z1.y
         }
@@ -74,7 +74,7 @@ public struct Octad {
         }
     }
 
-        public var z0: Float {
+        public var z0: Double {
         get {
             x0y0z0.z
         }
@@ -83,7 +83,7 @@ public struct Octad {
         }
     }
 
-        public var z1: Float {
+        public var z1: Double {
         get {
             x1y1z1.z
         }
@@ -107,7 +107,7 @@ public struct Octad {
         self.init(x0: x0, x1: x1, y0: y0, y1: y1, z0: z0, z1: z1)
     }
 
-    public init(x0: Float, x1: Float, y0: Float, y1: Float, z0: Float, z1: Float) {
+    public init(x0: Double, x1: Double, y0: Double, y1: Double, z0: Double, z1: Double) {
         switch (x1 < x0, y1 < y0, z1 < z0) {
         case (true, true, true):
             self.x0y0z0 = Coordinate(x: x1, y: y1, z: z1)
