@@ -15,6 +15,8 @@
 		B7D4219D2AD3859F0079C74B /* QuadTree in Frameworks */ = {isa = PBXBuildFile; productRef = B7D4219C2AD3859F0079C74B /* QuadTree */; };
 		B7D4219F2AD385EB0079C74B /* ForceDirectedGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D4219E2AD385EB0079C74B /* ForceDirectedGraph.swift */; };
 		B7D421A12AD387140079C74B /* miserables.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D421A02AD387140079C74B /* miserables.swift */; };
+		CA06E4992AD87F2F00A2C5EB /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = CA06E4982AD87F2F00A2C5EB /* ForceSimulation */; };
+		CA06E49B2AD87F2F00A2C5EB /* QuadTree in Frameworks */ = {isa = PBXBuildFile; productRef = CA06E49A2AD87F2F00A2C5EB /* QuadTree */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +37,8 @@
 			files = (
 				B7D4219B2AD3859F0079C74B /* ForceSimulation in Frameworks */,
 				B7D4219D2AD3859F0079C74B /* QuadTree in Frameworks */,
+				CA06E4992AD87F2F00A2C5EB /* ForceSimulation in Frameworks */,
+				CA06E49B2AD87F2F00A2C5EB /* QuadTree in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,6 +102,8 @@
 			packageProductDependencies = (
 				B7D4219A2AD3859F0079C74B /* ForceSimulation */,
 				B7D4219C2AD3859F0079C74B /* QuadTree */,
+				CA06E4982AD87F2F00A2C5EB /* ForceSimulation */,
+				CA06E49A2AD87F2F00A2C5EB /* QuadTree */,
 			);
 			productName = GrapeView;
 			productReference = B7D421872AD385890079C74B /* GrapeView.app */;
@@ -128,7 +134,7 @@
 			);
 			mainGroup = B7D4217E2AD385890079C74B;
 			packageReferences = (
-				B7D421992AD3859F0079C74B /* XCLocalSwiftPackageReference "../Grape" */,
+				CA06E4972AD87F2F00A2C5EB /* XCLocalSwiftPackageReference "../.." */,
 			);
 			productRefGroup = B7D421882AD385890079C74B /* Products */;
 			projectDirPath = "";
@@ -358,9 +364,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		B7D421992AD3859F0079C74B /* XCLocalSwiftPackageReference "../Grape" */ = {
+		CA06E4972AD87F2F00A2C5EB /* XCLocalSwiftPackageReference "../.." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../Grape;
+			relativePath = ../..;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -370,6 +376,14 @@
 			productName = ForceSimulation;
 		};
 		B7D4219C2AD3859F0079C74B /* QuadTree */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = QuadTree;
+		};
+		CA06E4982AD87F2F00A2C5EB /* ForceSimulation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ForceSimulation;
+		};
+		CA06E49A2AD87F2F00A2C5EB /* QuadTree */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = QuadTree;
 		};
