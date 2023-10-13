@@ -70,3 +70,8 @@ extension SimulationNode: CustomDebugStringConvertible {
     }
 
 }
+
+
+public protocol QuadForce: Force {
+    associatedtype QD: QuadDelegate
+}

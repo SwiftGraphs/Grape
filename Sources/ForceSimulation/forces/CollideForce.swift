@@ -13,7 +13,7 @@ enum CollideForceError: Error {
 }
 
 /// A delegate for finding the maximum radius (of nodes) in a quad.
-public struct MaxRadiusQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
+struct MaxRadiusQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
 
     public typealias Node = N
 
@@ -109,6 +109,9 @@ extension CollideForce.CollideRadius {
 }
 
 extension CollideForce: Force {
+    
+//    typealias QD = MaxRadiusQuadTreeDelegate<N>
+    
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
 
@@ -124,7 +127,6 @@ extension CollideForce: Force {
                             case .varied(_):
                                 return self.calculatedRadius[$0, default: 0.0]
                             }
-                            // return self.calculatedRadius[$0, default: 0.0]
                         }
                     }
                 )

@@ -1,24 +1,6 @@
 import XCTest
 @testable import QuadTree
 
-extension SIMD3<Double>: ComponentComparable {
-    public static func < (lhs: SIMD3<Scalar>, rhs: SIMD3<Scalar>) -> Bool {
-        return lhs.x < rhs.x && lhs.y < rhs.y && lhs.z < rhs.z
-    }
-
-    public static func > (lhs: SIMD3<Scalar>, rhs: SIMD3<Scalar>) -> Bool {
-        return lhs.x > rhs.x && lhs.y > rhs.y && lhs.z > rhs.z
-    }
-
-    public static func <= (lhs: SIMD3<Scalar>, rhs: SIMD3<Scalar>) -> Bool {
-        return lhs.x <= rhs.x && lhs.y <= rhs.y && lhs.z <= rhs.z
-    }
-
-    public static func >= (lhs: SIMD3<Scalar>, rhs: SIMD3<Scalar>) -> Bool {
-        return lhs.x >= rhs.x && lhs.y >= rhs.y && lhs.z >= rhs.z
-    }
-
-}
 
 final class NdTreeTests: XCTestCase {
     
@@ -32,13 +14,17 @@ final class NdTreeTests: XCTestCase {
         
         
         
-        let direction = OctDirection(rawValue: 3)
-        assert(box.getCorner(of: direction) == .init(0, 1, 1))
+        let direction = 3
+        assert(box.getCorner(of: direction) == .init(1, 1, 0))
         
         
-        let direction2 = OctDirection(rawValue: 4)
-        assert(box.getCorner(of: direction2) == .init(1, 0, 0))
+        let direction2 = 4
+        assert(box.getCorner(of: direction2) == .init(0, 0, 1))
         
+        
+    }
+    
+    func test2DCreatePoint() {
         
     }
 }

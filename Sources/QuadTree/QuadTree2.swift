@@ -10,11 +10,11 @@ import simd
 
 // TODO: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwjoh_vKttuBAxUunokEHdchDZAQFnoECBkQAQ&url=https%3A%2F%2Fosf.io%2Fdu6gq%2Fdownload%2F%3Fversion%3D1%26displayName%3Dgove-2018-updating-tree-approximations-2018-06-13T02%253A16%253A17.463Z.pdf&usg=AOvVaw3KFAE5U8cnhTDMN_qrzV6a&opi=89978449
 public final class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate, QD.Node == N {
-
+    
     public private(set) var quad: Quad
-
+    
     public var nodes: [N.ID: Vector2f] = [:]  // TODO: merge nodes if close enough
-
+    
     final public class Children {
         public private(set) var northWest: QuadTreeNode2<N, QD>
         public private(set) var northEast: QuadTreeNode2<N, QD>
@@ -31,12 +31,13 @@ public final class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate,
             self.southWest = southWest
             self.southEast = southEast
         }
-
+        
     }
-
+    
     public private(set) var children: Children?
-
+    
     public let clusterDistance: Double
+    private let clusterDistanceSquared: Double
 
     public var quadDelegate: QD
 
@@ -47,6 +48,7 @@ public final class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate,
     ) {
         self.quad = quad
         self.clusterDistance = clusterDistance
+        self.clusterDistanceSquared = clusterDistance * clusterDistance
         self.quadDelegate = rootQuadDelegate.createNew()
     }
 
@@ -58,15 +60,12 @@ public final class QuadTreeNode2<N, QD> where N: Identifiable, QD: QuadDelegate,
         }
 
         guard let children = self.children else {
-            if nodes.isEmpty {
-                // no children, not occupied => take this point
-                nodes[node.id] = point
-                return
-            } else if nodes.first!.value.distanceTo(point) < clusterDistance {
+            if nodes.isEmpty || nodes.first!.value == point || nodes.first!.value.squaredDistanceTo(point) < clusterDistanceSquared {
                 // no children, close enough => take this point
                 nodes[node.id] = point
                 return
-            } else {
+            } 
+            else {
                 // no children, not close enough => divide & add to children
                 let divided = QuadTreeNode2.divide(
                     quad: quad, clusterDistance: clusterDistance, rootQuadDelegate: quadDelegate)
