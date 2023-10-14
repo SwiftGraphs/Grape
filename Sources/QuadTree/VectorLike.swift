@@ -5,9 +5,11 @@
 //  Created by li3zhen1 on 10/13/23.
 //
 
+
 public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, ExpressibleByArrayLiteral, Hashable, AdditiveArithmetic {
     
     associatedtype Scalar: FloatingPoint, Decodable, Encodable, Hashable
+    
     
     
     @inlinable func lengthSquared() -> Scalar
@@ -26,4 +28,9 @@ public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, Expre
     subscript(index: Int) -> Self.Scalar { get set }
     
     var indices: Range<Int> { get }
+    
+    
+//    mutating func replace<M>(with other: Self, where mask: M) where M:MaskLike, M.Storage.Scalar==Scalar.SIMDMaskScalar
+    
+
 }

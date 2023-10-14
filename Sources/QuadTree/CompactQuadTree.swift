@@ -9,7 +9,6 @@
 
 import simd
 extension simd_double2: VectorLike {
-
     
     @inlinable public func distanceSquared(to: SIMD2<Scalar>) -> Scalar {
         return (self-to).lengthSquared()
@@ -30,13 +29,20 @@ extension simd_double3: VectorLike {
     }
 }
 
-public protocol CompactQuadTreeDelegate: NdTreeDelegate where Coordinate==simd_double2 { }
-public protocol CompactOctTreeDelegate: NdTreeDelegate where Coordinate==simd_double3 { }
+
+public typealias Vector2d = simd_double2
+public typealias Vector3d = simd_double3
 
 
-public typealias CompactQuadTree<TD: CompactQuadTreeDelegate> = CompactNdTree<simd_double2, TD>
-public typealias QuadBox = NdBox<simd_double2>
-public typealias CompactOctTree<TD: CompactOctTreeDelegate> = CompactNdTree<simd_double3, TD>
-public typealias OctBox = NdBox<simd_double3>
+public protocol CompactQuadTreeDelegate: NdTreeDelegate where Coordinate==Vector2d { }
+public protocol CompactOctTreeDelegate: NdTreeDelegate where Coordinate==Vector3d { }
+
+
+public typealias QuadBox = NdBox<Vector2d>
+public typealias OctBox = NdBox<Vector3d>
+
+
+public typealias CompactQuadTree<TD: CompactQuadTreeDelegate> = NdTree<Vector2d, TD>
+public typealias CompactOctTree<TD: CompactOctTreeDelegate> = NdTree<Vector3d, TD>
 
 #endif
