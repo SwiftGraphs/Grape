@@ -1,16 +1,9 @@
 //
-//  File.swift
+//  NdTree.swift
 //
 //
 //  Created by li3zhen1 on 10/10/23.
 //
-
-//public protocol ComponentComparable {
-//    @inlinable static func <(lhs: Self, rhs: Self) -> Bool
-//    @inlinable static func <=(lhs: Self, rhs: Self) -> Bool
-//    @inlinable static func >(lhs: Self, rhs: Self) -> Bool
-//    @inlinable static func >=(lhs: Self, rhs: Self) -> Bool
-//}
 
 public struct NdBox<Coordinate> where Coordinate: VectorLike {
     public var p0: Coordinate
@@ -110,12 +103,12 @@ where V: VectorLike, TD: NdTreeDelegate, TD.Coordinate == V {
 
     public typealias BoxStorageIndex = Int
 
-    private var directionCount: Int
+    public private(set) var directionCount: Int
 
-    fileprivate struct BoxStorage {
+    public struct BoxStorage {
         // once initialized, should have V.entryCount elements
-        var childrenBoxStorageIndices: [BoxStorageIndex]? = nil
-        var nodeIndices: [NodeIndex]
+        public var childrenBoxStorageIndices: [BoxStorageIndex]? = nil
+        public var nodeIndices: [NodeIndex]
         public var box: Box  // { didSet { center = box.center } }
 
         @inlinable init(
@@ -129,8 +122,8 @@ where V: VectorLike, TD: NdTreeDelegate, TD.Coordinate == V {
         }
     }
 
-    private var nodePositions: [V]
-    private var boxStorages: [BoxStorage]
+    public private(set) var nodePositions: [V]
+    public private(set) var boxStorages: [BoxStorage]
 
     private var clusterDistance: V.Scalar
     private var clusterDistanceSquared: V.Scalar
@@ -145,9 +138,7 @@ where V: VectorLike, TD: NdTreeDelegate, TD.Coordinate == V {
         self.clusterDistance = clusterDistance
         self.clusterDistanceSquared = clusterDistance * clusterDistance
         self.directionCount = 1 << V.scalarCount
-        self.boxStorages = [
-            .init(box: initialBox)
-        ]
+        self.boxStorages = [.init(box: initialBox)]
         self.nodePositions = []
         self.boxStorages.reserveCapacity(4 * estimatedNodeCount)  // TODO: Probably too much? its ~29000 for 10000 random nodes
         self.nodePositions.reserveCapacity(estimatedNodeCount)
@@ -155,23 +146,27 @@ where V: VectorLike, TD: NdTreeDelegate, TD.Coordinate == V {
         self.delegate = TD()
     }
 
+    @discardableResult
     public func add(
-        _ nodeIndex: NodeIndex,
         at point: V
-    ) {
+    ) -> Int {
         nodePositions.append(point)
         cover(point, boxStorageIndex: 0)
-        add(nodeIndex: nodePositions.count - 1, at: point, boxStorageIndex: 0)
+        let nodeIndex = nodePositions.count - 1
+        add(nodeIndex: nodeIndex, at: point, boxStorageIndex: 0)
+        return nodeIndex
     }
 
+    @discardableResult
     public func addAll(
         _ points: [V]
-    ) {
+    ) -> Range<Int> {
         nodePositions.append(contentsOf: points)
         for i in points.indices {
             cover(points[i], boxStorageIndex: 0)
             add(nodeIndex: i, at: points[i], boxStorageIndex: 0)
         }
+        return nodePositions.count - points.count ..< nodePositions.count
     }
 
     private func add(
@@ -348,12 +343,17 @@ where V: VectorLike, TD: NdTreeDelegate, TD.Coordinate == V {
     }
 }
 
+
 extension NdTree {
     public var extent: Box { boxStorages[0].box }
+    
 }
+
+
 
 extension NdBox: CustomDebugStringConvertible {
     @inlinable public var debugDescription: String {
         return "[\(p0), \(p1)]"
     }
+    
 }

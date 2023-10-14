@@ -11,7 +11,6 @@ public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, Expre
     associatedtype Scalar: FloatingPoint, Decodable, Encodable, Hashable
     
     
-    
     @inlinable func lengthSquared() -> Scalar
     @inlinable func length() -> Scalar
     @inlinable func distanceSquared(to: Self) -> Scalar
