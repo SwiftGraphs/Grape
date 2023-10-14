@@ -143,6 +143,8 @@ enum ManyBodyForceError: Error {
 }
 
 final public class ManyBodyForce<N>: Force where N: Identifiable {
+    
+//    public typealias QD = MassQuadTreeDelegate<N>
 
     var strength: Double = -20
 
