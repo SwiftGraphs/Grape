@@ -30,6 +30,15 @@ public struct NdBox<Coordinate> where Coordinate: VectorLike {
         }
         self.p0 = p0
         self.p1 = p1
+        // TODO: use Mask
+    }
+    
+    @inlinable internal init(pMin:Coordinate, pMax:Coordinate) {
+        #if DEBUG
+        assert(pMin != pMax, "NdBox was initialized with 2 same anchor")
+        #endif
+        self.p0 = pMin
+        self.p1 = pMax
     }
     
     @inlinable public init() {
@@ -280,10 +289,13 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate, 
             #endif
             
             appendDividedChildren(boxStorageIndex: boxStorageIndex)
-            boxStorages[boxStorages[boxStorageIndex].childrenBoxStorageIndices![
-                //indexShift
-                getIndexShiftInSubdivision(point, relativeTo: expandedCorner) // <- to the center of the new box
-            ]] = copyOfCurrentBoxStorage
+            boxStorages[
+                boxStorages[boxStorageIndex].childrenBoxStorageIndices![
+                    //indexShift
+                    getIndexShiftInSubdivision(point, relativeTo: expandedCorner) 
+                    // <- to the center of the new box
+                ]
+            ] = copyOfCurrentBoxStorage
             
             
         } while !boxStorages[boxStorageIndex].box.contains(point)
