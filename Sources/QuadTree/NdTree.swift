@@ -5,8 +5,6 @@
 //  Created by li3zhen1 on 10/10/23.
 //
 
-import Foundation
-
 public protocol ComponentComparable {
     @inlinable static func <(lhs: Self, rhs: Self) -> Bool
     @inlinable static func <=(lhs: Self, rhs: Self) -> Bool
@@ -14,7 +12,7 @@ public protocol ComponentComparable {
     @inlinable static func >=(lhs: Self, rhs: Self) -> Bool
 }
 
-public struct NdBox<Coordinate> where Coordinate: SIMD<Double> {
+public struct NdBox<Coordinate> where Coordinate: VectorLike {
     public var p0: Coordinate
     public var p1: Coordinate
     
@@ -31,13 +29,16 @@ public struct NdBox<Coordinate> where Coordinate: SIMD<Double> {
         self.p1 = p1
     }
     
-    public static var unit: Self { .init(p0: .zero, p1: .one) }
+    public init(_ p0:Coordinate, _ p1: Coordinate) {
+        self.init(p0:p0, p1:p1)
+    }
+    
 }
 
 
 extension NdBox {
-    var area: Double {
-        var result: Double = 1
+    @inlinable var area: Coordinate.Scalar {
+        var result: Coordinate.Scalar = 1
         let delta = p1 - p0
         for i in delta.indices {
             result *= delta[i]
@@ -45,9 +46,9 @@ extension NdBox {
         return result
     }
     
-    var vec: Coordinate { p1 - p0 }
+    @inlinable var vec: Coordinate { p1 - p0 }
     
-    var center: Coordinate { (p1 + p0) / 2 }
+    @inlinable var center: Coordinate { (p1 + p0) / Coordinate.Scalar(2) }
     
     
     @inlinable func contains(_ point: Coordinate) -> Bool {
@@ -76,28 +77,24 @@ extension NdBox {
 }
 
 
-public protocol TreeNodeDelegate {
-    associatedtype Node
+public protocol NdTreeDelegate {
     associatedtype Index: Hashable
-    mutating func didAddNode(_ node: Index, at position: Vector2f)
-    mutating func didRemoveNode(_ node: Index, at position: Vector2f)
-    func copy() -> Self
-    func createNew() -> Self
+    associatedtype Coordinate: VectorLike
+    @inlinable mutating func didAddNode(_ nodeIndex: Index, at position: Coordinate)
+    @inlinable mutating func didRemoveNode(_ nodeIndex: Index, at position: Coordinate)
+//    @inlinable func copy() -> Self
+//    @inlinable func createNew() -> Self
+    init()
 }
 
 
-public final class CompactNdTree<C, TD> where C:SIMD<Double>, C:VectorLike, C.Scalar==Double,TD: TreeNodeDelegate {
+public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
     
     public typealias Box = NdBox<C>
     
     public typealias NodeIndex = Int
     
-    
-    
-    
-    
     public typealias BoxStorageIndex = Int
-    
     
     private var directionCount: Int
     
@@ -123,56 +120,69 @@ public final class CompactNdTree<C, TD> where C:SIMD<Double>, C:VectorLike, C.Sc
     private var nodePositions: [C]
     private var boxStorages: [BoxStorage]
     
-    private var clusterDistance: Double
-    private var clusterDistanceSquared: Double
+    private var clusterDistance: C.Scalar
+    private var clusterDistanceSquared: C.Scalar
     
     
-//    private var startOfChildrenIndices: [Int]
+    public private(set) var delegate: TD
     
-    init(
+    public init(
+        initialBox: Box,
         estimatedNodeCount: Int,
-        clusterDistance: Double = 1e-5
-    ) {
+        clusterDistance: C.Scalar
+    ) where TD: NdTreeDelegate {
         self.clusterDistance = clusterDistance
         self.clusterDistanceSquared = clusterDistance*clusterDistance
-        
-        
-        self.boxStorages = []
+        self.directionCount = 1<<C.scalarCount
+        self.boxStorages = [
+            .init(box: initialBox)
+        ]
         self.nodePositions = []
-        
         self.boxStorages.reserveCapacity(4*estimatedNodeCount)
         self.nodePositions.reserveCapacity(estimatedNodeCount)
         
-        self.directionCount = 1<<C.scalarCount
+        self.delegate = TD()
     }
     
+    
+    
+    
+    public func add(
+        _ nodeIndex: NodeIndex,
+        at point: C
+    ) {
+        nodePositions.append(point)
+        add(nodeIndex: nodePositions.count - 1, at: point, boxStorageIndex: 0)
+    }
     
     private func add(
         nodeIndex: NodeIndex,
         at point: C,
-        boxStorage: inout BoxStorage
+        boxStorageIndex: BoxStorageIndex
     ) {
-        cover(point, boxStorage: &boxStorage)
+        
+        cover(point, boxStorageIndex: boxStorageIndex) // this can be moved to upper call
         
         defer {
             // TODO: Perform delegate actions
         }
         
-        guard let childrenBoxStorageIndices = boxStorage.childrenBoxStorageIndices else {
-            if boxStorage.nodeIndices.isEmpty
-                || nodePositions[boxStorage.nodeIndices.first!] == point
-                || (nodePositions[boxStorage.nodeIndices.first!]).distanceSquared(to: point) < self.clusterDistanceSquared {
+        guard let childrenBoxStorageIndices = boxStorages[boxStorageIndex].childrenBoxStorageIndices else {
+            if boxStorages[boxStorageIndex].nodeIndices.isEmpty
+                || nodePositions[boxStorages[boxStorageIndex].nodeIndices.first!] == point
+                || (nodePositions[boxStorages[boxStorageIndex].nodeIndices.first!]).distanceSquared(to: point) < self.clusterDistanceSquared {
                 
-                boxStorage.nodeIndices.append(nodeIndex)
+                boxStorages[boxStorageIndex].nodeIndices.append(nodeIndex)
                 
                 return
             }
             else {
                 
                 var newChildren = Array(repeating: BoxStorage(box: Box(p0: .zero, p1: .zero)), count: directionCount)
-                let p0 = boxStorage.box.p0
-                let p1 = boxStorage.box.p1
-                let pCenter = boxStorage.box.center
+                let _box = boxStorages[boxStorageIndex].box
+                let p0 = _box.p0
+                let p1 = _box.p1
+                let pCenter = _box.center
                 for i in 0..<C.scalarCount {
                     for j in newChildren.indices {
                         let isOnTheHigherRange = (j >> i) & 0b1
@@ -187,81 +197,95 @@ public final class CompactNdTree<C, TD> where C:SIMD<Double>, C:VectorLike, C.Sc
                     }
                 }
                 
-                defer { self.boxStorages.append(contentsOf: newChildren) }
+                let currentBoxStorageCount = self.boxStorages.count
+//                defer {
+                    self.boxStorages.append(contentsOf: newChildren)
+//                }
                 
-                if !boxStorage.nodeIndices.isEmpty {
+                let _nodeIndices = boxStorages[boxStorageIndex].nodeIndices
+                if !_nodeIndices.isEmpty {
                     // put the indices to new
                     let index = getIndexShiftInSubdivision(
-                        point: nodePositions[boxStorage.nodeIndices.first!],
-                        pCenter: pCenter
+                        nodePositions[_nodeIndices.first!],
+                        relativeTo: pCenter
                     )
                     
-                    newChildren[index].nodeIndices = boxStorage.nodeIndices
+                    newChildren[index].nodeIndices = _nodeIndices
                     
                     // this node will not have children any more
-                    boxStorage.nodeIndices=[]
+                    boxStorages[boxStorageIndex].nodeIndices=[]
                 }
-                boxStorage.childrenBoxStorageIndices=Array(boxStorages.count..<boxStorages.count+directionCount)
+                boxStorages[boxStorageIndex].childrenBoxStorageIndices=Array(currentBoxStorageCount..<currentBoxStorageCount+directionCount)
                 
                 let indexShiftForNewNode = getIndexShiftInSubdivision(
-                    point: point,
-                    pCenter: pCenter
+                    point,
+                    relativeTo: pCenter
                 )
                 
-                add(nodeIndex: nodeIndex, at: point, boxStorage: &boxStorages[
-                    boxStorage.childrenBoxStorageIndices![indexShiftForNewNode]
-                ])
+                add(nodeIndex: nodeIndex, at: point, boxStorageIndex: //&boxStorages[
+                    boxStorages[boxStorageIndex].childrenBoxStorageIndices![indexShiftForNewNode]
+//                ]
+                )
                 
                 return
             }
         }
         let indexShiftForNewNode = getIndexShiftInSubdivision(
-            point: point,
-            pCenter: boxStorage.center
+            point,
+            relativeTo: boxStorages[boxStorageIndex].center
         )
         
-        add(nodeIndex: nodeIndex, at: point, boxStorage: &boxStorages[
-            boxStorage.childrenBoxStorageIndices![indexShiftForNewNode]
-        ])
+        #if DEBUG
+        assert(boxStorages[childrenBoxStorageIndices[indexShiftForNewNode]].box.contains(point))
+        #endif
         
+        add(nodeIndex: nodeIndex, at: point, boxStorageIndex:
+            childrenBoxStorageIndices[indexShiftForNewNode]
+        )
         return
     }
     
 
     
-    private func cover(_ point:C, boxStorage: inout BoxStorage) {
-        if boxStorage.box.contains(point) { return }
+    private func cover(_ point:C, boxStorageIndex: BoxStorageIndex) {
+        
+        if boxStorages[boxStorageIndex].box.contains(point) { return }
         repeat {
-            let indexShift = getIndexShiftInSubdivision(point: point, pCenter: boxStorage.box.p0)
+            let _box = boxStorages[boxStorageIndex].box
+            let indexShift = getIndexShiftInSubdivision(point, relativeTo: _box.p0)
             
             let nailedDirectionIndexShift = (directionCount-1)-indexShift
             
-            let nailedCorner = boxStorage.box.getCorner(of: nailedDirectionIndexShift)
-            let expandedCorner = boxStorage.box.getCorner(of: indexShift) * 2 - nailedCorner
+            let nailedCorner = _box.getCorner(of: nailedDirectionIndexShift)
+            let expandedCorner = _box.getCorner(of: indexShift) * 2 - nailedCorner
             
             let newRootBox = Box(p0: nailedCorner, p1: expandedCorner)
             
             
-            let copyOfCurrentBoxStorage = boxStorage
+            let copyOfCurrentBoxStorage = boxStorages[boxStorageIndex]
             
-            boxStorage.box = newRootBox
+            boxStorages[boxStorageIndex].box = newRootBox
             
             #if DEBUG
-            assert(copyOfCurrentBoxStorage.box.p0 != boxStorage.box.p0 || copyOfCurrentBoxStorage.box.p1 != boxStorage.box.p1)
+            assert(copyOfCurrentBoxStorage.box.p0 != boxStorages[boxStorageIndex].box.p0 || copyOfCurrentBoxStorage.box.p1 != boxStorages[boxStorageIndex].box.p1)
             #endif
             
-            appendDividedChildren(boxStorage: &boxStorage)
-            boxStorages[boxStorage.childrenBoxStorageIndices![indexShift]] = copyOfCurrentBoxStorage
+            appendDividedChildren(boxStorageIndex: boxStorageIndex)
+            boxStorages[boxStorages[boxStorageIndex].childrenBoxStorageIndices![
+                //indexShift
+                getIndexShiftInSubdivision(point, relativeTo: expandedCorner) // <- to the center of the new box
+            ]] = copyOfCurrentBoxStorage
             
             
-        } while !boxStorage.box.contains(point)
+        } while !boxStorages[boxStorageIndex].box.contains(point)
     }
     
     
-    private func getIndexShiftInSubdivision(point: C, pCenter: C) -> Int {
+    private func getIndexShiftInSubdivision(_ point: C, relativeTo originalPoint: C) -> Int {
         var index = 0
         for i in 0..<C.scalarCount {
-            if point[i] >= pCenter[i] { // isOnHigherRange in this dimension
+            // TODO: bug here
+            if point[i] >= originalPoint[i] { // isOnHigherRange in this dimension
                 index |= (1<<i)
             }
         }
@@ -269,14 +293,17 @@ public final class CompactNdTree<C, TD> where C:SIMD<Double>, C:VectorLike, C.Sc
     }
     
     
-    private func appendDividedChildren(boxStorage: inout BoxStorage) {
+    private func appendDividedChildren(boxStorageIndex: BoxStorageIndex) {
         var newChildren = Array(repeating: BoxStorage(box: Box(p0: .zero, p1: .zero)), count: directionCount)
-        let p0 = boxStorage.box.p0
-        let p1 = boxStorage.box.p1
-        let pCenter = boxStorage.box.center
-        for i in 0..<C.scalarCount {
-            for j in newChildren.indices {
+        let box = boxStorages[boxStorageIndex].box
+        let p0 = box.p0
+        let p1 = box.p1
+        let pCenter = box.center
+        for j in newChildren.indices {
+            for i in 0..<C.scalarCount {
                 let isOnTheHigherRange = (j >> i) & 0b1
+                
+                // TODO: use simd mask
                 if isOnTheHigherRange != 0 {
                     newChildren[j].box.p0[i] = pCenter[i]
                     newChildren[j].box.p1[i] = p1[i]
@@ -288,21 +315,40 @@ public final class CompactNdTree<C, TD> where C:SIMD<Double>, C:VectorLike, C.Sc
             }
         }
         
-        defer { self.boxStorages.append(contentsOf: newChildren) }
         
-        if !boxStorage.nodeIndices.isEmpty {
+//        defer {
+//            self.boxStorages.append(contentsOf: newChildren)
+//        }
+        
+        let _boxStorage = boxStorages[boxStorageIndex]
+        if !_boxStorage.nodeIndices.isEmpty {
             // put the indices to new
-            let point = nodePositions[boxStorage.nodeIndices.first!]
+            let point = nodePositions[_boxStorage.nodeIndices.first!]
             
-            let index = getIndexShiftInSubdivision(point: point, pCenter: pCenter)
+            let index = getIndexShiftInSubdivision(point, relativeTo: pCenter)
             
-            newChildren[index].nodeIndices = boxStorage.nodeIndices
+            newChildren[index].nodeIndices = _boxStorage.nodeIndices
             
             // this node will not have children any more
-            boxStorage.nodeIndices=[]
+            boxStorages[boxStorageIndex].nodeIndices=[]
         }
-        boxStorage.childrenBoxStorageIndices=Array(boxStorages.count..<boxStorages.count+directionCount)
+        
+        let currentBoxStorageCount = boxStorages.count
+        
+        self.boxStorages.append(contentsOf: newChildren)
+        let newIndices = Array(currentBoxStorageCount ..< currentBoxStorageCount+directionCount)
+        boxStorages[boxStorageIndex].childrenBoxStorageIndices = newIndices
     }
-    
-    
+}
+
+
+public extension CompactNdTree {
+    var rootBox: Box { boxStorages[0].box }
+}
+
+
+extension NdBox: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        return "[\(p0), \(p1)]"
+    }
 }

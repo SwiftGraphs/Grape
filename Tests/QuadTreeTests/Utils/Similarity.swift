@@ -48,3 +48,21 @@ extension Quad {
             (lhs.y1 ~= rhs.y1)
     }
 }
+
+extension VectorLike where Scalar == Double {
+    static func ~= (lhs:Self, rhs: Self) -> Bool {
+        for i in lhs.indices {
+            if !(lhs[i] ~= rhs[i]) {
+                return false
+            }
+        }
+        return true
+    }
+}
+
+extension NdBox where Coordinate.Scalar == Double {
+
+    static func ~= (lhs:Self, rhs: Self) -> Bool {
+        return (lhs.p0 ~= rhs.p0) && (lhs.p1 ~= rhs.p1)
+    }
+}

@@ -1,5 +1,6 @@
 import XCTest
 @testable import QuadTree
+import simd
 
 
 final class CoverTests: XCTestCase {
@@ -14,6 +15,8 @@ final class CoverTests: XCTestCase {
         assert(q.quad ~= Quad(x0: 1, x1: 2, y0: 2, y1: 3))
     }
 
+    
+    let simd2 = simd_float2() / 2
 
 
     // it("quadtree.cover(x, y) sets a non-trivial squarified and centered extent if the extent was trivial", () => {
