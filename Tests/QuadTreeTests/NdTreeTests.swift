@@ -2,18 +2,27 @@ import XCTest
 @testable import QuadTree
 import simd
 
-struct EmptyTreeDelegate: NdTreeDelegate {
+struct EmptyTreeDelegate: CompactQuadTreeDelegate {
+    
+    var count: [Int:Int] = [:]
+    
+    mutating func didAddNode(
+        _ nodeIndex: NodeIndex,
+        at position: simd_double2,
+        in indexOfBoxStorage: BoxStorageIndex
+    ) {
+        count[indexOfBoxStorage, default: 0] += 1
+    }
+    
+    mutating func didRemoveNode(
+        _ nodeIndex: NodeIndex,
+        at position: simd_double2,
+        in indexOfBoxStorage: BoxStorageIndex
+    ) {
+        count[indexOfBoxStorage, default: 0] -= 1
+    }
+    
     typealias Coordinate = simd_double2
-    
-    mutating func didAddNode(_ nodeIndex: Int, at position: Coordinate) {
-        
-    }
-    
-    mutating func didRemoveNode(_ nodeIndex: Int, at position: Coordinate) {
-        
-    }
-    
-    typealias Index = Int
 }
 
 typealias DummyQuadTree = CompactQuadTree<EmptyTreeDelegate>
@@ -89,4 +98,39 @@ final class NdTreeTests: XCTestCase {
         ])
         assert(t5.rootBox ~= QuadBox([-4,-4], [4,4]))
     }
+    
+    func testRandomTree() {
+        var randomPoints = Array(repeating:simd_double2.zero, count:10000)
+        for i in randomPoints.indices {
+            randomPoints[i] = [Double.random(in: -1000...1000), Double.random(in: -1000...1000)]
+        }
+        
+        let r = buildTestTree([-1000,-1000], [1000,1000], randomPoints)
+        assert(r.delegate.count[1]!+r.delegate.count[2]!+r.delegate.count[3]!+r.delegate.count[4]! == 10000)
+        
+        measure {
+            let r = buildTestTree([-1000,-1000], [1000,1000], randomPoints)
+        }
+        
+        
+    }
+    
+    
+//    func testRandomTree2() {
+//        var randomPoints = Array(repeating:simd_double2.zero, count:77)
+//        for i in randomPoints.indices {
+//            randomPoints[i] = [Double.random(in: -300...300), Double.random(in: -300...300)]
+//        }
+//        
+//        
+//        measure {
+//            for i in 0..<120{
+//                buildTestTree([-300,-300], [300,300], randomPoints)
+//            }
+//        }
+//        
+//        
+//    }
+    
+
 }

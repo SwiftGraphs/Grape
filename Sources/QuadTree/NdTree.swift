@@ -5,12 +5,12 @@
 //  Created by li3zhen1 on 10/10/23.
 //
 
-public protocol ComponentComparable {
-    @inlinable static func <(lhs: Self, rhs: Self) -> Bool
-    @inlinable static func <=(lhs: Self, rhs: Self) -> Bool
-    @inlinable static func >(lhs: Self, rhs: Self) -> Bool
-    @inlinable static func >=(lhs: Self, rhs: Self) -> Bool
-}
+//public protocol ComponentComparable {
+//    @inlinable static func <(lhs: Self, rhs: Self) -> Bool
+//    @inlinable static func <=(lhs: Self, rhs: Self) -> Bool
+//    @inlinable static func >(lhs: Self, rhs: Self) -> Bool
+//    @inlinable static func >=(lhs: Self, rhs: Self) -> Bool
+//}
 
 public struct NdBox<Coordinate> where Coordinate: VectorLike {
     public var p0: Coordinate
@@ -18,6 +18,9 @@ public struct NdBox<Coordinate> where Coordinate: VectorLike {
     
     
     @inlinable public init(p0:Coordinate, p1:Coordinate) {
+        #if DEBUG
+        assert(p0 != p1, "NdBox was initialized with 2 same anchor")
+        #endif
         var p0 = p0
         var p1 = p1
         for i in p0.indices {
@@ -27,6 +30,11 @@ public struct NdBox<Coordinate> where Coordinate: VectorLike {
         }
         self.p0 = p0
         self.p1 = p1
+    }
+    
+    @inlinable public init() {
+        p0 = .zero
+        p1 = .zero
     }
     
     public init(_ p0:Coordinate, _ p1: Coordinate) {
@@ -53,10 +61,7 @@ extension NdBox {
     
     @inlinable func contains(_ point: Coordinate) -> Bool {
         for i in point.indices {
-            if p0[i] > point[i] {
-                return false
-            }
-            else if point[i] >= p1[i] {
+            if p0[i] > point[i] || point[i] >= p1[i] {
                 return false
             }
         }
@@ -78,17 +83,22 @@ extension NdBox {
 
 
 public protocol NdTreeDelegate {
-    associatedtype Index: Hashable
+    typealias NodeIndex = Int
+    typealias BoxStorageIndex = Int
     associatedtype Coordinate: VectorLike
-    @inlinable mutating func didAddNode(_ nodeIndex: Index, at position: Coordinate)
-    @inlinable mutating func didRemoveNode(_ nodeIndex: Index, at position: Coordinate)
-//    @inlinable func copy() -> Self
-//    @inlinable func createNew() -> Self
+    @inlinable mutating func didAddNode(
+        _ nodeIndex: NodeIndex,
+        at position: Coordinate,
+        in indexOfBoxStorage: BoxStorageIndex)
+    @inlinable mutating func didRemoveNode(
+        _ nodeIndex: NodeIndex,
+        at position: Coordinate,
+        in indexOfBoxStorage: BoxStorageIndex)
     init()
 }
 
 
-public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
+public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate, TD.Coordinate==C {
     
     public typealias Box = NdBox<C>
     
@@ -98,12 +108,11 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
     
     private var directionCount: Int
     
-    private struct BoxStorage {
+    fileprivate struct BoxStorage {
         // once initialized, should have C.entryCount elements
         var childrenBoxStorageIndices: [BoxStorageIndex]? = nil
         var nodeIndices: [NodeIndex]
-        var box: Box { didSet { center = box.center } }
-        var center: C
+        var box: Box // { didSet { center = box.center } }
         
         @inlinable init(
             box: Box,
@@ -111,10 +120,9 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
         ) {
             self.nodeIndices = nodeIndices
             self.box = box
-            self.center = box.center
+//            self.center = box.center
             
         }
-        
     }
     
     private var nodePositions: [C]
@@ -138,7 +146,7 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
             .init(box: initialBox)
         ]
         self.nodePositions = []
-        self.boxStorages.reserveCapacity(4*estimatedNodeCount)
+        self.boxStorages.reserveCapacity(4*estimatedNodeCount) // TODO: Probably too much? its ~29000 for 10000 random nodes
         self.nodePositions.reserveCapacity(estimatedNodeCount)
         
         self.delegate = TD()
@@ -152,6 +160,7 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
         at point: C
     ) {
         nodePositions.append(point)
+        cover(point, boxStorageIndex: 0) // this can be moved to upper call
         add(nodeIndex: nodePositions.count - 1, at: point, boxStorageIndex: 0)
     }
     
@@ -161,10 +170,8 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
         boxStorageIndex: BoxStorageIndex
     ) {
         
-        cover(point, boxStorageIndex: boxStorageIndex) // this can be moved to upper call
-        
         defer {
-            // TODO: Perform delegate actions
+            delegate.didAddNode(nodeIndex, at: point, in: boxStorageIndex)
         }
         
         guard let childrenBoxStorageIndices = boxStorages[boxStorageIndex].childrenBoxStorageIndices else {
@@ -178,13 +185,13 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
             }
             else {
                 
-                var newChildren = Array(repeating: BoxStorage(box: Box(p0: .zero, p1: .zero)), count: directionCount)
+                var newChildren = Array(repeating: BoxStorage(box: Box()), count: directionCount)
                 let _box = boxStorages[boxStorageIndex].box
                 let p0 = _box.p0
                 let p1 = _box.p1
                 let pCenter = _box.center
-                for i in 0..<C.scalarCount {
-                    for j in newChildren.indices {
+                for j in newChildren.indices {
+                    for i in 0..<C.scalarCount {
                         let isOnTheHigherRange = (j >> i) & 0b1
                         if isOnTheHigherRange != 0 {
                             newChildren[j].box.p0[i] = pCenter[i]
@@ -198,9 +205,6 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
                 }
                 
                 let currentBoxStorageCount = self.boxStorages.count
-//                defer {
-                    self.boxStorages.append(contentsOf: newChildren)
-//                }
                 
                 let _nodeIndices = boxStorages[boxStorageIndex].nodeIndices
                 if !_nodeIndices.isEmpty {
@@ -212,10 +216,15 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
                     
                     newChildren[index].nodeIndices = _nodeIndices
                     
+                    for ni in _nodeIndices {
+                        delegate.didAddNode(ni, at: nodePositions[ni], in: currentBoxStorageCount+index)
+                    }
+                    
                     // this node will not have children any more
                     boxStorages[boxStorageIndex].nodeIndices=[]
                 }
-                boxStorages[boxStorageIndex].childrenBoxStorageIndices=Array(currentBoxStorageCount..<currentBoxStorageCount+directionCount)
+                self.boxStorages.append(contentsOf: newChildren)
+                boxStorages[boxStorageIndex].childrenBoxStorageIndices = Array(currentBoxStorageCount..<currentBoxStorageCount+directionCount)
                 
                 let indexShiftForNewNode = getIndexShiftInSubdivision(
                     point,
@@ -232,7 +241,7 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
         }
         let indexShiftForNewNode = getIndexShiftInSubdivision(
             point,
-            relativeTo: boxStorages[boxStorageIndex].center
+            relativeTo: boxStorages[boxStorageIndex].box.center
         )
         
         #if DEBUG
@@ -284,7 +293,6 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
     private func getIndexShiftInSubdivision(_ point: C, relativeTo originalPoint: C) -> Int {
         var index = 0
         for i in 0..<C.scalarCount {
-            // TODO: bug here
             if point[i] >= originalPoint[i] { // isOnHigherRange in this dimension
                 index |= (1<<i)
             }
@@ -294,11 +302,12 @@ public final class CompactNdTree<C, TD> where C:VectorLike, TD: NdTreeDelegate {
     
     
     private func appendDividedChildren(boxStorageIndex: BoxStorageIndex) {
-        var newChildren = Array(repeating: BoxStorage(box: Box(p0: .zero, p1: .zero)), count: directionCount)
+        var newChildren = Array(repeating: BoxStorage(box: Box()), count: directionCount)
         let box = boxStorages[boxStorageIndex].box
         let p0 = box.p0
         let p1 = box.p1
         let pCenter = box.center
+        
         for j in newChildren.indices {
             for i in 0..<C.scalarCount {
                 let isOnTheHigherRange = (j >> i) & 0b1

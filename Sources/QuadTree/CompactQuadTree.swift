@@ -30,9 +30,13 @@ extension simd_double3: VectorLike {
     }
 }
 
-public typealias CompactQuadTree<TD: NdTreeDelegate> = CompactNdTree<simd_double2, TD>
+public protocol CompactQuadTreeDelegate: NdTreeDelegate where Coordinate==simd_double2 { }
+public protocol CompactOctTreeDelegate: NdTreeDelegate where Coordinate==simd_double3 { }
+
+
+public typealias CompactQuadTree<TD: CompactQuadTreeDelegate> = CompactNdTree<simd_double2, TD>
 public typealias QuadBox = NdBox<simd_double2>
-public typealias CompactOctTree<TD: NdTreeDelegate> = CompactNdTree<simd_double3, TD>
+public typealias CompactOctTree<TD: CompactOctTreeDelegate> = CompactNdTree<simd_double3, TD>
 public typealias OctBox = NdBox<simd_double3>
 
 #endif

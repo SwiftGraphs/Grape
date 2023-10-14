@@ -150,7 +150,6 @@ final class CoverTests: XCTestCase {
 
     }
 
-
     // it("quadtree.cover(x, y) does not wrap the root node if it is a leaf", () => {
     //   const q = quadtree().cover(0, 0).add([2, 2]);
     //   assert.deepStrictEqual(q.root(), {data: [2, 2]});
