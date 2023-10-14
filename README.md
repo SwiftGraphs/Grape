@@ -53,6 +53,12 @@ sim.createCollideForce(radius: .constant(5))
 
 See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/GrapeView) for more details.
 
+
 ### Performance
 
 Grape uses simd to calculate position and velocity. Currently it takes ~0.13 seconds to iterate 120 times over the example graph. (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max)
+
+
+### Credits
+
+This library has been greatly influenced by the outstanding work done by [D3.js (Data-Driven Documents)](https://d3js.org).
