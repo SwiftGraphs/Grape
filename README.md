@@ -20,9 +20,9 @@ https://github.com/li3zhen1/Grape/assets/45376537/6a1c9510-8af6-4967-9c05-c304b2
 
 ### Features
 
-|   | 2D simd | 3D simd | Metal |
+|   | 2D simd | ND simd | Metal |
 | --- | --- | --- | --- |
-| **NdTree** | ✅ | 🚧 |  |
+| **NdTree** | ✅ | ✅ |  |
 | **Simulation** | ✅ | 🚧 | 🚧 |
 | &emsp;LinkForce | ✅ |   |  |
 | &emsp;ManyBodyForce | ✅ |  |  |
