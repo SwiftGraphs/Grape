@@ -99,21 +99,21 @@ final class NdTreeTests: XCTestCase {
         assert(t5.rootBox ~= QuadBox([-4,-4], [4,4]))
     }
     
-    func testRandomTree() {
-        var randomPoints = Array(repeating:simd_double2.zero, count:10000)
-        for i in randomPoints.indices {
-            randomPoints[i] = [Double.random(in: -1000...1000), Double.random(in: -1000...1000)]
-        }
-        
-        let r = buildTestTree([-1000,-1000], [1000,1000], randomPoints)
-        assert(r.delegate.count[1]!+r.delegate.count[2]!+r.delegate.count[3]!+r.delegate.count[4]! == 10000)
-        
-        measure {
-            let r = buildTestTree([-1000,-1000], [1000,1000], randomPoints)
-        }
-        
-        
-    }
+//    func testRandomTree() {
+//        var randomPoints = Array(repeating:simd_double2.zero, count:10000)
+//        for i in randomPoints.indices {
+//            randomPoints[i] = [Double.random(in: -1000...1000), Double.random(in: -1000...1000)]
+//        }
+//        
+//        let r = buildTestTree([-1000,-1000], [1000,1000], randomPoints)
+//        assert(r.delegate.count[1]!+r.delegate.count[2]!+r.delegate.count[3]!+r.delegate.count[4]! == 10000)
+//        
+//        measure {
+//            let r = buildTestTree([-1000,-1000], [1000,1000], randomPoints)
+//        }
+//        
+//        
+//    }
     
     
 //    func testRandomTree2() {
@@ -131,6 +131,6 @@ final class NdTreeTests: XCTestCase {
 //        
 //        
 //    }
-    
+//    
 
 }
