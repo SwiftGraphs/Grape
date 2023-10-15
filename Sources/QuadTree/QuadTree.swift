@@ -155,7 +155,6 @@ public class QuadTreeNode<N> where N: Identifiable, N: HasMassLikeProperty {
                 }
 
             expand(towards: quadrant)
-
         } while !quad.contains(point)
 
         //        if quad.contains(point) {

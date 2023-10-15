@@ -34,15 +34,15 @@ public typealias Vector2d = simd_double2
 public typealias Vector3d = simd_double3
 
 
-public protocol CompactQuadTreeDelegate: NdTreeDelegate where Coordinate==Vector2d { }
-public protocol CompactOctTreeDelegate: NdTreeDelegate where Coordinate==Vector3d { }
+public protocol CompactQuadTreeDelegate: NDTreeDelegate where V==Vector2d, Node==Int { }
+public protocol CompactOctTreeDelegate: NDTreeDelegate where V==Vector3d, Node==Int { }
 
 
-public typealias QuadBox = NdBox<Vector2d>
-public typealias OctBox = NdBox<Vector3d>
+public typealias QuadBox = NDBox<Vector2d>
+public typealias OctBox = NDBox<Vector3d>
 
 
-public typealias CompactQuadTree<TD: CompactQuadTreeDelegate> = NdTree<Vector2d, TD>
-public typealias CompactOctTree<TD: CompactOctTreeDelegate> = NdTree<Vector3d, TD>
+public typealias CompactQuadTree<TD: CompactQuadTreeDelegate> = NDTree<Vector2d, TD>
+public typealias CompactOctTree<TD: CompactOctTreeDelegate> = NDTree<Vector3d, TD>
 
 #endif

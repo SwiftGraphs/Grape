@@ -60,6 +60,14 @@ extension VectorLike where Scalar == Double {
     }
 }
 
+extension NDBox where V.Scalar == Double {
+
+    static func ~= (lhs:Self, rhs: Self) -> Bool {
+        return (lhs.p0 ~= rhs.p0) && (lhs.p1 ~= rhs.p1)
+    }
+}
+
+
 extension NdBox where Coordinate.Scalar == Double {
 
     static func ~= (lhs:Self, rhs: Self) -> Bool {
