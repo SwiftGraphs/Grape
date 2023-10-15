@@ -13,7 +13,7 @@
   </a>
 </p>
 
-<p align="center">A visualization-purposed force simulation library.<img width="712" alt="ForceDirectedGraphLight" src="https://github.com/li3zhen1/Grape/assets/45376537/e0e8049d-25c2-4e5c-9623-6bf43ddddfa5"></p>
+<p align="center">A Swift library for force simulation and graph visualization.<img width="712" alt="ForceDirectedGraphLight" src="https://github.com/li3zhen1/Grape/assets/45376537/e0e8049d-25c2-4e5c-9623-6bf43ddddfa5"></p>
 
 
 
