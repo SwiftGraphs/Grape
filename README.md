@@ -1,15 +1,24 @@
-# Grape
+<p align="center">
+  <img alt="grap-icon" src="https://github.com/li3zhen1/Grape/assets/45376537/d7b9c39e-4210-4608-bcef-698ee46c66c0" height="96" style="margin:-24px">
+  <h1 align="center">Grape</h1>
+</p>
 
-![swift workflow](https://github.com/li3zhen1/Grape/actions/workflows/swift.yml/badge.svg)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fli3zhen1%2FGrape%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/li3zhen1/Grape)
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fli3zhen1%2FGrape%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/li3zhen1/Grape)
+<p align="center">
+  <img src="https://github.com/li3zhen1/Grape/actions/workflows/swift.yml/badge.svg" alt="swift workflow">
+  <a href="https://swiftpackageindex.com/li3zhen1/Grape">
+  <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fli3zhen1%2FGrape%2Fbadge%3Ftype%3Dplatforms" alt="swift package index">
+  </a>
+  <a href="https://swiftpackageindex.com/li3zhen1/Grape">
+  <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fli3zhen1%2FGrape%2Fbadge%3Ftype%3Dswift-versions" alt="swift package index">
+  </a>
+</p>
+
+<p align="center">A visualization-purposed force simulation library.<img width="712" alt="ForceDirectedGraphLight" src="https://github.com/li3zhen1/Grape/assets/45376537/e0e8049d-25c2-4e5c-9623-6bf43ddddfa5"></p>
 
 
 
-A visualization-purposed force simulation library.
 
 
-<img width="712" alt="ForceDirectedGraphLight" src="https://github.com/li3zhen1/Grape/assets/45376537/e0e8049d-25c2-4e5c-9623-6bf43ddddfa5">
 
 ### Examples
 
