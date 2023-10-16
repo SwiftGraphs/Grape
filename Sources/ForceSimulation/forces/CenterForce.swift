@@ -1,12 +1,13 @@
 //
-//  File.swift
-//  
+//  CenterForce.swift
+//
 //
 //  Created by li3zhen1 on 10/16/23.
 //
 import NDTree
 
-final public class CenterForce<NodeID, V>: ForceLike where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+final public class CenterForce<NodeID, V>: ForceLike
+where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     public var center: V
     public var strength: Double
     weak var simulation: Simulation<NodeID, V>?
@@ -15,7 +16,7 @@ final public class CenterForce<NodeID, V>: ForceLike where NodeID: Hashable, V: 
         self.center = center
         self.strength = strength
     }
-    
+
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
 

@@ -46,11 +46,11 @@ public extension VectorLike where Scalar == Double {
 }
 
 
-public struct EdgeID<VertexID>: Hashable where VertexID: Hashable {
-    public let source: VertexID
-    public let target: VertexID
+public struct EdgeID<NodeID>: Hashable where NodeID: Hashable {
+    public let source: NodeID
+    public let target: NodeID
 
-    public init(_ source: VertexID, _ target: VertexID) {
+    public init(_ source: NodeID, _ target: NodeID) {
         self.source = source
         self.target = target
     }
@@ -58,11 +58,12 @@ public struct EdgeID<VertexID>: Hashable where VertexID: Hashable {
 
 
 
-public protocol PrecalculatableParameter {
+public protocol PrecalculatableNodeProperty {
     associatedtype NodeID: Hashable
     associatedtype V: VectorLike where V.Scalar == Double
     func calculated(for simulation: Simulation<NodeID, V>) -> [Double]
 }
+
 
 //
 //struct ContiguousArrayWithLookupTable<Key, Value>: Collection

@@ -7,11 +7,9 @@
 
 import NDTree
 
-
 enum ManyBodyForceError: Error {
     case buildQuadTreeBeforeSimulationInitialized
 }
-
 
 struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
 
@@ -73,11 +71,9 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
     }
 }
 
+final public class ManyBodyForce<NodeID, V>: ForceLike
+where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
-
-
-final public class ManyBodyForce<NodeID, V>: ForceLike where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
-    
     var strength: Double = -20
 
     public enum NodeMass {
@@ -110,7 +106,6 @@ final public class ManyBodyForce<NodeID, V>: ForceLike where NodeID: Hashable, V
         self.mass = nodeMass
     }
 
-    
     public func apply(alpha: Double) {
         guard let simulation,
             let forces = try? calculateForce(alpha: alpha)
@@ -120,52 +115,53 @@ final public class ManyBodyForce<NodeID, V>: ForceLike where NodeID: Hashable, V
             simulation.nodes[i].velocity += forces[i]
         }
     }
-    
+
     func calculateForce(alpha: Double) throws -> [V] {
 
         guard let sim = self.simulation else {
             throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized
         }
-        
+
         let coveringBox = NDBox.cover(of: sim.nodes, keyPath: \.position)
-        
-        let tree = NDTree<V, MassQuadtreeDelegate<Int, V>>(box: coveringBox, clusterDistance: 1e-5) {
+
+        let tree = NDTree<V, MassQuadtreeDelegate<Int, V>>(box: coveringBox, clusterDistance: 1e-5)
+        {
             MassQuadtreeDelegate<Int, V> { index in
                 self.precalculatedMass[index]
             }
         }
-        
+
         var forces = [V](repeating: .zero, count: sim.nodes.count)
-        
-        
+
         for i in sim.nodes.indices {
             var f = V.zero
             tree.visit { t in
-                
+
                 guard let centroid = t.delegate.centroid else { return false }
 
                 let vec = centroid - sim.nodes[i].position
                 var distanceSquared = vec.jiggled().lengthSquared()
 
-                
                 guard distanceSquared < self.distanceMax2 else { return false }
                 let distance = distanceSquared.squareRoot()
-                
+
                 if distanceSquared < self.distanceMin2 {
-                    distanceSquared = self.distanceMin * distance //(self.distanceMin2 * distanceSquared).squareRoot()
+                    distanceSquared = self.distanceMin * distance  //(self.distanceMin2 * distanceSquared).squareRoot()
                 }
-                
+
                 let boxSize = (tree.box.p1 - tree.box.p0)[0]
                 let closeEnough: Bool = (distanceSquared * self.theta2) > (boxSize * boxSize)
                 let shouldAccumulateForce = tree.isLeaf || closeEnough
-                
+
                 if shouldAccumulateForce {
                     /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
-                    let k: Double = (self.strength * alpha * tree.delegate.accumulatedMass / (distanceSquared * distance))
+                    let k: Double =
+                        (self.strength * alpha * tree.delegate.accumulatedMass
+                            / (distanceSquared * distance))
                     f += vec * k
                 }
-                
-                return !shouldAccumulateForce // if accumulated, no need to visit children
+
+                return !shouldAccumulateForce  // if accumulated, no need to visit children
             }
             forces[i] = f
         }
@@ -174,7 +170,7 @@ final public class ManyBodyForce<NodeID, V>: ForceLike where NodeID: Hashable, V
 
 }
 
-extension ManyBodyForce.NodeMass: PrecalculatableParameter {
+extension ManyBodyForce.NodeMass: PrecalculatableNodeProperty {
     public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
         switch self {
         case .constant(let m):

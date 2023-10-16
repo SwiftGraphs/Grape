@@ -11,146 +11,205 @@ enum LinkForceError: Error {
     case useBeforeSimulationInitialized
 }
 
+final public class LinkForce<NodeID, V>: ForceLike
+where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
-final public class LinkForce<NodeID, V>: ForceLike where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
-    
-    
-    
     ///
     public enum LinkStiffness {
         case constant(Double)
-        case varied(   [EdgeID<NodeID>: Double], Double    )
+        case varied((EdgeID<NodeID>, LinkLookup<NodeID>) -> Double)
+        case weightedByDegree(k: Double)
     }
     var linkStiffness: LinkStiffness
     var calculatedStiffness: [Double] = []
-    
-    
-    
-    
-    
+
     ///
     public typealias LengthScalar = V.Scalar
     public enum LinkLength {
         case constant(LengthScalar)
-        case varied(   [EdgeID<NodeID>: Double], LengthScalar    )
+        case varied((EdgeID<NodeID>, LinkLookup<NodeID>) -> LengthScalar)
     }
     var linkLength: LinkLength
     var calculatedLength: [LengthScalar] = []
-    
-    
-    
-    
+
     /// Bias
     var calculatedBias: [Double] = []
-    
-    
-    
-    
-    
+
     /// Binding to simulation
     ///
-    weak var simulation: Simulation<NodeID, V>?
-    
-    
-    
-    
-    
-    
-    
-    var iteractionsPerTick: UInt
-    
-    
-    
-    
-    
-    var links: [EdgeID<Int>]
-    
-    
-    
-    
-    
-    
-    
-    init(linkStiffness: LinkStiffness, calculatedStiffnes: [Double], linkLength: LinkLength, calculatedLength: [LengthScalar], calculatedBias: [Double], iteractionsPerTick: UInt, links: [EdgeID<Int>]) {
-        self.linkStiffness = linkStiffness
-        self.linkLength = linkLength
-        self.calculatedLength = calculatedLength
-        self.calculatedBias = calculatedBias
-        self.iteractionsPerTick = iteractionsPerTick
-        self.links = links
+    weak var simulation: Simulation<NodeID, V>? {
+        didSet {
+
+            guard let sim = simulation else { return }
+
+            linksOfIndices = links.map { l in
+                EdgeID(
+                    sim.nodeIdToIndexLookup[l.source, default: 0],
+                    sim.nodeIdToIndexLookup[l.target, default: 0]
+                )
+            }
+
+            self.lookup = .buildFromLinks(linksOfIndices)
+            
+
+            self.calculatedBias = linksOfIndices.map { l in
+                Double(lookup.count[l.source, default: 0])
+                / Double(lookup.count[l.target, default: 0] + lookup.count[l.source, default: 0])
+            }
+
+            
+            let lookupWithOriginalID = LinkLookup.buildFromLinks(links)
+            self.calculatedLength = linkLength.calculated(for: self.links, connectionLookupTable: lookupWithOriginalID)
+            self.calculatedStiffness = linkStiffness.calculated(for: self.links, connectionLookupTable: lookupWithOriginalID)
+        }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    var iterationsPerTick: UInt
+
+    internal var linksOfIndices: [EdgeID<Int>] = []
+    var links: [EdgeID<NodeID>]
+
+    public struct LinkLookup<_NodeID> where _NodeID: Hashable {
+        let sources: [_NodeID: [_NodeID]]
+        let targets: [_NodeID: [_NodeID]]
+        let count: [_NodeID: Int]
+    }
+    private var lookup = LinkLookup<Int>(sources: [:], targets: [:], count: [:])
+
+    internal init(
+        _ links: [EdgeID<NodeID>],
+        stiffness: LinkStiffness,
+        originalLength: LinkLength = .constant(30),
+        iterationsPerTick: UInt = 1
+    ) {
+        self.links = links
+        self.iterationsPerTick = iterationsPerTick
+        self.linkStiffness = stiffness
+        self.linkLength = originalLength
+
+    }
+
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
-        
+
         var position: V
         var l: Double
-        
-        for _ in 0..<iteractionsPerTick {
+
+        for _ in 0..<iterationsPerTick {
             for i in links.indices {
-                let s = links[i].source
-                let t = links[i].target
-                
+                let s = linksOfIndices[i].source
+                let t = linksOfIndices[i].target
+
                 let _source = sim.nodes[s]
                 let _target = sim.nodes[t]
-                
+
                 let b = self.calculatedBias[i]
-                
-                position = (_target.position + _target.velocity - _source.position - _source.velocity).jiggled()
-                
+
+                position =
+                    (_target.position + _target.velocity - _source.position - _source.velocity)
+                    .jiggled()
+
                 l = position.length()
-                
+
                 l = (l - self.calculatedLength[i]) / l * alpha * self.calculatedStiffness[i]
 
                 position *= l
 
                 sim.nodes[s].velocity += position * b
                 sim.nodes[t].velocity -= position * (1 - b)
-                
+
             }
         }
     }
-    
-    
+
 }
 
 
+extension LinkForce.LinkLookup {
+    static func buildFromLinks(_ links: [EdgeID<_NodeID>]) -> Self {
+        var sources: [_NodeID: [_NodeID]] = [:]
+        var targets: [_NodeID: [_NodeID]] = [:]
+        var count: [_NodeID: Int] = [:]
+        for link in links {
+            sources[link.source, default: []].append(link.target)
+            targets[link.target, default: []].append(link.source)
+            count[link.source, default: 0] += 1
+            count[link.target, default: 0] += 1
+        }
+
+        return Self(sources: sources, targets: targets, count: count)
+    }
+}
 
 
-//extension LinkForce.LinkLength: PrecalculatableParameter {
-//    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
-//        switch self {
-//        case .constant(let l):
-//            return Array(repeating: l, count: simulation.nodes.count)
-//        case .varied(let lenDict, let defaultLen):
-//            return simulation.nodeIds.map { n in
-//                return lenDict[n, default: defaultMass]
-//            }
-//        }
-//    }
-//    
-//}
-//
-//
-//extension LinkForce.LinkStiffness: PrecalculatableParameter {
-//    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
-//        switch self {
-//        case .constant(let m):
-//            return Array(repeating: m, count: simulation.nodes.count)
-//        case .varied(let stiffnessDict, let defaultStiffness):
-//            return simulation.nodeIds.map { n in
-//                return stiffnessDict[n, default: defaultStiffness]
-//            }
-//        }
-//    }
-//}
+protocol PrecalculatableEdgeProperty {
+    associatedtype NodeID: Hashable
+    associatedtype V: VectorLike where V.Scalar == Double
+    func calculated(for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>) -> [Double]
+}
 
+extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
+    func calculated(for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>) -> [V.Scalar] {
+        switch self {
+        case .constant(let value):
+            return links.map { _ in value }
+        case .varied(let f):
+            return links.map { link in
+                f(link, connectionLookupTable)
+            }
+        }
+    }
+}
 
+extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
+    func calculated(for links: [EdgeID<NodeID>], connectionLookupTable lookup: LinkForce<NodeID, V>.LinkLookup<NodeID>) -> [Double] {
+        switch self {
+        case .constant(let value):
+            return links.map { _ in value }
+        case .varied(let f):
+            return links.map { link in
+                f(link, lookup)
+            }
+        case .weightedByDegree(k: let k):
+            return links.map { link in
+                k / Double(
+                        min(
+                            lookup.count[link.source, default: 0],
+                            lookup.count[link.target, default: 0]
+                        )
+                    )
+            }
+        }
+    }
+}
+
+extension Simulation {
+    @discardableResult
+    public func createLinkForce(
+        _ links: [EdgeID<NodeID>],
+        stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree(k: 1.0),
+        originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30),
+        iterationsPerTick: UInt = 1
+    ) -> LinkForce<NodeID, V> {
+        let linkForce = LinkForce<NodeID, V>(
+            links, stiffness: stiffness, originalLength: originalLength)
+        linkForce.simulation = self
+        self.forces.append(linkForce)
+        return linkForce
+    }
+
+    @discardableResult
+    public func createLinkForce(
+        _ linkTuples: [(NodeID, NodeID)],
+        stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree(k: 1.0),
+        originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30),
+        iterationsPerTick: UInt = 1
+    ) -> LinkForce<NodeID, V> {
+        let links = linkTuples.map { EdgeID($0.0, $0.1) }
+        let linkForce = LinkForce<NodeID, V>(
+            links, stiffness: stiffness, originalLength: originalLength)
+        linkForce.simulation = self
+        self.forces.append(linkForce)
+        return linkForce
+    }
+}
