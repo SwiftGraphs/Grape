@@ -58,6 +58,12 @@ public struct EdgeID<VertexID>: Hashable where VertexID: Hashable {
 
 
 
+public protocol PrecalculatableParameter {
+    associatedtype NodeID: Hashable
+    associatedtype V: VectorLike where V.Scalar == Double
+    func calculated(for simulation: Simulation<NodeID, V>) -> [Double]
+}
+
 //
 //struct ContiguousArrayWithLookupTable<Key, Value>: Collection
 //where Key: Hashable, Value: Identifiable, Value.ID == Key {

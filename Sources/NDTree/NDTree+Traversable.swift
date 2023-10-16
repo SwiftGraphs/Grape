@@ -17,6 +17,8 @@ public protocol Traversable {
 
 
 extension NDTree: Traversable {
+    
+    /// The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
     public func visit(shouldVisitChildren: (NDTree<V, D>) -> Bool) {
         if shouldVisitChildren(self), let children {
             // this is an internal node
@@ -26,6 +28,7 @@ extension NDTree: Traversable {
         }
     }
     
+
     public func visitPostOrdered(
         _ action: (NDTree<V, D>) -> ()
     ) {

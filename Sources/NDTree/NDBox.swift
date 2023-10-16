@@ -46,16 +46,9 @@ public struct NDBox<V> where V: VectorLike {
 }
 
 extension NDBox {
-    @inlinable var area: V.Scalar {
-        var result: V.Scalar = 1
-        let delta = p1 - p0
-        for i in delta.indices {
-            result *= delta[i]
-        }
-        return result
+    @inlinable var diagnalVector: V {
+        return p1 - p0
     }
-
-    @inlinable var vec: V { p1 - p0 }
 
     @inlinable var center: V { (p1 + p0) / V.Scalar(2) }
 
@@ -83,7 +76,62 @@ extension NDBox {
     @inlinable public var debugDescription: String {
         return "[\(p0), \(p1)]"
     }
-        
 }
 
+
+public extension NDBox {
+    @inlinable static func cover(of points: [V]) -> Self {
+        
+        var _p0 = points[0]
+        var _p1 = points[0]
+        
+        for p in points {
+            for i in p.indices {
+                if p[i] < _p0[i] {
+                    _p0[i] = p[i]
+                }
+                if p[i] >= _p1[i] {
+                    _p1[i] = p[i] + 1
+                }
+            }
+        }
+        
+        #if DEBUG
+        let _box = Self(_p0, _p1)
+        assert(points.allSatisfy{ p in
+            _box.contains(p)
+        })
+        #endif
+        
+        return Self(_p0, _p1)
+    }
+    
+    
+    @inlinable static func cover<T>(of points: [T], keyPath: KeyPath<T,V>) -> Self {
+        
+        var _p0 = points[0][keyPath: keyPath]
+        var _p1 = points[0][keyPath: keyPath]
+        
+        for _p in points {
+            let p = _p[keyPath: keyPath]
+            for i in p.indices {
+                if p[i] < _p0[i] {
+                    _p0[i] = p[i]
+                }
+                if p[i] >= _p1[i] {
+                    _p1[i] = p[i] + 1
+                }
+            }
+        }
+        
+        #if DEBUG
+        let _box = Self(_p0, _p1)
+        assert(points.allSatisfy{ p in
+            _box.contains(p[keyPath: keyPath])
+        })
+        #endif
+        
+        return Self(_p0, _p1)
+    }
+}
 

@@ -36,6 +36,8 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
     public internal(set) var nodes: [NodeStatus]
     public private(set) var nodeIds: [NodeID]
     
+    @usableFromInline internal private(set) var nodeIdToIndexLookup: [NodeID: Int] = [:]
+    
     public init(
         nodeIds: [NodeID],
         alpha: Double = 1,
@@ -58,7 +60,6 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         self.alphaTarget = alphaTarget
 
         self.velocityDecay = velocityDecay
-        self.nodeIds = nodeIds
         
         
         if let getInitialStatus {
@@ -71,6 +72,17 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
             }
         }
         
+        self.nodeIdToIndexLookup.reserveCapacity(nodeIds.count)
+        for i in nodeIds.indices {
+            self.nodeIdToIndexLookup[ nodeIds[i] ] = i
+        }
+        self.nodeIds = nodeIds
+        
+    }
+    
+    
+    @inlinable internal func getIndex(of nodeId: NodeID) -> Int{
+        return nodeIdToIndexLookup[ nodeId ]!
     }
     
     

@@ -61,8 +61,8 @@ let package = Package(
 //            name: "QuadTreeTests",
 //            dependencies: ["QuadTree"]),
 
-//        .testTarget(
-//            name: "ForceSimulationTests",
-//            dependencies: ["ForceSimulation", "QuadTree"]),
+        .testTarget(
+            name: "ForceSimulationTests",
+            dependencies: ["ForceSimulation", "NDTree"]),
     ]
 )

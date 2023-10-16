@@ -6,7 +6,7 @@
 //
 
 public protocol NDTreeDelegate {
-    associatedtype NodeID
+    associatedtype NodeID: Hashable
     associatedtype V: VectorLike
     mutating func didAddNode(_ node: NodeID, at position: V)
     mutating func didRemoveNode(_ node: NodeID, at position: V)
@@ -36,7 +36,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     
     public private(set) var delegate: D
     
-    public init(
+    private init(
         box: Box,
         clusterDistance: V.Scalar,
         parentDelegate: inout D
@@ -46,8 +46,34 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         self.clusterDistanceSquared = clusterDistance * clusterDistance
         self.directionCount = 1 << V.scalarCount
         self.nodeIndices = []
-        
         self.delegate = parentDelegate.spawn()
+    }
+    
+    public init(
+        box: Box,
+        clusterDistance: V.Scalar,
+        buildRootDelegate: () -> D
+    ) {
+        self.box = box
+        self.clusterDistance = clusterDistance
+        self.clusterDistanceSquared = clusterDistance * clusterDistance
+        self.directionCount = 1 << V.scalarCount
+        self.nodeIndices = []
+        self.delegate = buildRootDelegate()
+    }
+    
+    public convenience init(
+        covering nodes: [NodeIndex: V],
+        clusterDistance: V.Scalar,
+        buildRootDelegate: () -> D
+    ) {
+        let coveringBox = Box.cover(of: Array(nodes.values))
+        self.init(box: coveringBox, 
+                  clusterDistance: clusterDistance,
+                  buildRootDelegate: buildRootDelegate)
+        for (i, p) in nodes {
+            add(i, at: p)
+        }
     }
     
     
@@ -195,15 +221,43 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
 }
 
 
-
-
-
-
+extension NDTree where D.NodeID == Int {
+    public convenience init(
+        covering points: [V],
+        clusterDistance: V.Scalar,
+        buildRootDelegate: () -> D
+    ) {
+        let coveringBox = Box.cover(of: points)
+        self.init(box: coveringBox, clusterDistance: clusterDistance, buildRootDelegate: buildRootDelegate)
+        for i in points.indices {
+            add(i, at: points[i])
+        }
+    }
+    
+    public convenience init<T>(
+        covering points: [T],
+        keyPath: KeyPath<T, V>,
+        clusterDistance: V.Scalar,
+        buildRootDelegate: () -> D
+    ) {
+        let coveringBox = Box.cover(of: points, keyPath: keyPath)
+        self.init(box: coveringBox, clusterDistance: clusterDistance, buildRootDelegate: buildRootDelegate)
+        for i in points.indices {
+            add(i, at: points[i][keyPath: keyPath])
+        }
+    }
+}
 
 
 
 extension NDTree {
     @inlinable public var extent: Box { box }
+    
+    @inlinable public var isLeaf: Bool { children == nil }
+    @inlinable public var isInternalNode: Bool { children != nil }
+    
+    @inlinable public var isFilledLeaf: Bool { nodePosition != nil }
+    @inlinable public var idEmptyLeaf: Bool { nodePosition == nil }
 }
 
 

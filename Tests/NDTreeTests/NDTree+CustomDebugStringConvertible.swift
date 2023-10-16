@@ -5,7 +5,7 @@
 //  Created by li3zhen1 on 10/15/23.
 //
 
-import Foundation
+@testable import NDTree
 
 extension VectorLike {
     var compactDebugString: String {
