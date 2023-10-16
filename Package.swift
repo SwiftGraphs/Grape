@@ -12,24 +12,22 @@ let package = Package(
             name: "QuadTree",
             targets: ["QuadTree"]
         ),
+
+        .library(
+            name: "NDTree",
+            targets: ["NDTree"]
+        ),
+
         .library(
             name: "ForceSimulation",
             targets: ["ForceSimulation"]
         ),
-        
+
         .library(
             name: "Grape",
             targets: ["Grape"]
         ),
-        
-        
-//        .library(
-//            name: "SimdPolyfill",
-//            targets: ["SimdPolyfill"]
-//        ),
-        
-//        .library(name: "GrapePlayground", targets: ["GrapePlayground"]),
-        
+
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -39,32 +37,32 @@ let package = Package(
             path: "Sources/QuadTree"
         ),
 
-//            .target(
-//                name: "GrapePlayground", dependencies: ["QuadTree", "ForceSimulation"],
-//                path: "Examples/GrapePlayground"
-//            ),
-        
-            .target(
-                name: "Grape", dependencies: ["QuadTree", "ForceSimulation"],
-                path: "Sources/Grape"
-            ),
-        
-//        .target(
-//            name: "SimdPolyfill",
-//            path: "Sources/SimdPolyfill"
-//        ),
+        .target(
+            name: "NDTree",
+            path: "Sources/NDTree"
+        ),
+
+        .testTarget(
+            name: "NDTreeTests",
+            dependencies: ["NDTree"]),
+
+        .target(
+            name: "Grape", dependencies: ["QuadTree", "ForceSimulation"],
+            path: "Sources/Grape"
+        ),
+
         .target(
             name: "ForceSimulation",
             dependencies: ["QuadTree"],
             path: "Sources/ForceSimulation"
         ),
-        
+
         .testTarget(
             name: "QuadTreeTests",
             dependencies: ["QuadTree"]),
-        
+
         .testTarget(
             name: "ForceSimulationTests",
-            dependencies: ["ForceSimulation","QuadTree"])
+            dependencies: ["ForceSimulation", "QuadTree"]),
     ]
 )

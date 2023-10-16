@@ -69,6 +69,71 @@ struct MassQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
         return weightedAccumulatedNodePositions / accumulatedProperty
     }
 }
+//
+//
+//
+//
+//
+//struct MassQuadTreeDelegate: CompactQuadTreeDelegate {
+//
+//
+//    public var accumulatedProperty: Double = 0.0
+//    public var accumulatedCount = 0
+//    public var weightedAccumulatedNodePositions: Vector2f = .zero
+//
+//    @usableFromInline let massProvider: (N.ID) -> Double
+//
+//    init(
+//        massProvider: @escaping (N.ID) -> Double
+//    ) {
+//        self.massProvider = massProvider
+//    }
+//
+//    internal init(
+//        initialAccumulatedProperty: Double,
+//        initialAccumulatedCount: Int,
+//        initialWeightedAccumulatedNodePositions: Vector2f,
+//        massProvider: @escaping (N.ID) -> Double
+//    ) {
+//        self.accumulatedProperty = initialAccumulatedProperty
+//        self.accumulatedCount = initialAccumulatedCount
+//        self.weightedAccumulatedNodePositions = initialWeightedAccumulatedNodePositions
+//        self.massProvider = massProvider
+//    }
+//
+//    @inlinable mutating func didAddNode(_ node: N, at position: Vector2f) {
+//        let p = massProvider(node.id)
+//        accumulatedCount += 1
+//        accumulatedProperty += p
+//        weightedAccumulatedNodePositions += p * position
+//    }
+//
+//    @inlinable mutating func didRemoveNode(_ node: N, at position: Vector2f) {
+//        let p = massProvider(node.id)
+//        accumulatedCount -= 1
+//        accumulatedProperty -= p
+//        weightedAccumulatedNodePositions -= p * position
+//        // TODO: parent removal?
+//    }
+//
+//    @inlinable func copy() -> Self {
+//        return Self(
+//            initialAccumulatedProperty: self.accumulatedProperty,
+//            initialAccumulatedCount: self.accumulatedCount,
+//            initialWeightedAccumulatedNodePositions: self.weightedAccumulatedNodePositions,
+//            massProvider: self.massProvider
+//        )
+//    }
+//
+//    @inlinable func createNew() -> Self {
+//        return Self(massProvider: self.massProvider)
+//    }
+//
+//    @inlinable var centroid: Vector2f? {
+//        guard accumulatedCount > 0 else { return nil }
+//        return weightedAccumulatedNodePositions / accumulatedProperty
+//    }
+//}
 
 //final class MassQuadTreeDelegate<N>: QuadDelegate where N : Identifiable {
 //
