@@ -22,7 +22,7 @@ extension NDTree: Traversable {
     public func visit(shouldVisitChildren: (NDTree<V, D>) -> Bool) {
         if shouldVisitChildren(self), let children {
             // this is an internal node
-            children.forEach { t in
+            for t in children { 
                 t.visit(shouldVisitChildren: shouldVisitChildren)
             }
         }

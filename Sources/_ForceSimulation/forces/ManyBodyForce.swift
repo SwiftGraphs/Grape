@@ -277,7 +277,7 @@ final public class ManyBodyForce<N>: Force where N: Identifiable {
         }
 
         var forces = [Vector2f](repeating: .zero, count: sim.simulationNodes.count)
-
+        
         for i in sim.simulationNodes.indices {
             quad.visit { quadNode in
                 if let centroid = quadNode.quadDelegate.centroid {

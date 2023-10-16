@@ -192,9 +192,13 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
                 }
             }
         }
-        return spawned.map { b in
-            NDTree(box: b, clusterDistance: _clusterDistance, parentDelegate: &_delegate)
+        var result = [NDTree<V, D>]()
+        result.reserveCapacity(_directionCount)
+        for b in spawned {
+            result.append(NDTree(box: b, clusterDistance: _clusterDistance, parentDelegate: &_delegate))
         }
+        
+        return result
     }
     
     /// Copy object while holding the same reference to children

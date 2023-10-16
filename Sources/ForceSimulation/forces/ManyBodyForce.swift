@@ -139,11 +139,10 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         }
 
         var forces = [V](repeating: .zero, count: sim.nodes.count)
-
+        
         for i in sim.nodes.indices {
 //            var f = V.zero
             tree.visit { t in
-
                 guard let centroid = t.delegate.centroid else { return false }
 
                 let vec = centroid - sim.nodes[i].position
@@ -166,6 +165,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                         (self.strength * alpha * tree.delegate.accumulatedMass
                             / (distanceSquared * distanceSquared.squareRoot()))
                     forces[i] += vec * k
+//                    f = f + (vec * k)
                     return false
                 }
                 else {
