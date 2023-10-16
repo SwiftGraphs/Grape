@@ -16,9 +16,9 @@ enum SimulationError: Error {
 public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     public typealias Scalar = V.Scalar
     public struct NodeStatus {
-        var position: V
-        var velocity: V
-        var fixation: V?
+        public var position: V
+        public var velocity: V
+        public var fixation: V?
         
         static var zero: NodeStatus { .init(position: .zero, velocity: .zero) }
     }

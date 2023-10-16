@@ -33,6 +33,11 @@ final class MiserableGraphTest: XCTestCase {
         }
         
 //        sim.tick()
+        
+        for _ in 0..<120{
+            sim.tick()
+        }
+        
        measure {
             for _ in 0..<120{
                 sim.tick()

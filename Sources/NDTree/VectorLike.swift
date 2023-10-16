@@ -15,23 +15,26 @@ public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, Expre
     @inlinable func distanceSquared(to: Self) -> Scalar
     @inlinable func distance(to: Self) -> Scalar
     
-    static func * (a: Self, b: Double) -> Self
-    static func / (a: Self, b: Double) -> Self
+    @inlinable static func * (a: Self, b: Double) -> Self
+    @inlinable static func / (a: Self, b: Double) -> Self
     
-    static func * (a: Self, b: Scalar) -> Self
-    static func / (a: Self, b: Scalar) -> Self
-    static func - (a: Self, b: Self) -> Self
-    static func + (a: Self, b: Self) -> Self
+    @inlinable static func * (a: Self, b: Scalar) -> Self
+    @inlinable static func / (a: Self, b: Scalar) -> Self
+    @inlinable static func - (a: Self, b: Self) -> Self
+    @inlinable static func + (a: Self, b: Self) -> Self
+
+
+    @inlinable static func + (a: Self, b: Scalar) -> Self
     
-    static func += (a: inout Self, b: Self)
-    static func -= (a: inout Self, b: Self)
-    static func *= (a: inout Self, b: Scalar)
-    static func /= (a: inout Self, b: Scalar)
+    @inlinable static func += (a: inout Self, b: Self)
+    @inlinable static func -= (a: inout Self, b: Self)
+    @inlinable static func *= (a: inout Self, b: Scalar)
+    @inlinable static func /= (a: inout Self, b: Scalar)
     
     
     /// the same members as simd
-    static var scalarCount: Int { get }
-    static var zero: Self { get }
+    @inlinable static var scalarCount: Int { get }
+    @inlinable static var zero: Self { get }
 
     init()
 

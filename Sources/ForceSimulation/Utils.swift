@@ -29,7 +29,7 @@ public struct LinearCongruentialGenerator {
 public extension Double {
     @inlinable func jiggled() -> Double {
         if self == 0 || self == .nan {
-            return (LinearCongruentialGenerator.next() - 0.5) * 1e-6
+            return (LinearCongruentialGenerator.next() - 0.5) * 1e-5
         }
         return self
     }
