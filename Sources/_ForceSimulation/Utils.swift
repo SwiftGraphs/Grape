@@ -1,5 +1,5 @@
 //
-//  Utils.swift
+//  File.swift
 //
 //
 //  Created by li3zhen1 on 10/1/23.
@@ -44,18 +44,6 @@ public extension VectorLike where Scalar == Double {
         return result
     }
 }
-
-
-public struct EdgeID<VertexID>: Hashable where VertexID: Hashable {
-    public let source: VertexID
-    public let target: VertexID
-
-    public init(_ source: VertexID, _ target: VertexID) {
-        self.source = source
-        self.target = target
-    }
-}
-
 
 
 //

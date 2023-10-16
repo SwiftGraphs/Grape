@@ -47,40 +47,44 @@
     }
 
 
-    extension simd_double4: VectorLike {
 
-        @inlinable public func lengthSquared() -> Double {
-            return x * x + y * y + z * z + w * w
-        }
-
-        @inlinable public func length() -> Double {
-            return (x * x + y * y + z * z + w * w).squareRoot()
-        }
-
-        @inlinable public func distanceSquared(to: SIMD4<Scalar>) -> Scalar {
-            return (self - to).lengthSquared()
-        }
-
-        @inlinable public func distance(to: SIMD4<Scalar>) -> Scalar {
-            return (self - to).length()
-        }
-    }
 
     public typealias Vector2d = simd_double2
     public typealias Vector3d = simd_double3
-    public typealias Vector4d = simd_double4
 
-    public protocol QuadtreeDelegate: NDTreeDelegate where V == Vector2d, Node == Int {}
-    public protocol OctreeDelegate: NDTreeDelegate where V == Vector3d, Node == Int {}
-    public protocol HyperoctreeDelegate: NDTreeDelegate where V == Vector4d, Node == Int {}
+    public protocol QuadtreeDelegate: NDTreeDelegate where V == Vector2d {}
+    public protocol OctreeDelegate: NDTreeDelegate where V == Vector3d {}
+
 
     public typealias QuadBox = NDBox<Vector2d>
     public typealias OctBox = NDBox<Vector3d>
-    public typealias HyperoctBox = NDBox<Vector4d>
 
     public typealias Quadtree<TD: QuadtreeDelegate> = NDTree<Vector2d, TD>
     public typealias Octree<TD: OctreeDelegate> = NDTree<Vector3d, TD>
-    public typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<Vector4d, TD>
+
+
+//    extension simd_double4: VectorLike {
+//
+//        @inlinable public func lengthSquared() -> Double {
+//            return x * x + y * y + z * z + w * w
+//        }
+//
+//        @inlinable public func length() -> Double {
+//            return (x * x + y * y + z * z + w * w).squareRoot()
+//        }
+//
+//        @inlinable public func distanceSquared(to: SIMD4<Scalar>) -> Scalar {
+//            return (self - to).lengthSquared()
+//        }
+//
+//        @inlinable public func distance(to: SIMD4<Scalar>) -> Scalar {
+//            return (self - to).length()
+//        }
+//    }
+//    public typealias Vector4d = simd_double4
+//    public protocol HyperoctreeDelegate: NDTreeDelegate where V == Vector4d, Node == Int {}
+//    public typealias HyperoctBox = NDBox<Vector4d>
+//    public typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<Vector4d, TD>
 
 
 

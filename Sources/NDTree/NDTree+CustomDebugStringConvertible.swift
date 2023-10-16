@@ -22,7 +22,7 @@ extension VectorLike {
 }
 
 
-extension NDTree : CustomDebugStringConvertible {
+extension NDTree : CustomDebugStringConvertible where D.NodeID == Int {
     public var debugDescription: String {
         if let children {
             return "[\(children.map{$0.debugDescription}.joined(separator: ","))]"

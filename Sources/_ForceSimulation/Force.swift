@@ -18,6 +18,7 @@ public struct EdgeID<VertexID>: Hashable where VertexID: Hashable {
     }
 }
 
+
 public struct SimulationNode<VID>: Identifiable where VID: Hashable {
     public internal(set) var id: VID
     public var position: Vector2f

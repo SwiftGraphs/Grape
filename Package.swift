@@ -8,10 +8,10 @@ let package = Package(
     platforms: [.macOS(.v12), .iOS(.v13)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "QuadTree",
-            targets: ["QuadTree"]
-        ),
+//        .library(
+//            name: "QuadTree",
+//            targets: ["QuadTree"]
+//        ),
 
         .library(
             name: "NDTree",
@@ -23,19 +23,19 @@ let package = Package(
             targets: ["ForceSimulation"]
         ),
 
-        .library(
-            name: "Grape",
-            targets: ["Grape"]
-        ),
+//        .library(
+//            name: "Grape",
+//            targets: ["Grape"]
+//        ),
 
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "QuadTree",
-            path: "Sources/QuadTree"
-        ),
+//        .target(
+//            name: "QuadTree",
+//            path: "Sources/QuadTree"
+//        ),
 
         .target(
             name: "NDTree",
@@ -46,23 +46,23 @@ let package = Package(
             name: "NDTreeTests",
             dependencies: ["NDTree"]),
 
-        .target(
-            name: "Grape", dependencies: ["QuadTree", "ForceSimulation"],
-            path: "Sources/Grape"
-        ),
+//        .target(
+//            name: "Grape", dependencies: ["QuadTree", "ForceSimulation"],
+//            path: "Sources/Grape"
+//        ),
 
         .target(
             name: "ForceSimulation",
-            dependencies: ["QuadTree"],
+            dependencies: ["NDTree"],
             path: "Sources/ForceSimulation"
         ),
 
-        .testTarget(
-            name: "QuadTreeTests",
-            dependencies: ["QuadTree"]),
+//        .testTarget(
+//            name: "QuadTreeTests",
+//            dependencies: ["QuadTree"]),
 
-        .testTarget(
-            name: "ForceSimulationTests",
-            dependencies: ["ForceSimulation", "QuadTree"]),
+//        .testTarget(
+//            name: "ForceSimulationTests",
+//            dependencies: ["ForceSimulation", "QuadTree"]),
     ]
 )

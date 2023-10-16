@@ -54,6 +54,7 @@ final class AddTests: XCTestCase {
         for i in points.indices {
             qt.add(i, at: points[i])
         }
+        
         return qt
     }
     

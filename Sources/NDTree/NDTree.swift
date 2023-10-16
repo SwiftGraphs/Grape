@@ -6,17 +6,17 @@
 //
 
 public protocol NDTreeDelegate {
-    associatedtype Node
+    associatedtype NodeID
     associatedtype V: VectorLike
-    mutating func didAddNode(_ node: Node, at position: V)
-    mutating func didRemoveNode(_ node: Node, at position: V)
+    mutating func didAddNode(_ node: NodeID, at position: V)
+    mutating func didRemoveNode(_ node: NodeID, at position: V)
     func copy() -> Self
     func spawn() -> Self
 }
 
-public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.Node == Int, D.V == V {
+public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V {
     
-    public typealias NodeIndex = Int
+    public typealias NodeIndex = D.NodeID
     
     public typealias Direction = Int
     

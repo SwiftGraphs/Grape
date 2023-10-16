@@ -15,10 +15,19 @@ public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, Expre
     @inlinable func distanceSquared(to: Self) -> Scalar
     @inlinable func distance(to: Self) -> Scalar
     
+    static func * (a: Self, b: Double) -> Self
+    static func / (a: Self, b: Double) -> Self
+    
     static func * (a: Self, b: Scalar) -> Self
     static func / (a: Self, b: Scalar) -> Self
     static func - (a: Self, b: Self) -> Self
     static func + (a: Self, b: Self) -> Self
+    
+    static func += (a: inout Self, b: Self)
+    static func -= (a: inout Self, b: Self)
+    static func *= (a: inout Self, b: Scalar)
+    static func /= (a: inout Self, b: Scalar)
+    
     
     /// the same members as simd
     static var scalarCount: Int { get }
@@ -29,6 +38,7 @@ public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, Expre
     subscript(index: Int) -> Self.Scalar { get set }
     
     var indices: Range<Int> { get }
+    
     
     
 //    mutating func replace<M>(with other: Self, where mask: M) where M:MaskLike, M.Storage.Scalar==Scalar.SIMDMaskScalar
