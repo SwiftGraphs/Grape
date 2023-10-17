@@ -48,7 +48,7 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         nodeIds: [NodeID],
         alpha: Double = 1,
         alphaMin: Double = 1e-3,
-        alphaDecay: Double = 5e-3,
+        alphaDecay: Double = 2e-3,
         alphaTarget: Double = 0.0,
         velocityDecay: Double = 0.6,
 
@@ -73,9 +73,9 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         }
         else {
             self.nodes = Array(repeating: .zero, count: nodeIds.count)
-            for i in nodes.indices {
-                nodes[i].jiggle()
-            }
+//            for i in nodes.indices {
+//                nodes[i].jiggle()
+//            }
         }
         
         self.nodeIdToIndexLookup.reserveCapacity(nodeIds.count)
@@ -136,9 +136,9 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
 }
 
 
-extension Simulation.NodeStatus {
-    mutating func jiggle() {
-        self.position = position.jiggled()
-    }
-}
+//extension Simulation.NodeStatus {
+//    mutating func jiggle() {
+//        self.position = position.jiggled()
+//    }
+//}
 

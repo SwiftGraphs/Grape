@@ -28,15 +28,15 @@ final class MiserableGraphTest: XCTestCase {
         let centerForce = sim.createCenterForce(center: .zero)
 //        let collideForce = sim.createCollideForce(radius: .constant(5))
         
-        for _ in 0..<120{
-            sim.tick()
-        }
-        
-//        sim.tick()
-        
-        for _ in 0..<120{
-            sim.tick()
-        }
+//        for _ in 0..<120{
+//            sim.tick()
+//        }
+//        
+////        sim.tick()
+//        
+//        for _ in 0..<120{
+//            sim.tick()
+//        }
         
        measure {
             for _ in 0..<120{

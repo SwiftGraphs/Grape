@@ -74,7 +74,7 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
 final public class ManyBodyForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
-    var strength: Double = -20
+    var strength: Double
 
     public enum NodeMass {
         case constant(Double)
@@ -112,29 +112,28 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         else { return }
 
         for i in simulation.nodes.indices {
-            simulation.nodeVelocities[i] += forces[i]
-            
+            simulation.nodeVelocities[i] += forces[i] / precalculatedMass[i]
         }
     }
     
-    private func getCoveringBox() throws -> NDBox<V> {
-        guard let simulation else { throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized }
-        var _p0 = simulation.nodes[0].position
-        var _p1 = simulation.nodes[0].position
-        
-        for p in simulation.nodes {
-            for i in 0..<V.scalarCount {
-                if p.position[i] < _p0[i] {
-                    _p0[i] = p.position[i]
-                }
-                if p.position[i] >= _p1[i] {
-                    _p1[i] = p.position[i] + 1
-                }
-            }
-        }
-        return NDBox(_p0, _p1)
-        
-    }
+//    private func getCoveringBox() throws -> NDBox<V> {
+//        guard let simulation else { throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized }
+//        var _p0 = simulation.nodes[0].position
+//        var _p1 = simulation.nodes[0].position
+//        
+//        for p in simulation.nodes {
+//            for i in 0..<V.scalarCount {
+//                if p.position[i] < _p0[i] {
+//                    _p0[i] = p.position[i]
+//                }
+//                if p.position[i] >= _p1[i] {
+//                    _p1[i] = p.position[i] + 1
+//                }
+//            }
+//        }
+//        return NDBox(_p0, _p1)
+//        
+//    }
 
     func calculateForce(alpha: Double) throws -> [V] {
 
@@ -145,7 +144,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         
         let coveringBox = NDBox<V>.cover(of: sim.nodePositions) //try! getCoveringBox()
 
-        let tree = NDTree<V, MassQuadtreeDelegate<Int, V>>(box: coveringBox, clusterDistance: 1e-7)
+        let tree = NDTree<V, MassQuadtreeDelegate<Int, V>>(box: coveringBox, clusterDistance: 1e-5)
         {
             
             return switch self.mass {
@@ -156,13 +155,13 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                     self.precalculatedMass[index]
                 }
             }
-            
-
         }
         
         for i in sim.nodePositions.indices {
             tree.add(i, at: sim.nodePositions[i])
+            #if DEBUG
             assert(tree.delegate.accumulatedCount == i+1)
+            #endif
         }
 
         var forces = [V](repeating: .zero, count: sim.nodePositions.count)
@@ -170,37 +169,78 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         for i in sim.nodePositions.indices {
 //            var f = V.zero
             tree.visit { t in
-                guard t.delegate.accumulatedCount > 0 else { return false }
-                let centroid = t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
+            if let centroid = t.delegate.centroid {
+                    let vec = centroid - sim.nodePositions[i]
 
-                let vec = centroid - sim.nodePositions[i]
-                var distanceSquared = vec.jiggled().lengthSquared()
+                    var distanceSquared = vec.jiggled()
+                        .lengthSquared()
 
-                guard distanceSquared < self.distanceMax2 else { return false }
-                
-            
-                if distanceSquared < self.distanceMin2 {
-                    distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
-                }
+                    // too far away, omit
+                    guard distanceSquared < self.distanceMax2 else { return false }
 
-                let boxSize = (t.box.p1 - t.box.p0)[0]
-                
-                let farEnough: Bool = (distanceSquared * self.theta2) > (boxSize * boxSize)
+                    // too close, enlarge distance
+                    if distanceSquared < self.distanceMin2 {
+                        distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
+                    }
 
-                if tree.isLeaf || farEnough {
-                    /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
-                    let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / distanceSquared.squareRoot()
-                    forces[i] += vec * k
-//                    f = f + (vec * k)
+                    let boxWidth = (t.box.p1 - t.box.p1)[0]
+                    if t.isLeaf || (distanceSquared * self.theta2 > boxWidth*boxWidth) {
+                        
+                        let k: Double = self.strength * alpha * t.delegate.accumulatedMass
+
+                        forces[i] += vec / distanceSquared / (distanceSquared).squareRoot() * k
+
+                        return false
+                    } else {
+                        return true
+                    }
+                } else {
+                    // it's empty here, no need to visit
                     return false
                 }
-                else {
-                    return true
-                }
+
+                // guard t.delegate.accumulatedCount > 0 else { return false }
+                // let centroid = t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
+
+                // let vec = centroid - sim.nodePositions[i]
+                // var distanceSquared = vec.jiggled().lengthSquared()
+
+                // guard distanceSquared < self.distanceMax2 else { return false }
+                
+                // let boxWidth = (t.box.p1 - t.box.p0)[0]
+                // let farEnough: Bool = (distanceSquared * self.theta2) > (boxWidth * boxWidth)
+                
+                
+                
+                // if farEnough {
+                //     let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / distanceSquared.squareRoot()
+                //     let f = vec * k
+                //     forces[i] += f
+                //     return false
+                // }
+                // else if t.children != nil {
+                //     return true
+                // }
+                
+            
+                // if distanceSquared < self.distanceMin2 {
+                //     distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
+                // }
+
+
+
+                // if tree.isFilledLeaf && !tree.nodeIndices.contains(i) {
+                //     /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
+                //     let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / distanceSquared.squareRoot()
+                //     forces[i] += vec * k
+                //     return false
+                // }
+                // else {
+                //     return true
+                // }
 
 //                return !shouldAccumulateForce  // if accumulated, no need to visit children
             }
-            forces[i] /= self.precalculatedMass[i]
         }
         return forces
     }

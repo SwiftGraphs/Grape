@@ -162,7 +162,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         
         let copiedCurrentNode = shallowCopy()
         var spawned = Self.spawnChildren(
-            box,
+            newRootBox,
             V.directionCount,
             clusterDistance,
             /*&*/delegate

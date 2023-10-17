@@ -67,9 +67,9 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         }
         else {
             self.nodes = Array(repeating: .zero, count: nodeIds.count)
-            for i in nodes.indices {
-                nodes[i].jiggle()
-            }
+//            for i in nodes.indices {
+//                nodes[i]//.jiggle()
+//            }
         }
         
     }
