@@ -15,13 +15,13 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
 
     public typealias Scalar = V.Scalar
 
-    public struct NodeStatus {
-        public var position: V
-        public var velocity: V
-        public var fixation: V?
-
-        static var zero: NodeStatus { .init(position: .zero, velocity: .zero) }
-    }
+//    public struct NodeStatus {
+//        public var position: V
+//        public var velocity: V
+//        public var fixation: V?
+//
+//        static var zero: NodeStatus { .init(position: .zero, velocity: .zero) }
+//    }
 
     public let initializedAlpha: Double
 
@@ -36,7 +36,7 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
     /// This is only used for initialization.
     /// Position, velocities, fixations are moved to the arrays below
     /// to utilize cache hit
-    private var nodes: [NodeStatus]
+//    private var nodes: [NodeStatus]
 
     public internal(set) var nodePositions: [V]
     public internal(set) var nodeVelocities: [V]
@@ -54,7 +54,7 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         alphaTarget: Double = 0.0,
         velocityDecay: Double = 0.6,
 
-        setInitialStatus getInitialStatus: (
+        setInitialStatus getInitialPosition: (
             (NodeID) -> V
         )? = nil
 
@@ -69,21 +69,22 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
 
         self.velocityDecay = velocityDecay
 
-        if let getInitialStatus {
-            self.nodes = nodeIds.map { id in NodeStatus(position: getInitialStatus(id), velocity: .zero) }
+        if let getInitialPosition {
+            self.nodePositions = nodeIds.map(getInitialPosition)
         } else {
-            self.nodes = Array(repeating: .zero, count: nodeIds.count)
+            self.nodePositions = Array(repeating: .zero, count: nodeIds.count)
         }
 
+        self.nodeVelocities = Array(repeating: .zero, count: nodeIds.count)
+        self.nodeFixations = Array(repeating: nil, count: nodeIds.count)
+        
+        
         self.nodeIdToIndexLookup.reserveCapacity(nodeIds.count)
         for i in nodeIds.indices {
             self.nodeIdToIndexLookup[nodeIds[i]] = i
         }
         self.nodeIds = nodeIds
 
-        self.nodePositions = self.nodes.map { n in n.position }
-        self.nodeVelocities = self.nodes.map { n in n.velocity }
-        self.nodeFixations = Array(repeating: nil, count: nodeIds.count)
     }
 
     @inlinable internal func getIndex(of nodeId: NodeID) -> Int {
@@ -110,3 +111,12 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         }
     }
 }
+
+
+#if canImport(simd)
+
+public typealias Simulation2D<NodeID> = Simulation<NodeID, Vector2d> where NodeID: Hashable
+
+public typealias Simulation3D<NodeID> = Simulation<NodeID, Vector3d> where NodeID: Hashable
+
+#endif

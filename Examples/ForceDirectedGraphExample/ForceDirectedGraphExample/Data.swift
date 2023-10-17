@@ -7,14 +7,35 @@
 
 import Foundation
 
+let miserables3 = """
+{
+  "nodes": [
+
+    {"id": "Myriel", "group": 1},
+    {"id": "Napoleon", "group": 1},
+
+], "links": [
+    {"source": "Myriel", "target": "Napoleon", "value": 3},
+]
+}
+"""
 
 let miserables2 = """
 {
   "nodes": [
+
     {"id": "Myriel", "group": 1},
     {"id": "Napoleon", "group": 1},
+    {"id": "Mlle.Baptistine", "group": 1},
+    {"id": "Valjean", "group": 2},
+    {"id": "Marguerite", "group": 3},
+    {"id": "Mme.deR", "group": 2},
+
 ], "links": [
-    {"source": "Myriel", "target": "Napoleon", "value": 3}
+    {"source": "Myriel", "target": "Napoleon", "value": 3},
+    {"source": "Myriel", "target": "Mlle.Baptistine", "value": 3},
+    {"source": "Napoleon", "target": "Mme.deR", "value": 3},
+    {"source": "Mlle.Baptistine", "target": "Valjean", "value": 3}
 ]
 }
 """

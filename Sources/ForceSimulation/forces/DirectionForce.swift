@@ -93,6 +93,7 @@ extension DirectionForce.Direction {
 
 public extension Simulation {
 
+    @discardableResult
     func createPositionForce(
         direction: DirectionForce<NodeID, V>.Direction,
         targetOnDirection: DirectionForce<NodeID, V>.TargetOnDirection,

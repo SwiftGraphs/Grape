@@ -7,78 +7,71 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B7D4218B2AD385890079C74B /* GrapeViewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D4218A2AD385890079C74B /* GrapeViewApp.swift */; };
-		B7D4218D2AD385890079C74B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D4218C2AD385890079C74B /* ContentView.swift */; };
-		B7D4218F2AD3858A0079C74B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7D4218E2AD3858A0079C74B /* Assets.xcassets */; };
-		B7D421922AD3858A0079C74B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7D421912AD3858A0079C74B /* Preview Assets.xcassets */; };
-		B7D4219B2AD3859F0079C74B /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = B7D4219A2AD3859F0079C74B /* ForceSimulation */; };
-		B7D4219D2AD3859F0079C74B /* QuadTree in Frameworks */ = {isa = PBXBuildFile; productRef = B7D4219C2AD3859F0079C74B /* QuadTree */; };
-		B7D4219F2AD385EB0079C74B /* ForceDirectedGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D4219E2AD385EB0079C74B /* ForceDirectedGraph.swift */; };
-		B7D421A12AD387140079C74B /* miserables.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D421A02AD387140079C74B /* miserables.swift */; };
-		CA06E4992AD87F2F00A2C5EB /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = CA06E4982AD87F2F00A2C5EB /* ForceSimulation */; };
-		CA06E49B2AD87F2F00A2C5EB /* QuadTree in Frameworks */ = {isa = PBXBuildFile; productRef = CA06E49A2AD87F2F00A2C5EB /* QuadTree */; };
+		B7AFA55B2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */; };
+		B7AFA55D2ADF4997009C7154 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA55C2ADF4997009C7154 /* ContentView.swift */; };
+		B7AFA55F2ADF4999009C7154 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7AFA55E2ADF4999009C7154 /* Assets.xcassets */; };
+		B7AFA5622ADF4999009C7154 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7AFA5612ADF4999009C7154 /* Preview Assets.xcassets */; };
+		B7AFA56B2ADF49AA009C7154 /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = B7AFA56A2ADF49AA009C7154 /* ForceSimulation */; };
+		B7AFA56D2ADF49AA009C7154 /* NDTree in Frameworks */ = {isa = PBXBuildFile; productRef = B7AFA56C2ADF49AA009C7154 /* NDTree */; };
+		B7AFA56F2ADF49D6009C7154 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA56E2ADF49D6009C7154 /* Data.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B7D421872AD385890079C74B /* GrapeView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GrapeView.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B7D4218A2AD385890079C74B /* GrapeViewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrapeViewApp.swift; sourceTree = "<group>"; };
-		B7D4218C2AD385890079C74B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B7D4218E2AD3858A0079C74B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B7D421912AD3858A0079C74B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		B7D421932AD3858A0079C74B /* GrapeView.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GrapeView.entitlements; sourceTree = "<group>"; };
-		B7D4219E2AD385EB0079C74B /* ForceDirectedGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceDirectedGraph.swift; sourceTree = "<group>"; };
-		B7D421A02AD387140079C74B /* miserables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = miserables.swift; sourceTree = "<group>"; };
+		B7AFA5572ADF4997009C7154 /* ForceDirectedGraphExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForceDirectedGraphExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceDirectedGraphExampleApp.swift; sourceTree = "<group>"; };
+		B7AFA55C2ADF4997009C7154 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B7AFA55E2ADF4999009C7154 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B7AFA5612ADF4999009C7154 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B7AFA5632ADF4999009C7154 /* ForceDirectedGraphExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ForceDirectedGraphExample.entitlements; sourceTree = "<group>"; };
+		B7AFA56E2ADF49D6009C7154 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		B7D421842AD385890079C74B /* Frameworks */ = {
+		B7AFA5542ADF4997009C7154 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7D4219B2AD3859F0079C74B /* ForceSimulation in Frameworks */,
-				B7D4219D2AD3859F0079C74B /* QuadTree in Frameworks */,
-				CA06E4992AD87F2F00A2C5EB /* ForceSimulation in Frameworks */,
-				CA06E49B2AD87F2F00A2C5EB /* QuadTree in Frameworks */,
+				B7AFA56D2ADF49AA009C7154 /* NDTree in Frameworks */,
+				B7AFA56B2ADF49AA009C7154 /* ForceSimulation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B7D4217E2AD385890079C74B = {
+		B7AFA54E2ADF4997009C7154 = {
 			isa = PBXGroup;
 			children = (
-				B7D421892AD385890079C74B /* GrapeView */,
-				B7D421882AD385890079C74B /* Products */,
+				B7AFA5592ADF4997009C7154 /* ForceDirectedGraphExample */,
+				B7AFA5582ADF4997009C7154 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		B7D421882AD385890079C74B /* Products */ = {
+		B7AFA5582ADF4997009C7154 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B7D421872AD385890079C74B /* GrapeView.app */,
+				B7AFA5572ADF4997009C7154 /* ForceDirectedGraphExample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B7D421892AD385890079C74B /* GrapeView */ = {
+		B7AFA5592ADF4997009C7154 /* ForceDirectedGraphExample */ = {
 			isa = PBXGroup;
 			children = (
-				B7D4218A2AD385890079C74B /* GrapeViewApp.swift */,
-				B7D4218C2AD385890079C74B /* ContentView.swift */,
-				B7D4218E2AD3858A0079C74B /* Assets.xcassets */,
-				B7D421932AD3858A0079C74B /* GrapeView.entitlements */,
-				B7D421902AD3858A0079C74B /* Preview Content */,
-				B7D4219E2AD385EB0079C74B /* ForceDirectedGraph.swift */,
-				B7D421A02AD387140079C74B /* miserables.swift */,
+				B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */,
+				B7AFA55C2ADF4997009C7154 /* ContentView.swift */,
+				B7AFA55E2ADF4999009C7154 /* Assets.xcassets */,
+				B7AFA5632ADF4999009C7154 /* ForceDirectedGraphExample.entitlements */,
+				B7AFA5602ADF4999009C7154 /* Preview Content */,
+				B7AFA56E2ADF49D6009C7154 /* Data.swift */,
 			);
-			path = GrapeView;
+			path = ForceDirectedGraphExample;
 			sourceTree = "<group>";
 		};
-		B7D421902AD3858A0079C74B /* Preview Content */ = {
+		B7AFA5602ADF4999009C7154 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				B7D421912AD3858A0079C74B /* Preview Assets.xcassets */,
+				B7AFA5612ADF4999009C7154 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -86,45 +79,43 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B7D421862AD385890079C74B /* GrapeView */ = {
+		B7AFA5562ADF4997009C7154 /* ForceDirectedGraphExample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B7D421962AD3858A0079C74B /* Build configuration list for PBXNativeTarget "GrapeView" */;
+			buildConfigurationList = B7AFA5662ADF4999009C7154 /* Build configuration list for PBXNativeTarget "ForceDirectedGraphExample" */;
 			buildPhases = (
-				B7D421832AD385890079C74B /* Sources */,
-				B7D421842AD385890079C74B /* Frameworks */,
-				B7D421852AD385890079C74B /* Resources */,
+				B7AFA5532ADF4997009C7154 /* Sources */,
+				B7AFA5542ADF4997009C7154 /* Frameworks */,
+				B7AFA5552ADF4997009C7154 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = GrapeView;
+			name = ForceDirectedGraphExample;
 			packageProductDependencies = (
-				B7D4219A2AD3859F0079C74B /* ForceSimulation */,
-				B7D4219C2AD3859F0079C74B /* QuadTree */,
-				CA06E4982AD87F2F00A2C5EB /* ForceSimulation */,
-				CA06E49A2AD87F2F00A2C5EB /* QuadTree */,
+				B7AFA56A2ADF49AA009C7154 /* ForceSimulation */,
+				B7AFA56C2ADF49AA009C7154 /* NDTree */,
 			);
-			productName = GrapeView;
-			productReference = B7D421872AD385890079C74B /* GrapeView.app */;
+			productName = ForceDirectedGraphExample;
+			productReference = B7AFA5572ADF4997009C7154 /* ForceDirectedGraphExample.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		B7D4217F2AD385890079C74B /* Project object */ = {
+		B7AFA54F2ADF4997009C7154 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					B7D421862AD385890079C74B = {
+					B7AFA5562ADF4997009C7154 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
-			buildConfigurationList = B7D421822AD385890079C74B /* Build configuration list for PBXProject "GrapeView" */;
+			buildConfigurationList = B7AFA5522ADF4997009C7154 /* Build configuration list for PBXProject "ForceDirectedGraphExample" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -132,47 +123,46 @@
 				en,
 				Base,
 			);
-			mainGroup = B7D4217E2AD385890079C74B;
+			mainGroup = B7AFA54E2ADF4997009C7154;
 			packageReferences = (
-				CA06E4972AD87F2F00A2C5EB /* XCLocalSwiftPackageReference "../.." */,
+				B7AFA5692ADF49AA009C7154 /* XCLocalSwiftPackageReference "../.." */,
 			);
-			productRefGroup = B7D421882AD385890079C74B /* Products */;
+			productRefGroup = B7AFA5582ADF4997009C7154 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B7D421862AD385890079C74B /* GrapeView */,
+				B7AFA5562ADF4997009C7154 /* ForceDirectedGraphExample */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		B7D421852AD385890079C74B /* Resources */ = {
+		B7AFA5552ADF4997009C7154 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7D421922AD3858A0079C74B /* Preview Assets.xcassets in Resources */,
-				B7D4218F2AD3858A0079C74B /* Assets.xcassets in Resources */,
+				B7AFA5622ADF4999009C7154 /* Preview Assets.xcassets in Resources */,
+				B7AFA55F2ADF4999009C7154 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		B7D421832AD385890079C74B /* Sources */ = {
+		B7AFA5532ADF4997009C7154 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7D4218D2AD385890079C74B /* ContentView.swift in Sources */,
-				B7D4219F2AD385EB0079C74B /* ForceDirectedGraph.swift in Sources */,
-				B7D421A12AD387140079C74B /* miserables.swift in Sources */,
-				B7D4218B2AD385890079C74B /* GrapeViewApp.swift in Sources */,
+				B7AFA55D2ADF4997009C7154 /* ContentView.swift in Sources */,
+				B7AFA56F2ADF49D6009C7154 /* Data.swift in Sources */,
+				B7AFA55B2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		B7D421942AD3858A0079C74B /* Debug */ = {
+		B7AFA5642ADF4999009C7154 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -235,7 +225,7 @@
 			};
 			name = Debug;
 		};
-		B7D421952AD3858A0079C74B /* Release */ = {
+		B7AFA5652ADF4999009C7154 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -290,16 +280,16 @@
 			};
 			name = Release;
 		};
-		B7D421972AD3858A0079C74B /* Debug */ = {
+		B7AFA5672ADF4999009C7154 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = GrapeView/GrapeView.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ForceDirectedGraphExample/ForceDirectedGraphExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"GrapeView/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"ForceDirectedGraphExample/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -308,23 +298,23 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.lizhen.GrapeView;
+				PRODUCT_BUNDLE_IDENTIFIER = me.lizhen.ForceDirectedGraphExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
-		B7D421982AD3858A0079C74B /* Release */ = {
+		B7AFA5682ADF4999009C7154 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = GrapeView/GrapeView.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ForceDirectedGraphExample/ForceDirectedGraphExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"GrapeView/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"ForceDirectedGraphExample/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -333,7 +323,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.lizhen.GrapeView;
+				PRODUCT_BUNDLE_IDENTIFIER = me.lizhen.ForceDirectedGraphExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -343,20 +333,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B7D421822AD385890079C74B /* Build configuration list for PBXProject "GrapeView" */ = {
+		B7AFA5522ADF4997009C7154 /* Build configuration list for PBXProject "ForceDirectedGraphExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B7D421942AD3858A0079C74B /* Debug */,
-				B7D421952AD3858A0079C74B /* Release */,
+				B7AFA5642ADF4999009C7154 /* Debug */,
+				B7AFA5652ADF4999009C7154 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B7D421962AD3858A0079C74B /* Build configuration list for PBXNativeTarget "GrapeView" */ = {
+		B7AFA5662ADF4999009C7154 /* Build configuration list for PBXNativeTarget "ForceDirectedGraphExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B7D421972AD3858A0079C74B /* Debug */,
-				B7D421982AD3858A0079C74B /* Release */,
+				B7AFA5672ADF4999009C7154 /* Debug */,
+				B7AFA5682ADF4999009C7154 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -364,30 +354,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		CA06E4972AD87F2F00A2C5EB /* XCLocalSwiftPackageReference "../.." */ = {
+		B7AFA5692ADF49AA009C7154 /* XCLocalSwiftPackageReference "../.." */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../..;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B7D4219A2AD3859F0079C74B /* ForceSimulation */ = {
+		B7AFA56A2ADF49AA009C7154 /* ForceSimulation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ForceSimulation;
 		};
-		B7D4219C2AD3859F0079C74B /* QuadTree */ = {
+		B7AFA56C2ADF49AA009C7154 /* NDTree */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = QuadTree;
-		};
-		CA06E4982AD87F2F00A2C5EB /* ForceSimulation */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ForceSimulation;
-		};
-		CA06E49A2AD87F2F00A2C5EB /* QuadTree */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = QuadTree;
+			productName = NDTree;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = B7D4217F2AD385890079C74B /* Project object */;
+	rootObject = B7AFA54F2ADF4997009C7154 /* Project object */;
 }
