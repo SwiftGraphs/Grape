@@ -28,7 +28,11 @@ Documentations will be added soon.
 
 This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), running at 120FPS on a SwiftUI Canvas. Take a closer look at the animation:
 
-https://github.com/li3zhen1/Grape/Assets/Grape_0.2.0.mov
+
+
+https://github.com/li3zhen1/Grape/assets/45376537/7f7cfa8f-7b7c-4621-bc27-d46a2fc89ad2
+
+
 
 
 ### Features
