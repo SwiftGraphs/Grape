@@ -68,6 +68,9 @@
     public typealias Octree<TD: OctreeDelegate> = NDTree<Vector3d, TD>
 
 
+
+/// Uncomment the region below to unlock 4d tree
+
 //    extension simd_double4: VectorLike {
 //
 //        @inlinable public func lengthSquared() -> Double {
@@ -85,31 +88,15 @@
 //        @inlinable public func distance(to: SIMD4<Scalar>) -> Scalar {
 //            return (self - to).length()
 //        }
+//        public static let directionCount = 16
 //    }
 //    public typealias Vector4d = simd_double4
-//    public protocol HyperoctreeDelegate: NDTreeDelegate where V == Vector4d, Node == Int {}
+//    public protocol HyperoctreeDelegate: NDTreeDelegate where V == Vector4d {}
 //    public typealias HyperoctBox = NDBox<Vector4d>
 //    public typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<Vector4d, TD>
 
 
 
-    public extension QuadBox {
-        static func createBy(covering point: V) -> Self {
-            
-            var p0 = V.zero
-            var p1 = V.zero
-            
-            for i in point.indices {
-                p0[i] = floor(point[i])
-                p1[i] = ceil(point[i])
-                
-                if p0[i]==p1[i] || point[i] == p1[i] {
-                    p1[i] += 1
-                }
-            }
-            return Self(p0, p1)
-        }
-    }
 
 
 #endif

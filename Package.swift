@@ -5,13 +5,13 @@ import PackageDescription
 
 let package = Package(
     name: "Grape",
-    platforms: [.macOS(.v12), .iOS(.v13)],
+    platforms: [
+        .macOS(.v12), 
+        .iOS(.v13),
+        .watchOS(.v10),
+    ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
-//        .library(
-//            name: "QuadTree",
-//            targets: ["QuadTree"]
-//        ),
 
         .library(
             name: "NDTree",
@@ -22,44 +22,26 @@ let package = Package(
             name: "ForceSimulation",
             targets: ["ForceSimulation"]
         ),
-
-//        .library(
-//            name: "Grape",
-//            targets: ["Grape"]
-//        ),
-
+        
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
-//        .target(
-//            name: "QuadTree",
-//            path: "Sources/QuadTree"
-//        ),
-
+        
         .target(
             name: "NDTree",
-            path: "Sources/NDTree"
+            path: "Sources/NDTree",
+            swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
         ),
 
         .testTarget(
             name: "NDTreeTests",
             dependencies: ["NDTree"]),
 
-//        .target(
-//            name: "Grape", dependencies: ["QuadTree", "ForceSimulation"],
-//            path: "Sources/Grape"
-//        ),
-
         .target(
             name: "ForceSimulation",
             dependencies: ["NDTree"],
-            path: "Sources/ForceSimulation"
+            path: "Sources/ForceSimulation",
+            swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
         ),
-
-//        .testTarget(
-//            name: "QuadTreeTests",
-//            dependencies: ["QuadTree"]),
 
         .testTarget(
             name: "ForceSimulationTests",

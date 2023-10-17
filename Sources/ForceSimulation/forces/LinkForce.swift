@@ -17,8 +17,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     ///
     public enum LinkStiffness {
         case constant(Double)
-        case varied((EdgeID<NodeID>, LinkLookup<NodeID>) -> Double)
-        case weightedByDegree(k: Double)
+        case varied( (EdgeID<NodeID>, LinkLookup<NodeID>) -> Double )
+        case weightedByDegree( k: (EdgeID<NodeID>, LinkLookup<NodeID>) -> Double )
     }
     var linkStiffness: LinkStiffness
     var calculatedStiffness: [Double] = []
@@ -93,11 +93,11 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
 
-        var vec: V
-        var l: Double
+
 
         for _ in 0..<iterationsPerTick {
             for i in links.indices {
+                
                 let s = linksOfIndices[i].source
                 let t = linksOfIndices[i].target
 
@@ -110,10 +110,10 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                 assert(b != 0)
                 #endif
 
-                vec = (_target + sim.nodeVelocities[t] - _source - sim.nodeVelocities[s])
+                var vec = (_target + sim.nodeVelocities[t] - _source - sim.nodeVelocities[s])
                     .jiggled()
 
-                l = vec.length()
+                var l = vec.length()
 
                 l = (l - self.calculatedLength[i]) / l * alpha * self.calculatedStiffness[i]
 
@@ -144,7 +144,6 @@ extension LinkForce.LinkLookup {
             count[link.source, default: 0] += 1
             count[link.target, default: 0] += 1
         }
-
         return Self(sources: sources, targets: targets, count: count)
     }
 }
@@ -156,6 +155,7 @@ protocol PrecalculatableEdgeProperty {
         for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>
     ) -> [Double]
 }
+
 
 extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
     func calculated(
@@ -186,8 +186,7 @@ extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
             }
         case .weightedByDegree(let k):
             return links.map { link in
-                k
-                    / Double(
+                k(link, lookup) / Double(
                         min(
                             lookup.count[link.source, default: 0],
                             lookup.count[link.target, default: 0]
@@ -202,7 +201,7 @@ extension Simulation {
     @discardableResult
     public func createLinkForce(
         _ links: [EdgeID<NodeID>],
-        stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree(k: 1.0),
+        stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
         originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30),
         iterationsPerTick: UInt = 1
     ) -> LinkForce<NodeID, V> {
@@ -216,7 +215,7 @@ extension Simulation {
     @discardableResult
     public func createLinkForce(
         _ linkTuples: [(NodeID, NodeID)],
-        stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree(k: 1.0),
+        stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
         originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30),
         iterationsPerTick: UInt = 1
     ) -> LinkForce<NodeID, V> {

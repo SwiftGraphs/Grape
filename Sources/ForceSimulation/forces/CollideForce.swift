@@ -73,10 +73,6 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
 
-
-        // print("coveringBox: \(coveringBox)")
-        
-
         for _ in 0..<iterationsPerTick {
             
             let coveringBox = NDBox<V>.cover(of: sim.nodePositions)

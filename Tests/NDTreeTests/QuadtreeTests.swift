@@ -34,9 +34,11 @@ final class AddTests: XCTestCase {
     private func t(
         _ points: [Vector2d]
     ) -> Quadtree<DummyQuadtreeDelegate> {
-        var del = DummyQuadtreeDelegate()
-        let box = QuadBox.createBy(covering: points[0])
-        let qt = Quadtree(box: box, parentDelegate: /*&*/ del)
+//        var del = DummyQuadtreeDelegate()
+        let box = QuadBox.cover(of: points)
+        let qt = Quadtree<DummyQuadtreeDelegate>(box: box, clusterDistance: 1e-5) {
+            DummyQuadtreeDelegate()
+        }
         for i in points.indices {
             qt.add(i, at: points[i])
         }
@@ -47,8 +49,10 @@ final class AddTests: XCTestCase {
         _ box: QuadBox,
         _ points: [Vector2d]
     ) -> Quadtree<DummyQuadtreeDelegate> {
-        var del = DummyQuadtreeDelegate()
-        let qt = Quadtree(box: box, parentDelegate: /*&*/ del)
+//        var del = DummyQuadtreeDelegate()
+        let qt = Quadtree<DummyQuadtreeDelegate>(box: box, clusterDistance: 1e-5) {
+            DummyQuadtreeDelegate()
+        }
         for i in points.indices {
             qt.add(i, at: points[i])
         }

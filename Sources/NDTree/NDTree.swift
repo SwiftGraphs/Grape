@@ -38,7 +38,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     private init(
         box: Box,
         clusterDistance: V.Scalar,
-        parentDelegate: /*inout*/ D
+        parentDelegate: D
     ) {
         self.box = box
         self.clusterDistance = clusterDistance
@@ -46,6 +46,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         self.nodeIndices = []
         self.delegate = parentDelegate.spawn()
     }
+
     
     public init(
         box: Box,
@@ -100,7 +101,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
                 
                 let spawned = Self.spawnChildren(
                     box,
-                    V.directionCount,
+//                    V.directionCount,
                     clusterDistance,
                     /*&*/delegate
                 )
@@ -159,7 +160,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         let copiedCurrentNode = shallowCopy()
         var spawned = Self.spawnChildren(
             newRootBox,
-            V.directionCount,
+//            V.directionCount,
             clusterDistance,
             /*&*/delegate
         )
@@ -175,34 +176,52 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     
     private static func spawnChildren(
         _ _box: Box,
-        _ _directionCount: Int,
         _ _clusterDistance: V.Scalar,
         _ _delegate: D
     ) -> [NDTree<V, D>] {
         
         
-        var spawned = Array(repeating: _box, count: _directionCount)
+//        var spawned = Array(repeating: _box, count: _directionCount)
+//        
+//        
+//        
+//        let center = _box.center
+//        
+//        for j in spawned.indices {
+//            for i in 0..<V.scalarCount {
+//                let isOnTheHigherRange = (j >> i) & 0b1
+//
+//                // TODO: use simd mask
+//                if isOnTheHigherRange != 0 {
+//                    spawned[j].p0[i] = center[i]
+//                } else {
+//                    spawned[j].p1[i] = center[i]
+//                }
+//            }
+//        }
+//        var result = [NDTree<V, D>]()
+//        result.reserveCapacity(_directionCount)
+//        for b in spawned {
+//            result.append(NDTree(box: b, clusterDistance: _clusterDistance, parentDelegate: /*&*/_delegate))
+//        }
         
-        
-        
+        var result = [NDTree<V, D>]()
+        result.reserveCapacity(V.directionCount)
         let center = _box.center
         
-        for j in spawned.indices {
-            for i in 0..<V.scalarCount {
-                let isOnTheHigherRange = (j >> i) & 0b1
-
-                // TODO: use simd mask
-                if isOnTheHigherRange != 0 {
-                    spawned[j].p0[i] = center[i]
-                } else {
-                    spawned[j].p1[i] = center[i]
-                }
-            }
-        }
-        var result = [NDTree<V, D>]()
-        result.reserveCapacity(_directionCount)
-        for b in spawned {
-            result.append(NDTree(box: b, clusterDistance: _clusterDistance, parentDelegate: /*&*/_delegate))
+        for j in 0..<V.directionCount {
+                    var __box = _box
+                    for i in 0..<V.scalarCount {
+                        let isOnTheHigherRange = (j >> i) & 0b1
+        
+                        // TODO: use simd mask
+                        if isOnTheHigherRange != 0 {
+                            __box.p0[i] = center[i]
+                        } else {
+                            __box.p1[i] = center[i]
+                        }
+                    }
+            result.append(NDTree(box: __box, clusterDistance: _clusterDistance, parentDelegate: /*&*/_delegate))
         }
         
         return result
@@ -270,18 +289,5 @@ extension NDTree {
     
     @inlinable public var isFilledLeaf: Bool { nodePosition != nil }
     @inlinable public var isEmptyLeaf: Bool { nodePosition == nil }
-}
 
-
-public extension NDTree where V.Scalar == Double {
-    convenience init(
-        box: Box,
-        parentDelegate: D
-    ) {
-        self.init(
-            box: box,
-            clusterDistance: 1e-5,
-            parentDelegate: /*&*/parentDelegate
-        )
-    }
 }

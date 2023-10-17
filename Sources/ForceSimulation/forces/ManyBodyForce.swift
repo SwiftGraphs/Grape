@@ -81,7 +81,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
     public enum NodeMass {
         case constant(Double)
-        case varied(lookup: [NodeID: Double], default: Double)
+        case varied( (NodeID) -> Double )
     }
     var mass: NodeMass = .constant(1.0)
     var precalculatedMass: [Double] = []
@@ -162,7 +162,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
             return switch self.mass {
             case .constant(let m):
                 MassQuadtreeDelegate<Int, V> { _ in m }
-            case .varied(_, _):
+            case .varied(_):
                 MassQuadtreeDelegate<Int, V> { index in
                     self.precalculatedMass[index]
                 }
@@ -242,8 +242,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                 
                 let farEnough: Bool = (distanceSquared * self.theta2) > (boxWidth * boxWidth)
                 
-                
                 let distance = distanceSquared.squareRoot()
+                
                 if distanceSquared < self.distanceMin2 {
                     distanceSquared = self.distanceMin * distance//(self.distanceMin2 * distanceSquared).squareRoot()
                 }
@@ -294,9 +294,9 @@ extension ManyBodyForce.NodeMass: PrecalculatableNodeProperty {
         switch self {
         case .constant(let m):
             return Array(repeating: m, count: simulation.nodePositions.count)
-        case .varied(let massDict, let defaultMass):
+        case .varied(let massGetter):
             return simulation.nodeIds.map { n in
-                return massDict[n, default: defaultMass]
+                return massGetter(n)
             }
         }
     }
