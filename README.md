@@ -6,11 +6,12 @@
 <p align="center">
   <img src="https://github.com/li3zhen1/Grape/actions/workflows/swift.yml/badge.svg" alt="swift workflow">
   <a href="https://swiftpackageindex.com/li3zhen1/Grape">
-  <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fli3zhen1%2FGrape%2Fbadge%3Ftype%3Dplatforms" alt="swift package index">
-  </a>
-  <a href="https://swiftpackageindex.com/li3zhen1/Grape">
   <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fli3zhen1%2FGrape%2Fbadge%3Ftype%3Dswift-versions" alt="swift package index">
   </a>
+  <a href="https://swiftpackageindex.com/li3zhen1/Grape">
+  <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fli3zhen1%2FGrape%2Fbadge%3Ftype%3Dplatforms" alt="swift package index">
+  </a>
+
 </p>
 
 <p align="center">A Swift library for force simulation and graph visualization.
@@ -18,14 +19,16 @@
 
 
 
+Grape currently include 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is a N-dimensional tree data structure, which is used to accelerate the force simulation. `ForceSimulation` is a force simulation library, which is used to simulate the force between nodes in a graph. Both of them are based on SIMD-like data structures. 
 
+Documentations will be added soon.
 
 
 ### Examples
 
 This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), running at 120FPS on a SwiftUI Canvas. Take a closer look at the animation:
 
-https://github.com/li3zhen1/Grape/assets/45376537/6a1c9510-8af6-4967-9c05-c304b2af59ee
+https://github.com/li3zhen1/Grape/Assets/Grape_0.2.0.mov
 
 
 ### Features
@@ -33,13 +36,13 @@ https://github.com/li3zhen1/Grape/assets/45376537/6a1c9510-8af6-4967-9c05-c304b2
 |   | 2D simd | ND simd | Metal |
 | --- | --- | --- | --- |
 | **NdTree** | ✅ | ✅ |  |
-| **Simulation** | ✅ | 🚧 | 🚧 |
-| &emsp;LinkForce | ✅ |   |  |
-| &emsp;ManyBodyForce | ✅ |  |  |
-| &emsp;CenterForce | ✅ |  |  |
-| &emsp;CollideForce | ✅ |  |  |
-| &emsp;PositionForce | ✅ |  |  |
-| &emsp;RadialForce | ✅ |  |  |
+| **Simulation** | ✅ | ✅ |  |
+| &emsp;LinkForce | ✅ | ✅ |  |
+| &emsp;ManyBodyForce | ✅ | ✅ |  |
+| &emsp;CenterForce | ✅ | ✅ |  |
+| &emsp;CollideForce | ✅ | ✅ |  |
+| &emsp;PositionForce | ✅ | ✅ |  |
+| &emsp;RadialForce | ✅ | ✅ |  |
 | **SwiftUI View** | 🚧 |  |  |
 
 
@@ -47,26 +50,32 @@ https://github.com/li3zhen1/Grape/assets/45376537/6a1c9510-8af6-4967-9c05-c304b2
 
 ```swift
 import ForceSimulation
+import NDTree
 
 struct Node: Identifiable { ... }
 
-let nodes: [Node] = ... 
+let nodeIds: [Node.ID] = ... 
 let links: [(Node.ID, Node.ID)] = ... 
 
-let sim = Simulation(nodes: nodes, alphaDecay: 0.0005)
-sim.createManyBodyForce(strength: -30)
-sim.createLinkForce(links: links, originalLength: .constant(35))
-sim.createCenterForce(center: .zero, strength: 0.1)
-sim.createCollideForce(radius: .constant(5))
+let sim = Simulation2D(nodeIds: nodeIds, alphaDecay: 0.01)
+sim.createManyBodyForce(strength: -12)
+sim.createLinkForce(links)
+sim.createCenterForce(center: Vector2d(0, 0), strength: 0.4)
+sim.createCollideForce(radius: .constant(3))
 
 ```
 
-See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/GrapeView) for more details.
+See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details.
+
 
 
 ### Performance
 
-Grape uses simd to calculate position and velocity. Currently it takes ~0.13 seconds to iterate 120 times over the example graph. (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max)
+Grape uses simd to calculate position and velocity. Currently it takes ~0.12 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max)
+
+Grape also supports ND simulation. Examples and
+
+
 
 
 ### Credits
