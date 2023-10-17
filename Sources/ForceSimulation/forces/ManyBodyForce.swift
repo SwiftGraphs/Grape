@@ -143,12 +143,6 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         }
 
         
-        
-
-        
-        
-        
-//        let positions = sim.nodes.map {p in p.position}
         let coveringBox = NDBox<V>.cover(of: sim.nodePositions) //try! getCoveringBox()
 
         let tree = NDTree<V, MassQuadtreeDelegate<Int, V>>(box: coveringBox, clusterDistance: 1e-7)
@@ -168,6 +162,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         
         for i in sim.nodePositions.indices {
             tree.add(i, at: sim.nodePositions[i])
+            assert(tree.delegate.accumulatedCount == i+1)
         }
 
         var forces = [V](repeating: .zero, count: sim.nodePositions.count)

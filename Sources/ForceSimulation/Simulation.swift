@@ -86,7 +86,7 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         
         self.nodePositions = self.nodes.map { n in n.position }
         self.nodeVelocities = self.nodes.map { n in n.velocity }
-        self.nodeFixations = self.nodes.map { n in n.fixation }
+        self.nodeFixations = Array(repeating: nil, count: nodeIds.count)
     }
     
     
@@ -104,23 +104,32 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
                 f.apply(alpha: alpha)
             }
             
+//            print(nodePositions.count)
+//            print(nodeVelocities.count)
+//            print(nodeFixations.count)
+            
+            for i in nodePositions.indices {
+                                if let fixation = nodeFixations[i] {
+                                    nodePositions[i] = fixation
+                                } else {
+                                    nodeVelocities[i] *= velocityDecay
+                                    nodePositions[i] += nodeVelocities[i]
+                                }
+            }
+//            print(nodes.count)
 //            for i in nodes.indices {
-//                if let fixation = nodeFixations[i] {
-//                                        nodePositions[i] = fixation
-//                                    } else {
-//                                        nodeVelocities[i] *= velocityDecay
-//                                        nodePositions[i] += nodeVelocities[i]
-//                }
+
+////                }
 //            }
 
-            for i in nodes.indices {
-                if let fixation = nodes[i].fixation {
-                    nodes[i].position = fixation
-                } else {
-                    nodes[i].velocity *= velocityDecay
-                    nodes[i].position += nodes[i].velocity
-                }
-            }
+//            for i in nodes.indices {
+//                if let fixation = nodes[i].fixation {
+//                    nodes[i].position = fixation
+//                } else {
+//                    nodes[i].velocity *= velocityDecay
+//                    nodes[i].position += nodes[i].velocity
+//                }
+//            }
 
         }
     }

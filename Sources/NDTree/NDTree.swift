@@ -115,9 +115,9 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
                     spawned[direction].nodePosition = self.nodePosition
                     self.delegate = self.delegate.copy()
                     
-                    for ni in nodeIndices {
-                        delegate.didAddNode(ni, at: nodePosition)
-                    }
+//                    for ni in nodeIndices {
+//                        delegate.didAddNode(ni, at: nodePosition)
+//                    }
                     
                     self.nodeIndices = []
                     self.nodePosition = nil
