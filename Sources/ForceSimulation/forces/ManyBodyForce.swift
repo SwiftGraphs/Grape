@@ -83,12 +83,10 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     var mass: NodeMass = .constant(1.0)
     var precalculatedMass: [Double] = []
 
-    var positions: [V] = []
     weak var simulation: Simulation<NodeID, V>? {
         didSet {
             guard let sim = self.simulation else { return }
             self.precalculatedMass = self.mass.calculated(for: sim)
-            self.positions = sim.nodes.map {p in p.position}
         }
     }
 
@@ -114,9 +112,28 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         else { return }
 
         for i in simulation.nodes.indices {
-            simulation.nodes[i].velocity += forces[i]
+            simulation.nodeVelocities[i] += forces[i]
             
         }
+    }
+    
+    private func getCoveringBox() throws -> NDBox<V> {
+        guard let simulation else { throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized }
+        var _p0 = simulation.nodes[0].position
+        var _p1 = simulation.nodes[0].position
+        
+        for p in simulation.nodes {
+            for i in 0..<V.scalarCount {
+                if p.position[i] < _p0[i] {
+                    _p0[i] = p.position[i]
+                }
+                if p.position[i] >= _p1[i] {
+                    _p1[i] = p.position[i] + 1
+                }
+            }
+        }
+        return NDBox(_p0, _p1)
+        
     }
 
     func calculateForce(alpha: Double) throws -> [V] {
@@ -126,7 +143,13 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         }
 
         
-        let coveringBox = NDBox<V>.cover(of: self.positions )
+        
+
+        
+        
+        
+//        let positions = sim.nodes.map {p in p.position}
+        let coveringBox = NDBox<V>.cover(of: sim.nodePositions) //try! getCoveringBox()
 
         let tree = NDTree<V, MassQuadtreeDelegate<Int, V>>(box: coveringBox, clusterDistance: 1e-7)
         {
@@ -143,19 +166,19 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
         }
         
-        for i in sim.nodes.indices {
-            tree.add(i, at: positions[i])
+        for i in sim.nodePositions.indices {
+            tree.add(i, at: sim.nodePositions[i])
         }
 
-        var forces = [V](repeating: .zero, count: sim.nodes.count)
+        var forces = [V](repeating: .zero, count: sim.nodePositions.count)
         
-        for i in sim.nodes.indices {
+        for i in sim.nodePositions.indices {
 //            var f = V.zero
             tree.visit { t in
                 guard t.delegate.accumulatedCount > 0 else { return false }
                 let centroid = t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
 
-                let vec = centroid - sim.nodes[i].position
+                let vec = centroid - sim.nodePositions[i]
                 var distanceSquared = vec.jiggled().lengthSquared()
 
                 guard distanceSquared < self.distanceMax2 else { return false }

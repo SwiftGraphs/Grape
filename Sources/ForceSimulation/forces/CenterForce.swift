@@ -21,13 +21,13 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         guard let sim = self.simulation else { return }
 
         var meanPosition = V.zero
-        for n in sim.nodes {
-            meanPosition += n.position
+        for n in sim.nodePositions {
+            meanPosition += n//.position
         }
-        let delta = meanPosition * (self.strength / Double(sim.nodes.count))
+        let delta = meanPosition * (self.strength / Double(sim.nodePositions.count))
 
-        for i in sim.nodes.indices {
-            sim.nodes[i].position -= delta
+        for i in sim.nodePositions.indices {
+            sim.nodePositions[i] -= delta
         }
     }
 

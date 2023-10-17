@@ -34,6 +34,12 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
     public internal(set) var forces: [any ForceLike] = []
 
     public internal(set) var nodes: [NodeStatus]
+    
+    public internal(set) var nodePositions: [V]
+    public internal(set) var nodeVelocities: [V]
+    public internal(set) var nodeFixations: [V?]
+    
+    
     public private(set) var nodeIds: [NodeID]
     
     @usableFromInline internal private(set) var nodeIdToIndexLookup: [NodeID: Int] = [:]
@@ -78,6 +84,9 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         }
         self.nodeIds = nodeIds
         
+        self.nodePositions = self.nodes.map { n in n.position }
+        self.nodeVelocities = self.nodes.map { n in n.velocity }
+        self.nodeFixations = self.nodes.map { n in n.fixation }
     }
     
     
@@ -94,6 +103,15 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
             for f in forces {
                 f.apply(alpha: alpha)
             }
+            
+//            for i in nodes.indices {
+//                if let fixation = nodeFixations[i] {
+//                                        nodePositions[i] = fixation
+//                                    } else {
+//                                        nodeVelocities[i] *= velocityDecay
+//                                        nodePositions[i] += nodeVelocities[i]
+//                }
+//            }
 
             for i in nodes.indices {
                 if let fixation = nodes[i].fixation {

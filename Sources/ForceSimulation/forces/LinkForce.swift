@@ -100,13 +100,14 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                 let s = linksOfIndices[i].source
                 let t = linksOfIndices[i].target
 
-                let _source = sim.nodes[s]
-                let _target = sim.nodes[t]
+                let _source = sim.nodePositions[s]
+                let _target = sim.nodePositions[t]
+                
 
                 let b = self.calculatedBias[i]
 
-                position =
-                    (_target.position + _target.velocity - _source.position - _source.velocity)
+                position = (_target + sim.nodeVelocities[s] - _source - sim.nodeVelocities[t])
+//                    (_target.position + _target.velocity - _source.position - _source.velocity)
                     .jiggled()
 
                 l = position.length()
@@ -115,8 +116,10 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
                 position *= l
 
-                sim.nodes[s].velocity += position * b
-                sim.nodes[t].velocity -= position * (1 - b)
+//                sim.nodes[s].velocity += position * b
+//                sim.nodes[t].velocity -= position * (1 - b)
+                sim.nodeVelocities[s] += position * b
+                sim.nodeVelocities[t] -= position * (1 - b)
 
             }
         }
