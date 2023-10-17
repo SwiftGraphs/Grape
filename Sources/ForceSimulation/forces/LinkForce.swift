@@ -93,7 +93,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
 
-        var position: V
+        var vec: V
         var l: Double
 
         for _ in 0..<iterationsPerTick {
@@ -105,25 +105,27 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                 let _target = sim.nodePositions[t]
 
                 let b = self.calculatedBias[i]
+                
+                #if DEBUG
+                assert(b != 0)
+                #endif
 
-                position = (_target + sim.nodeVelocities[t] - _source - sim.nodeVelocities[s])
+                vec = (_target + sim.nodeVelocities[t] - _source - sim.nodeVelocities[s])
                     .jiggled()
 
-                l = position.length()
+                l = vec.length()
 
                 l = (l - self.calculatedLength[i]) / l * alpha * self.calculatedStiffness[i]
 
-                position *= l
-
-                //                sim.nodes[s].velocity += position * b
-                //                sim.nodes[t].velocity -= position * (1 - b)
-
-                sim.nodeVelocities[s] += position * (1 - b)
-                sim.nodeVelocities[t] -= position * b
+                vec *= l
                 
                 
-//                sim.nodeVelocities[s] += position * b
-//                sim.nodeVelocities[t] -= position * (1 - b)
+                // same as d3
+                sim.nodeVelocities[t] -= vec * b
+                sim.nodeVelocities[s] += vec * (1 - b)
+                
+//                sim.nodeVelocities[s] += vec * b
+//                sim.nodeVelocities[t] -= vec * (1 - b)
 
             }
         }

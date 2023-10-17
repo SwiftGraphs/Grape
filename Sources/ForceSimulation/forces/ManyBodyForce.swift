@@ -39,6 +39,9 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
 
     @inlinable mutating func didAddNode(_ node: NodeID, at position: V) {
         let p = massProvider(node)
+        #if DEBUG
+            assert(p > 0)
+        #endif
         accumulatedCount += 1
         accumulatedMass += p
         accumulatedMassWeightedPositions += position * p
@@ -87,11 +90,12 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         didSet {
             guard let sim = self.simulation else { return }
             self.precalculatedMass = self.mass.calculated(for: sim)
+            self.forces = [V](repeating: .zero, count: sim.nodePositions.count)
         }
     }
 
     var theta2: Double
-    var theta: Double { 
+    var theta: Double {
         didSet {
             theta2 = theta * theta
         }
@@ -113,10 +117,11 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         self.theta2 = theta * theta
     }
 
+    var forces: [V] = []
     public func apply(alpha: Double) {
-        guard let simulation,
-            let forces = try? calculateForce(alpha: alpha)
-        else { return }
+        guard let simulation else { return }
+        guard let forces = try? calculateForce(alpha: alpha) else { return }
+
 
         for i in simulation.nodeVelocities.indices {
             simulation.nodeVelocities[i] += forces[i] / precalculatedMass[i]
@@ -165,127 +170,113 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
         for i in sim.nodePositions.indices {
             tree.add(i, at: sim.nodePositions[i])
-            
+
             #if DEBUG
-            assert(tree.delegate.accumulatedCount == i + 1)
+                assert(tree.delegate.accumulatedCount == i + 1)
             #endif
-            
+
         }
 
-        var forces = [V](repeating: .zero, count: sim.nodePositions.count)
+//        var forces = [V](repeating: .zero, count: sim.nodePositions.count)
 
         for i in sim.nodePositions.indices {
-            
+            var f = V.zero
             tree.visit { t in
+
+                //                guard t.delegate.accumulatedCount > 0 else { return false }
+                //
+                //                let centroid = t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
+                //                let vec = centroid - sim.nodePositions[i]
+                //
+                //                var distanceSquared = vec.jiggled().lengthSquared()
+                //
+                //                /// too far away, omit
+                //                guard distanceSquared < self.distanceMax2 else { return false }
+                //
+                //
+                //
+                //                /// too close, enlarge distance
+                //                if distanceSquared < self.distanceMin2 {
+                //                    distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
+                //                }
+                //
+                //
+                //                if t.nodePosition != nil {
+                //
+                //                    /// filled leaf
+                //                    if !t.nodeIndices.contains(i) {
+                //                        let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / (distanceSquared).squareRoot()
+                //                        forces[i] += vec * k
+                //                    }
+                //
+                //                    return false
+                //
+                //                }
+                //                else if t.children != nil {
+                //
+                //                    let boxWidth = (t.box.p1 - t.box.p1)[0]
+                //
+                //                    /// internal, guard in 180 guarantees we have nodes here
+                //                    if distanceSquared * self.theta2 > boxWidth * boxWidth {
+                //                        // far enough
+                //                        let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / (distanceSquared).squareRoot()
+                //                        forces[i] += vec * k
+                //                        return false
+                //                    }
+                //                    else {
+                //                        return true
+                //                    }
+                //                }
+                //                else {
+                //                    // empty leaf
+                //                    return false
+                //                }
+
                 guard t.delegate.accumulatedCount > 0 else { return false }
-                
                 let centroid = t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
+
                 let vec = centroid - sim.nodePositions[i]
-
+                let boxWidth = (t.box.p1 - t.box.p0)[0]
                 var distanceSquared = vec.jiggled().lengthSquared()
-
-                /// too far away, omit
-                guard distanceSquared < self.distanceMax2 else { return false }
-
                 
+                let farEnough: Bool = (distanceSquared * self.theta2) > (boxWidth * boxWidth)
                 
-                /// too close, enlarge distance
                 if distanceSquared < self.distanceMin2 {
                     distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
                 }
 
-                
-                if t.nodePosition != nil {
+                if farEnough {
                     
-                    /// filled leaf
-                    if !t.nodeIndices.contains(i) {
-                        let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / (distanceSquared).squareRoot()
-                        forces[i] += vec * k
-                    }
+                    guard distanceSquared < self.distanceMax2 else { return true }
                     
+                    let k: Double =
+                        self.strength * alpha * t.delegate.accumulatedMass / distanceSquared // distanceSquared.squareRoot()
+                    
+                    f += vec * k
                     return false
                     
-                }
-                else if t.children != nil {
-                    
-                    let boxWidth = (t.box.p1 - t.box.p1)[0]
-                    
-                    /// internal, guard in 180 guarantees we have nodes here
-                    if distanceSquared * self.theta2 > boxWidth * boxWidth {
-                        // far enough
-                        let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / (distanceSquared).squareRoot()
-                        forces[i] += vec * k
-                        return false
-                    }
-                    else {
-                        return true
-                    }
-                }
-                else {
-                    // empty leaf
-                    return false
+                } else if t.children != nil {
+                    return true
                 }
                 
 
-//                if t.isLeaf
-//                    || (t.isInternalNode && (distanceSquared * self.theta2 > boxWidth * boxWidth))
-//                {
-//
-//                    let k: Double = self.strength * alpha * t.delegate.accumulatedMass
-//
-//                    forces[i] += vec / distanceSquared / (distanceSquared).squareRoot() * k
-//
-//                    return false
-//                } else if t.isEmptyLeaf {
-//                    return false
-//                } else {
-//                    return true
-//                }
-
-                //                 guard t.delegate.accumulatedCount > 0 else { return false }
-                //                 let centroid = t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
-                //
-                //                 let vec = centroid - sim.nodePositions[i]
-                //                 var distanceSquared = vec.jiggled().lengthSquared()
-                //
-                //                 guard distanceSquared < self.distanceMax2 else { return false }
-                //
-                //                 let boxWidth = (t.box.p1 - t.box.p0)[0]
-                //                 let farEnough: Bool = (distanceSquared * self.theta2) > (boxWidth * boxWidth)
-                //
-                //                 if farEnough {
-                //                     let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / distanceSquared.squareRoot()
-                //                     let f = vec * k
-                //                     forces[i] += f
-                //                     return false
-                //                 }
-                //                 else if t.children != nil {
-                //                     return true
-                //                 }
-                //
-                //
-                //
-                //                 if tree.isFilledLeaf {
-                //
-                //                     if distanceSquared < self.distanceMin2 {
-                //                         distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
-                //                     }
-                //
-                //                     for contained in tree.nodeIndices {
-                //                         if contained == i {
-                //                             return false
-                //                         }
-                //                     }
-                //
-                //                     /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
-                //                     let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / distanceSquared.squareRoot()
-                //                     forces[i] += vec * k
-                //                     return false
-                //                 }
-                //                 else {
-                //                     return true
-                //                 }
+                if t.isFilledLeaf {
+                    
+                    for j in t.nodeIndices {
+                        if j != i {
+                            /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
+                            let k: Double =
+                            self.strength * alpha * self.precalculatedMass[j] / distanceSquared // distanceSquared.squareRoot()
+                            f += vec * k
+                        }
+                    }
+                    
+                    return false
+                } else {
+                    return true
+                }
             }
+            forces[i] = f
         }
         return forces
     }
