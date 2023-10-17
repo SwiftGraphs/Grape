@@ -19,18 +19,16 @@
 
 
 
-Grape currently include 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is a N-dimensional tree data structure, which is used to accelerate the force simulation. `ForceSimulation` is a force simulation library, which is used to simulate the force between nodes in a graph. Both of them are based on SIMD-like data structures. 
 
-Documentations will be added soon.
 
 
 ### Examples
 
 This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), running at 120FPS on a SwiftUI Canvas. Take a closer look at the animation:
 
+https://github.com/li3zhen1/Grape/assets/45376537/ea1ccea3-5717-4cfe-a696-c89e75ca9d3b
 
 
-https://github.com/li3zhen1/Grape/assets/45376537/7f7cfa8f-7b7c-4621-bc27-d46a2fc89ad2
 
 
 
@@ -52,9 +50,13 @@ https://github.com/li3zhen1/Grape/assets/45376537/7f7cfa8f-7b7c-4621-bc27-d46a2f
 
 ### Usage
 
+Grape currently include 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is a N-dimensional tree data structure, which is used to accelerate the force simulation. `ForceSimulation` is a force simulation library, which is used to simulate the force between nodes in a graph. Both of them are based on SIMD-like data structures. 
+
+The package specifically exposes concrete types for 2D and 3D simulation, so you can create a 2D simulation like this:
+
 ```swift
-import ForceSimulation
 import NDTree
+import ForceSimulation
 
 struct Node: Identifiable { ... }
 
@@ -66,10 +68,9 @@ sim.createManyBodyForce(strength: -12)
 sim.createLinkForce(links)
 sim.createCenterForce(center: Vector2d(0, 0), strength: 0.4)
 sim.createCollideForce(radius: .constant(3))
-
 ```
 
-See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details.
+See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details. Documentations will be added soon.
 
 
 
@@ -77,8 +78,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 Grape uses simd to calculate position and velocity. Currently it takes ~0.12 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max)
 
-Grape also supports ND simulation. Examples and
-
+Due to the iteration over simd lanes, going 3D will hurt performance. (~0.19 seconds for the same graph and same configs.)
 
 
 
