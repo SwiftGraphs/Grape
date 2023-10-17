@@ -4,39 +4,41 @@
 //
 //  Created by li3zhen1 on 10/1/23.
 //
-import QuadTree
 
-final public class RadialForce<N>: Force where N: Identifiable {
-    weak var simulation: Simulation<N>? {
+import NDTree
+
+final public class RadialForce<NodeID, V>: ForceLike
+where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+    weak var simulation: Simulation<NodeID, V>? {
         didSet {
             guard let sim = self.simulation else { return }
-            self.calculatedStrength = strength.calculated(sim.simulationNodes)
-            self.calculatedRadius = radius.calculated(sim.simulationNodes)
+            self.calculatedStrength = strength.calculated(for: sim)
+            self.calculatedRadius = radius.calculated(for: sim)
         }
     }
 
-    public var center: Vector2f
+    public var center: V
 
     /// Radius accessor
-    public enum Radius {
-        case constant(Double)
-        case varied([N.ID: Double])
+    public enum NodeRadius {
+        case constant( V.Scalar )
+        case varied(   (NodeID) -> V.Scalar )
     }
-    public var radius: Radius
-    private var calculatedRadius: [N.ID: Double] = [:]
+    public var radius: NodeRadius
+    private var calculatedRadius: [V.Scalar] = []
 
     /// Strength accessor
     public enum Strength {
         case constant(Double)
-        case varied([N.ID: Double])
+        case varied(   (NodeID) -> Double )
     }
     public var strength: Strength
-    private var calculatedStrength: [N.ID: Double] = [:]
+    private var calculatedStrength: [Double] = []
 
 
 
 
-    public init(center: Vector2f, radius: Radius, strength: Strength) {
+    public init(center: V, radius: NodeRadius, strength: Strength) {
         self.center = center
         self.radius = radius
         self.strength = strength
@@ -44,39 +46,37 @@ final public class RadialForce<N>: Force where N: Identifiable {
 
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
-        for i in sim.simulationNodes.indices {
-            let nodeId = sim.simulationNodes[i].id
-            let deltaPosition = (sim.simulationNodes[i].position - self.center).jiggled()
+        for i in sim.nodePositions.indices {
+            let nodeId = i
+            let deltaPosition = (sim.nodePositions[i] - self.center).jiggled()
             let r = deltaPosition.length()
             let k =
-                (self.calculatedRadius[nodeId, default: 0.0]
-                    * self.calculatedStrength[nodeId, default: 0.0] * alpha) / r
-            sim.simulationNodes[i].velocity += deltaPosition * k
+                (self.calculatedRadius[nodeId]
+                    * self.calculatedStrength[nodeId] * alpha) / r
+            sim.nodeVelocities[i] += deltaPosition * k
         }
     }
 
 }
 
-extension RadialForce.Strength {
-    public func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Double]
-    where SimNode: Identifiable, SimNode.ID == N.ID {
+extension RadialForce.Strength: PrecalculatableNodeProperty {
+    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
         switch self {
         case .constant(let s):
-            return Dictionary(uniqueKeysWithValues: nodes.map { ($0.id, s) })
+            return simulation.nodeIds.map { _ in s }
         case .varied(let s):
-            return s
+            return simulation.nodeIds.map(s)
         }
     }
 }
 
-extension RadialForce.Radius {
-    public func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Double]
-    where SimNode: Identifiable, SimNode.ID == N.ID {
+extension RadialForce.NodeRadius: PrecalculatableNodeProperty {
+    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
         switch self {
         case .constant(let r):
-            return Dictionary(uniqueKeysWithValues: nodes.map { ($0.id, r) })
+            return simulation.nodeIds.map { _ in r }
         case .varied(let r):
-            return r
+            return simulation.nodeIds.map(r)
         }
     }
 }
@@ -85,11 +85,11 @@ extension Simulation {
 
     @discardableResult
     public func createRadialForce(
-        center: Vector2f = .zero, 
-        radius: RadialForce<N>.Radius = .constant(5.0),  
-        strength: RadialForce<N>.Strength = .constant(0.1)
-    ) -> RadialForce<N> {
-        let f = RadialForce<N>(center: center, radius: radius, strength: strength)
+        center: V = .zero, 
+        radius: RadialForce<NodeID, V>.NodeRadius,
+        strength: RadialForce<NodeID, V>.Strength = .constant(0.1)
+    ) -> RadialForce<NodeID, V> {
+        let f = RadialForce<NodeID, V>(center: center, radius: radius, strength: strength)
         f.simulation = self
         self.forces.append(f)
         return f

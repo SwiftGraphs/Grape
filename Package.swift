@@ -5,66 +5,46 @@ import PackageDescription
 
 let package = Package(
     name: "Grape",
-    platforms: [.macOS(.v12), .iOS(.v13)],
+    platforms: [
+        .macOS(.v12), 
+        .iOS(.v13),
+        .watchOS(.v10),
+    ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
+
         .library(
-            name: "QuadTree",
-            targets: ["QuadTree"]
+            name: "NDTree",
+            targets: ["NDTree"]
         ),
+
         .library(
             name: "ForceSimulation",
             targets: ["ForceSimulation"]
         ),
         
-        .library(
-            name: "Grape",
-            targets: ["Grape"]
-        ),
-        
-        
-//        .library(
-//            name: "SimdPolyfill",
-//            targets: ["SimdPolyfill"]
-//        ),
-        
-//        .library(name: "GrapePlayground", targets: ["GrapePlayground"]),
-        
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
+        
         .target(
-            name: "QuadTree",
-            path: "Sources/QuadTree"
+            name: "NDTree",
+            path: "Sources/NDTree"
+            // , swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
         ),
 
-//            .target(
-//                name: "GrapePlayground", dependencies: ["QuadTree", "ForceSimulation"],
-//                path: "Examples/GrapePlayground"
-//            ),
-        
-            .target(
-                name: "Grape", dependencies: ["QuadTree", "ForceSimulation"],
-                path: "Sources/Grape"
-            ),
-        
-//        .target(
-//            name: "SimdPolyfill",
-//            path: "Sources/SimdPolyfill"
-//        ),
+        .testTarget(
+            name: "NDTreeTests",
+            dependencies: ["NDTree"]),
+
         .target(
             name: "ForceSimulation",
-            dependencies: ["QuadTree"],
+            dependencies: ["NDTree"],
             path: "Sources/ForceSimulation"
+            // , swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
         ),
-        
-        .testTarget(
-            name: "QuadTreeTests",
-            dependencies: ["QuadTree"]),
-        
+
         .testTarget(
             name: "ForceSimulationTests",
-            dependencies: ["ForceSimulation","QuadTree"])
+            dependencies: ["ForceSimulation", "NDTree"]),
     ]
 )

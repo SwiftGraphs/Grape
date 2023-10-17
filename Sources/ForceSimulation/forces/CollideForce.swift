@@ -1,156 +1,122 @@
 //
-//  CollideForce.swift
+//  File.swift
 //
 //
-//  Created by li3zhen1 on 10/1/23.
+//  Created by li3zhen1 on 10/17/23.
 //
+import NDTree
 
-import QuadTree
-
-enum CollideForceError: Error {
-    case applyBeforeSimulationInitialized
-    case maxRadiusCannotBeCalculatedAfterRemoval
-}
-
-/// A delegate for finding the maximum radius (of nodes) in a quad.
-struct MaxRadiusQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
-
-    public typealias Node = N
+struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
 
     public var maxNodeRadius: Double
 
-    @usableFromInline var radiusProvider: (N.ID) -> Double
+    @usableFromInline var radiusProvider: (NodeID) -> Double
 
-    init(
-        radiusProvider: @escaping (N.ID) -> Double
-    ) {
-        self.radiusProvider = radiusProvider
-        self.maxNodeRadius = 0.0
-    }
-
-    internal init(
-        initialMaxNodeRadius: Double = 0.0,
-        radiusProvider: @escaping (N.ID) -> Double
-    ) {
-        self.maxNodeRadius = initialMaxNodeRadius
-        self.radiusProvider = radiusProvider
-    }
-
-    @inlinable public mutating func didAddNode(_ node: N, at position: Vector2f) {
-        let p = radiusProvider(node.id)
+    mutating func didAddNode(_ nodeId: NodeID, at position: V) {
+        let p = radiusProvider(nodeId)
         maxNodeRadius = max(maxNodeRadius, p)
     }
 
-    @inlinable public mutating func didRemoveNode(_ node: N, at position: Vector2f) {
-        if radiusProvider(node.id) >= maxNodeRadius {
-            // 🤯 for Collide force, set to 0 is fine (?)
+    mutating func didRemoveNode(_ nodeId: NodeID, at position: V) {
+        if radiusProvider(nodeId) >= maxNodeRadius {
+            // 🤯 for Collide force, set to 0 is fine
+            // Otherwise you need to traverse the delegate again
             maxNodeRadius = 0
         }
     }
 
-    public func copy() -> Self {
-        return Self(
-            initialMaxNodeRadius: self.maxNodeRadius,
-            radiusProvider: self.radiusProvider
-        )
+    func copy() -> MaxRadiusTreeDelegate<NodeID, V> {
+        return Self(maxNodeRadius: maxNodeRadius, radiusProvider: radiusProvider)
     }
 
-    public func createNew() -> Self {
-        return Self(
-            radiusProvider: self.radiusProvider
-        )
+    func spawn() -> MaxRadiusTreeDelegate<NodeID, V> {
+        return Self(radiusProvider: radiusProvider)
+    }
+
+    init(maxNodeRadius: Double = 0, radiusProvider: @escaping (NodeID) -> Double) {
+        self.maxNodeRadius = maxNodeRadius
+        self.radiusProvider = radiusProvider
     }
 
 }
 
-final public class CollideForce<N> where N: Identifiable {
-    var radius: CollideRadius
-    var calculatedRadius: [N.ID: Double] = [:]
+public final class CollideForce<NodeID, V>: ForceLike
+where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
-    var strength: Double
-
-    let iterationsPerTick: Int
-
-    weak var simulation: Simulation<N>? {
+    weak var simulation: Simulation<NodeID, V>? {
         didSet {
-            guard let sim = self.simulation else { return }
-            calculatedRadius = radius.calculated(sim.simulationNodes)
+            guard let sim = simulation else { return }
+            self.calculatedRadius = radius.calculated(for: sim)
         }
     }
+
+    public enum CollideRadius {
+        case constant(Double)
+        case varied((NodeID) -> Double)
+    }
+    public var radius: CollideRadius
+    var calculatedRadius: [Double] = []
+
+    public let iterationsPerTick: UInt
+    public var strength: Double
 
     internal init(
         radius: CollideRadius,
         strength: Double = 1.0,
-        iterationsPerTick: Int = 1
+        iterationsPerTick: UInt = 1
     ) {
         self.radius = radius
         self.iterationsPerTick = iterationsPerTick
         self.strength = strength
     }
-}
 
-extension CollideForce {
-    public enum CollideRadius {
-        case constant(Double)
-        case varied((N.ID) -> Double)
-    }
-}
-
-extension CollideForce.CollideRadius {
-    public func calculated<SimNode>(_ nodes: [SimNode]) -> [N.ID: Double]
-    where SimNode: Identifiable, SimNode.ID == N.ID {
-        switch self {
-        case .constant(let r):
-            return Dictionary(uniqueKeysWithValues: nodes.map { ($0.id, r) })
-        case .varied(let r):
-            return Dictionary(uniqueKeysWithValues: nodes.map { ($0.id, r($0.id)) })
-        }
-    }
-}
-
-extension CollideForce: Force {
-    
-//    typealias QD = MaxRadiusQuadTreeDelegate<N>
-    
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
 
         for _ in 0..<iterationsPerTick {
-            guard
-                let quad = try? QuadTree2(
-                    nodes: sim.simulationNodes.map { ($0, $0.position) },
-                    getQuadDelegate: {
-                        MaxRadiusQuadTreeDelegate {
-                            switch self.radius {
-                            case .constant(let r):
-                                return r
-                            case .varied(_):
-                                return self.calculatedRadius[$0, default: 0.0]
-                            }
-                        }
+            
+            let coveringBox = NDBox<V>.cover(of: sim.nodePositions)
+            
+            
+            let tree = NDTree<V, MaxRadiusTreeDelegate<Int, V>>(
+                box: coveringBox, clusterDistance: 1e-5
+            ) {
+                return switch self.radius {
+                case .constant(let m):
+                    MaxRadiusTreeDelegate<Int, V> { _ in m }
+                case .varied(_):
+                    MaxRadiusTreeDelegate<Int, V> { index in
+                        self.calculatedRadius[index]
                     }
-                )
-            else { return }
+                }
+            }
+            
+            for i in sim.nodePositions.indices {
+                tree.add(i, at: sim.nodePositions[i])
+            }
 
-            for i in sim.simulationNodes.indices {
-                let iNode = sim.simulationNodes[i]
-                let iNodeId = iNode.id
-                let iR = self.calculatedRadius[iNodeId]!
+            for i in sim.nodePositions.indices {
+                let iOriginalPosition = sim.nodePositions[i]
+                let iOriginalVelocity = sim.nodeVelocities[i]
+                let iR = self.calculatedRadius[i]
                 let iR2 = iR * iR
-                let iPosition = iNode.position + iNode.velocity
+                let iPosition = iOriginalPosition + iOriginalVelocity
 
-                quad.visit { quadNode in
+                tree.visit { t in
 
-                    let maxRadiusOfQuad = quadNode.quadDelegate.maxNodeRadius
+                    let maxRadiusOfQuad = t.delegate.maxNodeRadius
                     let deltaR = maxRadiusOfQuad + iR
 
-                    if !quadNode.nodes.isEmpty {
-                        for jNodeId in quadNode.nodes.keys {
+                    if t.nodePosition != nil {
+                        for j in t.nodeIndices {
+//                            print("\(i)<=>\(j)")
                             // is leaf, make sure every collision happens once.
-                            guard let j = sim.nodeIndexLookup[jNodeId], j > i else { continue }
-                            let jR = self.calculatedRadius[jNodeId]!
-                            let jNode = sim.simulationNodes[j]
-                            var deltaPosition = iPosition - (jNode.position + jNode.velocity)
+                            guard j > i else { continue }
+
+                            let jR = self.calculatedRadius[j]
+                            let jOriginalPosition = sim.nodePositions[j]
+                            let jOriginalVelocity = sim.nodeVelocities[j]
+                            var deltaPosition = iPosition - (jOriginalPosition + jOriginalVelocity)
                             let l = deltaPosition.lengthSquared()
 
                             let deltaR = iR + jR
@@ -165,32 +131,60 @@ extension CollideForce: Force {
 
                                 deltaPosition *= l
 
-                                sim.simulationNodes[i].velocity += deltaPosition * k
-                                sim.simulationNodes[j].velocity -= deltaPosition * (1 - k)
+                                sim.nodeVelocities[i] += deltaPosition * k
+                                sim.nodeVelocities[j] -= deltaPosition * (1 - k)
                             }
                         }
                         return false
                     }
 
-                    return
-                        !(quadNode.quad.x0 > iPosition.x + deltaR /* True if no overlap */
-                        || quadNode.quad.x1 < iPosition.x - deltaR
-                        || quadNode.quad.y0 > iPosition.y + deltaR
-                        || quadNode.quad.y1 < iPosition.y - deltaR)
+                    for laneIndex in t.box.p0.indices {
+                        let _v = t.box.p0[laneIndex]
+                        if _v > iPosition[laneIndex] + deltaR /* True if no overlap */ {
+                            return false
+                        }
+                    }
+
+                    for laneIndex in t.box.p1.indices {
+                        let _v = t.box.p1[laneIndex]
+                        if _v < iPosition[laneIndex] - deltaR /* True if no overlap */ {
+                            return false
+                        }
+                    }
+                    return true
+
+                    // return
+                    //     !(t.quad.x0 > iPosition.x + deltaR /* True if no overlap */
+                    //     || t.quad.x1 < iPosition.x - deltaR
+                    //     || t.quad.y0 > iPosition.y + deltaR
+                    //     || t.quad.y1 < iPosition.y - deltaR)
                 }
             }
+        }
+    }
+
+}
+
+extension CollideForce.CollideRadius: PrecalculatableNodeProperty {
+    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
+        switch self {
+        case .constant(let r):
+            return Array(repeating: r, count: simulation.nodePositions.count)
+        case .varied(let radiusProvider):
+            return simulation.nodeIds.map { radiusProvider($0) }
         }
     }
 }
 
 extension Simulation {
+
     @discardableResult
     public func createCollideForce(
-        radius: CollideForce<N>.CollideRadius = .constant(3.0),
+        radius: CollideForce<NodeID, V>.CollideRadius = .constant(3.0),
         strength: Double = 1.0,
-        iterationsPerTick: Int = 1
-    ) -> CollideForce<N> {
-        let f = CollideForce<N>(
+        iterationsPerTick: UInt = 1
+    ) -> CollideForce<NodeID, V> {
+        let f = CollideForce<NodeID, V>(
             radius: radius,
             strength: strength,
             iterationsPerTick: iterationsPerTick
@@ -199,4 +193,5 @@ extension Simulation {
         self.forces.append(f)
         return f
     }
+
 }

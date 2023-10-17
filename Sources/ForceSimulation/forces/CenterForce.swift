@@ -2,47 +2,32 @@
 //  CenterForce.swift
 //
 //
-//  Created by li3zhen1 on 10/1/23.
+//  Created by li3zhen1 on 10/16/23.
 //
+import NDTree
 
-import QuadTree
-
-final public class CenterForce<N>: Force where N: Identifiable {
-
-    public var center: Vector2f
+final public class CenterForce<NodeID, V>: ForceLike
+where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+    public var center: V
     public var strength: Double
-    weak var simulation: Simulation<N>?
+    weak var simulation: Simulation<NodeID, V>?
 
-    internal init(center: Vector2f, strength: Double) {
+    internal init(center: V, strength: Double) {
         self.center = center
         self.strength = strength
-    }
-
-    internal init(x: Double, y: Double, strength: Double) {
-        self.center = Vector2f(x, y)
-        self.strength = strength
-    }
-
-    var x: Double {
-        get { return center.x }
-        set { self.center.x = newValue }
-    }
-    var y: Double {
-        get { return center.y }
-        set { self.center.y = newValue }
     }
 
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
 
-        var meanPosition = Vector2f.zero
-        for n in sim.simulationNodes {
-            meanPosition += n.position
+        var meanPosition = V.zero
+        for n in sim.nodePositions {
+            meanPosition += n  //.position
         }
-        let delta = meanPosition * (self.strength / Double(sim.simulationNodes.count))
+        let delta = meanPosition * (self.strength / Double(sim.nodePositions.count))
 
-        for i in sim.simulationNodes.indices {
-            sim.simulationNodes[i].position -= delta
+        for i in sim.nodePositions.indices {
+            sim.nodePositions[i] -= delta
         }
     }
 
@@ -51,16 +36,8 @@ final public class CenterForce<N>: Force where N: Identifiable {
 extension Simulation {
 
     @discardableResult
-    public func createCenterForce(x: Double, y: Double, strength: Double = 0.1) -> CenterForce<N> {
-        let f = CenterForce<N>(x: x, y: y, strength: strength)
-        f.simulation = self
-        self.forces.append(f)
-        return f
-    }
-
-    @discardableResult
-    public func createCenterForce(center: Vector2f, strength: Double = 0.1) -> CenterForce<N> {
-        let f = CenterForce<N>(center: center, strength: strength)
+    public func createCenterForce(center: V, strength: Double = 0.1) -> CenterForce<NodeID, V> {
+        let f = CenterForce<NodeID, V>(center: center, strength: strength)
         f.simulation = self
         self.forces.append(f)
         return f

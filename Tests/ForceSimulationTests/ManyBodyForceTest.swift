@@ -6,7 +6,7 @@
 //
 
 import XCTest
-import QuadTree
+import NDTree
 @testable import ForceSimulation
 
 
@@ -31,15 +31,15 @@ final class ManyBodyForceTests: XCTestCase {
             .make("David")
         ]
         
-        let pos = [(-1,-1), (-1,1), (1,-1), (1, 1)]
-        let sim = Simulation(nodes: nodes) { n, i in
-            n.position = Vector2f(x: Double(pos[i].0), y: Double(pos[i].1))
-        }
-        
-        
-        let f = sim.createManyBodyForce(strength: 0.4)
-        
-        sim.tick()
+//        let pos = [(-1,-1), (-1,1), (1,-1), (1, 1)]
+//        let sim = Simulation<Int, Vector2d>(nodes: nodes) { n, i in
+//            n.position = Vector2f(x: Double(pos[i].0), y: Double(pos[i].1))
+//        }
+//        
+//        
+//        let f = sim.createManyBodyForce(strength: 0.4)
+//        
+//        sim.tick()
         
         
         

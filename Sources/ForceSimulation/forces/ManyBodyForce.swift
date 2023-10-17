@@ -5,21 +5,22 @@
 //  Created by li3zhen1 on 10/1/23.
 //
 
-import QuadTree
-import simd
+import NDTree
 
-struct MassQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
+enum ManyBodyForceError: Error {
+    case buildQuadTreeBeforeSimulationInitialized
+}
 
-    typealias Node = N
+struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
 
-    public var accumulatedProperty: Double = 0.0
+    public var accumulatedMass: Double = .zero
     public var accumulatedCount = 0
-    public var weightedAccumulatedNodePositions: Vector2f = .zero
+    public var accumulatedMassWeightedPositions: V = .zero
 
-    @usableFromInline let massProvider: (N.ID) -> Double
+    @usableFromInline let massProvider: (NodeID) -> Double
 
     init(
-        massProvider: @escaping (N.ID) -> Double
+        massProvider: @escaping (NodeID) -> Double
     ) {
         self.massProvider = massProvider
     }
@@ -27,234 +28,278 @@ struct MassQuadTreeDelegate<N>: QuadDelegate where N: Identifiable {
     internal init(
         initialAccumulatedProperty: Double,
         initialAccumulatedCount: Int,
-        initialWeightedAccumulatedNodePositions: Vector2f,
-        massProvider: @escaping (N.ID) -> Double
+        initialWeightedAccumulatedNodePositions: V,
+        massProvider: @escaping (NodeID) -> Double
     ) {
-        self.accumulatedProperty = initialAccumulatedProperty
+        self.accumulatedMass = initialAccumulatedProperty
         self.accumulatedCount = initialAccumulatedCount
-        self.weightedAccumulatedNodePositions = initialWeightedAccumulatedNodePositions
+        self.accumulatedMassWeightedPositions = initialWeightedAccumulatedNodePositions
         self.massProvider = massProvider
     }
 
-    @inlinable mutating func didAddNode(_ node: N, at position: Vector2f) {
-        let p = massProvider(node.id)
+    @inlinable mutating func didAddNode(_ node: NodeID, at position: V) {
+        let p = massProvider(node)
+        #if DEBUG
+            assert(p > 0)
+        #endif
         accumulatedCount += 1
-        accumulatedProperty += p
-        weightedAccumulatedNodePositions += p * position
+        accumulatedMass += p
+        accumulatedMassWeightedPositions += position * p
     }
 
-    @inlinable mutating func didRemoveNode(_ node: N, at position: Vector2f) {
-        let p = massProvider(node.id)
+    @inlinable mutating func didRemoveNode(_ node: NodeID, at position: V) {
+        let p = massProvider(node)
         accumulatedCount -= 1
-        accumulatedProperty -= p
-        weightedAccumulatedNodePositions -= p * position
+        accumulatedMass -= p
+        accumulatedMassWeightedPositions -= position * p
         // TODO: parent removal?
     }
 
     @inlinable func copy() -> Self {
         return Self(
-            initialAccumulatedProperty: self.accumulatedProperty,
+            initialAccumulatedProperty: self.accumulatedMass,
             initialAccumulatedCount: self.accumulatedCount,
-            initialWeightedAccumulatedNodePositions: self.weightedAccumulatedNodePositions,
+            initialWeightedAccumulatedNodePositions: self.accumulatedMassWeightedPositions,
             massProvider: self.massProvider
         )
     }
 
-    @inlinable func createNew() -> Self {
+    @inlinable func spawn() -> Self {
         return Self(massProvider: self.massProvider)
     }
 
-    @inlinable var centroid: Vector2f? {
+    @inlinable var centroid: V? {
         guard accumulatedCount > 0 else { return nil }
-        return weightedAccumulatedNodePositions / accumulatedProperty
+        return accumulatedMassWeightedPositions / accumulatedMass
     }
 }
 
-//final class MassQuadTreeDelegate<N>: QuadDelegate where N : Identifiable {
-//
-//    typealias Node = N
-//    typealias Property = Double
-//    typealias MassProvider = [N.ID: Double]
-//
-//    public var accumulatedProperty: Double = 0.0
-//    public var accumulatedCount = 0
-//    public var weightedAccumulatedNodePositions: Vector2f = .zero
-//
-//    let massProvider: [N.ID: Double]
-//
-//    init(
-//        massProvider: MassProvider
-//    ) {
-//        self.massProvider = massProvider
-//    }
-//
-//
-//    internal init(
-//        initialAccumulatedProperty: Double,
-//        initialAccumulatedCount: Int,
-//        initialWeightedAccumulatedNodePositions: Vector2f,
-//        massProvider: MassProvider
-//    ) {
-//        self.accumulatedProperty = initialAccumulatedProperty
-//        self.accumulatedCount = initialAccumulatedCount
-//        self.weightedAccumulatedNodePositions = initialWeightedAccumulatedNodePositions
-//        self.massProvider = massProvider
-//    }
-//
-//    func didAddNode(_ node: N, at position: Vector2f) {
-//        let p = massProvider[node.id, default: 0]
-//        accumulatedCount += 1
-//        accumulatedProperty += p
-//        weightedAccumulatedNodePositions += p * position
-//    }
-//
-//    func didRemoveNode(_ node: N, at position: Vector2f) {
-//        let p = massProvider[node.id, default: 0]
-//        accumulatedCount -= 1
-//        accumulatedProperty -= p
-//        weightedAccumulatedNodePositions -= p * position
-//
-//        // TODO: parent removal?
-//    }
-//
-//
-//    func copy() -> Self {
-//        return Self(
-//            initialAccumulatedProperty: self.accumulatedProperty,
-//            initialAccumulatedCount: self.accumulatedCount,
-//            initialWeightedAccumulatedNodePositions: self.weightedAccumulatedNodePositions,
-//            massProvider: self.massProvider
-//        )
-//    }
-//
-//    func createNew() -> Self {
-//        return Self(massProvider: self.massProvider)
-//    }
-//
-//
-//    var centroid : Vector2f? {
-//        guard accumulatedCount > 0 else { return nil }
-//        return weightedAccumulatedNodePositions / accumulatedProperty
-//    }
-//}
+final public class ManyBodyForce<NodeID, V>: ForceLike
+where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
-enum ManyBodyForceError: Error {
-    case buildQuadTreeBeforeSimulationInitialized
-}
-
-final public class ManyBodyForce<N>: Force where N: Identifiable {
-    
-//    public typealias QD = MassQuadTreeDelegate<N>
-
-    var strength: Double = -20
+    var strength: Double
 
     public enum NodeMass {
         case constant(Double)
-        case varied([N.ID: Double])
+        case varied( (NodeID) -> Double )
     }
     var mass: NodeMass = .constant(1.0)
-    var precalculatedMass: [N.ID: Double] = [:]
+    var precalculatedMass: [Double] = []
 
-    weak var simulation: Simulation<N>? {
+    weak var simulation: Simulation<NodeID, V>? {
         didSet {
             guard let sim = self.simulation else { return }
-            self.precalculatedMass = self.mass.calculated(nodes: sim.simulationNodes)
+            self.precalculatedMass = self.mass.calculated(for: sim)
+            self.forces = [V](repeating: .zero, count: sim.nodePositions.count)
         }
     }
 
-    var theta2: Double = 0.81
-    var theta: Double { theta2.squareRoot() }
+    var theta2: Double
+    var theta: Double {
+        didSet {
+            theta2 = theta * theta
+        }
+    }
 
-    var distanceMin2: Double = 0.01
+    var distanceMin2: Double = 1
     var distanceMax2: Double = Double.infinity
+    var distanceMin: Double = 1
+    var distanceMax: Double = Double.infinity
 
     internal init(
         strength: Double,
-        nodeMassProvider: NodeMass = .constant(1.0)
+        nodeMass: NodeMass = .constant(1.0),
+        theta: Double = 0.9
     ) {
         self.strength = strength
-        self.mass = nodeMassProvider
+        self.mass = nodeMass
+        self.theta = theta
+        self.theta2 = theta * theta
     }
 
+    var forces: [V] = []
     public func apply(alpha: Double) {
-        guard let simulation,
-            let forces = try? calculateForce(alpha: alpha)
-        else { return }
+        guard let simulation else { return }
+//        guard
+            try! calculateForce(alpha: alpha) //else { return }
 
-        for i in simulation.simulationNodes.indices {
-            simulation.updateNode(index: i) { n in
-                n.velocity += forces[i]
-            }
+
+        for i in simulation.nodeVelocities.indices {
+            simulation.nodeVelocities[i] += self.forces[i] / precalculatedMass[i]
         }
     }
 
-    func calculateForce(alpha: Double) throws -> [Vector2f] {
+    //    private func getCoveringBox() throws -> NDBox<V> {
+    //        guard let simulation else { throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized }
+    //        var _p0 = simulation.nodes[0].position
+    //        var _p1 = simulation.nodes[0].position
+    //
+    //        for p in simulation.nodes {
+    //            for i in 0..<V.scalarCount {
+    //                if p.position[i] < _p0[i] {
+    //                    _p0[i] = p.position[i]
+    //                }
+    //                if p.position[i] >= _p1[i] {
+    //                    _p1[i] = p.position[i] + 1
+    //                }
+    //            }
+    //        }
+    //        return NDBox(_p0, _p1)
+    //
+    //    }
+
+    func calculateForce(alpha: Double) throws {
 
         guard let sim = self.simulation else {
             throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized
         }
 
-        let quad = try QuadTree2(
-            nodes: sim.simulationNodes.map { ($0, $0.position) }
-        ) {
-            // this switch is only called on root init 
+        let coveringBox = NDBox<V>.cover(of: sim.nodePositions)  //try! getCoveringBox()
+
+        let tree = NDTree<V, MassQuadtreeDelegate<Int, V>>(box: coveringBox, clusterDistance: 1e-5)
+        {
+
             return switch self.mass {
             case .constant(let m):
-                MassQuadTreeDelegate<SimulationNode<N.ID>> { _ in m }
+                MassQuadtreeDelegate<Int, V> { _ in m }
             case .varied(_):
-                MassQuadTreeDelegate<SimulationNode<N.ID>> {
-                    self.precalculatedMass[$0, default: 0.0]
+                MassQuadtreeDelegate<Int, V> { index in
+                    self.precalculatedMass[index]
                 }
             }
         }
 
-        var forces = [Vector2f](repeating: .zero, count: sim.simulationNodes.count)
+        for i in sim.nodePositions.indices {
+            tree.add(i, at: sim.nodePositions[i])
 
-        for i in sim.simulationNodes.indices {
-            quad.visit { quadNode in
-                if let centroid = quadNode.quadDelegate.centroid {
-                    let vec = centroid - sim.simulationNodes[i].position
+            #if DEBUG
+                assert(tree.delegate.accumulatedCount == i + 1)
+            #endif
 
-                    var distanceSquared = vec.jiggled()
-                        .lengthSquared()
+        }
 
-                    // too far away, omit
-                    guard distanceSquared < self.distanceMax2 else { return false }
+//        var forces = [V](repeating: .zero, count: sim.nodePositions.count)
 
-                    // too close, enlarge distance
-                    if distanceSquared < self.distanceMin2 {
-                        distanceSquared = sqrt(self.distanceMin2 * distanceSquared)
-                    }
+        for i in sim.nodePositions.indices {
+            var f = V.zero
+            tree.visit { t in
 
-                    if quadNode.isLeaf || (distanceSquared * self.theta2 > quadNode.quad.area) {
+                //                guard t.delegate.accumulatedCount > 0 else { return false }
+                //
+                //                let centroid = t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
+                //                let vec = centroid - sim.nodePositions[i]
+                //
+                //                var distanceSquared = vec.jiggled().lengthSquared()
+                //
+                //                /// too far away, omit
+                //                guard distanceSquared < self.distanceMax2 else { return false }
+                //
+                //
+                //
+                //                /// too close, enlarge distance
+                //                if distanceSquared < self.distanceMin2 {
+                //                    distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
+                //                }
+                //
+                //
+                //                if t.nodePosition != nil {
+                //
+                //                    /// filled leaf
+                //                    if !t.nodeIndices.contains(i) {
+                //                        let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / (distanceSquared).squareRoot()
+                //                        forces[i] += vec * k
+                //                    }
+                //
+                //                    return false
+                //
+                //                }
+                //                else if t.children != nil {
+                //
+                //                    let boxWidth = (t.box.p1 - t.box.p1)[0]
+                //
+                //                    /// internal, guard in 180 guarantees we have nodes here
+                //                    if distanceSquared * self.theta2 > boxWidth * boxWidth {
+                //                        // far enough
+                //                        let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / (distanceSquared).squareRoot()
+                //                        forces[i] += vec * k
+                //                        return false
+                //                    }
+                //                    else {
+                //                        return true
+                //                    }
+                //                }
+                //                else {
+                //                    // empty leaf
+                //                    return false
+                //                }
 
-                        forces[i] +=
-                            self.strength * alpha * quadNode.quadDelegate.accumulatedProperty * vec / distanceSquared / sqrt(distanceSquared)
+                guard t.delegate.accumulatedCount > 0 else { return false }
+                let centroid = t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
 
-                        return false
-                    } else {
-                        return true
-                    }
-                } else {
-                    // it's empty here, no need to visit
+                let vec = centroid - sim.nodePositions[i]
+                let boxWidth = (t.box.p1 - t.box.p0)[0]
+                var distanceSquared = vec.jiggled().lengthSquared()
+                
+                let farEnough: Bool = (distanceSquared * self.theta2) > (boxWidth * boxWidth)
+                
+//                let distance = distanceSquared.squareRoot()
+                
+                if distanceSquared < self.distanceMin2 {
+                    distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
+                }
+
+                if farEnough {
+                    
+                    guard distanceSquared < self.distanceMax2 else { return true }
+                    
+                    /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
+                    let k: Double =
+                        self.strength * alpha * t.delegate.accumulatedMass / distanceSquared // distanceSquared.squareRoot()
+                    
+                    f += vec * k
                     return false
+                    
+                } else if t.children != nil {
+                    return true
+                }
+                
+
+                if t.isFilledLeaf {
+                    
+//                    for j in t.nodeIndices {
+//                        if j != i {
+//                            let k: Double =
+//                            self.strength * alpha * self.precalculatedMass[j] / distanceSquared / distanceSquared.squareRoot()
+//                            f += vec * k
+//                        }
+//                    }
+                    if t.nodeIndices.contains(i) {return false}
+                     
+                    let massAcc = t.delegate.accumulatedMass
+//                    t.nodeIndices.contains(i) ?  (t.delegate.accumulatedMass-self.precalculatedMass[i]) : (t.delegate.accumulatedMass)
+                    let k: Double = self.strength * alpha * massAcc / distanceSquared // distanceSquared.squareRoot()
+                    f += vec * k
+                    return false
+                } else {
+                    return true
                 }
             }
+            forces[i] = f
         }
-
-        return forces
+//        return forces
     }
 
 }
 
-extension ManyBodyForce.NodeMass {
-    func calculated<SimNodes>(nodes: [SimNodes]) -> [N.ID: Double]
-    where SimNodes: Identifiable, SimNodes.ID == N.ID {
+extension ManyBodyForce.NodeMass: PrecalculatableNodeProperty {
+    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
         switch self {
         case .constant(let m):
-            return Dictionary(uniqueKeysWithValues: nodes.map { ($0.id, m) })
-        case .varied(let massProvider):
-            return massProvider
+            return Array(repeating: m, count: simulation.nodePositions.count)
+        case .varied(let massGetter):
+            return simulation.nodeIds.map { n in
+                return massGetter(n)
+            }
         }
     }
 }
@@ -264,13 +309,12 @@ extension Simulation {
     @discardableResult
     public func createManyBodyForce(
         strength: Double,
-        nodeMassPassProvider: ManyBodyForce<N>.NodeMass = .constant(1.0)
-    ) -> ManyBodyForce<N> {
-        let manyBodyForce = ManyBodyForce<N>(
-            strength: strength, nodeMassProvider: nodeMassPassProvider)
+        nodeMass: ManyBodyForce<NodeID, V>.NodeMass = .constant(1.0)
+    ) -> ManyBodyForce<NodeID, V> {
+        let manyBodyForce = ManyBodyForce<NodeID, V>(
+            strength: strength, nodeMass: nodeMass)
         manyBodyForce.simulation = self
         self.forces.append(manyBodyForce)
         return manyBodyForce
     }
-
 }
