@@ -242,10 +242,10 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                 
                 let farEnough: Bool = (distanceSquared * self.theta2) > (boxWidth * boxWidth)
                 
-                let distance = distanceSquared.squareRoot()
+//                let distance = distanceSquared.squareRoot()
                 
                 if distanceSquared < self.distanceMin2 {
-                    distanceSquared = self.distanceMin * distance//(self.distanceMin2 * distanceSquared).squareRoot()
+                    distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
                 }
 
                 if farEnough {
@@ -254,7 +254,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                     
                     /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
                     let k: Double =
-                        self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / distance //Squared.squareRoot()
+                        self.strength * alpha * t.delegate.accumulatedMass / distanceSquared // distanceSquared.squareRoot()
                     
                     f += vec * k
                     return false
@@ -273,9 +273,11 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 //                            f += vec * k
 //                        }
 //                    }
-                    
-                    let massAcc = t.nodeIndices.contains(i) ?  (t.delegate.accumulatedMass-self.precalculatedMass[i]) : (t.delegate.accumulatedMass)
-                    let k: Double = self.strength * alpha * massAcc / distanceSquared / distance //Squared.squareRoot()
+                    if t.nodeIndices.contains(i) {return false}
+                     
+                    let massAcc = t.delegate.accumulatedMass
+//                    t.nodeIndices.contains(i) ?  (t.delegate.accumulatedMass-self.precalculatedMass[i]) : (t.delegate.accumulatedMass)
+                    let k: Double = self.strength * alpha * massAcc / distanceSquared // distanceSquared.squareRoot()
                     f += vec * k
                     return false
                 } else {

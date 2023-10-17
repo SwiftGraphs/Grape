@@ -28,8 +28,8 @@ let package = Package(
         
         .target(
             name: "NDTree",
-            path: "Sources/NDTree",
-            swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
+            path: "Sources/NDTree"
+            // , swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
         ),
 
         .testTarget(
@@ -39,8 +39,8 @@ let package = Package(
         .target(
             name: "ForceSimulation",
             dependencies: ["NDTree"],
-            path: "Sources/ForceSimulation",
-            swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
+            path: "Sources/ForceSimulation"
+            // , swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
         ),
 
         .testTarget(
