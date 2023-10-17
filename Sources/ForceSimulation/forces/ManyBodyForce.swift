@@ -120,11 +120,12 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     var forces: [V] = []
     public func apply(alpha: Double) {
         guard let simulation else { return }
-        guard let forces = try? calculateForce(alpha: alpha) else { return }
+//        guard
+            try! calculateForce(alpha: alpha) //else { return }
 
 
         for i in simulation.nodeVelocities.indices {
-            simulation.nodeVelocities[i] += forces[i] / precalculatedMass[i]
+            simulation.nodeVelocities[i] += self.forces[i] / precalculatedMass[i]
         }
     }
 
@@ -147,7 +148,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     //
     //    }
 
-    func calculateForce(alpha: Double) throws -> [V] {
+    func calculateForce(alpha: Double) throws {
 
         guard let sim = self.simulation else {
             throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized
@@ -249,8 +250,9 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                     
                     guard distanceSquared < self.distanceMax2 else { return true }
                     
+                    /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
                     let k: Double =
-                        self.strength * alpha * t.delegate.accumulatedMass / distanceSquared // distanceSquared.squareRoot()
+                        self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / distanceSquared.squareRoot()
                     
                     f += vec * k
                     return false
@@ -262,15 +264,18 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
                 if t.isFilledLeaf {
                     
-                    for j in t.nodeIndices {
-                        if j != i {
-                            /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
-                            let k: Double =
-                            self.strength * alpha * self.precalculatedMass[j] / distanceSquared // distanceSquared.squareRoot()
-                            f += vec * k
-                        }
-                    }
+//                    for j in t.nodeIndices {
+//                        if j != i {
+//                            let k: Double =
+//                            self.strength * alpha * self.precalculatedMass[j] / distanceSquared / distanceSquared.squareRoot()
+//                            f += vec * k
+//                        }
+//                    }
                     
+                    let massAcc = t.nodeIndices.contains(i) ? t.delegate.accumulatedMass : t.delegate.accumulatedMass-self.precalculatedMass[i]
+                    let k: Double =
+                    self.strength * alpha * massAcc / distanceSquared / distanceSquared.squareRoot()
+                    f += vec * k
                     return false
                 } else {
                     return true
@@ -278,7 +283,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
             }
             forces[i] = f
         }
-        return forces
+//        return forces
     }
 
 }
