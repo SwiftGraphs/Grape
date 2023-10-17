@@ -106,9 +106,9 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
                 let b = self.calculatedBias[i]
 
-                position = (_target + sim.nodeVelocities[s] - _source - sim.nodeVelocities[t])
+                position = (_target + sim.nodeVelocities[s] - _source - sim.nodeVelocities[t]).jiggled()
 //                    (_target.position + _target.velocity - _source.position - _source.velocity)
-                    .jiggled()
+                    
 
                 l = position.length()
 
@@ -118,8 +118,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
 //                sim.nodes[s].velocity += position * b
 //                sim.nodes[t].velocity -= position * (1 - b)
-                sim.nodeVelocities[s] += position * b
-                sim.nodeVelocities[t] -= position * (1 - b)
+                sim.nodeVelocities[t] -= position * b //(1 - b)
+                sim.nodeVelocities[s] += position * (1-b)
 
             }
         }

@@ -185,12 +185,11 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
                 let boxSize = (t.box.p1 - t.box.p0)[0]
                 
-                let closeEnough: Bool = (distanceSquared * self.theta2) > (boxSize * boxSize)
+                let farEnough: Bool = (distanceSquared * self.theta2) > (boxSize * boxSize)
 
-                if tree.isLeaf || closeEnough {
+                if tree.isLeaf || farEnough {
                     /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
-                    let k: Double = self.strength * alpha * tree.delegate.accumulatedMass / distanceSquared
-                    / distanceSquared.squareRoot()
+                    let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / distanceSquared.squareRoot()
                     forces[i] += vec * k
 //                    f = f + (vec * k)
                     return false
