@@ -6,20 +6,20 @@
 //
 
 public protocol Traversable {
-    func visit(
+    
+    @inlinable func visit(
         shouldVisitChildren: (Self) -> Bool
     )
     
-    func visitPostOrdered(
+    @inlinable func visitPostOrdered(
         _ action: (Self) -> ()
     )
 }
 
 
-extension NDTree: Traversable {
+extension NDTree {
     
-    /// The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
-    public func visit(shouldVisitChildren: (NDTree<V, D>) -> Bool) {
+    @inlinable public func visit(shouldVisitChildren: (NDTree<V,D>) -> Bool) {
         if shouldVisitChildren(self), let children {
             // this is an internal node
             for t in children { 
@@ -29,12 +29,12 @@ extension NDTree: Traversable {
     }
     
 
-    public func visitPostOrdered(
+    @inlinable public func visitPostOrdered(
         _ action: (NDTree<V, D>) -> ()
     ) {
         if let children {
-            children.forEach { t in
-                t.visitPostOrdered(action)
+            for c in children {
+                c.visitPostOrdered(action)
             }
         }
         action(self)

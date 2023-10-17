@@ -25,6 +25,9 @@
         @inlinable public func distance(to: SIMD2<Scalar>) -> Scalar {
             return (self - to).length()
         }
+        
+        
+        public static let directionCount = 4
     }
 
     extension simd_double3: VectorLike {
@@ -44,6 +47,8 @@
         @inlinable public func distance(to: SIMD3<Scalar>) -> Scalar {
             return (self - to).length()
         }
+        
+        public static let directionCount = 8
     }
 
 

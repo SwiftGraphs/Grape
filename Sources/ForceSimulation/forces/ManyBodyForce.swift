@@ -11,7 +11,7 @@ enum ManyBodyForceError: Error {
     case buildQuadTreeBeforeSimulationInitialized
 }
 
-final class MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
+struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
 
     public var accumulatedMass: Double = .zero
     public var accumulatedCount = 0
@@ -37,14 +37,14 @@ final class MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashab
         self.massProvider = massProvider
     }
 
-    @inlinable  func didAddNode(_ node: NodeID, at position: V) {
+    @inlinable mutating func didAddNode(_ node: NodeID, at position: V) {
         let p = massProvider(node)
         accumulatedCount += 1
         accumulatedMass += p
         accumulatedMassWeightedPositions += position * p
     }
 
-    @inlinable  func didRemoveNode(_ node: NodeID, at position: V) {
+    @inlinable mutating func didRemoveNode(_ node: NodeID, at position: V) {
         let p = massProvider(node)
         accumulatedCount -= 1
         accumulatedMass -= p
@@ -83,10 +83,12 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     var mass: NodeMass = .constant(1.0)
     var precalculatedMass: [Double] = []
 
+    var positions: [V] = []
     weak var simulation: Simulation<NodeID, V>? {
         didSet {
             guard let sim = self.simulation else { return }
             self.precalculatedMass = self.mass.calculated(for: sim)
+            self.positions = sim.nodes.map {p in p.position}
         }
     }
 
@@ -123,15 +125,22 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
             throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized
         }
 
-//        let corner: V = V.zero + 200
-        let positions = sim.nodes.map {p in p.position}
-        let coveringBox = NDBox<V>.cover(of: positions )
+        
+        let coveringBox = NDBox<V>.cover(of: self.positions )
 
         let tree = NDTree<V, MassQuadtreeDelegate<Int, V>>(box: coveringBox, clusterDistance: 1e-7)
         {
-            MassQuadtreeDelegate<Int, V> { index in
-                self.precalculatedMass[index]
+            
+            return switch self.mass {
+            case .constant(let m):
+                MassQuadtreeDelegate<Int, V> { _ in m }
+            case .varied(_, _):
+                MassQuadtreeDelegate<Int, V> { index in
+                    self.precalculatedMass[index]
+                }
             }
+            
+
         }
         
         for i in sim.nodes.indices {
@@ -143,27 +152,27 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         for i in sim.nodes.indices {
 //            var f = V.zero
             tree.visit { t in
-                guard let centroid = t.delegate.centroid else { return false }
+                guard t.delegate.accumulatedCount > 0 else { return false }
+                let centroid = t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
 
                 let vec = centroid - sim.nodes[i].position
                 var distanceSquared = vec.jiggled().lengthSquared()
 
                 guard distanceSquared < self.distanceMax2 else { return false }
-
+                
+            
                 if distanceSquared < self.distanceMin2 {
                     distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
-                    //self.distanceMin * distance  //
                 }
 
-                let boxSize = (tree.box.p1 - tree.box.p0)[0]
+                let boxSize = (t.box.p1 - t.box.p0)[0]
+                
                 let closeEnough: Bool = (distanceSquared * self.theta2) > (boxSize * boxSize)
-//                let shouldAccumulateForce = tree.isLeaf || closeEnough
 
                 if tree.isLeaf || closeEnough {
                     /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
-                    let k: Double =
-                        (self.strength * alpha * tree.delegate.accumulatedMass
-                            / (distanceSquared * distanceSquared.squareRoot()))
+                    let k: Double = self.strength * alpha * tree.delegate.accumulatedMass / distanceSquared
+                    / distanceSquared.squareRoot()
                     forces[i] += vec * k
 //                    f = f + (vec * k)
                     return false
@@ -174,7 +183,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
 //                return !shouldAccumulateForce  // if accumulated, no need to visit children
             }
-//            forces[i] = f
+            forces[i] /= self.precalculatedMass[i]
         }
         return forces
     }

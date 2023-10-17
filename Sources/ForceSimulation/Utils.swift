@@ -29,6 +29,7 @@ public struct LinearCongruentialGenerator {
 public extension Double {
     @inlinable func jiggled() -> Double {
         if self == 0 || self == .nan {
+//            return Double.random(in: -5e-6..<5e-6)
             return (LinearCongruentialGenerator.next() - 0.5) * 1e-5
         }
         return self
@@ -42,6 +43,12 @@ public extension VectorLike where Scalar == Double {
             result[i] = self[i].jiggled()
         }
         return result
+    }
+}
+
+public extension Vector2d {
+    @inlinable func jiggled() -> Self {
+        return Vector2d(x.jiggled(), y.jiggled())
     }
 }
 

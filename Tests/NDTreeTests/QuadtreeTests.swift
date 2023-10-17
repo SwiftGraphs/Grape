@@ -38,7 +38,7 @@ final class AddTests: XCTestCase {
     ) -> Quadtree<DummyQuadtreeDelegate> {
         var del = DummyQuadtreeDelegate()
         let box = QuadBox.createBy(covering: points[0])
-        let qt = Quadtree(box: box, parentDelegate: &del)
+        let qt = Quadtree(box: box, parentDelegate: /*&*/del)
         for i in points.indices {
             qt.add(i, at: points[i])
         }
@@ -50,7 +50,7 @@ final class AddTests: XCTestCase {
         _ points: [Vector2d]
     ) -> Quadtree<DummyQuadtreeDelegate> {
         var del = DummyQuadtreeDelegate()
-        let qt = Quadtree(box: box, parentDelegate: &del)
+        let qt = Quadtree(box: box, parentDelegate: /*&*/del)
         for i in points.indices {
             qt.add(i, at: points[i])
         }

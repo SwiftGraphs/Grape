@@ -32,19 +32,19 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     public let clusterDistance: V.Scalar
     private let clusterDistanceSquared: V.Scalar
     
-    private let directionCount: Int
+//    private let directionCount: Int
     
     public private(set) var delegate: D
     
     private init(
         box: Box,
         clusterDistance: V.Scalar,
-        parentDelegate: inout D
+        parentDelegate: /*inout*/ D
     ) {
         self.box = box
         self.clusterDistance = clusterDistance
         self.clusterDistanceSquared = clusterDistance * clusterDistance
-        self.directionCount = 1 << V.scalarCount
+//        self.directionCount = 1 << V.scalarCount
         self.nodeIndices = []
         self.delegate = parentDelegate.spawn()
     }
@@ -57,7 +57,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         self.box = box
         self.clusterDistance = clusterDistance
         self.clusterDistanceSquared = clusterDistance * clusterDistance
-        self.directionCount = 1 << V.scalarCount
+//        self.directionCount = 1 << V.scalarCount
         self.nodeIndices = []
         self.delegate = buildRootDelegate()
     }
@@ -100,11 +100,13 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
                 return
             }
             else {
+                
                 let spawned = Self.spawnChildren(
                     box,
-                    directionCount,
+//                    1 << V.scalarCount,
+                    V.directionCount,
                     clusterDistance,
-                    &delegate
+                    /*&*/delegate
                 )
                 
                 if let nodePosition {
@@ -145,8 +147,9 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         } while !box.contains(point)
     }
     
+    
     private func expand(towards direction: Direction) {
-        let nailedDirection = (directionCount - 1) - direction
+        let nailedDirection = (V.directionCount - 1) - direction
         let nailedCorner = box.getCorner(of: nailedDirection)
         
         let _corner = box.getCorner(of: direction)
@@ -157,9 +160,9 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         let copiedCurrentNode = shallowCopy()
         var spawned = Self.spawnChildren(
             box,
-            directionCount,
+            V.directionCount,
             clusterDistance,
-            &delegate
+            /*&*/delegate
         )
         
         spawned[nailedDirection] = copiedCurrentNode
@@ -175,7 +178,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         _ _box: Box,
         _ _directionCount: Int,
         _ _clusterDistance: V.Scalar,
-        _ _delegate: inout D
+        _ _delegate: D
     ) -> [NDTree<V, D>] {
         var spawned = Array(repeating: _box, count: _directionCount)
         let center = _box.center
@@ -195,7 +198,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         var result = [NDTree<V, D>]()
         result.reserveCapacity(_directionCount)
         for b in spawned {
-            result.append(NDTree(box: b, clusterDistance: _clusterDistance, parentDelegate: &_delegate))
+            result.append(NDTree(box: b, clusterDistance: _clusterDistance, parentDelegate: /*&*/_delegate))
         }
         
         return result
@@ -203,7 +206,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     
     /// Copy object while holding the same reference to children
     private func shallowCopy() -> NDTree<V, D> {
-        let copy = NDTree(box: box, clusterDistance: clusterDistance, parentDelegate: &delegate)
+        let copy = NDTree(box: box, clusterDistance: clusterDistance, parentDelegate: /*&*/delegate)
         
         copy.nodeIndices = nodeIndices
         copy.nodePosition = nodePosition
@@ -268,12 +271,12 @@ extension NDTree {
 public extension NDTree where V.Scalar == Double {
     convenience init(
         box: Box,
-        parentDelegate: inout D
+        parentDelegate: D
     ) {
         self.init(
             box: box,
             clusterDistance: 1e-5,
-            parentDelegate: &parentDelegate
+            parentDelegate: /*&*/parentDelegate
         )
     }
 }

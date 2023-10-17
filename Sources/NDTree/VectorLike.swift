@@ -6,7 +6,13 @@
 //
 
 
+
+
 public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, ExpressibleByArrayLiteral, Hashable {
+    
+    
+    static var directionCount: Int { get }
+    
     
     associatedtype Scalar: FloatingPoint, Decodable, Encodable, Hashable, CustomDebugStringConvertible
     
@@ -41,6 +47,7 @@ public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, Expre
     subscript(index: Int) -> Self.Scalar { get set }
     
     var indices: Range<Int> { get }
+
     
     
     
@@ -67,3 +74,4 @@ public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, Expre
     
 
 }
+
