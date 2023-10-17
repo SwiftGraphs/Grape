@@ -22,7 +22,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
         var meanPosition = V.zero
         for n in sim.nodePositions {
-            meanPosition += n//.position
+            meanPosition += n  //.position
         }
         let delta = meanPosition * (self.strength / Double(sim.nodePositions.count))
 

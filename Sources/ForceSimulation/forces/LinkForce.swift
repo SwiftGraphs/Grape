@@ -50,17 +50,18 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
             }
 
             self.lookup = .buildFromLinks(linksOfIndices)
-            
 
             self.calculatedBias = linksOfIndices.map { l in
                 Double(lookup.count[l.source, default: 0])
-                / Double(lookup.count[l.target, default: 0] + lookup.count[l.source, default: 0])
+                    / Double(
+                        lookup.count[l.target, default: 0] + lookup.count[l.source, default: 0])
             }
 
-            
             let lookupWithOriginalID = LinkLookup.buildFromLinks(links)
-            self.calculatedLength = linkLength.calculated(for: self.links, connectionLookupTable: lookupWithOriginalID)
-            self.calculatedStiffness = linkStiffness.calculated(for: self.links, connectionLookupTable: lookupWithOriginalID)
+            self.calculatedLength = linkLength.calculated(
+                for: self.links, connectionLookupTable: lookupWithOriginalID)
+            self.calculatedStiffness = linkStiffness.calculated(
+                for: self.links, connectionLookupTable: lookupWithOriginalID)
         }
     }
 
@@ -102,13 +103,11 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
                 let _source = sim.nodePositions[s]
                 let _target = sim.nodePositions[t]
-                
 
                 let b = self.calculatedBias[i]
 
-                position = (_target + sim.nodeVelocities[t] - _source - sim.nodeVelocities[s]).jiggled()
-//                    (_target.position + _target.velocity - _source.position - _source.velocity)
-                    
+                position = (_target + sim.nodeVelocities[t] - _source - sim.nodeVelocities[s])
+                    .jiggled()
 
                 l = position.length()
 
@@ -116,18 +115,21 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
                 position *= l
 
-//                sim.nodes[s].velocity += position * b
-//                sim.nodes[t].velocity -= position * (1 - b)
+                //                sim.nodes[s].velocity += position * b
+                //                sim.nodes[t].velocity -= position * (1 - b)
+
+                sim.nodeVelocities[s] += position * (1 - b)
+                sim.nodeVelocities[t] -= position * b
                 
-                sim.nodeVelocities[s] += position * b //(1-b)
-                sim.nodeVelocities[t] -= position * (1 - b)
+                
+//                sim.nodeVelocities[s] += position * b
+//                sim.nodeVelocities[t] -= position * (1 - b)
 
             }
         }
     }
 
 }
-
 
 extension LinkForce.LinkLookup {
     static func buildFromLinks(_ links: [EdgeID<_NodeID>]) -> Self {
@@ -145,15 +147,18 @@ extension LinkForce.LinkLookup {
     }
 }
 
-
 protocol PrecalculatableEdgeProperty {
     associatedtype NodeID: Hashable
     associatedtype V: VectorLike where V.Scalar == Double
-    func calculated(for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>) -> [Double]
+    func calculated(
+        for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>
+    ) -> [Double]
 }
 
 extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
-    func calculated(for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>) -> [V.Scalar] {
+    func calculated(
+        for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>
+    ) -> [V.Scalar] {
         switch self {
         case .constant(let value):
             return links.map { _ in value }
@@ -166,7 +171,10 @@ extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
 }
 
 extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
-    func calculated(for links: [EdgeID<NodeID>], connectionLookupTable lookup: LinkForce<NodeID, V>.LinkLookup<NodeID>) -> [Double] {
+    func calculated(
+        for links: [EdgeID<NodeID>],
+        connectionLookupTable lookup: LinkForce<NodeID, V>.LinkLookup<NodeID>
+    ) -> [Double] {
         switch self {
         case .constant(let value):
             return links.map { _ in value }
@@ -174,9 +182,10 @@ extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
             return links.map { link in
                 f(link, lookup)
             }
-        case .weightedByDegree(k: let k):
+        case .weightedByDegree(let k):
             return links.map { link in
-                k / Double(
+                k
+                    / Double(
                         min(
                             lookup.count[link.source, default: 0],
                             lookup.count[link.target, default: 0]

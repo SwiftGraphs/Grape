@@ -14,10 +14,11 @@ public protocol Traversable {
     @inlinable func visitPostOrdered(
         _ action: (Self) -> ()
     )
+    
 }
 
 
-extension NDTree {
+extension NDTree: Traversable {
     
     @inlinable public func visit(shouldVisitChildren: (NDTree<V,D>) -> Bool) {
         if shouldVisitChildren(self), let children {

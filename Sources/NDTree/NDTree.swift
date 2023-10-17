@@ -267,7 +267,7 @@ extension NDTree {
     @inlinable public var isInternalNode: Bool { children != nil }
     
     @inlinable public var isFilledLeaf: Bool { nodePosition != nil }
-    @inlinable public var idEmptyLeaf: Bool { nodePosition == nil }
+    @inlinable public var isEmptyLeaf: Bool { nodePosition == nil }
 }
 
 

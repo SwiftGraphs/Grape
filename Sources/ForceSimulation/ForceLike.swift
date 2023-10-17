@@ -12,14 +12,12 @@ public protocol ForceLike {
     func apply(alpha: Double)
 }
 
-
 public protocol NDTreeBasedForceLike: ForceLike {
     associatedtype TD: NDTreeDelegate
 }
 
 extension Array where Element: NDTreeBasedForceLike {
     public func combined() {
-        
+
     }
 }
-
