@@ -19,6 +19,8 @@
 
 
 
+<br/>
+<br/>
 
 
 
@@ -29,8 +31,8 @@ This is a force directed graph visualizing the data from [Force Directed Graph C
 https://github.com/li3zhen1/Grape/assets/45376537/ea1ccea3-5717-4cfe-a696-c89e75ca9d3b
 
 
-
-
+<br/>
+<br/>
 
 
 ### Features
@@ -47,6 +49,9 @@ https://github.com/li3zhen1/Grape/assets/45376537/ea1ccea3-5717-4cfe-a696-c89e75
 | &emsp;RadialForce | ✅ | ✅ |  |
 | **SwiftUI View** | 🚧 |  |  |
 
+
+<br/>
+<br/>
 
 ### Usage
 
@@ -73,6 +78,8 @@ sim.createCollideForce(radius: .constant(3))
 See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details. Documentations will be added soon.
 
 
+<br/>
+<br/>
 
 ### Performance
 
@@ -81,6 +88,8 @@ Grape uses simd to calculate position and velocity. Currently it takes ~0.12 sec
 Due to the iteration over simd lanes, going 3D will hurt performance. (~0.19 seconds for the same graph and same configs.)
 
 
+<br/>
+<br/>
 
 ### Credits
 
