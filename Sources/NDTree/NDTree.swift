@@ -32,7 +32,6 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     public let clusterDistance: V.Scalar
     private let clusterDistanceSquared: V.Scalar
     
-//    private let directionCount: Int
     
     public private(set) var delegate: D
     
@@ -44,7 +43,6 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         self.box = box
         self.clusterDistance = clusterDistance
         self.clusterDistanceSquared = clusterDistance * clusterDistance
-//        self.directionCount = 1 << V.scalarCount
         self.nodeIndices = []
         self.delegate = parentDelegate.spawn()
     }
@@ -57,7 +55,6 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         self.box = box
         self.clusterDistance = clusterDistance
         self.clusterDistanceSquared = clusterDistance * clusterDistance
-//        self.directionCount = 1 << V.scalarCount
         self.nodeIndices = []
         self.delegate = buildRootDelegate()
     }
@@ -103,11 +100,10 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
                 
                 let spawned = Self.spawnChildren(
                     box,
-//                    1 << V.scalarCount,
                     V.directionCount,
                     clusterDistance,
                     /*&*/delegate
-                ) // didn't copy delegate
+                )
                 
                 if let nodePosition {
                     let direction = getIndexInChildren(nodePosition, relativeTo: box.center)
@@ -156,7 +152,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         let nailedCorner = box.getCorner(of: nailedDirection)
         
         let _corner = box.getCorner(of: direction)
-        let expandedCorner = _corner+_corner - nailedCorner
+        let expandedCorner = (_corner+_corner) - nailedCorner
         
         let newRootBox = Box(nailedCorner, expandedCorner)
         
@@ -183,7 +179,12 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         _ _clusterDistance: V.Scalar,
         _ _delegate: D
     ) -> [NDTree<V, D>] {
+        
+        
         var spawned = Array(repeating: _box, count: _directionCount)
+        
+        
+        
         let center = _box.center
         
         for j in spawned.indices {
@@ -219,6 +220,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         return copy
     }
     
+    
     private func getIndexInChildren(_ point: V, relativeTo originalPoint: V) -> Int {
         var index = 0
         for i in 0..<V.scalarCount {
@@ -228,8 +230,8 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         }
         return index
     }
-}
 
+}
 
 extension NDTree where D.NodeID == Int {
     public convenience init(
