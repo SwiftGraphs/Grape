@@ -55,7 +55,7 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         velocityDecay: Double = 0.6,
 
         setInitialStatus getInitialStatus: (
-            (NodeID) -> NodeStatus
+            (NodeID) -> V
         )? = nil
 
     ) {
@@ -70,7 +70,7 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         self.velocityDecay = velocityDecay
 
         if let getInitialStatus {
-            self.nodes = nodeIds.map(getInitialStatus)
+            self.nodes = nodeIds.map { id in NodeStatus(position: getInitialStatus(id), velocity: .zero) }
         } else {
             self.nodes = Array(repeating: .zero, count: nodeIds.count)
         }

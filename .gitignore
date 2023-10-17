@@ -9,3 +9,4 @@ DerivedData/
 *.ts
 /.vscode
 /.swiftpm
+/Sources/_ForceSimulation
