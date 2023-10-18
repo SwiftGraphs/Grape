@@ -16,7 +16,8 @@
 </p>
 
 <p align="center">A Swift library for force simulation and graph visualization.
-<img width="1355" alt="ForceDirected" src="https://github.com/li3zhen1/Grape/assets/45376537/800a2dd6-18d4-493f-a971-6cd1164aeb11"></p>
+  <img width="712" alt="ForceDirected" src="https://github.com/li3zhen1/Grape/assets/45376537/1cbc938e-55a8-438e-b20b-3e52577ac30a">
+</p>
 
 
 
@@ -27,9 +28,21 @@
 
 ### Examples
 
-This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), running at 120FPS on a SwiftUI Canvas. Take a closer look at the animation:
+#### Force Directed Graph
+This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), iterating at 120FPS. Take a closer look at the animation:
 
 https://github.com/li3zhen1/Grape/assets/45376537/ea1ccea3-5717-4cfe-a696-c89e75ca9d3b
+
+<br/>
+
+#### Lattice Simulation
+
+This is a 30x30 force directed lattice like [Force Directed Lattice](https://observablehq.com/@d3/force-directed-lattice):
+
+https://github.com/li3zhen1/Grape/assets/45376537/86c6b155-105f-44d8-a280-de70f55fefd2
+
+
+
 
 
 <br/>
