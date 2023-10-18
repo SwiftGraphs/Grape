@@ -56,9 +56,10 @@ https://github.com/li3zhen1/Grape/assets/45376537/ea1ccea3-5717-4cfe-a696-c89e75
 
 ### Usage
 
-Grape currently include 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is a N-dimensional tree data structure, which is used to accelerate the force simulation. `ForceSimulation` is a force simulation library, which is used to simulate the force between nodes in a graph. Both of them are based on SIMD-like data structures. 
+#### Basic Simulation
+Grape currently includes 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is a N-dimensional tree data structure, which is used to accelerate the force simulation. `ForceSimulation` is a force simulation library, which is used to simulate the force between nodes in a graph. Both of them are based on SIMD-like data structures. 
 
-The package specifically exposes concrete types for 2D and 3D simulation, so you can create a 2D simulation like this:
+The package specifically exposes types for 2D and 3D simulation, so you can create a 2D simulation like this:
 
 ```swift
 import NDTree
@@ -74,9 +75,33 @@ sim.createManyBodyForce(strength: -12)
 sim.createLinkForce(links)
 sim.createCenterForce(center: Vector2d(0, 0), strength: 0.4)
 sim.createCollideForce(radius: .constant(3))
+
 ```
 
-See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details. Documentations will be added soon.
+See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details. 
+
+
+#### Extensibility
+
+To integrate Grape into platforms where import simd isn't supported, you need to create a struct conforming to the VectorLike protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
+
+```swift
+   struct SuperCool4DVector { ... }
+   extension SuperCool4DVector: VectorLike {
+       // ... other required implementations should have same semantics as SIMD protocol provided in Foundation ...
+       public static let directionCount = 16 // Indicating that a node in a 4D tree should have 2^4 subdivisions
+   }
+   
+   public protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}
+   public typealias HyperoctBox = NDBox<SuperCool4DVector>
+   public typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
+
+   public typealias Simulation4D<NodeID> = Simulation<NodeID, Vector4d> where NodeID: Hashable
+
+```
+
+Also, this is how you create a 4D simulation. (Though I don't know what good it does)
+
 
 
 <br/>
