@@ -11,6 +11,7 @@ enum LinkForceError: Error {
     case useBeforeSimulationInitialized
 }
 
+/// A force that represents links between nodes. 
 final public class LinkForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
@@ -157,6 +158,7 @@ protocol PrecalculatableEdgeProperty {
 }
 
 
+
 extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
     func calculated(
         for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>
@@ -171,6 +173,8 @@ extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
         }
     }
 }
+
+
 
 extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
     func calculated(
@@ -197,7 +201,12 @@ extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
     }
 }
 
+
+
 extension Simulation {
+
+
+    /// Create a link force, Similar to https://d3js.org/d3-force/link
     @discardableResult
     public func createLinkForce(
         _ links: [EdgeID<NodeID>],

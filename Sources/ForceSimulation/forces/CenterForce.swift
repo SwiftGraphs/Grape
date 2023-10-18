@@ -6,6 +6,7 @@
 //
 import NDTree
 
+/// A force that represents links between nodes.
 final public class CenterForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     public var center: V
@@ -35,6 +36,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
 extension Simulation {
 
+    /// Create a center force, See: https://d3js.org/d3-force/center
     @discardableResult
     public func createCenterForce(center: V, strength: Double = 0.1) -> CenterForce<NodeID, V> {
         let f = CenterForce<NodeID, V>(center: center, strength: strength)

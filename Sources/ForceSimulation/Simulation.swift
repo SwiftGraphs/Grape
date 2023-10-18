@@ -11,17 +11,13 @@ enum SimulationError: Error {
     case subscriptionToNonexistentNode
 }
 
+/// An N-Dimensional force simulation.
 public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
+    /// The type of the vector used in the simulation.
+    /// Usually this is `Double` if you are on Apple platforms.
     public typealias Scalar = V.Scalar
 
-//    public struct NodeStatus {
-//        public var position: V
-//        public var velocity: V
-//        public var fixation: V?
-//
-//        static var zero: NodeStatus { .init(position: .zero, velocity: .zero) }
-//    }
 
     public let initializedAlpha: Double
 
@@ -33,10 +29,6 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
 
     public internal(set) var forces: [any ForceLike] = []
 
-    /// This is only used for initialization.
-    /// Position, velocities, fixations are moved to the arrays below
-    /// to utilize cache hit
-//    private var nodes: [NodeStatus]
 
     public internal(set) var nodePositions: [V]
     public internal(set) var nodeVelocities: [V]
@@ -46,6 +38,15 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
 
     @usableFromInline internal private(set) var nodeIdToIndexLookup: [NodeID: Int] = [:]
 
+    /// Create a new simulation.
+    /// - Parameters:
+    ///   - nodeIds: Hashable identifiers for the nodes. Force simulation calculate them by order once created.
+    ///   - alpha: 
+    ///   - alphaMin: 
+    ///   - alphaDecay: The larger the value, the faster the simulation converges to the final result.
+    ///   - alphaTarget: 
+    ///   - velocityDecay: 
+    ///   - getInitialPosition: The closure to set the initial position of the node. If not provided, the initial position is set to zero.
     public init(
         nodeIds: [NodeID],
         alpha: Double = 1,
@@ -91,6 +92,8 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
         return nodeIdToIndexLookup[nodeId]!
     }
 
+    /// Run the simulation for a number of iterations.
+    /// - Parameter iterationCount: Default to 1.
     public func tick(iterationCount: UInt = 1) {
         for _ in 0..<iterationCount {
             alpha += (alphaTarget - alpha) * alphaDecay

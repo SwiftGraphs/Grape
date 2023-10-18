@@ -40,6 +40,8 @@ struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, 
 
 }
 
+
+/// A force that prevents nodes from overlapping.
 public final class CollideForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
@@ -178,6 +180,7 @@ extension CollideForce.CollideRadius: PrecalculatableNodeProperty {
 
 extension Simulation {
 
+    /// Create a collide force, See: https://d3js.org/d3-force/collide
     @discardableResult
     public func createCollideForce(
         radius: CollideForce<NodeID, V>.CollideRadius = .constant(3.0),

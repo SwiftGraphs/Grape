@@ -6,7 +6,10 @@
 //
 import NDTree
 
+
 // TODO: https://forums.swift.org/t/deterministic-randomness-in-swift/20835/5
+
+/// A random number generator that generates deterministic random numbers.
 public struct LinearCongruentialGenerator {
     @usableFromInline internal static let a: Double = 1_664_525
     @usableFromInline internal static let c: Double = 1_013_904_223
@@ -51,6 +54,7 @@ extension Vector2d {
     }
 }
 
+/// A Hashable identifier for an edge.
 public struct EdgeID<NodeID>: Hashable where NodeID: Hashable {
     public let source: NodeID
     public let target: NodeID

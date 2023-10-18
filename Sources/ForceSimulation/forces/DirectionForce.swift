@@ -7,6 +7,7 @@
 
 import NDTree
 
+/// A force that moves nodes to a target position.
 final public class DirectionForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
@@ -93,6 +94,7 @@ extension DirectionForce.Direction {
 
 public extension Simulation {
 
+    /// Create a direction force, Similar to https://d3js.org/d3-force/position
     @discardableResult
     func createPositionForce(
         direction: DirectionForce<NodeID, V>.Direction,
