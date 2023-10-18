@@ -83,7 +83,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 #### Extensibility
 
-To integrate Grape into platforms where import simd isn't supported, you need to create a struct conforming to the VectorLike protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
+To integrate Grape into platforms where `import simd` isn't supported, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
 
 ```swift
    struct SuperCool4DVector { ... }
