@@ -59,7 +59,7 @@ https://github.com/li3zhen1/Grape/assets/45376537/ea1ccea3-5717-4cfe-a696-c89e75
 #### Basic Simulation
 Grape currently includes 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is a N-dimensional tree data structure, which is used to accelerate the force simulation. `ForceSimulation` is a force simulation library, which is used to simulate the force between nodes in a graph. Both of them are based on SIMD-like data structures. 
 
-The package specifically exposes types for 2D and 3D simulation, so you can create a 2D simulation like this:
+The package specifically exposes types for 2D and 3D simulation, so you can simply create one by using `Simulation2D` or `Simulation3D`:
 
 ```swift
 import NDTree
@@ -80,6 +80,7 @@ sim.createCollideForce(radius: .constant(3))
 
 See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details. 
 
+<br/>
 
 #### Extensibility
 
