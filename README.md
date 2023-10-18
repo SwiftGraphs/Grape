@@ -57,9 +57,8 @@ https://github.com/li3zhen1/Grape/assets/45376537/ea1ccea3-5717-4cfe-a696-c89e75
 ### Usage
 
 #### Basic Simulation
-Grape currently includes 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is a N-dimensional tree data structure, which is used to accelerate the force simulation. `ForceSimulation` is a force simulation library, which is used to simulate the force between nodes in a graph. Both of them are based on SIMD-like data structures. 
 
-The package specifically exposes types for 2D and 3D simulation, so you can simply create one by using `Simulation2D` or `Simulation3D`:
+The basic concepts of simulations and forces can be found here: [Force simulations - D3](https://d3js.org/d3-force/simulation). You can simply create 2D or 3D simulations by using `Simulation2D` or `Simulation3D`:
 
 ```swift
 import NDTree
@@ -83,6 +82,8 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 <br/>
 
 #### Extensibility
+
+Grape currently includes 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is a N-dimensional tree data structure, which is used to accelerate the force simulation. `ForceSimulation` is a force simulation library, which is used to simulate the force between nodes in a graph. Both of them are generic types that work with any SIMD-like data structures. 
 
 To integrate Grape into platforms where `import simd` isn't supported, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
 
