@@ -1,6 +1,7 @@
 <p align="center">
-  <img alt="grap-icon" src="https://github.com/li3zhen1/Grape/assets/45376537/0e23c50e-9b2c-4c3f-ad59-9ae03773ab78" height="96">
+  <img alt="grape-icon" src="https://github.com/li3zhen1/Grape/assets/45376537/4ab08ea1-22e6-4fe8-ab2b-99ae325b46a6" height="96">
   <h1 align="center">Grape</h1>
+
 </p>
 
 <p align="center">
