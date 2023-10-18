@@ -7,20 +7,38 @@
 
 
 
-
+/// A vector-like type that can be used in a `ForceSimulation`.
+/// The members required by `VectorLike` are basically the same as `simd`'s `SIMD` protocol.
+/// `NDTree` only rely on this protocol so that you can implement your structure on the platforms
+/// that do not support `simd`.
 public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, ExpressibleByArrayLiteral, Hashable {
     
-    
+    /// The children count of a node in NDTree.
+    /// Should be equal to the 2^(dimension of the vector). 
+    /// For example, a 2D vector should have 4 children, a 3D vector should have 8 children.
+    /// This property should be implemented even if you are using `simd`.
     static var directionCount: Int { get }
     
     
     associatedtype Scalar: FloatingPoint, Decodable, Encodable, Hashable, CustomDebugStringConvertible
     
+    /// The length of the vector squared.
+    /// This property should be implemented even if you are using `simd`.
     @inlinable func lengthSquared() -> Scalar
+
+    /// The length of the vector.
+    /// This property should be implemented even if you are using `simd`.
     @inlinable func length() -> Scalar
+
+    /// The distance to another vector, squared.
+    /// This property should be implemented even if you are using `simd`.
     @inlinable func distanceSquared(to: Self) -> Scalar
+
+    /// The distance to another vector.
+    /// This property should be implemented even if you are using `simd`.
     @inlinable func distance(to: Self) -> Scalar
     
+
     @inlinable static func * (a: Self, b: Double) -> Self
     @inlinable static func / (a: Self, b: Double) -> Self
     
@@ -37,8 +55,6 @@ public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, Expre
     @inlinable static func *= (a: inout Self, b: Scalar)
     @inlinable static func /= (a: inout Self, b: Scalar)
     
-    
-    /// the same members as simd
     @inlinable static var scalarCount: Int { get }
     @inlinable static var zero: Self { get }
 

@@ -20,6 +20,8 @@ public protocol Traversable {
 
 extension NDTree: Traversable {
     
+    /// Visit the tree in pre-order.
+    /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
     @inlinable public func visit(shouldVisitChildren: (NDTree<V,D>) -> Bool) {
         if shouldVisitChildren(self), let children {
             // this is an internal node
@@ -29,7 +31,8 @@ extension NDTree: Traversable {
         }
     }
     
-
+    /// Visit the tree in post-order.
+    /// - Parameter action: a closure that takes a tree as its argument.
     @inlinable public func visitPostOrdered(
         _ action: (NDTree<V, D>) -> ()
     ) {

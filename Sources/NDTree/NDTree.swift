@@ -1,19 +1,34 @@
 //
-//  File.swift
-//  
+//  NDTree.swift
+//   
 //
 //  Created by li3zhen1 on 10/14/23.
 //
 
+/// The data structure carried by a node of NDTree
+/// It receives notifications when a node is added or removed on a node, regardless of whether the node is internal or leaf.
+/// It is designed to calculate properties like a box's center of mass.
 public protocol NDTreeDelegate {
     associatedtype NodeID: Hashable
     associatedtype V: VectorLike
+
     mutating func didAddNode(_ node: NodeID, at position: V)
+
     mutating func didRemoveNode(_ node: NodeID, at position: V)
+
+    /// Copy object. This method is called when the root box is not large enough to cover the new nodes.
+    /// The method
     func copy() -> Self
+
+    /// Create new object with properties set to initial value as if the box is empty.
+    /// However, you can still carry something like a closure to get information from outside.
+    /// This method is called when a leaf box is splited due to the insertion of a new node in this box.
     func spawn() -> Self
 }
 
+/// A node in NDTree
+/// - Note: `NDTree` is a generic type that can be used in any dimension.
+///        `NDTree` is a reference type.
 public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V {
     
     public typealias NodeIndex = D.NodeID

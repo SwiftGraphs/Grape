@@ -11,6 +11,7 @@ enum ManyBodyForceError: Error {
     case buildQuadTreeBeforeSimulationInitialized
 }
 
+
 struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
 
     public var accumulatedMass: Double = .zero
@@ -74,6 +75,7 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
     }
 }
 
+/// A force that simulate the many-body force. See: https://d3js.org/d3-force/many-body
 final public class ManyBodyForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
@@ -305,7 +307,7 @@ extension ManyBodyForce.NodeMass: PrecalculatableNodeProperty {
 }
 
 extension Simulation {
-
+    /// Create a many-body force. See: https://d3js.org/d3-force/many-body
     @discardableResult
     public func createManyBodyForce(
         strength: Double,

@@ -10,6 +10,7 @@ let package = Package(
         .iOS(.v13),
         .watchOS(.v10),
     ],
+
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
 
@@ -24,6 +25,12 @@ let package = Package(
         ),
         
     ],
+
+    dependencies: [
+        // other dependencies
+        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.1.0"),
+    ],
+
     targets: [
         
         .target(
