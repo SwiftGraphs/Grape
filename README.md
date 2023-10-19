@@ -91,11 +91,11 @@ Almost all the types in Grape work with any SIMD-like data structures. To integr
 /// as the SIMD protocol provided in Foundation.
 struct SuperCool4DVector: VectorLike { ... }
 
-public protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}
-public typealias HyperoctBox = NDBox<SuperCool4DVector>
-public typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
+protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}
+typealias HyperoctBox = NDBox<SuperCool4DVector>
+typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
 
-public typealias Simulation4D<NodeID> = Simulation<NodeID, Vector4d> where NodeID: Hashable
+typealias Simulation4D<NodeID: Hashable> = Simulation<NodeID, Vector4d>
 ```
 
 Also, this is how you create a 4D simulation with or without `simd_double4`. (Though I don't know what good it does)
