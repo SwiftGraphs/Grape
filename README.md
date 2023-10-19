@@ -105,21 +105,18 @@ Grape currently includes 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is
 To integrate Grape into platforms where `import simd` isn't supported, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
 
 ```swift
-   struct SuperCool4DVector { ... }
-   extension SuperCool4DVector: VectorLike {
-       // ... other required implementations should have same semantics as SIMD protocol provided in Foundation ...
-       public static let directionCount = 16 // Indicating that a node in a 4D tree should have 2^4 subdivisions
-   }
-   
-   public protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}
-   public typealias HyperoctBox = NDBox<SuperCool4DVector>
-   public typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
+/// All required implementations should have same semantics
+/// as the SIMD protocol provided in Foundation.
+struct SuperCool4DVector: VectorLike { ... }
 
-   public typealias Simulation4D<NodeID> = Simulation<NodeID, Vector4d> where NodeID: Hashable
+public protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}
+public typealias HyperoctBox = NDBox<SuperCool4DVector>
+public typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
 
+public typealias Simulation4D<NodeID> = Simulation<NodeID, Vector4d> where NodeID: Hashable
 ```
 
-Also, this is how you create a 4D simulation. (Though I don't know what good it does)
+Also, this is how you create a 4D simulation with or without `simd_double4`. (Though I don't know what good it does)
 
 
 
