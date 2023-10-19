@@ -2,7 +2,7 @@ import Foundation
 
 // Define the paths for the files
 let htmlFilePath = "./docs/documentation/forcesimulation/index.html"
-let iconSourcePath = "./assets/grape_icon.png"
+let iconSourcePath = "./assets/grape_icon_256.png"
 let iconDestPath = "./docs/favicon.png"
 
 do {
