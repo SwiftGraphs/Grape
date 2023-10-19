@@ -21,7 +21,7 @@ jobs:
       # Mandatory settings for GitHub Pages deployment
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: macos-13  # to use the latest version that is available on  GitHub Actions
+    runs-on: self-hosted  # to use the latest version that is available on  GitHub Actions
     steps:
     - name: Checkout 🛎️
       uses: actions/checkout@v3
