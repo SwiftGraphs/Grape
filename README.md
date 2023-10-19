@@ -17,21 +17,19 @@
 
 
 
-<br/>
-<br/>
 
 
 
-### Examples
+## Examples
 
-#### Force Directed Graph
+### Force Directed Graph
 This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), iterating at 120FPS. Take a closer look at the animation:
 
 https://github.com/li3zhen1/Grape/assets/45376537/ea1ccea3-5717-4cfe-a696-c89e75ca9d3b
 
 <br/>
 
-#### Lattice Simulation
+### Lattice Simulation
 
 This is a 30x30 force directed lattice like [Force Directed Lattice](https://observablehq.com/@d3/force-directed-lattice):
 
@@ -39,13 +37,10 @@ https://github.com/li3zhen1/Grape/assets/45376537/86c6b155-105f-44d8-a280-de70f5
 
 
 
-
-
-<br/>
 <br/>
 
 
-### Features
+## Features
 
 |   | 2D simd | ND simd | Metal |
 | --- | --- | --- | --- |
@@ -61,11 +56,10 @@ https://github.com/li3zhen1/Grape/assets/45376537/86c6b155-105f-44d8-a280-de70f5
 
 
 <br/>
-<br/>
 
-### Usage
+## Usage
 
-#### Basic Simulation
+### Basic
 
 The basic concepts of simulations and forces can be found here: [Force simulations - D3](https://d3js.org/d3-force/simulation). You can simply create 2D or 3D simulations by using `Simulation2D` or `Simulation3D`:
 
@@ -98,7 +92,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 <br/>
 
-#### Extensibility
+### Advanced
 
 Grape currently includes 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is a N-dimensional tree data structure, which is used to accelerate the force simulation. `ForceSimulation` is a force simulation library, which is used to simulate the force between nodes in a graph. Both of them are generic types that work with any SIMD-like data structures. 
 
@@ -119,11 +113,9 @@ public typealias Simulation4D<NodeID> = Simulation<NodeID, Vector4d> where NodeI
 Also, this is how you create a 4D simulation with or without `simd_double4`. (Though I don't know what good it does)
 
 
-
-<br/>
 <br/>
 
-### Performance
+## Performance
 
 Grape uses simd to calculate position and velocity. Currently it takes ~0.12 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max)
 
@@ -131,8 +123,7 @@ Due to the iteration over simd lanes, going 3D will hurt performance. (~0.16 sec
 
 
 <br/>
-<br/>
 
-### Credits
+## Credits
 
 This library has been greatly influenced by the outstanding work done by [D3.js (Data-Driven Documents)](https://d3js.org).
