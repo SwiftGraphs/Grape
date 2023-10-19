@@ -48,13 +48,10 @@ extension VectorLike where Scalar == Double {
     }
 }
 
-extension Vector2d {
-    @inlinable public func jiggled() -> Self {
-        return Vector2d(x.jiggled(), y.jiggled())
-    }
-}
 
-/// A Hashable identifier for an edge.
+
+/// A Hashable identifier for an edge. It’s a utility type for preserving the
+/// `Hashable` conformance.
 public struct EdgeID<NodeID>: Hashable where NodeID: Hashable {
     public let source: NodeID
     public let target: NodeID
@@ -64,6 +61,7 @@ public struct EdgeID<NodeID>: Hashable where NodeID: Hashable {
         self.target = target
     }
 }
+
 
 public protocol PrecalculatableNodeProperty {
     associatedtype NodeID: Hashable

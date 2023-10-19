@@ -84,6 +84,14 @@ sim.createLinkForce(links)
 sim.createCenterForce(center: Vector2d(0, 0), strength: 0.4)
 sim.createCollideForce(radius: .constant(3))
 
+/// Force is ready to start! run `tick` to iterate the simulation.
+
+for i in 0..<120 {
+    sim.tick()
+    let positions = sim.nodePositions
+    /// Do something with the positions.
+}
+
 ```
 
 See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details. 
@@ -122,7 +130,7 @@ Also, this is how you create a 4D simulation. (Though I don't know what good it 
 
 Grape uses simd to calculate position and velocity. Currently it takes ~0.12 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max)
 
-Due to the iteration over simd lanes, going 3D will hurt performance. (~0.19 seconds for the same graph and same configs.)
+Due to the iteration over simd lanes, going 3D will hurt performance. (~0.16 seconds for the same graph and same configs.)
 
 
 <br/>

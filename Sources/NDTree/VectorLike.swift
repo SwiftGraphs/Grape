@@ -13,12 +13,6 @@
 /// that do not support `simd`.
 public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, ExpressibleByArrayLiteral, Hashable {
     
-    /// The children count of a node in NDTree.
-    /// Should be equal to the 2^(dimension of the vector). 
-    /// For example, a 2D vector should have 4 children, a 3D vector should have 8 children.
-    /// This property should be implemented even if you are using `simd`.
-    static var directionCount: Int { get }
-    
     
     associatedtype Scalar: FloatingPoint, Decodable, Encodable, Hashable, CustomDebugStringConvertible
     

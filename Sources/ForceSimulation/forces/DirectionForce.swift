@@ -12,29 +12,31 @@ final public class DirectionForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
     public enum Direction {
-        case x 
-        case y 
+        case x
+        case y
         case entryOfVector(Int)
     }
     public enum Strength {
         case constant(Double)
-        case varied( (NodeID) -> Double )
+        case varied((NodeID) -> Double)
     }
 
     public enum TargetOnDirection {
         case constant(V.Scalar)
-        case varied( (NodeID) -> V.Scalar )
+        case varied((NodeID) -> V.Scalar)
     }
-    
+
     public var strength: Strength
     public var direction: Int
     public var calculatedStrength: [Double] = []
     public var targetOnDirection: TargetOnDirection
     public var calculatedTargetOnDirection: [V.Scalar] = []
 
-    internal init(direction: Direction, targetOnDirection: TargetOnDirection, strength: Strength = .constant(1.0)) {
-        
-        
+    internal init(
+        direction: Direction, targetOnDirection: TargetOnDirection,
+        strength: Strength = .constant(1.0)
+    ) {
+
         self.strength = strength
         self.direction = direction.lane
         self.targetOnDirection = targetOnDirection
@@ -50,17 +52,17 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
-        let lane = self.direction 
+        let lane = self.direction
         for i in sim.nodePositions.indices {
-            sim.nodeVelocities[i][lane] += (
-                self.calculatedTargetOnDirection[i] - sim.nodePositions[i][lane]
-            ) * self.calculatedStrength[i] * alpha
+            sim.nodeVelocities[i][lane] +=
+                (self.calculatedTargetOnDirection[i] - sim.nodePositions[i][lane])
+                * self.calculatedStrength[i] * alpha
         }
     }
 }
 
 extension DirectionForce.Strength: PrecalculatableNodeProperty {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double]  {
+    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
         switch self {
         case .constant(let value):
             return Array(repeating: value, count: simulation.nodeIds.count)
@@ -71,7 +73,7 @@ extension DirectionForce.Strength: PrecalculatableNodeProperty {
 }
 
 extension DirectionForce.TargetOnDirection: PrecalculatableNodeProperty {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double]  {
+    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
         switch self {
         case .constant(let value):
             return Array(repeating: value, count: simulation.nodeIds.count)
@@ -81,9 +83,8 @@ extension DirectionForce.TargetOnDirection: PrecalculatableNodeProperty {
     }
 }
 
-
 extension DirectionForce.Direction {
-    @inlinable var lane: Int { 
+    @inlinable var lane: Int {
         switch self {
         case .x: return 0
         case .y: return 1
@@ -92,11 +93,11 @@ extension DirectionForce.Direction {
     }
 }
 
-public extension Simulation {
+extension Simulation {
 
     /// Create a direction force, Similar to https://d3js.org/d3-force/position
     @discardableResult
-    func createPositionForce(
+    public func createPositionForce(
         direction: DirectionForce<NodeID, V>.Direction,
         targetOnDirection: DirectionForce<NodeID, V>.TargetOnDirection,
         strength: DirectionForce<NodeID, V>.Strength = .constant(1.0)
@@ -111,4 +112,3 @@ public extension Simulation {
         return force
     }
 }
-

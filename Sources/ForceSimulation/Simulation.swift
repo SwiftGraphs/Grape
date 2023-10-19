@@ -18,20 +18,31 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
     /// Usually this is `Double` if you are on Apple platforms.
     public typealias Scalar = V.Scalar
 
-
     public let initializedAlpha: Double
 
     public var alpha: Double
     public var alphaMin: Double
     public var alphaDecay: Double
     public var alphaTarget: Double
+    
     public var velocityDecay: V.Scalar
 
     public internal(set) var forces: [any ForceLike] = []
 
-
+    /// The position of points stored in simulation. 
+    /// Ordered as the nodeIds you passed in when initializing simulation.
+    /// They are always updated.
     public internal(set) var nodePositions: [V]
+    
+    /// The velocities of points stored in simulation.
+    /// Ordered as the nodeIds you passed in when initializing simulation.
+    /// They are always updated.
     public internal(set) var nodeVelocities: [V]
+    
+    
+    /// The fixed positions of points stored in simulation.
+    /// Ordered as the nodeIds you passed in when initializing simulation.
+    /// They are always updated.
     public internal(set) var nodeFixations: [V?]
 
     public private(set) var nodeIds: [NodeID]
@@ -41,11 +52,11 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
     /// Create a new simulation.
     /// - Parameters:
     ///   - nodeIds: Hashable identifiers for the nodes. Force simulation calculate them by order once created.
-    ///   - alpha: 
-    ///   - alphaMin: 
+    ///   - alpha:
+    ///   - alphaMin:
     ///   - alphaDecay: The larger the value, the faster the simulation converges to the final result.
-    ///   - alphaTarget: 
-    ///   - velocityDecay: 
+    ///   - alphaTarget:
+    ///   - velocityDecay:
     ///   - getInitialPosition: The closure to set the initial position of the node. If not provided, the initial position is set to zero.
     public init(
         nodeIds: [NodeID],
@@ -78,8 +89,7 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
 
         self.nodeVelocities = Array(repeating: .zero, count: nodeIds.count)
         self.nodeFixations = Array(repeating: nil, count: nodeIds.count)
-        
-        
+
         self.nodeIdToIndexLookup.reserveCapacity(nodeIds.count)
         for i in nodeIds.indices {
             self.nodeIdToIndexLookup[nodeIds[i]] = i
@@ -88,11 +98,20 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
 
     }
 
-    @inlinable internal func getIndex(of nodeId: NodeID) -> Int {
+    /// Get the index in the nodeArray for `nodeId`
+    /// - **Complexity**: O(1)
+    public func getIndex(of nodeId: NodeID) -> Int {
         return nodeIdToIndexLookup[nodeId]!
+    }
+    
+    /// Reset the alpha. The points will move faster as alpha gets larger.
+    public func resetAlpha(_ alpha: Double) {
+        self.alpha = alpha
     }
 
     /// Run the simulation for a number of iterations.
+    /// Goes through all the forces created.
+    /// The forces will call  `apply` then the positions and velocities will be modified.
     /// - Parameter iterationCount: Default to 1.
     public func tick(iterationCount: UInt = 1) {
         for _ in 0..<iterationCount {
@@ -115,11 +134,10 @@ public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, 
     }
 }
 
-
 #if canImport(simd)
 
-public typealias Simulation2D<NodeID> = Simulation<NodeID, Vector2d> where NodeID: Hashable
+    public typealias Simulation2D<NodeID> = Simulation<NodeID, Vector2d> where NodeID: Hashable
 
-public typealias Simulation3D<NodeID> = Simulation<NodeID, Vector3d> where NodeID: Hashable
+    public typealias Simulation3D<NodeID> = Simulation<NodeID, Vector3d> where NodeID: Hashable
 
 #endif

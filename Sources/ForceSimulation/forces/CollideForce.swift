@@ -40,7 +40,6 @@ struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, 
 
 }
 
-
 /// A force that prevents nodes from overlapping.
 public final class CollideForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
@@ -76,10 +75,9 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         guard let sim = self.simulation else { return }
 
         for _ in 0..<iterationsPerTick {
-            
+
             let coveringBox = NDBox<V>.cover(of: sim.nodePositions)
-            
-            
+
             let tree = NDTree<V, MaxRadiusTreeDelegate<Int, V>>(
                 box: coveringBox, clusterDistance: 1e-5
             ) {
@@ -92,7 +90,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                     }
                 }
             }
-            
+
             for i in sim.nodePositions.indices {
                 tree.add(i, at: sim.nodePositions[i])
             }
@@ -111,7 +109,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
                     if t.nodePosition != nil {
                         for j in t.nodeIndices {
-//                            print("\(i)<=>\(j)")
+                            //                            print("\(i)<=>\(j)")
                             // is leaf, make sure every collision happens once.
                             guard j > i else { continue }
 

@@ -27,7 +27,7 @@
         }
         
         
-        public static let directionCount = 4
+        // public static let directionCount = 4
     }
 
     extension simd_double3: VectorLike {
@@ -48,7 +48,7 @@
             return (self - to).length()
         }
         
-        public static let directionCount = 8
+        // public static let directionCount = 8
     }
 
 

@@ -11,7 +11,6 @@ enum ManyBodyForceError: Error {
     case buildQuadTreeBeforeSimulationInitialized
 }
 
-
 struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
 
     public var accumulatedMass: Double = .zero
@@ -83,7 +82,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
     public enum NodeMass {
         case constant(Double)
-        case varied( (NodeID) -> Double )
+        case varied((NodeID) -> Double)
     }
     var mass: NodeMass = .constant(1.0)
     var precalculatedMass: [Double] = []
@@ -122,9 +121,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     var forces: [V] = []
     public func apply(alpha: Double) {
         guard let simulation else { return }
-//        guard
-            try! calculateForce(alpha: alpha) //else { return }
-
+        //        guard
+        try! calculateForce(alpha: alpha)  //else { return }
 
         for i in simulation.nodeVelocities.indices {
             simulation.nodeVelocities[i] += self.forces[i] / precalculatedMass[i]
@@ -180,7 +178,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
         }
 
-//        var forces = [V](repeating: .zero, count: sim.nodePositions.count)
+        //        var forces = [V](repeating: .zero, count: sim.nodePositions.count)
 
         for i in sim.nodePositions.indices {
             var f = V.zero
@@ -236,50 +234,50 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                 //                }
 
                 guard t.delegate.accumulatedCount > 0 else { return false }
-                let centroid = t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
+                let centroid =
+                    t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
 
                 let vec = centroid - sim.nodePositions[i]
                 let boxWidth = (t.box.p1 - t.box.p0)[0]
                 var distanceSquared = vec.jiggled().lengthSquared()
-                
+
                 let farEnough: Bool = (distanceSquared * self.theta2) > (boxWidth * boxWidth)
-                
-//                let distance = distanceSquared.squareRoot()
-                
+
+                //                let distance = distanceSquared.squareRoot()
+
                 if distanceSquared < self.distanceMin2 {
                     distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
                 }
 
                 if farEnough {
-                    
+
                     guard distanceSquared < self.distanceMax2 else { return true }
-                    
+
                     /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
                     let k: Double =
-                        self.strength * alpha * t.delegate.accumulatedMass / distanceSquared // distanceSquared.squareRoot()
-                    
+                        self.strength * alpha * t.delegate.accumulatedMass / distanceSquared  // distanceSquared.squareRoot()
+
                     f += vec * k
                     return false
-                    
+
                 } else if t.children != nil {
                     return true
                 }
-                
 
                 if t.isFilledLeaf {
-                    
-//                    for j in t.nodeIndices {
-//                        if j != i {
-//                            let k: Double =
-//                            self.strength * alpha * self.precalculatedMass[j] / distanceSquared / distanceSquared.squareRoot()
-//                            f += vec * k
-//                        }
-//                    }
-                    if t.nodeIndices.contains(i) {return false}
-                     
+
+                    //                    for j in t.nodeIndices {
+                    //                        if j != i {
+                    //                            let k: Double =
+                    //                            self.strength * alpha * self.precalculatedMass[j] / distanceSquared / distanceSquared.squareRoot()
+                    //                            f += vec * k
+                    //                        }
+                    //                    }
+                    if t.nodeIndices.contains(i) { return false }
+
                     let massAcc = t.delegate.accumulatedMass
-//                    t.nodeIndices.contains(i) ?  (t.delegate.accumulatedMass-self.precalculatedMass[i]) : (t.delegate.accumulatedMass)
-                    let k: Double = self.strength * alpha * massAcc / distanceSquared // distanceSquared.squareRoot()
+                    //                    t.nodeIndices.contains(i) ?  (t.delegate.accumulatedMass-self.precalculatedMass[i]) : (t.delegate.accumulatedMass)
+                    let k: Double = self.strength * alpha * massAcc / distanceSquared  // distanceSquared.squareRoot()
                     f += vec * k
                     return false
                 } else {
@@ -288,7 +286,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
             }
             forces[i] = f
         }
-//        return forces
+        //        return forces
     }
 
 }

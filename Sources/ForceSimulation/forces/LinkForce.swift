@@ -11,15 +11,15 @@ enum LinkForceError: Error {
     case useBeforeSimulationInitialized
 }
 
-/// A force that represents links between nodes. 
+/// A force that represents links between nodes.
 final public class LinkForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
     ///
     public enum LinkStiffness {
         case constant(Double)
-        case varied( (EdgeID<NodeID>, LinkLookup<NodeID>) -> Double )
-        case weightedByDegree( k: (EdgeID<NodeID>, LinkLookup<NodeID>) -> Double )
+        case varied((EdgeID<NodeID>, LinkLookup<NodeID>) -> Double)
+        case weightedByDegree(k: (EdgeID<NodeID>, LinkLookup<NodeID>) -> Double)
     }
     var linkStiffness: LinkStiffness
     var calculatedStiffness: [Double] = []
@@ -94,11 +94,9 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     public func apply(alpha: Double) {
         guard let sim = self.simulation else { return }
 
-
-
         for _ in 0..<iterationsPerTick {
             for i in links.indices {
-                
+
                 let s = linksOfIndices[i].source
                 let t = linksOfIndices[i].target
 
@@ -106,9 +104,9 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                 let _target = sim.nodePositions[t]
 
                 let b = self.calculatedBias[i]
-                
+
                 #if DEBUG
-                assert(b != 0)
+                    assert(b != 0)
                 #endif
 
                 var vec = (_target + sim.nodeVelocities[t] - _source - sim.nodeVelocities[s])
@@ -119,14 +117,13 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                 l = (l - self.calculatedLength[i]) / l * alpha * self.calculatedStiffness[i]
 
                 vec *= l
-                
-                
+
                 // same as d3
                 sim.nodeVelocities[t] -= vec * b
                 sim.nodeVelocities[s] += vec * (1 - b)
-                
-//                sim.nodeVelocities[s] += vec * b
-//                sim.nodeVelocities[t] -= vec * (1 - b)
+
+                //                sim.nodeVelocities[s] += vec * b
+                //                sim.nodeVelocities[t] -= vec * (1 - b)
 
             }
         }
@@ -157,8 +154,6 @@ protocol PrecalculatableEdgeProperty {
     ) -> [Double]
 }
 
-
-
 extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
     func calculated(
         for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>
@@ -174,8 +169,6 @@ extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
     }
 }
 
-
-
 extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
     func calculated(
         for links: [EdgeID<NodeID>],
@@ -190,7 +183,8 @@ extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
             }
         case .weightedByDegree(let k):
             return links.map { link in
-                k(link, lookup) / Double(
+                k(link, lookup)
+                    / Double(
                         min(
                             lookup.count[link.source, default: 0],
                             lookup.count[link.target, default: 0]
@@ -201,10 +195,7 @@ extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
     }
 }
 
-
-
 extension Simulation {
-
 
     /// Create a link force, Similar to https://d3js.org/d3-force/link
     @discardableResult

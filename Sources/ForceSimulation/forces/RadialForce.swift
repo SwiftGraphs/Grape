@@ -23,8 +23,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
     /// Radius accessor
     public enum NodeRadius {
-        case constant( V.Scalar )
-        case varied(   (NodeID) -> V.Scalar )
+        case constant(V.Scalar)
+        case varied((NodeID) -> V.Scalar)
     }
     public var radius: NodeRadius
     private var calculatedRadius: [V.Scalar] = []
@@ -32,13 +32,10 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     /// Strength accessor
     public enum Strength {
         case constant(Double)
-        case varied(   (NodeID) -> Double )
+        case varied((NodeID) -> Double)
     }
     public var strength: Strength
     private var calculatedStrength: [Double] = []
-
-
-
 
     public init(center: V, radius: NodeRadius, strength: Strength) {
         self.center = center
@@ -88,7 +85,7 @@ extension Simulation {
     /// Create a radial force, Similar to https://d3js.org/d3-force/position
     @discardableResult
     public func createRadialForce(
-        center: V = .zero, 
+        center: V = .zero,
         radius: RadialForce<NodeID, V>.NodeRadius,
         strength: RadialForce<NodeID, V>.Strength = .constant(0.1)
     ) -> RadialForce<NodeID, V> {
