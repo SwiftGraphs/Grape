@@ -43,24 +43,11 @@ Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/
 <br/>
 
 
-## Features
-
-|   | 2D simd | ND simd | Metal |
-| --- | --- | --- | --- |
-| **NdTree** | ✅ | ✅ |  |
-| **Simulation** | ✅ | ✅ |  |
-| &emsp;LinkForce | ✅ | ✅ |  |
-| &emsp;ManyBodyForce | ✅ | ✅ |  |
-| &emsp;CenterForce | ✅ | ✅ |  |
-| &emsp;CollideForce | ✅ | ✅ |  |
-| &emsp;PositionForce | ✅ | ✅ |  |
-| &emsp;RadialForce | ✅ | ✅ |  |
-| **SwiftUI View** | 🚧 |  |  |
-
-
-<br/>
-
 ## Usage
+
+Grape currently provides 2 packages, `NDTree` and `ForceSimulation`. 
+- `NDTree` is a KD-Tree data structure, which is used to accelerate the force simulation with [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/).
+- `ForceSimulation` is a force simulation library, that enables you to create any dimensional simulation with velocity Verlet integration.
 
 ### Basic
 
@@ -97,23 +84,39 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 ### Advanced
 
-Grape currently includes 2 packages, `NDTree` and `ForceSimulation`. `NDTree` is a N-dimensional tree data structure, which is used to accelerate the force simulation. `ForceSimulation` is a force simulation library, which is used to simulate the force between nodes in a graph. Both of them are generic types that work with any SIMD-like data structures. 
-
-To integrate Grape into platforms where `import simd` isn't supported, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
+Almost all the types in Grape work with any SIMD-like data structures. To integrate Grape into platforms where `import simd` isn't supported, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
 
 ```swift
 /// All required implementations should have same semantics
 /// as the SIMD protocol provided in Foundation.
 struct SuperCool4DVector: VectorLike { ... }
 
-public protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}
-public typealias HyperoctBox = NDBox<SuperCool4DVector>
-public typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
+protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}
+typealias HyperoctBox = NDBox<SuperCool4DVector>
+typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
 
-public typealias Simulation4D<NodeID> = Simulation<NodeID, Vector4d> where NodeID: Hashable
+typealias Simulation4D<NodeID: Hashable> = Simulation<NodeID, Vector4d>
 ```
 
 Also, this is how you create a 4D simulation with or without `simd_double4`. (Though I don't know what good it does)
+
+
+<br/>
+
+
+## Roadmap
+
+|   | 2D simd | ND simd | Metal |
+| --- | --- | --- | --- |
+| **NdTree** | ✅ | ✅ |  |
+| **Simulation** | ✅ | ✅ |  |
+| &emsp;LinkForce | ✅ | ✅ |  |
+| &emsp;ManyBodyForce | ✅ | ✅ |  |
+| &emsp;CenterForce | ✅ | ✅ |  |
+| &emsp;CollideForce | ✅ | ✅ |  |
+| &emsp;PositionForce | ✅ | ✅ |  |
+| &emsp;RadialForce | ✅ | ✅ |  |
+| **SwiftUI View** | 🚧 |  |  |
 
 
 <br/>
