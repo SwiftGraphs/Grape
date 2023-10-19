@@ -12,3 +12,4 @@ DerivedData/
 /Sources/_ForceSimulation
 
 /docs
+*.kts
