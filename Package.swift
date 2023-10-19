@@ -1,4 +1,4 @@
-// swift-tools-version: 5.8
+// swift-tools-version: 5.6
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,9 +6,9 @@ import PackageDescription
 let package = Package(
     name: "Grape",
     platforms: [
-        .macOS(.v12), 
-        .iOS(.v13),
-        .watchOS(.v9),
+        .macOS(.v11), 
+        .iOS(.v14),
+        .watchOS(.v7),
     ],
 
     products: [
