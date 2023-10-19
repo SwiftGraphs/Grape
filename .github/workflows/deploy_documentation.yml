@@ -36,7 +36,7 @@ jobs:
           --disable-indexing \
           --transform-for-static-hosting \
           --hosting-base-path Grape \
-          --output-path docs
+          --output-path docs && kotlin docc-postprocess.kts
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
       with:
