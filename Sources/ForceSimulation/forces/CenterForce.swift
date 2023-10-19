@@ -6,7 +6,7 @@
 //
 import NDTree
 
-/// A force that represents links between nodes.
+/// A force that drives nodes towards the center.
 final public class CenterForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     public var center: V
