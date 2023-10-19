@@ -101,6 +101,8 @@ typealias Simulation4D<NodeID: Hashable> = Simulation<NodeID, Vector4d>
 Also, this is how you create a 4D simulation with or without `simd_double4`. (Though I don't know what good it does)
 
 
+<br/>
+
 
 ## Roadmap
 
@@ -116,8 +118,6 @@ Also, this is how you create a 4D simulation with or without `simd_double4`. (Th
 | &emsp;RadialForce | ✅ | ✅ |  |
 | **SwiftUI View** | 🚧 |  |  |
 
-
-<br/>
 
 <br/>
 
