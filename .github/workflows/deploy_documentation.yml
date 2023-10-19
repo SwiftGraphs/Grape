@@ -31,14 +31,14 @@ jobs:
         xcode-version: '15.0'
     - name: Build DocC
       run: | # If you use docc-plugin, you might be able to use docc-plugin command instead
-        xcodebuild docbuild -scheme Grape \
+        xcodebuild docbuild -scheme ForceSimulation \ # target name goes here
           -derivedDataPath /tmp/docbuild \
           -destination 'generic/platform=iOS';
         $(xcrun --find docc) process-archive \
-          transform-for-static-hosting /tmp/docbuild/Build/Products/Debug-iphoneos/Grape.doccarchive \
-          --hosting-base-path grape \
+          transform-for-static-hosting /tmp/docbuild/Build/Products/Debug-iphoneos/ForceSimulation.doccarchive \ # name of the doccarchive goes here (same as target)
+          --hosting-base-path grape \ # repository name goes here
           --output-path docs;
-        echo "<script>window.location.href += \"/documentation/grape\"</script>" > docs/index.html
+        echo "<script>window.location.href += \"/documentation/forcesimulation\"</script>" > docs/index.html
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
       with:
