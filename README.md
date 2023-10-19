@@ -27,6 +27,8 @@ This is a force directed graph visualizing the data from [Force Directed Graph C
 
 https://github.com/li3zhen1/Grape/assets/45376537/ea1ccea3-5717-4cfe-a696-c89e75ca9d3b
 
+Source code: [ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ContentView.swift). 
+
 <br/>
 
 ### Lattice Simulation
@@ -35,6 +37,7 @@ This is a 30x30 force directed lattice like [Force Directed Lattice](https://obs
 
 https://github.com/li3zhen1/Grape/assets/45376537/86c6b155-105f-44d8-a280-de70f55fefd2
 
+Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ForceDirectedLatticeView.swift)
 
 
 <br/>
