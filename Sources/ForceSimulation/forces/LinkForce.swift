@@ -13,7 +13,7 @@ enum LinkForceError: Error {
 
 /// A force that represents links between nodes.
 /// The complexity is `O(e)`, where `e` is the number of links.
-/// See [Link Force - D3](https://d3js.org/d3-force/link)
+/// See [Link Force - D3](https://d3js.org/d3-force/link).
 final public class LinkForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
@@ -224,7 +224,7 @@ extension Simulation {
     /// Create a link force that represents links between nodes. It works like
     /// there is a spring between each pair of nodes.
     /// The complexity is `O(e)`, where `e` is the number of links.
-    /// See [Link Force - D3](https://d3js.org/d3-force/link)
+    /// See [Link Force - D3](https://d3js.org/d3-force/link).
     /// - Parameters:
     ///  - links: The links between nodes.
     ///  - stiffness: The stiffness of the spring (or links).

@@ -9,7 +9,7 @@ import NDTree
 /// A force that drives nodes towards the center.
 /// Center force is relatively fast, the complexity is `O(n)`,
 /// where `n` is the number of nodes.
-/// See [Collide Force - D3](https://d3js.org/d3-force/collide)
+/// See [Collide Force - D3](https://d3js.org/d3-force/collide).
 final public class CenterForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     public var center: V
@@ -40,6 +40,9 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 extension Simulation {
 
     /// Create a center force that drives nodes towards the center.
+    /// Center force is relatively fast, the complexity is `O(n)`,
+    /// where `n` is the number of nodes.
+    /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
     /// - Parameters:
     ///  - center: The center of the force.
     ///  - strength: The strength of the force.
