@@ -42,6 +42,17 @@ Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/
 
 <br/>
 
+### Force Directed Graph in visionOS
+
+This is the same graph in the first example, rendered in `RealityView`:
+
+https://github.com/li3zhen1/Grape/assets/45376537/52cd3915-c2f8-40cf-96c1-2fd81897b2fe
+
+Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift)
+
+
+<br/>
+
 
 ## Usage
 
