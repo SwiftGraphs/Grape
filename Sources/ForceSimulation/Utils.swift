@@ -28,11 +28,39 @@ public struct LinearCongruentialGenerator {
     }
 }
 
+public struct FloatLinearCongruentialGenerator {
+    @usableFromInline internal static let a: Float = 75
+    @usableFromInline internal static let c: Float = 74
+    @usableFromInline internal static let m: Float = 65537
+    @usableFromInline internal static var _s: Float = 1
+    @usableFromInline internal var s: Float = 1
+
+    @inlinable mutating func next() -> Float {
+        s = (Self.a * s + Self.c).truncatingRemainder(dividingBy: Self.m)
+        return s / Self.m
+    }
+
+    @inlinable static func next() -> Float {
+        Self._s = (Self.a * Self._s + Self.c).truncatingRemainder(dividingBy: Self.m)
+        return Self._s / Self.m
+    }
+}
+
 extension Double {
     @inlinable public func jiggled() -> Double {
         if self == 0 || self == .nan {
             // return Double.random(in: -5e-6..<5e-6)
             return (LinearCongruentialGenerator.next() - 0.5) * 1e-5
+        }
+        return self
+    }
+}
+
+extension Float {
+    @inlinable public func jiggled() -> Float {
+        if self == 0 || self == .nan {
+            // return Double.random(in: -5e-6..<5e-6)
+            return (FloatLinearCongruentialGenerator.next() - 0.5) * 1e-5
         }
         return self
     }
@@ -48,6 +76,15 @@ extension VectorLike where Scalar == Double {
     }
 }
 
+extension VectorLike where Scalar == Float {
+    @inlinable public func jiggled() -> Self {
+        var result = Self.zero
+        for i in indices {
+            result[i] = self[i].jiggled()
+        }
+        return result
+    }
+}
 
 
 /// A Hashable identifier for an edge. It’s a utility type for preserving the
@@ -65,6 +102,8 @@ public struct EdgeID<NodeID>: Hashable where NodeID: Hashable {
 
 public protocol PrecalculatableNodeProperty {
     associatedtype NodeID: Hashable
+
     associatedtype V: VectorLike where V.Scalar == Double
+    
     func calculated(for simulation: Simulation<NodeID, V>) -> [Double]
 }

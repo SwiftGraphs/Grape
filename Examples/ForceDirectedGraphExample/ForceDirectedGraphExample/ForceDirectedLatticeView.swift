@@ -34,6 +34,12 @@ struct ForceDirectedLatticeView: View {
             }
         }
 
+        //        self.edgeIds = Array(0..<width).flatMap { i in
+        //            return Array(0..<width).flatMap{ j in [
+        //                (width*i+j, width*i+j+1),
+        //                (width*i+j, width*(i+1)+1)
+        //            ] }
+        //        }
         self.edgeIds = edge
         self.sim = Simulation2D(nodeIds: nodeIds)
         sim.createLinkForce(self.edgeIds, stiffness: .constant(1), originalLength: .constant(1.5))

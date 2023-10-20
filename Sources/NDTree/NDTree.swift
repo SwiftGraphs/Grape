@@ -246,7 +246,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     }
 
     /// Get the index of the child that contains the point.
-    /// **Complexity**: O(n*(2^n)), where n is the dimension of the vector.
+    /// **Complexity**: `O(n*(2^n))`, where `n` is the dimension of the vector.
     private func getIndexInChildren(_ point: V, relativeTo originalPoint: V) -> Int {
         var index = 0
         for i in 0..<V.scalarCount {

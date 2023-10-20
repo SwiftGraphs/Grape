@@ -74,7 +74,10 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
     }
 }
 
-/// A force that simulate the many-body force. See: https://d3js.org/d3-force/many-body
+/// A force that simulate the many-body force. 
+/// This is a very expensive force, the complexity is `O(n log(n))`,
+/// where `n` is the number of nodes. The complexity might degrade to `O(n^2)` if the nodes are too close to each other.
+/// See [Manybody Force - D3](https://d3js.org/d3-force/many-body).
 final public class ManyBodyForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
@@ -305,7 +308,15 @@ extension ManyBodyForce.NodeMass: PrecalculatableNodeProperty {
 }
 
 extension Simulation {
-    /// Create a many-body force. See: https://d3js.org/d3-force/many-body
+    /// Create a many-body force that simulate the many-body force. 
+    /// This is a very expensive force, the complexity is `O(n log(n))`,
+    /// where `n` is the number of nodes. The complexity might degrade to `O(n^2)` if the nodes are too close to each other.
+    /// The force mimics the gravity force or electrostatic force.
+    /// See [Manybody Force - D3](https://d3js.org/d3-force/many-body).
+    /// - Parameters:
+    ///  - strength: The strength of the force. When the strength is positive, the nodes are attracted to each other like gravity force, otherwise, the nodes are repelled like electrostatic force.
+    ///  - nodeMass: The mass of the nodes. The mass is used to calculate the force. The default value is 1.0.
+    ///  - theta: Determines how approximate the calculation is. The default value is 0.9. The higher the value, the more approximate and fast the calculation is.
     @discardableResult
     public func createManyBodyForce(
         strength: Double,
