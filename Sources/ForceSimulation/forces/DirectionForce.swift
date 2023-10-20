@@ -8,6 +8,9 @@
 import NDTree
 
 /// A force that moves nodes to a target position.
+/// Center force is relatively fast, the complexity is `O(n)`,
+/// where `n` is the number of nodes.
+/// See [Position Force - D3](https://d3js.org/d3-force/position).
 final public class DirectionForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
@@ -95,7 +98,10 @@ extension DirectionForce.Direction {
 
 extension Simulation {
 
-    /// Create a direction force, Similar to https://d3js.org/d3-force/position
+    /// Create a direction force that moves nodes to a target position.
+    /// Center force is relatively fast, the complexity is `O(n)`,
+    /// where `n` is the number of nodes.
+    /// See [Position Force - D3](https://d3js.org/d3-force/position).
     @discardableResult
     public func createPositionForce(
         direction: DirectionForce<NodeID, V>.Direction,

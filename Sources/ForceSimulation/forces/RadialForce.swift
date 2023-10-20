@@ -8,7 +8,9 @@
 import NDTree
 
 /// A force that applies a radial force to all nodes.
-/// Similar to https://d3js.org/d3-force/position
+/// Center force is relatively fast, the complexity is `O(n)`,
+/// where `n` is the number of nodes.
+/// See [Position Force - D3](https://d3js.org/d3-force/position).
 final public class RadialForce<NodeID, V>: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     weak var simulation: Simulation<NodeID, V>? {
@@ -82,7 +84,14 @@ extension RadialForce.NodeRadius: PrecalculatableNodeProperty {
 
 extension Simulation {
 
-    /// Create a radial force, Similar to https://d3js.org/d3-force/position
+    /// Create a radial force that applies a radial force to all nodes.
+    /// Center force is relatively fast, the complexity is `O(n)`,
+    /// where `n` is the number of nodes.
+    /// See [Position Force - D3](https://d3js.org/d3-force/position).
+    /// - Parameters:
+    ///   - center: The center of the force.
+    ///   - radius: The radius of the force.
+    ///   - strength: The strength of the force.
     @discardableResult
     public func createRadialForce(
         center: V = .zero,
