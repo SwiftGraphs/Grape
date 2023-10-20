@@ -42,6 +42,21 @@ Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/
 
 <br/>
 
+### Force Directed Graph in visionOS
+
+This is the same graph in the first example, rendered in `RealityView`:
+
+https://github.com/li3zhen1/Grape/assets/45376537/52cd3915-c2f8-40cf-96c1-2fd81897b2fe
+
+Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift)
+
+> [!IMPORTANT]  
+> When working with 3D contents, you probably need `Float` types instead of `Double`. The example here manually cast `Double` to `Float`.
+> The `float32` branch relaxes the generic constraint from `Scalar == Double` to `Scalar: ExpressibleByFloatLiteral`, which allows you to get out-of-box supports for other floating point types. However, the performance will be downgraded. I’m trying to find a workaround.
+
+
+<br/>
+
 
 ## Usage
 
@@ -65,7 +80,7 @@ let links: [(Node.ID, Node.ID)] = ...
 let sim = Simulation2D(nodeIds: nodeIds, alphaDecay: 0.01)
 sim.createManyBodyForce(strength: -12)
 sim.createLinkForce(links)
-sim.createCenterForce(center: Vector2d(0, 0), strength: 0.4)
+sim.createCenterForce(center: [0, 0], strength: 0.4)
 sim.createCollideForce(radius: .constant(3))
 
 /// Force is ready to start! run `tick` to iterate the simulation.
