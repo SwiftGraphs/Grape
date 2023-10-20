@@ -3,78 +3,87 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B7579FB22AE0D7E8005EE7E8 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = B7579FB12AE0D7E8005EE7E8 /* RealityKitContent */; };
-		B7579FB42AE0D7E8005EE7E8 /* ForceDirectedGraph3DApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7579FB32AE0D7E8005EE7E8 /* ForceDirectedGraph3DApp.swift */; };
-		B7579FB62AE0D7E8005EE7E8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7579FB52AE0D7E8005EE7E8 /* ContentView.swift */; };
-		B7579FB82AE0D7EB005EE7E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7579FB72AE0D7EB005EE7E8 /* Assets.xcassets */; };
-		B7579FBB2AE0D7EB005EE7E8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7579FBA2AE0D7EB005EE7E8 /* Preview Assets.xcassets */; };
+		B7786A1C2AE2DE7800FF7CA8 /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = B7786A1B2AE2DE7800FF7CA8 /* ForceSimulation */; };
+		B7786A1E2AE2DE7800FF7CA8 /* NDTree in Frameworks */ = {isa = PBXBuildFile; productRef = B7786A1D2AE2DE7800FF7CA8 /* NDTree */; };
+		B7786A202AE2DEA000FF7CA8 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7786A1F2AE2DEA000FF7CA8 /* Data.swift */; };
+		B783A12C2AE2DA4900EC828F /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = B783A12B2AE2DA4900EC828F /* RealityKitContent */; };
+		B783A12E2AE2DA4900EC828F /* ForceDirectedGraph3DApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B783A12D2AE2DA4900EC828F /* ForceDirectedGraph3DApp.swift */; };
+		B783A1302AE2DA4900EC828F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B783A12F2AE2DA4900EC828F /* ContentView.swift */; };
+		B783A1322AE2DA4A00EC828F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B783A1312AE2DA4A00EC828F /* Assets.xcassets */; };
+		B783A1352AE2DA4A00EC828F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B783A1342AE2DA4A00EC828F /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B7579FAC2AE0D7E8005EE7E8 /* ForceDirectedGraph3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForceDirectedGraph3D.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B7579FB02AE0D7E8005EE7E8 /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
-		B7579FB32AE0D7E8005EE7E8 /* ForceDirectedGraph3DApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceDirectedGraph3DApp.swift; sourceTree = "<group>"; };
-		B7579FB52AE0D7E8005EE7E8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B7579FB72AE0D7EB005EE7E8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B7579FBA2AE0D7EB005EE7E8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B7786A1F2AE2DEA000FF7CA8 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
+		B783A1262AE2DA4900EC828F /* ForceDirectedGraph3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForceDirectedGraph3D.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B783A12A2AE2DA4900EC828F /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
+		B783A12D2AE2DA4900EC828F /* ForceDirectedGraph3DApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceDirectedGraph3DApp.swift; sourceTree = "<group>"; };
+		B783A12F2AE2DA4900EC828F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B783A1312AE2DA4A00EC828F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B783A1342AE2DA4A00EC828F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B783A1362AE2DA4A00EC828F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		B7579FA92AE0D7E8005EE7E8 /* Frameworks */ = {
+		B783A1232AE2DA4900EC828F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7579FB22AE0D7E8005EE7E8 /* RealityKitContent in Frameworks */,
+				B783A12C2AE2DA4900EC828F /* RealityKitContent in Frameworks */,
+				B7786A1E2AE2DE7800FF7CA8 /* NDTree in Frameworks */,
+				B7786A1C2AE2DE7800FF7CA8 /* ForceSimulation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B7579FA32AE0D7E8005EE7E8 = {
+		B783A11D2AE2DA4900EC828F = {
 			isa = PBXGroup;
 			children = (
-				B7579FAE2AE0D7E8005EE7E8 /* ForceDirectedGraph3D */,
-				B7579FAF2AE0D7E8005EE7E8 /* Packages */,
-				B7579FAD2AE0D7E8005EE7E8 /* Products */,
+				B783A1282AE2DA4900EC828F /* ForceDirectedGraph3D */,
+				B783A1292AE2DA4900EC828F /* Packages */,
+				B783A1272AE2DA4900EC828F /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		B7579FAD2AE0D7E8005EE7E8 /* Products */ = {
+		B783A1272AE2DA4900EC828F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B7579FAC2AE0D7E8005EE7E8 /* ForceDirectedGraph3D.app */,
+				B783A1262AE2DA4900EC828F /* ForceDirectedGraph3D.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B7579FAE2AE0D7E8005EE7E8 /* ForceDirectedGraph3D */ = {
+		B783A1282AE2DA4900EC828F /* ForceDirectedGraph3D */ = {
 			isa = PBXGroup;
 			children = (
-				B7579FB32AE0D7E8005EE7E8 /* ForceDirectedGraph3DApp.swift */,
-				B7579FB52AE0D7E8005EE7E8 /* ContentView.swift */,
-				B7579FB72AE0D7EB005EE7E8 /* Assets.xcassets */,
-				B7579FB92AE0D7EB005EE7E8 /* Preview Content */,
+				B7786A1F2AE2DEA000FF7CA8 /* Data.swift */,
+				B783A12D2AE2DA4900EC828F /* ForceDirectedGraph3DApp.swift */,
+				B783A12F2AE2DA4900EC828F /* ContentView.swift */,
+				B783A1312AE2DA4A00EC828F /* Assets.xcassets */,
+				B783A1362AE2DA4A00EC828F /* Info.plist */,
+				B783A1332AE2DA4A00EC828F /* Preview Content */,
 			);
 			path = ForceDirectedGraph3D;
 			sourceTree = "<group>";
 		};
-		B7579FAF2AE0D7E8005EE7E8 /* Packages */ = {
+		B783A1292AE2DA4900EC828F /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				B7579FB02AE0D7E8005EE7E8 /* RealityKitContent */,
+				B783A12A2AE2DA4900EC828F /* RealityKitContent */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
 		};
-		B7579FB92AE0D7EB005EE7E8 /* Preview Content */ = {
+		B783A1332AE2DA4A00EC828F /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				B7579FBA2AE0D7EB005EE7E8 /* Preview Assets.xcassets */,
+				B783A1342AE2DA4A00EC828F /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -82,13 +91,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B7579FAB2AE0D7E8005EE7E8 /* ForceDirectedGraph3D */ = {
+		B783A1252AE2DA4900EC828F /* ForceDirectedGraph3D */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B7579FBE2AE0D7EB005EE7E8 /* Build configuration list for PBXNativeTarget "ForceDirectedGraph3D" */;
+			buildConfigurationList = B783A1392AE2DA4A00EC828F /* Build configuration list for PBXNativeTarget "ForceDirectedGraph3D" */;
 			buildPhases = (
-				B7579FA82AE0D7E8005EE7E8 /* Sources */,
-				B7579FA92AE0D7E8005EE7E8 /* Frameworks */,
-				B7579FAA2AE0D7E8005EE7E8 /* Resources */,
+				B783A1222AE2DA4900EC828F /* Sources */,
+				B783A1232AE2DA4900EC828F /* Frameworks */,
+				B783A1242AE2DA4900EC828F /* Resources */,
 			);
 			buildRules = (
 			);
@@ -96,28 +105,30 @@
 			);
 			name = ForceDirectedGraph3D;
 			packageProductDependencies = (
-				B7579FB12AE0D7E8005EE7E8 /* RealityKitContent */,
+				B783A12B2AE2DA4900EC828F /* RealityKitContent */,
+				B7786A1B2AE2DE7800FF7CA8 /* ForceSimulation */,
+				B7786A1D2AE2DE7800FF7CA8 /* NDTree */,
 			);
 			productName = ForceDirectedGraph3D;
-			productReference = B7579FAC2AE0D7E8005EE7E8 /* ForceDirectedGraph3D.app */;
+			productReference = B783A1262AE2DA4900EC828F /* ForceDirectedGraph3D.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		B7579FA42AE0D7E8005EE7E8 /* Project object */ = {
+		B783A11E2AE2DA4900EC828F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastSwiftUpdateCheck = 1510;
+				LastUpgradeCheck = 1510;
 				TargetAttributes = {
-					B7579FAB2AE0D7E8005EE7E8 = {
-						CreatedOnToolsVersion = 15.0;
+					B783A1252AE2DA4900EC828F = {
+						CreatedOnToolsVersion = 15.1;
 					};
 				};
 			};
-			buildConfigurationList = B7579FA72AE0D7E8005EE7E8 /* Build configuration list for PBXProject "ForceDirectedGraph3D" */;
+			buildConfigurationList = B783A1212AE2DA4900EC828F /* Build configuration list for PBXProject "ForceDirectedGraph3D" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -125,42 +136,46 @@
 				en,
 				Base,
 			);
-			mainGroup = B7579FA32AE0D7E8005EE7E8;
-			productRefGroup = B7579FAD2AE0D7E8005EE7E8 /* Products */;
+			mainGroup = B783A11D2AE2DA4900EC828F;
+			packageReferences = (
+				B7786A1A2AE2DE7800FF7CA8 /* XCLocalSwiftPackageReference "../.." */,
+			);
+			productRefGroup = B783A1272AE2DA4900EC828F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B7579FAB2AE0D7E8005EE7E8 /* ForceDirectedGraph3D */,
+				B783A1252AE2DA4900EC828F /* ForceDirectedGraph3D */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		B7579FAA2AE0D7E8005EE7E8 /* Resources */ = {
+		B783A1242AE2DA4900EC828F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7579FBB2AE0D7EB005EE7E8 /* Preview Assets.xcassets in Resources */,
-				B7579FB82AE0D7EB005EE7E8 /* Assets.xcassets in Resources */,
+				B783A1352AE2DA4A00EC828F /* Preview Assets.xcassets in Resources */,
+				B783A1322AE2DA4A00EC828F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		B7579FA82AE0D7E8005EE7E8 /* Sources */ = {
+		B783A1222AE2DA4900EC828F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7579FB62AE0D7E8005EE7E8 /* ContentView.swift in Sources */,
-				B7579FB42AE0D7E8005EE7E8 /* ForceDirectedGraph3DApp.swift in Sources */,
+				B783A1302AE2DA4900EC828F /* ContentView.swift in Sources */,
+				B7786A202AE2DEA000FF7CA8 /* Data.swift in Sources */,
+				B783A12E2AE2DA4900EC828F /* ForceDirectedGraph3DApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		B7579FBC2AE0D7EB005EE7E8 /* Debug */ = {
+		B783A1372AE2DA4A00EC828F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -223,7 +238,7 @@
 			};
 			name = Debug;
 		};
-		B7579FBD2AE0D7EB005EE7E8 /* Release */ = {
+		B783A1382AE2DA4A00EC828F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -279,7 +294,7 @@
 			};
 			name = Release;
 		};
-		B7579FBF2AE0D7EB005EE7E8 /* Debug */ = {
+		B783A13A2AE2DA4A00EC828F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -289,7 +304,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ForceDirectedGraph3D/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -304,7 +319,7 @@
 			};
 			name = Debug;
 		};
-		B7579FC02AE0D7EB005EE7E8 /* Release */ = {
+		B783A13B2AE2DA4A00EC828F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -314,7 +329,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ForceDirectedGraph3D/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -332,32 +347,47 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B7579FA72AE0D7E8005EE7E8 /* Build configuration list for PBXProject "ForceDirectedGraph3D" */ = {
+		B783A1212AE2DA4900EC828F /* Build configuration list for PBXProject "ForceDirectedGraph3D" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B7579FBC2AE0D7EB005EE7E8 /* Debug */,
-				B7579FBD2AE0D7EB005EE7E8 /* Release */,
+				B783A1372AE2DA4A00EC828F /* Debug */,
+				B783A1382AE2DA4A00EC828F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B7579FBE2AE0D7EB005EE7E8 /* Build configuration list for PBXNativeTarget "ForceDirectedGraph3D" */ = {
+		B783A1392AE2DA4A00EC828F /* Build configuration list for PBXNativeTarget "ForceDirectedGraph3D" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B7579FBF2AE0D7EB005EE7E8 /* Debug */,
-				B7579FC02AE0D7EB005EE7E8 /* Release */,
+				B783A13A2AE2DA4A00EC828F /* Debug */,
+				B783A13B2AE2DA4A00EC828F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		B7786A1A2AE2DE7800FF7CA8 /* XCLocalSwiftPackageReference "../.." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
-		B7579FB12AE0D7E8005EE7E8 /* RealityKitContent */ = {
+		B7786A1B2AE2DE7800FF7CA8 /* ForceSimulation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ForceSimulation;
+		};
+		B7786A1D2AE2DE7800FF7CA8 /* NDTree */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NDTree;
+		};
+		B783A12B2AE2DA4900EC828F /* RealityKitContent */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RealityKitContent;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = B7579FA42AE0D7E8005EE7E8 /* Project object */;
+	rootObject = B783A11E2AE2DA4900EC828F /* Project object */;
 }

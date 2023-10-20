@@ -7,7 +7,7 @@
 
 def Xform "Root"
 {
-    reorder nameChildren = ["Sphere", "_GridMaterial", "_PlainMaterial"]
+    reorder nameChildren = ["GridMaterial", "Sphere"]
     rel material:binding = None (
         bindMaterialAs = "weakerThanDescendants"
     )
@@ -17,7 +17,7 @@ def Xform "Root"
         prepend apiSchemas = ["MaterialBindingAPI"]
     )
     {
-        rel material:binding = </Root/_PlainMaterial/PlainMaterial> (
+        rel material:binding = </Root/GridMaterial/GridMaterial> (
             bindMaterialAs = "weakerThanDescendants"
         )
         double radius = 0.05
@@ -47,9 +47,9 @@ def Xform "Root"
         }
     }
 
-    def "_PlainMaterial" (
+    def "GridMaterial" (
         active = true
-        prepend references = @_PlainMaterial.usda@
+        prepend references = @Materials/GridMaterial.usda@
     )
     {
         float3 xformOp:scale = (1, 1, 1)
