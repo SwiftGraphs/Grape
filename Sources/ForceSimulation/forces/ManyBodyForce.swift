@@ -13,23 +13,23 @@ enum ManyBodyForceError: Error {
 
 struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
 
-    public var accumulatedMass: Double = .zero
+    public var accumulatedMass: V.Scalar = .zero
     public var accumulatedCount = 0
     public var accumulatedMassWeightedPositions: V = .zero
 
-    @usableFromInline let massProvider: (NodeID) -> Double
+    @usableFromInline let massProvider: (NodeID) -> V.Scalar
 
     init(
-        massProvider: @escaping (NodeID) -> Double
+        massProvider: @escaping (NodeID) -> V.Scalar
     ) {
         self.massProvider = massProvider
     }
 
     internal init(
-        initialAccumulatedProperty: Double,
+        initialAccumulatedProperty: V.Scalar,
         initialAccumulatedCount: Int,
         initialWeightedAccumulatedNodePositions: V,
-        massProvider: @escaping (NodeID) -> Double
+        massProvider: @escaping (NodeID) -> V.Scalar
     ) {
         self.accumulatedMass = initialAccumulatedProperty
         self.accumulatedCount = initialAccumulatedCount
@@ -79,16 +79,16 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
 /// where `n` is the number of nodes. The complexity might degrade to `O(n^2)` if the nodes are too close to each other.
 /// See [Manybody Force - D3](https://d3js.org/d3-force/many-body).
 final public class ManyBodyForce<NodeID, V>: ForceLike
-where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 
-    var strength: Double
+    var strength: V.Scalar
 
     public enum NodeMass {
-        case constant(Double)
-        case varied((NodeID) -> Double)
+        case constant(V.Scalar)
+        case varied((NodeID) -> V.Scalar)
     }
-    var mass: NodeMass = .constant(1.0)
-    var precalculatedMass: [Double] = []
+    var mass: NodeMass
+    var precalculatedMass: [V.Scalar] = []
 
     weak var simulation: Simulation<NodeID, V>? {
         didSet {
@@ -98,22 +98,22 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         }
     }
 
-    var theta2: Double
-    var theta: Double {
+    var theta2: V.Scalar
+    var theta: V.Scalar {
         didSet {
             theta2 = theta * theta
         }
     }
 
-    var distanceMin2: Double = 1
-    var distanceMax2: Double = Double.infinity
-    var distanceMin: Double = 1
-    var distanceMax: Double = Double.infinity
+    var distanceMin2: V.Scalar = 1
+    var distanceMax2: V.Scalar = V.Scalar.infinity
+    var distanceMin: V.Scalar = 1
+    var distanceMax: V.Scalar = V.Scalar.infinity
 
     internal init(
-        strength: Double,
+        strength: V.Scalar,
         nodeMass: NodeMass = .constant(1.0),
-        theta: Double = 0.9
+        theta: V.Scalar = 0.9
     ) {
         self.strength = strength
         self.mass = nodeMass
@@ -122,9 +122,11 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     }
 
     var forces: [V] = []
-    public func apply(alpha: Double) {
+    public func apply() {
         guard let simulation else { return }
-        //        guard
+        
+        let alpha = simulation.alpha
+        
         try! calculateForce(alpha: alpha)  //else { return }
 
         for i in simulation.nodeVelocities.indices {
@@ -151,7 +153,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     //
     //    }
 
-    func calculateForce(alpha: Double) throws {
+    func calculateForce(alpha: V.Scalar) throws {
 
         guard let sim = self.simulation else {
             throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized
@@ -209,7 +211,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                 //
                 //                    /// filled leaf
                 //                    if !t.nodeIndices.contains(i) {
-                //                        let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / (distanceSquared).squareRoot()
+                //                        let k: V.Scalar = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / (distanceSquared).squareRoot()
                 //                        forces[i] += vec * k
                 //                    }
                 //
@@ -223,7 +225,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                 //                    /// internal, guard in 180 guarantees we have nodes here
                 //                    if distanceSquared * self.theta2 > boxWidth * boxWidth {
                 //                        // far enough
-                //                        let k: Double = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / (distanceSquared).squareRoot()
+                //                        let k: V.Scalar = self.strength * alpha * t.delegate.accumulatedMass / distanceSquared / (distanceSquared).squareRoot()
                 //                        forces[i] += vec * k
                 //                        return false
                 //                    }
@@ -257,7 +259,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
                     guard distanceSquared < self.distanceMax2 else { return true }
 
                     /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
-                    let k: Double =
+                    let k: V.Scalar =
                         self.strength * alpha * t.delegate.accumulatedMass / distanceSquared  // distanceSquared.squareRoot()
 
                     f += vec * k
@@ -271,7 +273,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
                     //                    for j in t.nodeIndices {
                     //                        if j != i {
-                    //                            let k: Double =
+                    //                            let k: V.Scalar =
                     //                            self.strength * alpha * self.precalculatedMass[j] / distanceSquared / distanceSquared.squareRoot()
                     //                            f += vec * k
                     //                        }
@@ -280,7 +282,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
                     let massAcc = t.delegate.accumulatedMass
                     //                    t.nodeIndices.contains(i) ?  (t.delegate.accumulatedMass-self.precalculatedMass[i]) : (t.delegate.accumulatedMass)
-                    let k: Double = self.strength * alpha * massAcc / distanceSquared  // distanceSquared.squareRoot()
+                    let k: V.Scalar = self.strength * alpha * massAcc / distanceSquared  // distanceSquared.squareRoot()
                     f += vec * k
                     return false
                 } else {
@@ -294,8 +296,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
 }
 
-extension ManyBodyForce.NodeMass: PrecalculatableNodeProperty {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
+extension ManyBodyForce.NodeMass {
+    public func calculated(for simulation: Simulation<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let m):
             return Array(repeating: m, count: simulation.nodePositions.count)
@@ -319,7 +321,7 @@ extension Simulation {
     ///  - theta: Determines how approximate the calculation is. The default value is 0.9. The higher the value, the more approximate and fast the calculation is.
     @discardableResult
     public func createManyBodyForce(
-        strength: Double,
+        strength: V.Scalar,
         nodeMass: ManyBodyForce<NodeID, V>.NodeMass = .constant(1.0)
     ) -> ManyBodyForce<NodeID, V> {
         let manyBodyForce = ManyBodyForce<NodeID, V>(

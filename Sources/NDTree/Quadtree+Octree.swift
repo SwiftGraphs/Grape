@@ -57,6 +57,9 @@
     public typealias Vector2d = simd_double2
     public typealias Vector3d = simd_double3
 
+    public typealias Vector2f = simd_float2
+    public typealias Vector3f = simd_float3
+
     public protocol QuadtreeDelegate: NDTreeDelegate where V == Vector2d {}
     public protocol OctreeDelegate: NDTreeDelegate where V == Vector3d {}
 
@@ -70,7 +73,6 @@
 
 
 /// Uncomment the region below to unlock 4d tree
-
 //    extension simd_double4: VectorLike {
 //
 //        @inlinable public func lengthSquared() -> Double {

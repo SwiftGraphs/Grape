@@ -46,7 +46,11 @@ public struct FloatLinearCongruentialGenerator {
     }
 }
 
-extension Double {
+public protocol SimulatableFloatingPoint: ExpressibleByFloatLiteral {
+    func jiggled() -> Self
+}
+
+extension Double: SimulatableFloatingPoint {
     @inlinable public func jiggled() -> Double {
         if self == 0 || self == .nan {
             // return Double.random(in: -5e-6..<5e-6)
@@ -56,7 +60,7 @@ extension Double {
     }
 }
 
-extension Float {
+extension Float: SimulatableFloatingPoint {
     @inlinable public func jiggled() -> Float {
         if self == 0 || self == .nan {
             // return Double.random(in: -5e-6..<5e-6)
@@ -66,17 +70,7 @@ extension Float {
     }
 }
 
-extension VectorLike where Scalar == Double {
-    @inlinable public func jiggled() -> Self {
-        var result = Self.zero
-        for i in indices {
-            result[i] = self[i].jiggled()
-        }
-        return result
-    }
-}
-
-extension VectorLike where Scalar == Float {
+extension VectorLike where Scalar: SimulatableFloatingPoint {
     @inlinable public func jiggled() -> Self {
         var result = Self.zero
         for i in indices {
@@ -97,13 +91,4 @@ public struct EdgeID<NodeID>: Hashable where NodeID: Hashable {
         self.source = source
         self.target = target
     }
-}
-
-
-public protocol PrecalculatableNodeProperty {
-    associatedtype NodeID: Hashable
-
-    associatedtype V: VectorLike where V.Scalar == Double
-    
-    func calculated(for simulation: Simulation<NodeID, V>) -> [Double]
 }

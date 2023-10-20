@@ -15,16 +15,16 @@ enum LinkForceError: Error {
 /// The complexity is `O(e)`, where `e` is the number of links.
 /// See [Link Force - D3](https://d3js.org/d3-force/link).
 final public class LinkForce<NodeID, V>: ForceLike
-where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 
     ///
     public enum LinkStiffness {
-        case constant(Double)
-        case varied((EdgeID<NodeID>, LinkLookup<NodeID>) -> Double)
-        case weightedByDegree(k: (EdgeID<NodeID>, LinkLookup<NodeID>) -> Double)
+        case constant(V.Scalar)
+        case varied((EdgeID<NodeID>, LinkLookup<NodeID>) -> V.Scalar)
+        case weightedByDegree(k: (EdgeID<NodeID>, LinkLookup<NodeID>) -> V.Scalar)
     }
     var linkStiffness: LinkStiffness
-    var calculatedStiffness: [Double] = []
+    var calculatedStiffness: [V.Scalar] = []
 
     ///
     public typealias LengthScalar = V.Scalar
@@ -36,7 +36,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     var calculatedLength: [LengthScalar] = []
 
     /// Bias
-    var calculatedBias: [Double] = []
+    var calculatedBias: [V.Scalar] = []
 
     /// Binding to simulation
     ///
@@ -55,8 +55,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
             self.lookup = .buildFromLinks(linksOfIndices)
 
             self.calculatedBias = linksOfIndices.map { l in
-                Double(lookup.count[l.source, default: 0])
-                    / Double(
+                V.Scalar(lookup.count[l.source, default: 0])
+                    / V.Scalar(
                         lookup.count[l.target, default: 0] + lookup.count[l.source, default: 0])
             }
 
@@ -93,8 +93,10 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
     }
 
-    public func apply(alpha: Double) {
+    public func apply() {
         guard let sim = self.simulation else { return }
+        
+        let alpha = sim.alpha
 
         for _ in 0..<iterationsPerTick {
             for i in links.indices {
@@ -150,10 +152,10 @@ extension LinkForce.LinkLookup {
 
 protocol PrecalculatableEdgeProperty {
     associatedtype NodeID: Hashable
-    associatedtype V: VectorLike where V.Scalar == Double
+    associatedtype V: VectorLike where V.Scalar: SimulatableFloatingPoint
     func calculated(
         for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>
-    ) -> [Double]
+    ) -> [V.Scalar]
 }
 
 extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
@@ -175,7 +177,7 @@ extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
     func calculated(
         for links: [EdgeID<NodeID>],
         connectionLookupTable lookup: LinkForce<NodeID, V>.LinkLookup<NodeID>
-    ) -> [Double] {
+    ) -> [V.Scalar] {
         switch self {
         case .constant(let value):
             return links.map { _ in value }
@@ -186,7 +188,7 @@ extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
         case .weightedByDegree(let k):
             return links.map { link in
                 k(link, lookup)
-                    / Double(
+                    / V.Scalar(
                         min(
                             lookup.count[link.source, default: 0],
                             lookup.count[link.target, default: 0]
@@ -211,7 +213,7 @@ extension Simulation {
     public func createLinkForce(
         _ links: [EdgeID<NodeID>],
         stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
-        originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30),
+        originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30.0),
         iterationsPerTick: UInt = 1
     ) -> LinkForce<NodeID, V> {
         let linkForce = LinkForce<NodeID, V>(
@@ -233,7 +235,7 @@ extension Simulation {
     public func createLinkForce(
         _ linkTuples: [(NodeID, NodeID)],
         stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
-        originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30),
+originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30.0),
         iterationsPerTick: UInt = 1
     ) -> LinkForce<NodeID, V> {
         let links = linkTuples.map { EdgeID($0.0, $0.1) }

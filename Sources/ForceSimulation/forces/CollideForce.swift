@@ -8,9 +8,9 @@ import NDTree
 
 struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
 
-    public var maxNodeRadius: Double
+    public var maxNodeRadius: V.Scalar
 
-    @usableFromInline var radiusProvider: (NodeID) -> Double
+    @usableFromInline var radiusProvider: (NodeID) -> V.Scalar
 
     mutating func didAddNode(_ nodeId: NodeID, at position: V) {
         let p = radiusProvider(nodeId)
@@ -33,7 +33,7 @@ struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, 
         return Self(radiusProvider: radiusProvider)
     }
 
-    init(maxNodeRadius: Double = 0, radiusProvider: @escaping (NodeID) -> Double) {
+    init(maxNodeRadius: V.Scalar = 0, radiusProvider: @escaping (NodeID) -> V.Scalar) {
         self.maxNodeRadius = maxNodeRadius
         self.radiusProvider = radiusProvider
     }
@@ -45,7 +45,7 @@ struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, 
 /// where `n` is the number of nodes. 
 /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
 public final class CollideForce<NodeID, V>: ForceLike
-where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 
     weak var simulation: Simulation<NodeID, V>? {
         didSet {
@@ -55,18 +55,18 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     }
 
     public enum CollideRadius {
-        case constant(Double)
-        case varied((NodeID) -> Double)
+        case constant(V.Scalar)
+        case varied((NodeID) -> V.Scalar)
     }
     public var radius: CollideRadius
-    var calculatedRadius: [Double] = []
+    var calculatedRadius: [V.Scalar] = []
 
     public let iterationsPerTick: UInt
-    public var strength: Double
+    public var strength: V.Scalar
 
     internal init(
         radius: CollideRadius,
-        strength: Double = 1.0,
+        strength: V.Scalar = 1.0,
         iterationsPerTick: UInt = 1
     ) {
         self.radius = radius
@@ -74,15 +74,18 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         self.strength = strength
     }
 
-    public func apply(alpha: Double) {
+    public func apply() {
         guard let sim = self.simulation else { return }
+        let alpha = sim.alpha
 
         for _ in 0..<iterationsPerTick {
 
             let coveringBox = NDBox<V>.cover(of: sim.nodePositions)
+            
+            let clusterDistance: V.Scalar = V.Scalar(Int(0.00001))
 
             let tree = NDTree<V, MaxRadiusTreeDelegate<Int, V>>(
-                box: coveringBox, clusterDistance: 1e-5
+                box: coveringBox, clusterDistance: clusterDistance
             ) {
                 return switch self.radius {
                 case .constant(let m):
@@ -168,8 +171,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
 }
 
-extension CollideForce.CollideRadius: PrecalculatableNodeProperty {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
+extension CollideForce.CollideRadius {
+    public func calculated(for simulation: Simulation<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let r):
             return Array(repeating: r, count: simulation.nodePositions.count)
@@ -192,7 +195,7 @@ extension Simulation {
     @discardableResult
     public func createCollideForce(
         radius: CollideForce<NodeID, V>.CollideRadius = .constant(3.0),
-        strength: Double = 1.0,
+        strength: V.Scalar = 1.0,
         iterationsPerTick: UInt = 1
     ) -> CollideForce<NodeID, V> {
         let f = CollideForce<NodeID, V>(

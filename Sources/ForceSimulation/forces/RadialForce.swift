@@ -12,7 +12,7 @@ import NDTree
 /// where `n` is the number of nodes.
 /// See [Position Force - D3](https://d3js.org/d3-force/position).
 final public class RadialForce<NodeID, V>: ForceLike
-where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
     weak var simulation: Simulation<NodeID, V>? {
         didSet {
             guard let sim = self.simulation else { return }
@@ -33,11 +33,11 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
     /// Strength accessor
     public enum Strength {
-        case constant(Double)
-        case varied((NodeID) -> Double)
+        case constant(V.Scalar)
+        case varied((NodeID) -> V.Scalar)
     }
     public var strength: Strength
-    private var calculatedStrength: [Double] = []
+    private var calculatedStrength: [V.Scalar] = []
 
     public init(center: V, radius: NodeRadius, strength: Strength) {
         self.center = center
@@ -45,8 +45,9 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         self.strength = strength
     }
 
-    public func apply(alpha: Double) {
+    public func apply() {
         guard let sim = self.simulation else { return }
+        let alpha = sim.alpha
         for i in sim.nodePositions.indices {
             let nodeId = i
             let deltaPosition = (sim.nodePositions[i] - self.center).jiggled()
@@ -60,8 +61,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
 }
 
-extension RadialForce.Strength: PrecalculatableNodeProperty {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
+extension RadialForce.Strength {
+    public func calculated(for simulation: Simulation<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let s):
             return simulation.nodeIds.map { _ in s }
@@ -71,8 +72,8 @@ extension RadialForce.Strength: PrecalculatableNodeProperty {
     }
 }
 
-extension RadialForce.NodeRadius: PrecalculatableNodeProperty {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [Double] {
+extension RadialForce.NodeRadius {
+    public func calculated(for simulation: Simulation<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let r):
             return simulation.nodeIds.map { _ in r }
