@@ -123,6 +123,11 @@ struct ContentView: View {
                 
                 
                 
+            } update: { content in
+                guard let animationResource = try? AnimationResource.generate(with: OrbitAnimation(trimDuration: 1)) else {return}
+                content.entities.forEach { e in
+                    e.playAnimation(animationResource, transitionDuration: 1)
+                }
             }
             .frame(depth: 10.0)
             
