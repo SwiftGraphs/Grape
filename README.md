@@ -50,6 +50,10 @@ https://github.com/li3zhen1/Grape/assets/45376537/52cd3915-c2f8-40cf-96c1-2fd818
 
 Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift)
 
+> [!IMPORTANT]  
+> When working with 3D contents, you probably need `Float` types instead of `Double`. The example here manually cast `Double` to `Float`.
+> The `float32` branch provides out-of-box support for `Float` through generics. However, the performance will be downgraded. I’ll try to fix that.
+
 
 <br/>
 
