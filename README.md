@@ -52,8 +52,7 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 
 > [!IMPORTANT]  
 > When working with 3D contents, you probably need `Float` types instead of `Double`. The example here manually cast `Double` to `Float`.
-> The `float32` branch relaxes the generic constraint from `Scalar == Double` to `Scalar: ExpressibleByFloatLiteral`, which allows you to get out-of-box supports for other floating point types. However, the performance will be downgraded. I’m trying to find a workaround.
-
+> The `float32` branch relaxes the generic constraint from `Scalar == Double` to `Scalar: ExpressibleByFloatLiteral`, which allows you to get out-of-box supports for other floating point types. However, the performance will be downgraded. 
 
 <br/>
 

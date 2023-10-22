@@ -57,7 +57,8 @@ do {
                             },
                             svg: {
                                 fontCache: 'global'
-                            }
+                            },
+                            loader: {load: ['ui/lazy']}
                             };
                             </script>
                             <script type="text/javascript" id="MathJax-script" async
