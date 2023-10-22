@@ -62,7 +62,7 @@
     public protocol OctreeDelegate: NDTreeDelegate where V == Vector3d {}
 
 
-    // public typealias QuadBox = NDBox<Vector2d>
+    public typealias QuadBox = NDBox<Vector2d>
     public typealias OctBox = NDBox<Vector3d>
 
     // public typealias Quadtree<TD: QuadtreeDelegate> = NDTree<Vector2d, TD>

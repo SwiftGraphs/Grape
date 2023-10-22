@@ -1,5 +1,5 @@
 //
-//  QuadBox.swift
+//  _QuadBox.swift
 //  
 //
 //  Created by li3zhen1 on 10/14/23.
@@ -9,7 +9,7 @@ import simd
 
 /// A box in N-dimensional space.
 /// - Note: `p0` is the minimum point of the box, `p1` is the maximum point of the box.
-public struct QuadBox {
+public struct _QuadBox {
     /// the minimum anchor of the box
     public var p0: simd_double2
 
@@ -74,7 +74,7 @@ public struct QuadBox {
 
 }
 
-extension QuadBox {
+extension _QuadBox {
     @inlinable var diagnalVector: simd_double2 {
         return p1 - p0
     }
@@ -96,7 +96,7 @@ extension QuadBox {
     }
 }
 
-extension QuadBox {
+extension _QuadBox {
     @inlinable func getCorner(of direction: Int) -> simd_double2 {
         var corner = simd_double2.zero
         for i in 0..<simd_double2.scalarCount {
@@ -112,7 +112,7 @@ extension QuadBox {
 }
 
 
-public extension QuadBox {
+public extension _QuadBox {
 
     /// Get the small box that contains a list points and guarantees the box's size is at least 1x..x1.
     /// - Parameter points: The points to be covered.

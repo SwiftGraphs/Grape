@@ -49,7 +49,7 @@ extension Simulation2D {
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
-    public final class CollideForce2D: ForceLike
+    public final class CollideForce: ForceLike
     where NodeID: Hashable {
 
         public typealias V = simd_double2
@@ -87,7 +87,7 @@ extension Simulation2D {
 
             for _ in 0..<iterationsPerTick {
 
-                let coveringBox = QuadBox.cover(of: sim.nodePositions)
+                let coveringBox = NDBox<V>.cover(of: sim.nodePositions)
 
                 let clusterDistance: V.Scalar = V.Scalar(Int(0.00001))
 
@@ -189,11 +189,11 @@ extension Simulation2D {
     ///   - iterationsPerTick: The number of iterations per tick.
     @discardableResult
     public func createCollideForce(
-        radius: CollideForce2D.CollideRadius = .constant(3.0),
+        radius: CollideForce.CollideRadius = .constant(3.0),
         strength: V.Scalar = 1.0,
         iterationsPerTick: UInt = 1
-    ) -> CollideForce2D {
-        let f = CollideForce2D(
+    ) -> CollideForce {
+        let f = CollideForce(
             radius: radius,
             strength: strength,
             iterationsPerTick: iterationsPerTick
@@ -205,7 +205,7 @@ extension Simulation2D {
 
 }
 
-extension Simulation2D.CollideForce2D.CollideRadius {
+extension Simulation2D.CollideForce.CollideRadius {
     public func calculated(for simulation: Simulation2D<NodeID>) -> [Double] {
         switch self {
         case .constant(let r):

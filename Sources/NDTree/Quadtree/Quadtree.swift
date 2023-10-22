@@ -46,7 +46,7 @@ public final class Quadtree<D> where D: QuadtreeDelegate {
 
     public typealias Direction = Int
 
-    public typealias Box = QuadBox
+    public typealias Box = NDBox<V>
 
     public private(set) var box: Box
 

@@ -15,8 +15,7 @@ where NodeID: Hashable {
     public var alphaTarget: Scalar
 
     public var velocityDecay: Scalar
-    
-    
+
     public internal(set) var forces: [any ForceLike] = []
 
     /// The position of points stored in simulation.
