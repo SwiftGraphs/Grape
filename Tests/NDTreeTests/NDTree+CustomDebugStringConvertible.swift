@@ -5,6 +5,7 @@
 //  Created by li3zhen1 on 10/15/23.
 //
 
+import simd
 @testable import NDTree
 
 extension VectorLike {
@@ -52,6 +53,12 @@ extension NDTree: CustomDebugStringConvertible where D.NodeID == Int {
     }
 }
 
+
+extension simd_double2 {
+    var compactDebugString: String {
+        return "[\(self.x), \(self.y)]"
+    }
+}
 
 
 

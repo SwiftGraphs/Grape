@@ -247,7 +247,7 @@ where NodeID: Hashable {
 
                 let vec = centroid - sim.nodePositions[i]
                 let boxWidth = (t.box.p1 - t.box.p0)[0]
-                var distanceSquared = vec.jiggled().lengthSquared()
+                var distanceSquared = simd_length_squared(vec.jiggled())
 
                 let farEnough: Bool = (distanceSquared * self.theta2) > (boxWidth * boxWidth)
 

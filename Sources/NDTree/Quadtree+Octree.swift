@@ -8,6 +8,8 @@
 #if canImport(simd)
 
     import simd
+
+
     extension simd_double2: VectorLike {
 
         @inlinable public func lengthSquared() -> Double {
@@ -26,8 +28,7 @@
             return (self - to).length()
         }
         
-        
-        // public static let directionCount = 4
+        // public static let directionCount = 8
     }
 
     extension simd_double3: VectorLike {
@@ -50,9 +51,6 @@
         
         // public static let directionCount = 8
     }
-
-
-
 
     public typealias Vector2d = simd_double2
     public typealias Vector3d = simd_double3

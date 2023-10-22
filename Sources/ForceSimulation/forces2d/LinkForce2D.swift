@@ -119,7 +119,7 @@ where NodeID: Hashable {
                 var vec = (_target + sim.nodeVelocities[t] - _source - sim.nodeVelocities[s])
                     .jiggled()
 
-                var l = vec.length()
+                var l = simd_length(vec)
 
                 l = (l - self.calculatedLength[i]) / l * alpha * self.calculatedStiffness[i]
 

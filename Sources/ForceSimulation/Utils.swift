@@ -5,6 +5,7 @@
 //  Created by li3zhen1 on 10/1/23.
 //
 import NDTree
+import simd
 
 
 // TODO: https://forums.swift.org/t/deterministic-randomness-in-swift/20835/5
@@ -67,6 +68,16 @@ extension Float: SimulatableFloatingPoint {
             return (FloatLinearCongruentialGenerator.next() - 0.5) * 1e-5
         }
         return self
+    }
+}
+
+extension simd_double2 {
+    @inlinable public func jiggled() -> Self {
+        var result = Self.zero
+        for i in indices {
+            result[i] = self[i].jiggled()
+        }
+        return result
     }
 }
 

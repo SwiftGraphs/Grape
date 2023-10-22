@@ -137,7 +137,9 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
 #if canImport(simd)
 
-    public typealias _Simulation2D<NodeID> = Simulation<NodeID, Vector2d> where NodeID: Hashable
+    import simd
+
+    // public typealias _Simulation2D<NodeID> = Simulation<NodeID, simd_double2> where NodeID: Hashable
 
     public typealias Simulation3D<NodeID> = Simulation<NodeID, Vector3d> where NodeID: Hashable
 

@@ -55,7 +55,7 @@ where NodeID: Hashable {
         for i in sim.nodePositions.indices {
             let nodeId = i
             let deltaPosition = (sim.nodePositions[i] - self.center).jiggled()
-            let r = deltaPosition.length()
+            let r = simd_length(deltaPosition)
             let k =
                 (self.calculatedRadius[nodeId]
                     * self.calculatedStrength[nodeId] * alpha) / r

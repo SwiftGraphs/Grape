@@ -115,7 +115,7 @@ public final class Quadtree<D> where D: QuadtreeDelegate {
                 nodePosition = point
                 return
             } else if nodePosition == point
-                || nodePosition!.distanceSquared(to: point) < clusterDistanceSquared
+                || simd_length_squared(nodePosition! - point) < clusterDistanceSquared
             {
                 nodeIndices.append(nodeIndex)
                 return
