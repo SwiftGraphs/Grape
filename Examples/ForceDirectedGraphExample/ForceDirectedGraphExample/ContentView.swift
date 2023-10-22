@@ -39,7 +39,7 @@ struct ContentView: View {
     
     var sim: Simulation2D<String>
     let data: Miserable
-    var linkForce: LinkForce<String,Vector2d>
+    var linkForce: LinkForce2D<String>
     
     init() {
         

@@ -5,8 +5,11 @@
 //  Created by li3zhen1 on 10/17/23.
 //
 import NDTree
+import simd
 
-struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
+struct MaxRadiusTreeDelegate2D<NodeID>: QuadtreeDelegate where NodeID: Hashable {
+
+    public typealias V = simd_double2
 
     public var maxNodeRadius: V.Scalar
 
@@ -25,11 +28,11 @@ struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, 
         }
     }
 
-    func copy() -> MaxRadiusTreeDelegate<NodeID, V> {
+    func copy() -> MaxRadiusTreeDelegate2D<NodeID> {
         return Self(maxNodeRadius: maxNodeRadius, radiusProvider: radiusProvider)
     }
 
-    func spawn() -> MaxRadiusTreeDelegate<NodeID, V> {
+    func spawn() -> MaxRadiusTreeDelegate2D<NodeID> {
         return Self(radiusProvider: radiusProvider)
     }
 
@@ -44,10 +47,12 @@ struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, 
 /// This is a very expensive force, the complexity is `O(n log(n))`,
 /// where `n` is the number of nodes. 
 /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
-public final class CollideForce<NodeID, V>: ForceLike
-where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+public final class CollideForce2D<NodeID>: ForceLike
+where NodeID: Hashable {
 
-    weak var simulation: Simulation<NodeID, V>? {
+    public typealias V = simd_double2
+
+    weak var simulation: Simulation2D<NodeID>? {
         didSet {
             guard let sim = simulation else { return }
             self.calculatedRadius = radius.calculated(for: sim)
@@ -80,18 +85,18 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
         for _ in 0..<iterationsPerTick {
 
-            let coveringBox = NDBox<V>.cover(of: sim.nodePositions)
+            let coveringBox = QuadBox.cover(of: sim.nodePositions)
             
             let clusterDistance: V.Scalar = V.Scalar(Int(0.00001))
 
-            let tree = NDTree<V, MaxRadiusTreeDelegate<Int, V>>(
+            let tree = Quadtree<MaxRadiusTreeDelegate2D>(
                 box: coveringBox, clusterDistance: clusterDistance
             ) {
                 return switch self.radius {
                 case .constant(let m):
-                    MaxRadiusTreeDelegate<Int, V> { _ in m }
+                    MaxRadiusTreeDelegate2D<Int> { _ in m }
                 case .varied(_):
-                    MaxRadiusTreeDelegate<Int, V> { index in
+                    MaxRadiusTreeDelegate2D<Int> { index in
                         self.calculatedRadius[index]
                     }
                 }
@@ -171,8 +176,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
 }
 
-extension CollideForce.CollideRadius {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [V.Scalar] {
+extension CollideForce2D.CollideRadius {
+    public func calculated(for simulation: Simulation2D<NodeID>) -> [Double] {
         switch self {
         case .constant(let r):
             return Array(repeating: r, count: simulation.nodePositions.count)
@@ -182,7 +187,7 @@ extension CollideForce.CollideRadius {
     }
 }
 
-extension Simulation {
+extension Simulation2D {
 
     /// Create a collide force that prevents nodes from overlapping.
     /// This is a very expensive force, the complexity is `O(n log(n))`,
@@ -194,11 +199,11 @@ extension Simulation {
     ///   - iterationsPerTick: The number of iterations per tick.
     @discardableResult
     public func createCollideForce(
-        radius: CollideForce<NodeID, V>.CollideRadius = .constant(3.0),
+        radius: CollideForce2D<NodeID>.CollideRadius = .constant(3.0),
         strength: V.Scalar = 1.0,
         iterationsPerTick: UInt = 1
-    ) -> CollideForce<NodeID, V> {
-        let f = CollideForce<NodeID, V>(
+    ) -> CollideForce2D<NodeID> {
+        let f = CollideForce2D<NodeID>(
             radius: radius,
             strength: strength,
             iterationsPerTick: iterationsPerTick

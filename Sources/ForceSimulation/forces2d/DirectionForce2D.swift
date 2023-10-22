@@ -6,13 +6,17 @@
 //
 
 import NDTree
+import simd
 
 /// A force that moves nodes to a target position.
 /// Center force is relatively fast, the complexity is `O(n)`,
 /// where `n` is the number of nodes.
 /// See [Position Force - D3](https://d3js.org/d3-force/position).
-final public class DirectionForce<NodeID, V>: ForceLike
-where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+final public class DirectionForce2D<NodeID>: ForceLike
+where NodeID: Hashable {
+
+
+    public typealias V = simd_double2
 
     public enum Direction {
         case x
@@ -45,7 +49,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         self.targetOnDirection = targetOnDirection
     }
 
-    weak var simulation: Simulation<NodeID, V>? {
+    weak var simulation: Simulation2D<NodeID>? {
         didSet {
             guard let sim = self.simulation else { return }
             self.calculatedStrength = strength.calculated(for: sim)
@@ -65,8 +69,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     }
 }
 
-extension DirectionForce.Strength {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [V.Scalar] {
+extension DirectionForce2D.Strength {
+    public func calculated(for simulation: Simulation2D<NodeID>) -> [Double] {
         switch self {
         case .constant(let value):
             return Array(repeating: value, count: simulation.nodeIds.count)
@@ -76,8 +80,8 @@ extension DirectionForce.Strength {
     }
 }
 
-extension DirectionForce.TargetOnDirection {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [V.Scalar] {
+extension DirectionForce2D.TargetOnDirection {
+    public func calculated(for simulation: Simulation2D<NodeID>) -> [Double] {
         switch self {
         case .constant(let value):
             return Array(repeating: value, count: simulation.nodeIds.count)
@@ -87,7 +91,7 @@ extension DirectionForce.TargetOnDirection {
     }
 }
 
-extension DirectionForce.Direction {
+extension DirectionForce2D.Direction {
     @inlinable var lane: Int {
         switch self {
         case .x: return 0
@@ -97,7 +101,7 @@ extension DirectionForce.Direction {
     }
 }
 
-extension Simulation {
+extension Simulation2D {
 
     /// Create a direction force that moves nodes to a target position.
     /// Center force is relatively fast, the complexity is `O(n)`,
@@ -105,11 +109,11 @@ extension Simulation {
     /// See [Position Force - D3](https://d3js.org/d3-force/position).
     @discardableResult
     public func createPositionForce(
-        direction: DirectionForce<NodeID, V>.Direction,
-        targetOnDirection: DirectionForce<NodeID, V>.TargetOnDirection,
-        strength: DirectionForce<NodeID, V>.Strength = .constant(1.0)
-    ) -> DirectionForce<NodeID, V> {
-        let force = DirectionForce<NodeID, V>(
+        direction: DirectionForce2D<NodeID>.Direction,
+        targetOnDirection: DirectionForce2D<NodeID>.TargetOnDirection,
+        strength: DirectionForce2D<NodeID>.Strength = .constant(1.0)
+    ) -> DirectionForce2D<NodeID> {
+        let force = DirectionForce2D<NodeID>(
             direction: direction,
             targetOnDirection: targetOnDirection,
             strength: strength

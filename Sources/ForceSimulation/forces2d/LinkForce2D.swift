@@ -6,16 +6,19 @@
 //
 
 import NDTree
+import simd
 
-enum LinkForceError: Error {
+enum LinkForce2DError: Error {
     case useBeforeSimulationInitialized
 }
 
 /// A force that represents links between nodes.
 /// The complexity is `O(e)`, where `e` is the number of links.
 /// See [Link Force - D3](https://d3js.org/d3-force/link).
-final public class LinkForce<NodeID, V>: ForceLike
-where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+final public class LinkForce2D<NodeID>: ForceLike
+where NodeID: Hashable {
+
+    public typealias V = simd_double2
 
     ///
     public enum LinkStiffness {
@@ -40,7 +43,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
     /// Binding to simulation
     ///
-    weak var simulation: Simulation<NodeID, V>? {
+    weak var simulation: Simulation2D<NodeID>? {
         didSet {
 
             guard let sim = simulation else { return }
@@ -135,7 +138,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
 }
 
-extension LinkForce.LinkLookup {
+extension LinkForce2D.LinkLookup {
     static func buildFromLinks(_ links: [EdgeID<_NodeID>]) -> Self {
         var sources: [_NodeID: [_NodeID]] = [:]
         var targets: [_NodeID: [_NodeID]] = [:]
@@ -150,18 +153,10 @@ extension LinkForce.LinkLookup {
     }
 }
 
-protocol PrecalculatableEdgeProperty {
-    associatedtype NodeID: Hashable
-    associatedtype V: VectorLike where V.Scalar == Double
+extension LinkForce2D.LinkLength {
     func calculated(
-        for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>
-    ) -> [V.Scalar]
-}
-
-extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
-    func calculated(
-        for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce<NodeID, V>.LinkLookup<NodeID>
-    ) -> [V.Scalar] {
+        for links: [EdgeID<NodeID>], connectionLookupTable: LinkForce2D<NodeID>.LinkLookup<NodeID>
+    ) -> [Double] {
         switch self {
         case .constant(let value):
             return links.map { _ in value }
@@ -173,11 +168,11 @@ extension LinkForce.LinkLength: PrecalculatableEdgeProperty {
     }
 }
 
-extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
+extension LinkForce2D.LinkStiffness {
     func calculated(
         for links: [EdgeID<NodeID>],
-        connectionLookupTable lookup: LinkForce<NodeID, V>.LinkLookup<NodeID>
-    ) -> [V.Scalar] {
+        connectionLookupTable lookup: LinkForce2D<NodeID>.LinkLookup<NodeID>
+    ) -> [Double] {
         switch self {
         case .constant(let value):
             return links.map { _ in value }
@@ -188,7 +183,7 @@ extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
         case .weightedByDegree(let k):
             return links.map { link in
                 k(link, lookup)
-                    / V.Scalar(
+                    / Double(
                         min(
                             lookup.count[link.source, default: 0],
                             lookup.count[link.target, default: 0]
@@ -199,7 +194,7 @@ extension LinkForce.LinkStiffness: PrecalculatableEdgeProperty {
     }
 }
 
-extension Simulation {
+extension Simulation2D {
 
     /// Create a link force that represents links between nodes. It works like
     /// there is a spring between each pair of nodes.
@@ -212,11 +207,11 @@ extension Simulation {
     @discardableResult
     public func createLinkForce(
         _ links: [EdgeID<NodeID>],
-        stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
-        originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30.0),
+        stiffness: LinkForce2D<NodeID>.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
+        originalLength: LinkForce2D<NodeID>.LinkLength = .constant(30.0),
         iterationsPerTick: UInt = 1
-    ) -> LinkForce<NodeID, V> {
-        let linkForce = LinkForce<NodeID, V>(
+    ) -> LinkForce2D<NodeID> {
+        let linkForce = LinkForce2D<NodeID>(
             links, stiffness: stiffness, originalLength: originalLength)
         linkForce.simulation = self
         self.forces.append(linkForce)
@@ -234,12 +229,12 @@ extension Simulation {
     @discardableResult
     public func createLinkForce(
         _ linkTuples: [(NodeID, NodeID)],
-        stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
-originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30.0),
+        stiffness: LinkForce2D<NodeID>.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
+originalLength: LinkForce2D<NodeID>.LinkLength = .constant(30.0),
         iterationsPerTick: UInt = 1
-    ) -> LinkForce<NodeID, V> {
+    ) -> LinkForce2D<NodeID> {
         let links = linkTuples.map { EdgeID($0.0, $0.1) }
-        let linkForce = LinkForce<NodeID, V>(
+        let linkForce = LinkForce2D<NodeID>(
             links, stiffness: stiffness, originalLength: originalLength)
         linkForce.simulation = self
         self.forces.append(linkForce)

@@ -6,14 +6,18 @@
 //
 
 import NDTree
+import simd
 
 /// A force that applies a radial force to all nodes.
 /// Center force is relatively fast, the complexity is `O(n)`,
 /// where `n` is the number of nodes.
 /// See [Position Force - D3](https://d3js.org/d3-force/position).
-final public class RadialForce<NodeID, V>: ForceLike
-where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
-    weak var simulation: Simulation<NodeID, V>? {
+final public class RadialForce2D<NodeID>: ForceLike
+where NodeID: Hashable {
+
+    public typealias V = simd_double2
+
+    weak var simulation: Simulation2D<NodeID>? {
         didSet {
             guard let sim = self.simulation else { return }
             self.calculatedStrength = strength.calculated(for: sim)
@@ -61,8 +65,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
 
 }
 
-extension RadialForce.Strength {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [V.Scalar] {
+extension RadialForce2D.Strength {
+    public func calculated(for simulation: Simulation2D<NodeID>) -> [Double] {
         switch self {
         case .constant(let s):
             return simulation.nodeIds.map { _ in s }
@@ -72,8 +76,8 @@ extension RadialForce.Strength {
     }
 }
 
-extension RadialForce.NodeRadius {
-    public func calculated(for simulation: Simulation<NodeID, V>) -> [V.Scalar] {
+extension RadialForce2D.NodeRadius {
+    public func calculated(for simulation: Simulation2D<NodeID>) -> [Double] {
         switch self {
         case .constant(let r):
             return simulation.nodeIds.map { _ in r }
@@ -83,7 +87,7 @@ extension RadialForce.NodeRadius {
     }
 }
 
-extension Simulation {
+extension Simulation2D {
 
     /// Create a radial force that applies a radial force to all nodes.
     /// Center force is relatively fast, the complexity is `O(n)`,
@@ -96,10 +100,10 @@ extension Simulation {
     @discardableResult
     public func createRadialForce(
         center: V = .zero,
-        radius: RadialForce<NodeID, V>.NodeRadius,
-        strength: RadialForce<NodeID, V>.Strength = .constant(0.1)
-    ) -> RadialForce<NodeID, V> {
-        let f = RadialForce<NodeID, V>(center: center, radius: radius, strength: strength)
+        radius: RadialForce2D<NodeID>.NodeRadius,
+        strength: RadialForce2D<NodeID>.Strength = .constant(0.1)
+    ) -> RadialForce2D<NodeID> {
+        let f = RadialForce2D<NodeID>(center: center, radius: radius, strength: strength)
         f.simulation = self
         self.forces.append(f)
         return f
