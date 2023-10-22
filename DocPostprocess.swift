@@ -45,7 +45,7 @@ do {
                                     font-weight: 600!important;
                                     font-variation-settings: 'wght' 600, 'opsz' 24!important;
                                 }
-                                h2.title {
+                                h2 {
                                     font-weight: 600!important;
                                     font-variation-settings: 'wght' 600, 'opsz' 24!important;
                                 }
