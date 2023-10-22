@@ -21,7 +21,6 @@ The basic concepts of simulations and forces can be found here: [Force simulatio
 * <doc:Creating2DAnd3DSimulations>
 * ``Simulation2D``
 * ``Simulation3D``
-
 * ``Simulation``
 
 ### Creating forces in a simulation
