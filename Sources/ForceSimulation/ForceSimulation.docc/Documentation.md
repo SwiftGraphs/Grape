@@ -1,6 +1,6 @@
 # ``ForceSimulation``
 
-Run force simulation on any dimension.
+Run force simulation on any dimensions.
 
 ## Overview
 
