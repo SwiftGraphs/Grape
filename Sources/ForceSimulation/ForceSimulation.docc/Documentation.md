@@ -13,7 +13,6 @@ Run force simulation on any dimensions.
 
 ## Topics
 
-
 ### Creating a simulation
 
 * <doc:Creating2DAnd3DSimulations>
