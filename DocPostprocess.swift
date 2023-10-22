@@ -50,20 +50,7 @@ do {
                                     font-variation-settings: 'wght' 600, 'opsz' 24!important;
                                 }
                             </style>
-                            <script>
-                            MathJax = {
-                            tex: {
-                                inlineMath: [['$', '$'], ['\\(', '\\)']]
-                            },
-                            svg: {
-                                fontCache: 'global'
-                            },
-                            loader: {load: ['ui/lazy']}
-                            };
-                            </script>
-                            <script type="text/javascript" id="MathJax-script" async
-                            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-                            </script>
+                            
                             """)
 
                     try htmlString.write(toFile: indexPath, atomically: false, encoding: .utf8)
