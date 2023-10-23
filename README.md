@@ -65,7 +65,7 @@ let links: [(Node.ID, Node.ID)] = ...
 let sim = Simulation2D(nodeIds: nodeIds, alphaDecay: 0.01)
 sim.createManyBodyForce(strength: -12)
 sim.createLinkForce(links)
-sim.createCenterForce(center: Vector2d(0, 0), strength: 0.4)
+sim.createCenterForce(center: [0, 0], strength: 0.4)
 sim.createCollideForce(radius: .constant(3))
 
 /// Force is ready to start! run `tick` to iterate the simulation.

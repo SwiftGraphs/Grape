@@ -6,6 +6,7 @@
 //
 
 import NDTree
+import simd
 import XCTest
 
 @testable import ForceSimulation
@@ -15,7 +16,7 @@ final class MiserableGraphTest: XCTestCase {
     func test_Generic_2d() {
         let data = getData()
 
-        let sim = SimulationKD<String, Vector2d>(
+        let sim = SimulationKD<String, simd_double2>(
             nodeIds: data.nodes.map { n in
                 n.id
             })

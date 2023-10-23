@@ -7,11 +7,11 @@
 
 import CoreGraphics
 import ForceSimulation
-import NDTree
+import simd
 import SwiftUI
 
 struct ForceDirectedLatticeView: View {
-    @State var points: [Vector2d]? = nil
+    @State var points: [simd_double2]? = nil
 
     private let sim: Simulation2D<Int>
     private let edgeIds: [(Int, Int)]
