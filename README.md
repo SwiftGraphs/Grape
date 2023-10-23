@@ -50,10 +50,6 @@ https://github.com/li3zhen1/Grape/assets/45376537/52cd3915-c2f8-40cf-96c1-2fd818
 
 Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift)
 
-> [!IMPORTANT]  
-> When working with 3D contents, you probably need `Float` types instead of `Double`. The example here manually cast `Double` to `Float`.
-> The `float32` branch relaxes the generic constraint from `Scalar == Double` to `Scalar: ExpressibleByFloatLiteral`, which allows you to get out-of-box supports for other floating point types. However, the performance will be downgraded. 
-
 <br/>
 
 
@@ -98,7 +94,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 ### Advanced
 
-Almost all the types in Grape work with any SIMD-like data structures. To integrate Grape into platforms where `import simd` isn't supported, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
+Grape provides a set of generic based types that works with any SIMD-like data structures. To integrate Grape into platforms where `import simd` isn't supported, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
 
 ```swift
 /// All required implementations should have same semantics
@@ -112,7 +108,8 @@ typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
 typealias Simulation4D<NodeID: Hashable> = Simulation<NodeID, Vector4d>
 ```
 
-Also, this is how you create a 4D simulation with or without `simd_double4`. (Though I don't know what good it does)
+> [!IMPORTANT]  
+> When using generic based types, you need to pay for dynamic dispatch. It's recommended to use simd based types whenever possible.
 
 
 <br/>
@@ -137,9 +134,9 @@ Also, this is how you create a 4D simulation with or without `simd_double4`. (Th
 
 ## Performance
 
-Grape uses simd to calculate position and velocity. Currently it takes ~0.12 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max)
+Grape uses simd to calculate position and velocity. Currently it takes ~0.05 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max)
 
-Due to the iteration over simd lanes, going 3D will hurt performance. (~0.16 seconds for the same graph and same configs.)
+Due to the iteration over simd lanes, going 3D will hurt performance. (~0.075 seconds for the same graph and same configs.)
 
 
 <br/>

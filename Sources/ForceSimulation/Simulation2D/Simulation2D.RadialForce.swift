@@ -5,6 +5,7 @@
 //  Created by li3zhen1 on 10/1/23.
 //
 
+#if canImport(simd)
 import NDTree
 import simd
 
@@ -109,3 +110,5 @@ extension Simulation2D.RadialForce.NodeRadius {
         }
     }
 }
+
+#endif

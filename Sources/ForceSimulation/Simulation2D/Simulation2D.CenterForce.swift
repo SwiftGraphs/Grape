@@ -4,6 +4,9 @@
 //
 //  Created by li3zhen1 on 10/16/23.
 //
+
+
+#if canImport(simd)
 import NDTree
 import simd
 
@@ -58,3 +61,5 @@ extension Simulation2D {
     }
 
 }
+
+#endif

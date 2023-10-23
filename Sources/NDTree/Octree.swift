@@ -5,6 +5,7 @@
 //  Created by li3zhen1 on 10/22/23.
 //
 
+#if canImport(simd)
 import simd
 
 /// The data structure carried by a node of NDTree
@@ -339,3 +340,5 @@ extension Octree {
         }
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+
+#if canImport(simd)
+
 import simd
 
 /// A 2-Dimensional force simulation running on `double` and `simd_double3` types.
@@ -122,3 +125,5 @@ where NodeID: Hashable {
         }
     }
 }
+
+#endif

@@ -7,6 +7,9 @@
 import NDTree
 import simd
 
+
+#if canImport(simd)
+
 struct MaxRadiusTreeDelegate3D<NodeID>: OctreeDelegate where NodeID: Hashable {
 
     public typealias V = simd_float3
@@ -215,3 +218,5 @@ extension Simulation3D.CollideForce.CollideRadius {
         }
     }
 }
+
+#endif
