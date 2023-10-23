@@ -35,7 +35,8 @@ Source code: [ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Exa
 
 This is a 36x36 force directed lattice like [Force Directed Lattice](https://observablehq.com/@d3/force-directed-lattice):
 
-https://github.com/li3zhen1/Grape/assets/45376537/86c6b155-105f-44d8-a280-de70f55fefd2
+https://github.com/li3zhen1/Grape/assets/45376537/bc665dcb-c054-46e4-95ce-2f3a696e3d79
+
 
 Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ForceDirectedLatticeView.swift)
 
@@ -109,7 +110,7 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 ```
 
 > [!IMPORTANT]  
-> When using generic based types, you need to **pay for dynamic dispatch**, in terms of performance. It's recommended to use `Simulation2D` or `Simulation3D` whenever possible.
+> When using generic based types, you ***pay for dynamic dispatch***, in terms of performance. It's recommended to use `Simulation2D` or `Simulation3D` whenever possible.
 
 
 <br/>
@@ -134,7 +135,7 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 
 ## Performance
 
-Grape uses simd to calculate position and velocity. Currently it takes ~0.05 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max)
+Grape uses simd to calculate position and velocity. Currently it takes ~0.05 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
 
 Due to the iteration over simd lanes, going 3D will hurt performance. (~0.075 seconds for the same graph and same configs.)
 
