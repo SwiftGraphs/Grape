@@ -25,7 +25,11 @@
 ### Force Directed Graph
 This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), iterating at 120FPS. Take a closer look at the animation:
 
-https://github.com/li3zhen1/Grape/assets/45376537/ea1ccea3-5717-4cfe-a696-c89e75ca9d3b
+
+
+https://github.com/li3zhen1/Grape/assets/45376537/d80dc797-1980-4755-85b9-18ee26e2a7ff
+
+
 
 Source code: [ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ContentView.swift). 
 
@@ -35,7 +39,10 @@ Source code: [ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Exa
 
 This is a 36x36 force directed lattice like [Force Directed Lattice](https://observablehq.com/@d3/force-directed-lattice):
 
-https://github.com/li3zhen1/Grape/assets/45376537/bc665dcb-c054-46e4-95ce-2f3a696e3d79
+
+
+https://github.com/li3zhen1/Grape/assets/45376537/5b76fddc-dd5c-4d35-bced-29c01269dd2b
+
 
 
 Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ForceDirectedLatticeView.swift)
@@ -47,7 +54,11 @@ Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/
 
 This is the same graph as the first example, rendered in `RealityView`:
 
-https://github.com/li3zhen1/Grape/assets/45376537/52cd3915-c2f8-40cf-96c1-2fd81897b2fe
+
+
+https://github.com/li3zhen1/Grape/assets/45376537/4585471e-2339-4aee-8f39-0c11fdfb6901
+
+
 
 Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift)
 
