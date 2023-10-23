@@ -45,7 +45,7 @@ Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/
 
 ### Force Directed Graph in visionOS
 
-This is the same graph in the first example, rendered in `RealityView`:
+This is the same graph as the first example, rendered in `RealityView`:
 
 https://github.com/li3zhen1/Grape/assets/45376537/52cd3915-c2f8-40cf-96c1-2fd81897b2fe
 
@@ -110,7 +110,7 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 ```
 
 > [!IMPORTANT]  
-> When using generic based types, you ***pay for dynamic dispatch***, in terms of performance. It's recommended to use `Simulation2D` or `Simulation3D` whenever possible.
+> When using generic based types, you ***pay for dynamic dispatch***, in terms of performance. Although their implementations are basically the same, it's recommended to use `Simulation2D` or `Simulation3D` whenever possible.
 
 
 <br/>
@@ -137,7 +137,7 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 
 Grape uses simd to calculate position and velocity. Currently it takes ~0.05 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
 
-Due to the iteration over simd lanes, going 3D will hurt performance. (~0.075 seconds for the same graph and same configs.)
+For 3D simulation, it takes ~0.07 seconds for the same graph and same configs.
 
 
 <br/>
