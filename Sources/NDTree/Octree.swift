@@ -1,8 +1,8 @@
 //
-//  NDTree.swift
+//  Octree.swift
 //
 //
-//  Created by li3zhen1 on 10/14/23.
+//  Created by li3zhen1 on 10/22/23.
 //
 
 import simd
@@ -10,9 +10,9 @@ import simd
 /// The data structure carried by a node of NDTree
 /// It receives notifications when a node is added or removed on a node, regardless of whether the node is internal or leaf.
 /// It is designed to calculate properties like a box's center of mass.
-public protocol QuadtreeDelegate {
+public protocol OctreeDelegate {
     associatedtype NodeID: Hashable
-    typealias V = simd_double2
+    typealias V = simd_double3
 
     /// Called when a node is added on a node, regardless of whether the node is internal or leaf.
     /// If you add `n` points to the root, this method will be called `n` times in the root delegate, 
@@ -38,7 +38,7 @@ public protocol QuadtreeDelegate {
 /// A node in NDTree
 /// - Note: `NDTree` is a generic type that can be used in any dimension.
 ///        `NDTree` is a reference type.
-public final class Quadtree<D> where D: QuadtreeDelegate {
+public final class Octree<D> where D: QuadtreeDelegate {
 
     public typealias V = simd_double2
 
@@ -50,7 +50,7 @@ public final class Quadtree<D> where D: QuadtreeDelegate {
 
     public private(set) var box: Box
 
-    public private(set) var children: [Quadtree<D>]?
+    public private(set) var children: [Octree<D>]?
 
     public private(set) var nodePosition: V?
     public private(set) var nodeIndices: [NodeIndex]
@@ -208,9 +208,9 @@ public final class Quadtree<D> where D: QuadtreeDelegate {
         _ _box: Box,
         _ _clusterDistance: V.Scalar,
         _ _delegate: D
-    ) -> [Quadtree<D>] {
+    ) -> [Octree<D>] {
 
-        var result = [Quadtree<D>]()
+        var result = [Octree<D>]()
         result.reserveCapacity(Self.directionCount)
         let center = _box.center
 
@@ -262,12 +262,12 @@ public final class Quadtree<D> where D: QuadtreeDelegate {
 
         let mask = point .>= originalPoint
         
-        return (mask[0] ? 1 : 0) | (mask[1] ? 2 : 0)
+        return (mask[0] ? 1 : 0) | (mask[1] ? 2 : 0) | (mask[2] ? 4 : 0)
     }
 
 }
 
-extension Quadtree where D.NodeID == Int {
+extension Octree where D.NodeID == Int {
 
     /// Initialize a NDTree with a list of points and a key path to the vector.
     /// - Parameters: 
@@ -312,7 +312,7 @@ extension Quadtree where D.NodeID == Int {
     }
 }
 
-extension Quadtree {
+extension Octree {
 
     /// The bounding box of the current node
     @inlinable public var extent: Box { box }
@@ -330,7 +330,7 @@ extension Quadtree {
     @inlinable public var isEmptyLeaf: Bool { nodePosition == nil }
 
 
-    public func visit(shouldVisitChildren: (Quadtree) -> Bool) {
+    public func visit(shouldVisitChildren: (Octree) -> Bool) {
         if shouldVisitChildren(self), let children {
             // this is an internal node
             for t in children { 
