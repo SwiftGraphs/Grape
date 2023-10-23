@@ -4,11 +4,12 @@
 //
 //  Created by li3zhen1 on 10/17/23.
 //
-import NDTree
-import simd
 
 
 #if canImport(simd)
+import NDTree
+import simd
+
 
 struct MaxRadiusTreeDelegate3D<NodeID>: OctreeDelegate where NodeID: Hashable {
 
