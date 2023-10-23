@@ -33,9 +33,10 @@ Source code: [ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Exa
 
 ### Lattice Simulation
 
-This is a 30x30 force directed lattice like [Force Directed Lattice](https://observablehq.com/@d3/force-directed-lattice):
+This is a 36x36 force directed lattice like [Force Directed Lattice](https://observablehq.com/@d3/force-directed-lattice):
 
-https://github.com/li3zhen1/Grape/assets/45376537/86c6b155-105f-44d8-a280-de70f55fefd2
+https://github.com/li3zhen1/Grape/assets/45376537/bc665dcb-c054-46e4-95ce-2f3a696e3d79
+
 
 Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ForceDirectedLatticeView.swift)
 
@@ -49,10 +50,6 @@ This is the same graph in the first example, rendered in `RealityView`:
 https://github.com/li3zhen1/Grape/assets/45376537/52cd3915-c2f8-40cf-96c1-2fd81897b2fe
 
 Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift)
-
-> [!IMPORTANT]  
-> When working with 3D contents, you probably need `Float` types instead of `Double`. The example here manually cast `Double` to `Float`.
-> The `float32` branch relaxes the generic constraint from `Scalar == Double` to `Scalar: ExpressibleByFloatLiteral`, which allows you to get out-of-box supports for other floating point types. However, the performance will be downgraded. 
 
 <br/>
 
@@ -68,7 +65,7 @@ Grape currently provides 2 packages, `NDTree` and `ForceSimulation`.
 The basic concepts of simulations and forces can be found here: [Force simulations - D3](https://d3js.org/d3-force/simulation). You can simply create 2D or 3D simulations by using `Simulation2D` or `Simulation3D`:
 
 ```swift
-import NDTree
+import simd
 import ForceSimulation
 
 struct Node: Identifiable { ... }
@@ -98,7 +95,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 ### Advanced
 
-Almost all the types in Grape work with any SIMD-like data structures. To integrate Grape into platforms where `import simd` isn't supported, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
+Grape provides a set of generic based types that works with any SIMD-like data structures. To integrate Grape into platforms where `import simd` isn't supported, or higher dimensions, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
 
 ```swift
 /// All required implementations should have same semantics
@@ -109,10 +106,11 @@ protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}
 typealias HyperoctBox = NDBox<SuperCool4DVector>
 typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
 
-typealias Simulation4D<NodeID: Hashable> = Simulation<NodeID, Vector4d>
+typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 ```
 
-Also, this is how you create a 4D simulation with or without `simd_double4`. (Though I don't know what good it does)
+> [!IMPORTANT]  
+> When using generic based types, you ***pay for dynamic dispatch***, in terms of performance. It's recommended to use `Simulation2D` or `Simulation3D` whenever possible.
 
 
 <br/>
@@ -137,9 +135,9 @@ Also, this is how you create a 4D simulation with or without `simd_double4`. (Th
 
 ## Performance
 
-Grape uses simd to calculate position and velocity. Currently it takes ~0.12 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max)
+Grape uses simd to calculate position and velocity. Currently it takes ~0.05 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
 
-Due to the iteration over simd lanes, going 3D will hurt performance. (~0.16 seconds for the same graph and same configs.)
+Due to the iteration over simd lanes, going 3D will hurt performance. (~0.075 seconds for the same graph and same configs.)
 
 
 <br/>

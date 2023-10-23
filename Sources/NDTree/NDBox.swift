@@ -1,6 +1,6 @@
 //
 //  NDBox.swift
-//  
+//
 //
 //  Created by li3zhen1 on 10/14/23.
 //
@@ -18,7 +18,7 @@ public struct NDBox<V> where V: VectorLike {
     /// - Parameters:
     ///   - p0: anchor
     ///   - p1: another anchor in the diagonal position of `p0`
-    /// - Note: `p0` you pass does not have to be minimum point of the box. 
+    /// - Note: `p0` you pass does not have to be minimum point of the box.
     ///         `p1` does not have to be maximum point of the box. The initializer will
     ///         automatically adjust the order of `p0` and `p1` to make sure `p0` is the
     ///        minimum point of the box and `p1` is the maximum point of the box.
@@ -62,7 +62,7 @@ public struct NDBox<V> where V: VectorLike {
     /// - Parameters:
     ///   - p0: anchor
     ///   - p1: another anchor in the diagonal position of `p0`
-    /// - Note: `p0` you pass does not have to be minimum point of the box. 
+    /// - Note: `p0` you pass does not have to be minimum point of the box.
     ///         `p1` does not have to be maximum point of the box. The initializer will
     ///         automatically adjust the order of `p0` and `p1` to make sure `p0` is the
     ///        minimum point of the box and `p1` is the maximum point of the box.
@@ -102,24 +102,22 @@ extension NDBox {
         }
         return corner
     }
-    
-    
+
     @inlinable public var debugDescription: String {
         return "[\(p0), \(p1)]"
     }
 }
 
-
-public extension NDBox {
+extension NDBox {
 
     /// Get the small box that contains a list points and guarantees the box's size is at least 1x..x1.
     /// - Parameter points: The points to be covered.
     /// - Returns: The box that contains all the points.
-    @inlinable static func cover(of points: [V]) -> Self {
-        
+    @inlinable public static func cover(of points: [V]) -> Self {
+
         var _p0 = points[0]
         var _p1 = points[0]
-        
+
         for p in points {
             for i in p.indices {
                 if p[i] < _p0[i] {
@@ -130,29 +128,30 @@ public extension NDBox {
                 }
             }
         }
-        
+
         #if DEBUG
-        let _box = Self(_p0, _p1)
-        assert(points.allSatisfy{ p in
-            _box.contains(p)
-        })
+            let _box = Self(_p0, _p1)
+            assert(
+                points.allSatisfy { p in
+                    _box.contains(p)
+                })
         #endif
-        
+
         return Self(_p0, _p1)
     }
-    
+
     /// Get the small box that contains a list points and guarantees the box's size is at least 1x..x1.
     /// Please note that KeyPath is slow.
-    /// 
-    /// - Parameter 
+    ///
+    /// - Parameter
     ///  - points: The points to be covered.
     ///  - keyPath: The key path to get the vector from the point.
     /// - Returns: The box that contains all the points.
-    @inlinable static func cover<T>(of points: [T], keyPath: KeyPath<T,V>) -> Self {
-        
+    @inlinable public static func cover<T>(of points: [T], keyPath: KeyPath<T, V>) -> Self {
+
         var _p0 = points[0][keyPath: keyPath]
         var _p1 = points[0][keyPath: keyPath]
-        
+
         for _p in points {
             let p = _p[keyPath: keyPath]
             for i in p.indices {
@@ -164,15 +163,15 @@ public extension NDBox {
                 }
             }
         }
-        
+
         #if DEBUG
-        let _box = Self(_p0, _p1)
-        assert(points.allSatisfy{ p in
-            _box.contains(p[keyPath: keyPath])
-        })
+            let _box = Self(_p0, _p1)
+            assert(
+                points.allSatisfy { p in
+                    _box.contains(p[keyPath: keyPath])
+                })
         #endif
-        
+
         return Self(_p0, _p1)
     }
 }
-

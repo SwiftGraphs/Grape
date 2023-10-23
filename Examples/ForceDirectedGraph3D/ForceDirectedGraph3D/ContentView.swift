@@ -8,7 +8,7 @@
 import SwiftUI
 import RealityKit
 import RealityKitContent
-import NDTree
+import simd
 import ForceSimulation
 
 
@@ -83,9 +83,9 @@ struct ContentView: View {
                 let sim = buildSimulation()
                 
                 let positions = sim.nodePositions.map { pos in  simd_float3(
-                    Float(pos[1]) * scaleRatio,
-                    -Float(pos[0]) * scaleRatio,
-                    Float(pos[2]) * scaleRatio + 0.25
+                    (pos[1]) * scaleRatio,
+                    -(pos[0]) * scaleRatio,
+                    (pos[2]) * scaleRatio + 0.25
                 )}
                 
                 
@@ -151,10 +151,6 @@ struct ContentView: View {
 
         
         
-//        let fromPosition: simd_float3 = [Float(_fromPosition[0]), Float(_fromPosition[1]), Float(_fromPosition[2])]
-//        let toPosition: simd_float3 = [Float(_toPosition[0]), Float(_toPosition[1]), Float(_toPosition[2])]
-        
-
         
         let cylinderVector = toPosition - fromPosition
 
