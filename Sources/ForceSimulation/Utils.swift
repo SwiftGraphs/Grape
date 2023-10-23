@@ -81,6 +81,16 @@ extension simd_double2 {
     }
 }
 
+extension simd_float3 {
+    @inlinable public func jiggled() -> Self {
+        var result = Self.zero
+        for i in indices {
+            result[i] = self[i].jiggled()
+        }
+        return result
+    }
+}
+
 extension VectorLike where Scalar: SimulatableFloatingPoint {
     @inlinable public func jiggled() -> Self {
         var result = Self.zero

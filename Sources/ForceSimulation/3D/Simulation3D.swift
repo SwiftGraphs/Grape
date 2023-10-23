@@ -6,14 +6,17 @@
 //
 
 import NDTree
+import simd
 
-enum SimulationError: Error {
+enum Simulation3DError: Error {
     case subscriptionToNonexistentNode
 }
 
 /// An N-Dimensional force simulation.
-public final class Simulation<NodeID, V>
-where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
+public final class Simulation3D<NodeID>
+where NodeID: Hashable{
+
+    public typealias V = simd_float3
 
     /// The type of the vector used in the simulation.
     /// Usually this is `Scalar` if you are on Apple platforms.
@@ -27,8 +30,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
     public var alphaTarget: Scalar
 
     public var velocityDecay: Scalar
-    
-    
+
     public internal(set) var forces: [any ForceLike] = []
 
     /// The position of points stored in simulation.
@@ -134,13 +136,3 @@ where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
         }
     }
 }
-
-#if canImport(simd)
-
-    import simd
-
-    // public typealias _Simulation2D<NodeID> = Simulation<NodeID, simd_double2> where NodeID: Hashable
-
-    public typealias Simulation3D<NodeID> = Simulation<NodeID, Vector3d> where NodeID: Hashable
-
-#endif

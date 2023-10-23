@@ -11,42 +11,40 @@
 
 
     extension simd_double2: VectorLike {
-
-        @inlinable public func lengthSquared() -> Double {
-            return x * x + y * y
+        @inlinable public func lengthSquared() -> Scalar {
+            return simd_length_squared(self)
         }
 
-        @inlinable public func length() -> Double {
-            return (x * x + y * y).squareRoot()
+        @inlinable public func length() -> Scalar {
+            return simd_length(self)
         }
 
         @inlinable public func distanceSquared(to: SIMD2<Scalar>) -> Scalar {
-            return (self - to).lengthSquared()
+            return simd_length_squared(self - to)
         }
 
         @inlinable public func distance(to: SIMD2<Scalar>) -> Scalar {
-            return (self - to).length()
+            return simd_length(self - to)
         }
-        
-        // public static let directionCount = 8
+
     }
 
-    extension simd_double3: VectorLike {
+    extension simd_float3: VectorLike {
 
-        @inlinable public func lengthSquared() -> Double {
-            return x * x + y * y + z * z
+        @inlinable public func lengthSquared() -> Scalar {
+            return simd_length_squared(self)
         }
 
-        @inlinable public func length() -> Double {
-            return (x * x + y * y + z * z).squareRoot()
+        @inlinable public func length() -> Scalar {
+            return simd_length(self)
         }
 
         @inlinable public func distanceSquared(to: SIMD3<Scalar>) -> Scalar {
-            return (self - to).lengthSquared()
+            return simd_length_squared(self - to)
         }
 
         @inlinable public func distance(to: SIMD3<Scalar>) -> Scalar {
-            return (self - to).length()
+            return simd_length(self - to)
         }
         
         // public static let directionCount = 8
@@ -63,7 +61,7 @@
 
 
     public typealias QuadBox = NDBox<Vector2d>
-    public typealias OctBox = NDBox<Vector3d>
+    public typealias OctBox = NDBox<Vector3f>
 
     // public typealias Quadtree<TD: QuadtreeDelegate> = NDTree<Vector2d, TD>
     // public typealias Octree<TD: OctreeDelegate> = NDTree<Vector3d, TD>

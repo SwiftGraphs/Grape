@@ -12,7 +12,7 @@ import simd
 /// It is designed to calculate properties like a box's center of mass.
 public protocol OctreeDelegate {
     associatedtype NodeID: Hashable
-    typealias V = simd_double3
+    typealias V = simd_float3
 
     /// Called when a node is added on a node, regardless of whether the node is internal or leaf.
     /// If you add `n` points to the root, this method will be called `n` times in the root delegate, 
@@ -38,9 +38,9 @@ public protocol OctreeDelegate {
 /// A node in NDTree
 /// - Note: `NDTree` is a generic type that can be used in any dimension.
 ///        `NDTree` is a reference type.
-public final class Octree<D> where D: QuadtreeDelegate {
+public final class Octree<D> where D: OctreeDelegate {
 
-    public typealias V = simd_double2
+    public typealias V = simd_float3
 
     public typealias NodeIndex = D.NodeID
 

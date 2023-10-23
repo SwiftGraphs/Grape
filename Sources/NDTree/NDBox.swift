@@ -103,7 +103,6 @@ extension NDBox {
         return corner
     }
     
-    
     @inlinable public var debugDescription: String {
         return "[\(p0), \(p1)]"
     }

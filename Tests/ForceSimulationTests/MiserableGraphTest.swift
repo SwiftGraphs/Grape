@@ -12,10 +12,10 @@ import XCTest
 
 final class MiserableGraphTest: XCTestCase {
 
-    func test_Generic() {
+    func test_Generic_2d() {
         let data = getData()
 
-        let sim = Simulation<String, Vector2d>(
+        let sim = SimulationKD<String, Vector2d>(
             nodeIds: data.nodes.map { n in
                 n.id
             })
@@ -51,7 +51,7 @@ final class MiserableGraphTest: XCTestCase {
     }
     
 
-    func test_Inlined() {
+    func test_Inlined_2d() {
         let data = getData()
 
         let sim = Simulation2D<String>(
@@ -93,7 +93,7 @@ final class MiserableGraphTest: XCTestCase {
     func test3d() {
         let data = getData()
 
-        let sim = Simulation<String, Vector3d>(
+        let sim = Simulation3D(
             nodeIds: data.nodes.map { n in
                 n.id
             })
