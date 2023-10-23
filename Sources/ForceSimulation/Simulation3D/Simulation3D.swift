@@ -1,8 +1,23 @@
+//
+//  Simulation.swift
+//
+//
+//  Created by li3zhen1 on 10/16/23.
+//
+
+import NDTree
 import simd
 
-public final class Simulation2D<NodeID>
-where NodeID: Hashable {
-    public typealias V = simd_double2
+enum Simulation3DError: Error {
+    case subscriptionToNonexistentNode
+}
+
+/// A 3-Dimensional force simulation running on `float` and `simd_float3` types.
+public final class Simulation3D<NodeID>
+where NodeID: Hashable{
+
+    public typealias V = simd_float3
+
     /// The type of the vector used in the simulation.
     /// Usually this is `Scalar` if you are on Apple platforms.
     public typealias Scalar = V.Scalar

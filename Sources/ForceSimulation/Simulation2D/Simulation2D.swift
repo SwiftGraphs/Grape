@@ -1,23 +1,9 @@
-//
-//  Simulation.swift
-//
-//
-//  Created by li3zhen1 on 10/16/23.
-//
-
-import NDTree
 import simd
 
-enum Simulation3DError: Error {
-    case subscriptionToNonexistentNode
-}
-
-/// An N-Dimensional force simulation.
-public final class Simulation3D<NodeID>
-where NodeID: Hashable{
-
-    public typealias V = simd_float3
-
+/// A 2-Dimensional force simulation running on `double` and `simd_double3` types.
+public final class Simulation2D<NodeID>
+where NodeID: Hashable {
+    public typealias V = simd_double2
     /// The type of the vector used in the simulation.
     /// Usually this is `Scalar` if you are on Apple platforms.
     public typealias Scalar = V.Scalar
