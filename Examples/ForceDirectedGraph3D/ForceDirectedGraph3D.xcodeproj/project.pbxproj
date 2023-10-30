@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		B7786A1C2AE2DE7800FF7CA8 /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = B7786A1B2AE2DE7800FF7CA8 /* ForceSimulation */; };
-		B7786A1E2AE2DE7800FF7CA8 /* NDTree in Frameworks */ = {isa = PBXBuildFile; productRef = B7786A1D2AE2DE7800FF7CA8 /* NDTree */; };
 		B7786A202AE2DEA000FF7CA8 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7786A1F2AE2DEA000FF7CA8 /* Data.swift */; };
 		B783A12C2AE2DA4900EC828F /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = B783A12B2AE2DA4900EC828F /* RealityKitContent */; };
 		B783A12E2AE2DA4900EC828F /* ForceDirectedGraph3DApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B783A12D2AE2DA4900EC828F /* ForceDirectedGraph3DApp.swift */; };
@@ -34,7 +33,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B783A12C2AE2DA4900EC828F /* RealityKitContent in Frameworks */,
-				B7786A1E2AE2DE7800FF7CA8 /* NDTree in Frameworks */,
 				B7786A1C2AE2DE7800FF7CA8 /* ForceSimulation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -107,7 +105,6 @@
 			packageProductDependencies = (
 				B783A12B2AE2DA4900EC828F /* RealityKitContent */,
 				B7786A1B2AE2DE7800FF7CA8 /* ForceSimulation */,
-				B7786A1D2AE2DE7800FF7CA8 /* NDTree */,
 			);
 			productName = ForceDirectedGraph3D;
 			productReference = B783A1262AE2DA4900EC828F /* ForceDirectedGraph3D.app */;
@@ -378,10 +375,6 @@
 		B7786A1B2AE2DE7800FF7CA8 /* ForceSimulation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ForceSimulation;
-		};
-		B7786A1D2AE2DE7800FF7CA8 /* NDTree */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = NDTree;
 		};
 		B783A12B2AE2DA4900EC828F /* RealityKitContent */ = {
 			isa = XCSwiftPackageProductDependency;
