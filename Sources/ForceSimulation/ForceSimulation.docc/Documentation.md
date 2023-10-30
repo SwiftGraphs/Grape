@@ -26,14 +26,14 @@ Run force simulation on any dimensions.
 * ``Simulation2D/CollideForce``
 * ``Simulation2D/LinkForce``
 * ``Simulation2D/ManyBodyForce``
-* ``Simulation2D/DirectionForce``
+* ``Simulation2D/DirectionForce2D``
 * ``Simulation2D/RadialForce``
 
 * ``Simulation3D/CenterForce``
 * ``Simulation3D/CollideForce``
 * ``Simulation3D/LinkForce``
 * ``Simulation3D/ManyBodyForce``
-* ``Simulation3D/DirectionForce``
+* ``Simulation3D/DirectionForce3D``
 * ``Simulation3D/RadialForce``
 
 * ``SimulationKD/CenterForce``
