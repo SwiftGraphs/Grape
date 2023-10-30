@@ -13,7 +13,6 @@
 		B7AFA55F2ADF4999009C7154 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7AFA55E2ADF4999009C7154 /* Assets.xcassets */; };
 		B7AFA5622ADF4999009C7154 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7AFA5612ADF4999009C7154 /* Preview Assets.xcassets */; };
 		B7AFA56B2ADF49AA009C7154 /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = B7AFA56A2ADF49AA009C7154 /* ForceSimulation */; };
-		B7AFA56D2ADF49AA009C7154 /* NDTree in Frameworks */ = {isa = PBXBuildFile; productRef = B7AFA56C2ADF49AA009C7154 /* NDTree */; };
 		B7AFA56F2ADF49D6009C7154 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA56E2ADF49D6009C7154 /* Data.swift */; };
 /* End PBXBuildFile section */
 
@@ -33,7 +32,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7AFA56D2ADF49AA009C7154 /* NDTree in Frameworks */,
 				B7AFA56B2ADF49AA009C7154 /* ForceSimulation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -97,7 +95,6 @@
 			name = ForceDirectedGraphExample;
 			packageProductDependencies = (
 				B7AFA56A2ADF49AA009C7154 /* ForceSimulation */,
-				B7AFA56C2ADF49AA009C7154 /* NDTree */,
 			);
 			productName = ForceDirectedGraphExample;
 			productReference = B7AFA5572ADF4997009C7154 /* ForceDirectedGraphExample.app */;
@@ -368,10 +365,6 @@
 		B7AFA56A2ADF49AA009C7154 /* ForceSimulation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ForceSimulation;
-		};
-		B7AFA56C2ADF49AA009C7154 /* NDTree */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = NDTree;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -8,7 +8,7 @@
 
 #if canImport(simd)
 
-import NDTree
+
 import simd
 
 extension Simulation3D {

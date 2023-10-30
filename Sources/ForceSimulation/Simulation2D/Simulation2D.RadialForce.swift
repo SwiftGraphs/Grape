@@ -6,7 +6,7 @@
 //
 
 #if canImport(simd)
-import NDTree
+
 import simd
 
 extension Simulation2D {
@@ -19,7 +19,7 @@ extension Simulation2D {
 
         public typealias V = simd_double2
 
-        weak var simulation: Simulation2D<NodeID>? {
+        @usableFromInline weak var simulation: Simulation2D<NodeID>? {
             didSet {
                 guard let sim = self.simulation else { return }
                 self.calculatedStrength = strength.calculated(for: sim)

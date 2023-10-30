@@ -6,7 +6,7 @@
 //
 
 import XCTest
-import NDTree
+// import ForceSimulation
 @testable import ForceSimulation
 
 

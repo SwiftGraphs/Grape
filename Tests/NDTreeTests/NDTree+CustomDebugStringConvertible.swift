@@ -6,7 +6,7 @@
 //
 
 import simd
-@testable import NDTree
+@testable import ForceSimulation
 
 extension VectorLike {
     var compactDebugString: String {

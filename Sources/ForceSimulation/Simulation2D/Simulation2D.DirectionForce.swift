@@ -6,7 +6,7 @@
 //
 
 #if canImport(simd)
-import NDTree
+
 import simd
 
 
@@ -43,7 +43,7 @@ extension Simulation2D {
         public var targetOnDirection: TargetOnDirection
         public var calculatedTargetOnDirection: [V.Scalar] = []
 
-        internal init(
+        @inlinable internal init(
             direction: Direction, targetOnDirection: TargetOnDirection,
             strength: Strength = .constant(1.0)
         ) {
@@ -53,7 +53,7 @@ extension Simulation2D {
             self.targetOnDirection = targetOnDirection
         }
 
-        weak var simulation: Simulation2D<NodeID>? {
+        @usableFromInline weak var simulation: Simulation2D<NodeID>? {
             didSet {
                 guard let sim = self.simulation else { return }
                 self.calculatedStrength = strength.calculated(for: sim)

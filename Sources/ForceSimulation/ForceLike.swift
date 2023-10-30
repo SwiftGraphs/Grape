@@ -5,7 +5,6 @@
 //  Created by li3zhen1 on 10/1/23.
 //
 
-import NDTree
 
 /// A protocol that represents a force.
 /// A force takes a simulation state and modifies its node positions and velocities.

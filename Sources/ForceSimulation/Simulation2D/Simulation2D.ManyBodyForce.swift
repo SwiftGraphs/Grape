@@ -8,14 +8,14 @@
 
 #if canImport(simd)
 
-import NDTree
+
 import simd
 
-enum ManyBodyForce2DError: Error {
+public enum ManyBodyForce2DError: Error {
     case buildQuadTreeBeforeSimulationInitialized
 }
 
-struct MassQuadtreeDelegate2D<NodeID>: QuadtreeDelegate where NodeID: Hashable {
+@usableFromInline struct MassQuadtreeDelegate2D<NodeID>: QuadtreeDelegate where NodeID: Hashable {
 
     public var accumulatedMass: Double = .zero
     public var accumulatedCount: Int = 0
@@ -23,13 +23,13 @@ struct MassQuadtreeDelegate2D<NodeID>: QuadtreeDelegate where NodeID: Hashable {
 
     @usableFromInline let massProvider: (NodeID) -> Double
 
-    init(
+    @inlinable init(
         massProvider: @escaping (NodeID) -> Double
     ) {
         self.massProvider = massProvider
     }
 
-    internal init(
+    @inlinable internal init(
         initialAccumulatedProperty: Double,
         initialAccumulatedCount: Int,
         initialWeightedAccumulatedNodePositions: simd_double2,
@@ -87,16 +87,16 @@ extension Simulation2D {
     final public class ManyBodyForce: ForceLike
     where NodeID: Hashable {
 
-        var strength: Double
+        @usableFromInline var strength: Double
 
         public enum NodeMass {
             case constant(Double)
             case varied((NodeID) -> Double)
         }
-        var mass: NodeMass
-        var precalculatedMass: [Double] = []
+        @usableFromInline var mass: NodeMass
+        @usableFromInline var precalculatedMass: [Double] = []
 
-        weak var simulation: Simulation2D<NodeID>? {
+        @usableFromInline weak var simulation: Simulation2D<NodeID>? {
             didSet {
                 guard let sim = self.simulation else { return }
                 self.precalculatedMass = self.mass.calculated(for: sim)
@@ -104,19 +104,19 @@ extension Simulation2D {
             }
         }
 
-        var theta2: Double
-        var theta: Double {
+        @usableFromInline var theta2: Double
+        @usableFromInline var theta: Double {
             didSet {
                 theta2 = theta * theta
             }
         }
 
-        var distanceMin2: Double = 1
-        var distanceMax2: Double = Double.infinity
-        var distanceMin: Double = 1
-        var distanceMax: Double = Double.infinity
+        @usableFromInline var distanceMin2: Double = 1
+        @usableFromInline var distanceMax2: Double = Double.infinity
+        @usableFromInline var distanceMin: Double = 1
+        @usableFromInline var distanceMax: Double = Double.infinity
 
-        internal init(
+        @inlinable internal init(
             strength: Double,
             nodeMass: NodeMass = .constant(1.0),
             theta: Double = 0.9
@@ -127,7 +127,7 @@ extension Simulation2D {
             self.theta2 = theta * theta
         }
 
-        var forces: [simd_double2] = []
+        @usableFromInline var forces: [simd_double2] = []
         public func apply() {
             guard let simulation else { return }
 
@@ -159,7 +159,7 @@ extension Simulation2D {
         //
         //    }
 
-        func calculateForce(alpha: Double) throws {
+        @usableFromInline func calculateForce(alpha: Double) throws {
 
             guard let sim = self.simulation else {
                 throw ManyBodyForce2DError.buildQuadTreeBeforeSimulationInitialized

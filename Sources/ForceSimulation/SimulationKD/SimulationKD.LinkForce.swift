@@ -5,7 +5,7 @@
 //  Created by li3zhen1 on 10/16/23.
 //
 
-import NDTree
+
 
 enum LinkForceError: Error {
     case useBeforeSimulationInitialized

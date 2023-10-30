@@ -1,7 +1,7 @@
 import XCTest
 import simd
 
-@testable import NDTree
+@testable import ForceSimulation
 
 final class DummyQuadtreeDelegate: QuadtreeDelegate {
     func didAddNode(_ node: Int, at position: SIMD2<Double>) {
