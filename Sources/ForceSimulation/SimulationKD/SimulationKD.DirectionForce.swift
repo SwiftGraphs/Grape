@@ -5,7 +5,7 @@
 //  Created by li3zhen1 on 10/1/23.
 //
 
-import NDTree
+
 
 extension SimulationKD {
     /// A force that moves nodes to a target position.

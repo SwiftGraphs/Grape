@@ -14,10 +14,10 @@ let package = Package(
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
 
-        .library(
-            name: "NDTree",
-            targets: ["NDTree"]
-        ),
+        // .library(
+        //     name: "NDTree",
+        //     targets: ["NDTree"]
+        // ),
 
         .library(
             name: "ForceSimulation",
@@ -33,52 +33,56 @@ let package = Package(
 
     targets: [
 
-        .target(
-            name: "NDTree",
-            path: "Sources/NDTree",
-            swiftSettings: [
-                .unsafeFlags([
-                    "-cross-module-optimization",
-                    // "-whole-module-optimization",
-                    // "-whole-module-optimization",
-                    // "-Ounchecked",
-                ])
-            ]
-        ),
+        // .target(
+        //     name: "NDTree",
+        //     path: "Sources/NDTree",
+        //     swiftSettings: [
+        //         .unsafeFlags([
+        //              "-cross-module-optimization",
+        //             // "-whole-module-optimization",
+        //             // "-whole-module-optimization",
+        //             // "-Ounchecked",
+        //         ]),
+                
+        //     ]
+        // ),
 
         .testTarget(
             name: "NDTreeTests",
-            dependencies: ["NDTree"],
-            swiftSettings: [
-                .unsafeFlags([
-                    "-cross-module-optimization",
-                    // "-whole-module-optimization",
-                ])
-            ]
+            dependencies: ["ForceSimulation"]
+            // ,
+            // swiftSettings: [
+            //     .unsafeFlags([
+            //          "-cross-module-optimization",
+            //         // "-whole-module-optimization",
+            //     ])
+            // ]
         ),
         .target(
             name: "ForceSimulation",
-            dependencies: ["NDTree"],
-            path: "Sources/ForceSimulation",
-            swiftSettings: [
-                .unsafeFlags([
-                    "-cross-module-optimization",
-                    // "-whole-module-optimization",
-                    // "-Ounchecked",
-                ])
-            ]
-            // , swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
+            // dependencies: ["NDTree"],
+            path: "Sources/ForceSimulation"
+            // ,
+            // swiftSettings: [
+            //     .unsafeFlags([
+            //          "-cross-module-optimization",
+            //         // "-whole-module-optimization",
+            //         // "-Ounchecked",
+            //     ])
+            // ]
         ),
 
         .testTarget(
             name: "ForceSimulationTests",
-            dependencies: ["ForceSimulation", "NDTree"],
-            swiftSettings: [
-                .unsafeFlags([
-                    "-cross-module-optimization",
-                    // "-whole-module-optimization",
-                    // "-Ounchecked",
-                ])
-            ]),
+            dependencies: ["ForceSimulation"]
+            // ,
+            // swiftSettings: [
+            //     .unsafeFlags([
+            //          "-cross-module-optimization",
+            //         // "-whole-module-optimization",
+            //         // "-Ounchecked",
+            //     ])
+            // ]
+            ),
     ]
 )

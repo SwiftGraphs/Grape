@@ -7,7 +7,7 @@
 
 
 #if canImport(simd)
-import NDTree
+
 import simd
 
 extension Simulation2D {
@@ -21,16 +21,16 @@ extension Simulation2D {
 
         public var center: V
         public var strength: V.Scalar
-        weak var simulation: Simulation2D<NodeID>?
+        @usableFromInline weak var simulation: Simulation2D<NodeID>?
 
-        internal init(center: V, strength: V.Scalar) {
+        @inlinable internal init(center: V, strength: V.Scalar) {
             self.center = center
             self.strength = strength
         }
 
         public func apply() {
             guard let sim = self.simulation else { return }
-            let alpha = sim.alpha
+            // let alpha = sim.alpha
 
             var meanPosition = V.zero
             for n in sim.nodePositions {

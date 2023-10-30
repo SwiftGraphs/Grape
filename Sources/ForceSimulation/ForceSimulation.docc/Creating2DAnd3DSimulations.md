@@ -6,7 +6,7 @@
 You can simply create 2D or 3D simulations by using Simulation2D or Simulation3D:
 
 ```swift
-import NDTree
+
 import ForceSimulation
 
 struct Node: Identifiable { ... }

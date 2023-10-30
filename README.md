@@ -67,9 +67,9 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 
 ## Usage
 
-Grape currently provides 2 packages, `NDTree` and `ForceSimulation`. 
+Grape provides 2 kinds of classes, `NDTree` and `Simulation`. 
 - `NDTree` is a KD-Tree data structure, which is used to accelerate the force simulation with [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/).
-- `ForceSimulation` is a force simulation library, that enables you to create any dimensional simulation with velocity Verlet integration.
+- `Simulation` is a force simulation class, that enables you to create any dimensional simulation with velocity Verlet integration.
 
 ### Basic
 
@@ -146,9 +146,9 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 
 ## Performance
 
-Grape uses simd to calculate position and velocity. Currently it takes ~0.04 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
+Grape uses simd to calculate position and velocity. Currently it takes ~0.034 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
 
-For 3D simulation, it takes ~0.05 seconds for the same graph and same configs.
+For 3D simulation, it takes ~0.052 seconds for the same graph and same configs.
 
 
 <br/>

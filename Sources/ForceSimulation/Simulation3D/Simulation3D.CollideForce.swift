@@ -7,7 +7,7 @@
 
 
 #if canImport(simd)
-import NDTree
+
 import simd
 
 

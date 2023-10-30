@@ -4,7 +4,7 @@
 //
 //  Created by li3zhen1 on 10/16/23.
 //
-import NDTree
+
 
 extension SimulationKD {
     /// A force that drives nodes towards the center.

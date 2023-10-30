@@ -6,7 +6,7 @@
 //
 
 #if canImport(simd)
-import NDTree
+
 import simd
 
 struct MaxRadiusTreeDelegate2D<NodeID>: QuadtreeDelegate where NodeID: Hashable {
@@ -17,12 +17,12 @@ struct MaxRadiusTreeDelegate2D<NodeID>: QuadtreeDelegate where NodeID: Hashable 
 
     @usableFromInline var radiusProvider: (NodeID) -> V.Scalar
 
-    mutating func didAddNode(_ nodeId: NodeID, at position: V) {
+    @inlinable mutating func didAddNode(_ nodeId: NodeID, at position: V) {
         let p = radiusProvider(nodeId)
         maxNodeRadius = max(maxNodeRadius, p)
     }
 
-    mutating func didRemoveNode(_ nodeId: NodeID, at position: V) {
+    @inlinable mutating func didRemoveNode(_ nodeId: NodeID, at position: V) {
         if radiusProvider(nodeId) >= maxNodeRadius {
             // 🤯 for Collide force, set to 0 is fine
             // Otherwise you need to traverse the delegate again
@@ -30,15 +30,15 @@ struct MaxRadiusTreeDelegate2D<NodeID>: QuadtreeDelegate where NodeID: Hashable 
         }
     }
 
-    func copy() -> MaxRadiusTreeDelegate2D {
+    @inlinable func copy() -> MaxRadiusTreeDelegate2D {
         return Self(maxNodeRadius: maxNodeRadius, radiusProvider: radiusProvider)
     }
 
-    func spawn() -> MaxRadiusTreeDelegate2D {
+    @inlinable func spawn() -> MaxRadiusTreeDelegate2D {
         return Self(radiusProvider: radiusProvider)
     }
 
-    init(maxNodeRadius: V.Scalar = 0, radiusProvider: @escaping (NodeID) -> V.Scalar) {
+    @inlinable init(maxNodeRadius: V.Scalar = 0, radiusProvider: @escaping (NodeID) -> V.Scalar) {
         self.maxNodeRadius = maxNodeRadius
         self.radiusProvider = radiusProvider
     }

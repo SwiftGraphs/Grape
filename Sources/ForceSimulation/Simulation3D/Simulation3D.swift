@@ -7,7 +7,7 @@
 
 #if canImport(simd)
 
-import NDTree
+
 import simd
 
 enum Simulation3DError: Error {
