@@ -7,17 +7,17 @@
 
 import CoreGraphics
 import ForceSimulation
-import NDTree
+import simd
 import SwiftUI
 
 struct ForceDirectedLatticeView: View {
-    @State var points: [Vector2d]? = nil
+    @State var points: [simd_double2]? = nil
 
     private let sim: Simulation2D<Int>
     private let edgeIds: [(Int, Int)]
     private let nodeIds: [Int]
     private let canvasWidth: CGFloat = 800.0
-    let width = 30
+    let width = 36
 
     init() {
         self.nodeIds = Array(0..<(width * width))
@@ -42,8 +42,8 @@ struct ForceDirectedLatticeView: View {
         //        }
         self.edgeIds = edge
         self.sim = Simulation2D(nodeIds: nodeIds)
-        sim.createLinkForce(self.edgeIds, stiffness: .constant(1), originalLength: .constant(1.5))
-        sim.createManyBodyForce(strength: -1.5)
+        sim.createLinkForce(self.edgeIds, stiffness: .constant(1), originalLength: .constant(1))
+        sim.createManyBodyForce(strength: -1)
 
     }
 

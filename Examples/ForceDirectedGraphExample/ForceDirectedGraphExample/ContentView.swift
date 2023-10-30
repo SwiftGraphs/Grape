@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import simd
 import NDTree
 import ForceSimulation
 import CoreGraphics
@@ -35,11 +35,11 @@ struct MiserableNode: Identifiable {
 
 struct ContentView: View {
     
-    @State var points: [Vector2d] = []
+    @State var points: [simd_double2] = []
     
     var sim: Simulation2D<String>
     let data: Miserable
-    var linkForce: LinkForce<String,Vector2d>
+    var linkForce: Simulation2D<String>.LinkForce
     
     init() {
         

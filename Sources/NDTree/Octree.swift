@@ -1,16 +1,19 @@
 //
-//  NDTree.swift
+//  Octree.swift
 //
 //
-//  Created by li3zhen1 on 10/14/23.
+//  Created by li3zhen1 on 10/22/23.
 //
+
+#if canImport(simd)
+import simd
 
 /// The data structure carried by a node of NDTree
 /// It receives notifications when a node is added or removed on a node, regardless of whether the node is internal or leaf.
 /// It is designed to calculate properties like a box's center of mass.
-public protocol NDTreeDelegate {
+public protocol OctreeDelegate {
     associatedtype NodeID: Hashable
-    associatedtype V: VectorLike
+    typealias V = simd_float3
 
     /// Called when a node is added on a node, regardless of whether the node is internal or leaf.
     /// If you add `n` points to the root, this method will be called `n` times in the root delegate, 
@@ -36,7 +39,9 @@ public protocol NDTreeDelegate {
 /// A node in NDTree
 /// - Note: `NDTree` is a generic type that can be used in any dimension.
 ///        `NDTree` is a reference type.
-public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V {
+public final class Octree<D> where D: OctreeDelegate {
+
+    public typealias V = simd_float3
 
     public typealias NodeIndex = D.NodeID
 
@@ -46,7 +51,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
 
     public private(set) var box: Box
 
-    public private(set) var children: [NDTree<V, D>]?
+    public private(set) var children: [Octree<D>]?
 
     public private(set) var nodePosition: V?
     public private(set) var nodeIndices: [NodeIndex]
@@ -111,7 +116,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
                 nodePosition = point
                 return
             } else if nodePosition == point
-                || nodePosition!.distanceSquared(to: point) < clusterDistanceSquared
+                || simd_length_squared(nodePosition! - point) < clusterDistanceSquared
             {
                 nodeIndices.append(nodeIndex)
                 return
@@ -204,9 +209,9 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         _ _box: Box,
         _ _clusterDistance: V.Scalar,
         _ _delegate: D
-    ) -> [NDTree<V, D>] {
+    ) -> [Octree<D>] {
 
-        var result = [NDTree<V, D>]()
+        var result = [Octree<D>]()
         result.reserveCapacity(Self.directionCount)
         let center = _box.center
 
@@ -223,7 +228,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
                 }
             }
             result.append(
-                NDTree(
+                Self(
                     box: __box, clusterDistance: _clusterDistance, parentDelegate: /*&*/ _delegate)
             )
         }
@@ -233,8 +238,8 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
 
     /// Copy object while holding the same reference to children.
     /// Consider this function something you would do when working with linked list.
-    private func shallowCopy() -> NDTree<V, D> {
-        let copy = NDTree(
+    private func shallowCopy() -> Self {
+        let copy = Self(
             box: box, clusterDistance: clusterDistance, parentDelegate: /*&*/ delegate)
 
         copy.nodeIndices = nodeIndices
@@ -248,18 +253,22 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     /// Get the index of the child that contains the point.
     /// **Complexity**: `O(n*(2^n))`, where `n` is the dimension of the vector.
     private func getIndexInChildren(_ point: V, relativeTo originalPoint: V) -> Int {
-        var index = 0
-        for i in 0..<V.scalarCount {
-            if point[i] >= originalPoint[i] {  // isOnHigherRange in this dimension
-                index |= (1 << i)
-            }
-        }
-        return index
+        // var index = 0
+        // for i in 0..<V.scalarCount {
+        //     if point[i] >= originalPoint[i] {  // isOnHigherRange in this dimension
+        //         index |= (1 << i)
+        //     }
+        // }
+        // return index
+
+        let mask = point .>= originalPoint
+        
+        return (mask[0] ? 1 : 0) | (mask[1] ? 2 : 0) | (mask[2] ? 4 : 0)
     }
 
 }
 
-extension NDTree where D.NodeID == Int {
+extension Octree where D.NodeID == Int {
 
     /// Initialize a NDTree with a list of points and a key path to the vector.
     /// - Parameters: 
@@ -304,7 +313,7 @@ extension NDTree where D.NodeID == Int {
     }
 }
 
-extension NDTree {
+extension Octree {
 
     /// The bounding box of the current node
     @inlinable public var extent: Box { box }
@@ -322,9 +331,7 @@ extension NDTree {
     @inlinable public var isEmptyLeaf: Bool { nodePosition == nil }
 
 
-    /// Visit the tree in pre-order.
-    /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
-    @inlinable public func visit(shouldVisitChildren: (NDTree<V,D>) -> Bool) {
+    public func visit(shouldVisitChildren: (Octree) -> Bool) {
         if shouldVisitChildren(self), let children {
             // this is an internal node
             for t in children { 
@@ -332,17 +339,6 @@ extension NDTree {
             }
         }
     }
-    
-    /// Visit the tree in post-order.
-    /// - Parameter action: a closure that takes a tree as its argument.
-    @inlinable public func visitPostOrdered(
-        _ action: (NDTree<V, D>) -> ()
-    ) {
-        if let children {
-            for c in children {
-                c.visitPostOrdered(action)
-            }
-        }
-        action(self)
-    }
 }
+
+#endif

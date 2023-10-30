@@ -33,8 +33,8 @@ public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, Expre
     @inlinable func distance(to: Self) -> Scalar
     
 
-    @inlinable static func * (a: Self, b: Double) -> Self
-    @inlinable static func / (a: Self, b: Double) -> Self
+    // @inlinable static func * (a: Self, b: Scalar) -> Self
+    // @inlinable static func / (a: Self, b: Scalar) -> Self
     
     @inlinable static func * (a: Self, b: Scalar) -> Self
     @inlinable static func / (a: Self, b: Scalar) -> Self

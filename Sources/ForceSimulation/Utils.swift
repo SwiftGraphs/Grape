@@ -7,6 +7,7 @@
 import NDTree
 
 
+
 // TODO: https://forums.swift.org/t/deterministic-randomness-in-swift/20835/5
 
 /// A random number generator that generates deterministic random numbers.
@@ -69,6 +70,32 @@ extension Float: SimulatableFloatingPoint {
         return self
     }
 }
+
+
+#if canImport(simd)
+
+import simd
+extension simd_double2 {
+    @inlinable public func jiggled() -> Self {
+        var result = Self.zero
+        for i in indices {
+            result[i] = self[i].jiggled()
+        }
+        return result
+    }
+}
+
+extension simd_float3 {
+    @inlinable public func jiggled() -> Self {
+        var result = Self.zero
+        for i in indices {
+            result[i] = self[i].jiggled()
+        }
+        return result
+    }
+}
+
+#endif
 
 extension VectorLike where Scalar: SimulatableFloatingPoint {
     @inlinable public func jiggled() -> Self {

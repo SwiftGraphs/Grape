@@ -32,7 +32,7 @@ final class AddTests: XCTestCase {
 
     // tests below are mainly generate by github copilot with d3 source code
     private func t(
-        _ points: [Vector2d]
+        _ points: [simd_double2]
     ) -> Quadtree<DummyQuadtreeDelegate> {
 //        var del = DummyQuadtreeDelegate()
         let box = QuadBox.cover(of: points)
@@ -47,7 +47,7 @@ final class AddTests: XCTestCase {
 
     private func t(
         _ box: QuadBox,
-        _ points: [Vector2d]
+        _ points: [simd_double2]
     ) -> Quadtree<DummyQuadtreeDelegate> {
 //        var del = DummyQuadtreeDelegate()
         let qt = Quadtree<DummyQuadtreeDelegate>(box: box, clusterDistance: 1e-5) {
