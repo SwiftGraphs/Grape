@@ -8,7 +8,8 @@
 #if canImport(simd)
 import simd
 
-/// The data structure carried by a node of NDTree
+/// The data structure carried by a node of NDTree.
+///
 /// It receives notifications when a node is added or removed on a node, regardless of whether the node is internal or leaf.
 /// It is designed to calculate properties like a box's center of mass.
 public protocol QuadtreeDelegate {
@@ -16,7 +17,8 @@ public protocol QuadtreeDelegate {
     typealias V = simd_double2
 
     /// Called when a node is added on a node, regardless of whether the node is internal or leaf.
-    /// If you add `n` points to the root, this method will be called `n` times in the root delegate, 
+    ///
+    /// If you add `n` points to the root, this method will be called `n` times in the root delegate,
     /// although it is probably not containing points now.
     /// - Parameters:
     ///   - node: The nodeID of the node that is added.
@@ -26,17 +28,20 @@ public protocol QuadtreeDelegate {
     /// Called when a node is removed on a node, regardless of whether the node is internal or leaf.
     mutating func didRemoveNode(_ node: NodeID, at position: V)
 
-    /// Copy object. This method is called when the root box is not large enough to cover the new nodes.
-    /// The method
+    /// Copy object. 
+    ///
+    /// This method is called when the root box is not large enough to cover the new nodes.
     func copy() -> Self
 
     /// Create new object with properties set to initial value as if the box is empty.
+    ///
     /// However, you can still carry something like a closure to get information from outside.
     /// This method is called when a leaf box is splited due to the insertion of a new node in this box.
     func spawn() -> Self
 }
 
 /// A node in NDTree
+///
 /// - Note: `NDTree` is a generic type that can be used in any dimension.
 ///        `NDTree` is a reference type.
 public final class Quadtree<D> where D: QuadtreeDelegate {
@@ -170,8 +175,9 @@ public final class Quadtree<D> where D: QuadtreeDelegate {
         } while !box.contains(point)
     }
 
-    /// Expand the current node towards a direction. The expansion
-    /// will double the size on each dimension. Then the data in delegate will be copied to the new children.
+    /// Expand the current node towards a direction. 
+    ///
+    /// The expansion will double the size on each dimension. Then the data in delegate will be copied to the new children.
     /// - Parameter direction: An Integer between 0 and `directionCount - 1`, where `directionCount` equals to 2^(dimension of the vector).
     private func expand(towards direction: Direction) {
         let nailedDirection = (Self.directionCount - 1) - direction
@@ -200,6 +206,7 @@ public final class Quadtree<D> where D: QuadtreeDelegate {
     }
 
     /// The children count of a node in NDTree.
+    ///
     /// Should be equal to the 2^(dimension of the vector).
     /// For example, a 2D vector should have 4 children, a 3D vector should have 8 children.
     /// This property is a getter property but it is probably be inlined.
@@ -237,6 +244,7 @@ public final class Quadtree<D> where D: QuadtreeDelegate {
     }
 
     /// Copy object while holding the same reference to children.
+    ///
     /// Consider this function something you would do when working with linked list.
     private func shallowCopy() -> Self {
         let copy = Self(
@@ -251,6 +259,7 @@ public final class Quadtree<D> where D: QuadtreeDelegate {
     }
 
     /// Get the index of the child that contains the point.
+    ///
     /// **Complexity**: `O(n*(2^n))`, where `n` is the dimension of the vector.
     private func getIndexInChildren(_ point: V, relativeTo originalPoint: V) -> Int {
         // var index = 0
@@ -271,7 +280,8 @@ public final class Quadtree<D> where D: QuadtreeDelegate {
 extension Quadtree where D.NodeID == Int {
 
     /// Initialize a NDTree with a list of points and a key path to the vector.
-    /// - Parameters: 
+    ///
+    /// - Parameters:
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
     ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the root.
@@ -291,7 +301,8 @@ extension Quadtree where D.NodeID == Int {
     }
 
     /// Initialize a NDTree with a list of points and a key path to the vector.
-    /// - Parameters: 
+    ///
+    /// - Parameters:
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
     ///  - keyPath: A key path to the vector in the element of the list.
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
@@ -318,10 +329,14 @@ extension Quadtree {
     /// The bounding box of the current node
     @inlinable public var extent: Box { box }
 
-    /// Returns true is the current tree node is leaf. Does not guarantee that the tree node has point in it.
+    /// Returns true is the current tree node is leaf. 
+    ///
+    /// Does not guarantee that the tree node has point in it.
     @inlinable public var isLeaf: Bool { children == nil }
 
-    /// Returns true is the current tree node is internal. Internal tree node are always empty and do not contain any points.
+    /// Returns true is the current tree node is internal. 
+    ///
+    /// Internal tree node are always empty and do not contain any points.
     @inlinable public var isInternalNode: Bool { children != nil }
 
     /// Returns true is the current tree node is leaf and has point in it.

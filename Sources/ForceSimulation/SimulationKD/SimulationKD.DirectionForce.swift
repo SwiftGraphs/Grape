@@ -9,6 +9,7 @@
 
 extension SimulationKD {
     /// A force that moves nodes to a target position.
+    ///
     /// Center force is relatively fast, the complexity is `O(n)`,
     /// where `n` is the number of nodes.
     /// See [Position Force - D3](https://d3js.org/d3-force/position).
@@ -67,6 +68,7 @@ extension SimulationKD {
     }
 
     /// Create a direction force that moves nodes to a target position.
+    /// 
     /// Center force is relatively fast, the complexity is `O(n)`,
     /// where `n` is the number of nodes.
     /// See [Position Force - D3](https://d3js.org/d3-force/position).

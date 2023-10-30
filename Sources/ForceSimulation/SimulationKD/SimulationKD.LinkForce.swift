@@ -13,6 +13,7 @@ enum LinkForceError: Error {
 
 extension SimulationKD {
     /// A force that represents links between nodes.
+    /// 
     /// The complexity is `O(e)`, where `e` is the number of links.
     /// See [Link Force - D3](https://d3js.org/d3-force/link).
     final public class LinkForce: ForceLike

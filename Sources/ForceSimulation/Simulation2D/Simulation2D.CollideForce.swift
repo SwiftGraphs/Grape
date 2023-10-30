@@ -48,6 +48,7 @@ struct MaxRadiusTreeDelegate2D<NodeID>: QuadtreeDelegate where NodeID: Hashable 
 extension Simulation2D {
 
     /// A force that prevents nodes from overlapping.
+    ///
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
@@ -182,6 +183,7 @@ extension Simulation2D {
     }
 
     /// Create a collide force that prevents nodes from overlapping.
+    /// 
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).

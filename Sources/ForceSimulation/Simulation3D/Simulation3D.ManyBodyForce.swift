@@ -81,6 +81,7 @@ struct MassQuadtreeDelegate3D<NodeID>: OctreeDelegate where NodeID: Hashable {
 extension Simulation3D {
 
     /// A force that simulate the many-body force.
+    ///
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes. The complexity might degrade to `O(n^2)` if the nodes are too close to each other.
     /// See [Manybody Force - D3](https://d3js.org/d3-force/many-body).
@@ -302,6 +303,7 @@ extension Simulation3D {
     }
 
     /// Create a many-body force that simulate the many-body force.
+    /// 
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes. The complexity might degrade to `O(n^2)` if the nodes are too close to each other.
     /// The force mimics the gravity force or electrostatic force.

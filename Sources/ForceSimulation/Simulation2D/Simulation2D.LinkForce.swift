@@ -14,6 +14,7 @@ enum LinkForce2DError: Error {
 }
 extension Simulation2D {
     /// A force that represents links between nodes.
+    ///
     /// The complexity is `O(e)`, where `e` is the number of links.
     /// See [Link Force - D3](https://d3js.org/d3-force/link).
     final public class LinkForce: ForceLike
@@ -139,8 +140,9 @@ extension Simulation2D {
 
     }
 
-    /// Create a link force that represents links between nodes. It works like
-    /// there is a spring between each pair of nodes.
+    /// Create a link force that represents links between nodes. 
+    ///
+    /// It works like there is a spring between each pair of nodes.
     /// The complexity is `O(e)`, where `e` is the number of links.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide)
     /// - Parameters:
@@ -161,8 +163,9 @@ extension Simulation2D {
         return linkForce
     }
 
-    /// Create a link force that represents links between nodes. It works like
-    /// there is a spring between each pair of nodes.
+    /// Create a link force that represents links between nodes.
+    /// 
+    /// It works like there is a spring between each pair of nodes.
     /// The complexity is `O(e)`, where `e` is the number of links.
     /// See [Link Force - D3](https://d3js.org/d3-force/link).
     /// - Parameters:

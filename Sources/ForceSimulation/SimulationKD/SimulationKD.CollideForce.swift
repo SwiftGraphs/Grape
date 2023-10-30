@@ -42,6 +42,7 @@ struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, 
 
 extension SimulationKD {
     /// A force that prevents nodes from overlapping.
+    ///
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
@@ -174,6 +175,7 @@ extension SimulationKD {
     }
 
     /// Create a collide force that prevents nodes from overlapping.
+    /// 
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
