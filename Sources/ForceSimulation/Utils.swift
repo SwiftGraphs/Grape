@@ -108,8 +108,9 @@ extension VectorLike where Scalar: SimulatableFloatingPoint {
 }
 
 
-/// A Hashable identifier for an edge. It’s a utility type for preserving the
-/// `Hashable` conformance.
+/// A Hashable identifier for an edge. 
+///
+/// It’s a utility type for preserving `Hashable` conformance.
 public struct EdgeID<NodeID>: Hashable where NodeID: Hashable {
     public let source: NodeID
     public let target: NodeID

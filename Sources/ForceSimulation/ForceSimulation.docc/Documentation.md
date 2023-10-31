@@ -1,10 +1,12 @@
 # ``ForceSimulation``
 
-Run force simulation on any dimensions.
+Run force simulation within any number of dimensions.
 
 ## Overview
 
-`ForceSimulation` is a force simulation library that enables you to create any dimensional simulation with velocity Verlet integration. The basic concepts of simulations and forces can be found here: [Force simulations - D3](https://d3js.org/d3-force/simulation). 
+The `ForceSimulation` library enables you to create any dimensional simulation that uses velocity Verlet integration.
+
+For more information on force simulations, read: [Force simulations - D3](https://d3js.org/d3-force/simulation). 
 
 
 @Image(source: "ForceDirectedGraph.png", alt: "An example of 2D force directied graph.")
@@ -20,25 +22,31 @@ Run force simulation on any dimensions.
 * ``Simulation3D``
 * ``SimulationKD``
 
-### Creating forces in a simulation
+### Spatial data structures
 
-* ``Simulation2D/CenterForce``
-* ``Simulation2D/CollideForce``
-* ``Simulation2D/LinkForce``
-* ``Simulation2D/ManyBodyForce``
-* ``Simulation2D/DirectionForce2D``
-* ``Simulation2D/RadialForce``
+- ``Quadtree``
+- ``QuadtreeDelegate``
+- ``QuadBox``
+- ``Octree``
+- ``OctreeDelegate``
+- ``OctBox``
+- ``NDTree``
+- ``NDTreeDelegate``
+- ``NDBox``
+- ``EdgeID``
 
-* ``Simulation3D/CenterForce``
-* ``Simulation3D/CollideForce``
-* ``Simulation3D/LinkForce``
-* ``Simulation3D/ManyBodyForce``
-* ``Simulation3D/DirectionForce3D``
-* ``Simulation3D/RadialForce``
+### Deterministic Randomness
 
-* ``SimulationKD/CenterForce``
-* ``SimulationKD/CollideForce``
-* ``SimulationKD/LinkForce``
-* ``SimulationKD/ManyBodyForce``
-* ``SimulationKD/DirectionForce``
-* ``SimulationKD/RadialForce``
+- ``FloatLinearCongruentialGenerator``
+- ``LinearCongruentialGenerator``
+
+### Supporting Protocols
+
+- ``ForceLike``
+- ``NDTreeBasedForceLike``
+- ``VectorLike``
+- ``SimulatableFloatingPoint``
+
+### Error Types
+
+- ``ManyBodyForce2DError``

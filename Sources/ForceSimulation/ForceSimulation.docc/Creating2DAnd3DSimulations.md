@@ -3,7 +3,8 @@
 
 ## Overview
 
-You can simply create 2D or 3D simulations by using Simulation2D or Simulation3D:
+Create 2D or 3D simulations by using Simulation2D or Simulation3D.
+For example, the following code creates a 2D force simulation.
 
 ```swift
 
@@ -30,4 +31,4 @@ for i in 0..<120 {
 
 ```
 
-See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details.
+See [Examples](https://github.com/li3zhen1/Grape/tree/main/Examples) for example Xcode projects.
