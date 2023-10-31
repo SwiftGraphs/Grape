@@ -11,6 +11,7 @@ import simd
 
 extension Simulation2D {
     /// A force that applies a radial force to all nodes.
+    ///
     /// Center force is relatively fast, the complexity is `O(n)`,
     /// where `n` is the number of nodes.
     /// See [Position Force - D3](https://d3js.org/d3-force/position).
@@ -68,6 +69,7 @@ extension Simulation2D {
     }
 
     /// Create a radial force that applies a radial force to all nodes.
+    /// 
     /// Center force is relatively fast, the complexity is `O(n)`,
     /// where `n` is the number of nodes.
     /// See [Position Force - D3](https://d3js.org/d3-force/position).

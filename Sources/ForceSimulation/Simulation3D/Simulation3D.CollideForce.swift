@@ -50,6 +50,7 @@ struct MaxRadiusTreeDelegate3D<NodeID>: OctreeDelegate where NodeID: Hashable {
 extension Simulation3D {
 
     /// A force that prevents nodes from overlapping.
+    ///
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
@@ -184,6 +185,7 @@ extension Simulation3D {
     }
 
     /// Create a collide force that prevents nodes from overlapping.
+    /// 
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).

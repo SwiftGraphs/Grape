@@ -23,16 +23,19 @@ where NodeID: Hashable {
     public internal(set) var forces: [any ForceLike] = []
 
     /// The position of points stored in simulation.
+    ///
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
     public internal(set) var nodePositions: [V]
 
     /// The velocities of points stored in simulation.
+    ///
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
     public internal(set) var nodeVelocities: [V]
 
     /// The fixed positions of points stored in simulation.
+    ///
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
     public internal(set) var nodeFixations: [V?]
@@ -42,6 +45,7 @@ where NodeID: Hashable {
     @usableFromInline internal private(set) var nodeIdToIndexLookup: [NodeID: Int] = [:]
 
     /// Create a new simulation.
+    /// 
     /// - Parameters:
     ///   - nodeIds: Hashable identifiers for the nodes. Force simulation calculate them by order once created.
     ///   - alpha:
@@ -96,12 +100,15 @@ where NodeID: Hashable {
         return nodeIdToIndexLookup[nodeId]!
     }
 
-    /// Reset the alpha. The points will move faster as alpha gets larger.
+    /// Reset the alpha. 
+    ///
+    /// The points will move faster as alpha gets larger.
     public func resetAlpha(_ alpha: Scalar) {
         self.alpha = alpha
     }
 
     /// Run the simulation for a number of iterations.
+    ///
     /// Goes through all the forces created.
     /// The forces will call  `apply` then the positions and velocities will be modified.
     /// - Parameter iterationCount: Default to 1.

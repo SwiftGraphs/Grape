@@ -51,6 +51,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     @usableFromInline internal private(set) var nodeIdToIndexLookup: [NodeID: Int] = [:]
 
     /// Create a new simulation.
+    /// 
     /// - Parameters:
     ///   - nodeIds: Hashable identifiers for the nodes. Force simulation calculate them by order once created.
     ///   - alpha:
@@ -111,6 +112,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     }
 
     /// Run the simulation for a number of iterations.
+    /// 
     /// Goes through all the forces created.
     /// The forces will call  `apply` then the positions and velocities will be modified.
     /// - Parameter iterationCount: Default to 1.

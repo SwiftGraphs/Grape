@@ -12,6 +12,7 @@ import simd
 
 extension Simulation2D {
     /// A force that drives nodes towards the center.
+    ///
     /// Center force is relatively fast, the complexity is `O(n)`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
@@ -46,6 +47,7 @@ extension Simulation2D {
     }
 
     /// Create a center force that drives nodes towards the center.
+    /// 
     /// Center force is relatively fast, the complexity is `O(n)`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).

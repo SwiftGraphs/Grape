@@ -7,6 +7,7 @@
 
 
 /// A protocol that represents a force.
+/// 
 /// A force takes a simulation state and modifies its node positions and velocities.
 public protocol ForceLike {
 

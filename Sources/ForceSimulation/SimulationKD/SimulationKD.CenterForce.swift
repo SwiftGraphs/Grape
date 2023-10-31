@@ -8,6 +8,7 @@
 
 extension SimulationKD {
     /// A force that drives nodes towards the center.
+    /// 
     /// Center force is relatively fast, the complexity is `O(n)`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
@@ -41,6 +42,7 @@ extension SimulationKD {
     }
 
     /// Create a center force that drives nodes towards the center.
+    /// 
     /// Center force is relatively fast, the complexity is `O(n)`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
