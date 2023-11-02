@@ -21,19 +21,19 @@ public protocol OctreeDelegate {
     /// - Parameters:
     ///   - node: The nodeID of the node that is added.
     ///   - position: The position of the node that is added.
-    mutating func didAddNode(_ node: NodeID, at position: V)
+    @inlinable mutating func didAddNode(_ node: NodeID, at position: V)
 
     /// Called when a node is removed on a node, regardless of whether the node is internal or leaf.
-    mutating func didRemoveNode(_ node: NodeID, at position: V)
+    @inlinable mutating func didRemoveNode(_ node: NodeID, at position: V)
 
     /// Copy object. This method is called when the root box is not large enough to cover the new nodes.
     /// The method
-    func copy() -> Self
+    @inlinable func copy() -> Self
 
     /// Create new object with properties set to initial value as if the box is empty.
     /// However, you can still carry something like a closure to get information from outside.
     /// This method is called when a leaf box is splited due to the insertion of a new node in this box.
-    func spawn() -> Self
+    @inlinable func spawn() -> Self
 }
 
 /// A node in NDTree

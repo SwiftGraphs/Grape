@@ -16,7 +16,7 @@ extension SimulationKD {
 /// See [Position Force - D3](https://d3js.org/d3-force/position).
 final public class RadialForce: ForceLike
 where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
-    weak var simulation: SimulationKD<NodeID, V>? {
+    @usableFromInline weak var simulation: SimulationKD<NodeID, V>? {
         didSet {
             guard let sim = self.simulation else { return }
             self.calculatedStrength = strength.calculated(for: sim)
@@ -32,7 +32,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
         case varied((NodeID) -> V.Scalar)
     }
     public var radius: NodeRadius
-    private var calculatedRadius: [V.Scalar] = []
+    @usableFromInline var calculatedRadius: [V.Scalar] = []
 
     /// Strength accessor
     public enum Strength {
@@ -40,7 +40,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
         case varied((NodeID) -> V.Scalar)
     }
     public var strength: Strength
-    private var calculatedStrength: [V.Scalar] = []
+    @usableFromInline var calculatedStrength: [V.Scalar] = []
 
     public init(center: V, radius: NodeRadius, strength: Strength) {
         self.center = center

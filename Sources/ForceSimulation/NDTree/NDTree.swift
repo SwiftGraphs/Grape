@@ -18,19 +18,19 @@ public protocol NDTreeDelegate {
     /// - Parameters:
     ///   - node: The nodeID of the node that is added.
     ///   - position: The position of the node that is added.
-    mutating func didAddNode(_ node: NodeID, at position: V)
+    @inlinable mutating func didAddNode(_ node: NodeID, at position: V)
 
     /// Called when a node is removed on a node, regardless of whether the node is internal or leaf.
-    mutating func didRemoveNode(_ node: NodeID, at position: V)
+    @inlinable mutating func didRemoveNode(_ node: NodeID, at position: V)
 
     /// Copy object. This method is called when the root box is not large enough to cover the new nodes.
     /// The method
-    func copy() -> Self
+    @inlinable func copy() -> Self
 
     /// Create new object with properties set to initial value as if the box is empty.
     /// However, you can still carry something like a closure to get information from outside.
     /// This method is called when a leaf box is splited due to the insertion of a new node in this box.
-    func spawn() -> Self
+    @inlinable func spawn() -> Self
 }
 
 /// A node in NDTree
@@ -44,19 +44,19 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
 
     public typealias Box = NDBox<V>
 
-    public private(set) var box: Box
+    @usableFromInline var box: Box
 
-    public private(set) var children: [NDTree<V, D>]?
+    @usableFromInline var children: [NDTree<V, D>]?
 
-    public private(set) var nodePosition: V?
-    public private(set) var nodeIndices: [NodeIndex]
+    @usableFromInline var nodePosition: V?
+    @usableFromInline var nodeIndices: [NodeIndex]
 
     public let clusterDistance: V.Scalar
-    private let clusterDistanceSquared: V.Scalar
+    @usableFromInline let clusterDistanceSquared: V.Scalar
 
-    public private(set) var delegate: D
+    public var delegate: D
 
-    private init(
+    @inlinable init(
         box: Box,
         clusterDistance: V.Scalar,
         parentDelegate: D
@@ -100,7 +100,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         addWithoutCover(nodeIndex, at: point)
     }
 
-    private func addWithoutCover(_ nodeIndex: NodeIndex, at point: V) {
+    @inlinable func addWithoutCover(_ nodeIndex: NodeIndex, at point: V) {
         defer {
             delegate.didAddNode(nodeIndex, at: point)
         }
@@ -156,7 +156,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
 
     /// Expand the current node multiple times by calling `expand(towards:)`, until the point is covered.
     /// - Parameter point: The point to be covered.
-    private func cover(_ point: V) {
+    @inlinable func cover(_ point: V) {
         if box.contains(point) { return }
 
         repeat {
@@ -168,7 +168,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     /// Expand the current node towards a direction. The expansion
     /// will double the size on each dimension. Then the data in delegate will be copied to the new children.
     /// - Parameter direction: An Integer between 0 and `directionCount - 1`, where `directionCount` equals to 2^(dimension of the vector).
-    private func expand(towards direction: Direction) {
+    @inlinable func expand(towards direction: Direction) {
         let nailedDirection = (Self.directionCount - 1) - direction
         let nailedCorner = box.getCorner(of: nailedDirection)
 
@@ -200,7 +200,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     /// This property is a getter property but it is probably be inlined.
     @inlinable static var directionCount: Int { 1 << V.scalarCount }
 
-    private static func spawnChildren(
+    @inlinable static func spawnChildren(
         _ _box: Box,
         _ _clusterDistance: V.Scalar,
         _ _delegate: D
@@ -233,7 +233,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
 
     /// Copy object while holding the same reference to children.
     /// Consider this function something you would do when working with linked list.
-    private func shallowCopy() -> NDTree<V, D> {
+    @inlinable func shallowCopy() -> NDTree<V, D> {
         let copy = NDTree(
             box: box, clusterDistance: clusterDistance, parentDelegate: /*&*/ delegate)
 
@@ -247,7 +247,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
 
     /// Get the index of the child that contains the point.
     /// **Complexity**: `O(n*(2^n))`, where `n` is the dimension of the vector.
-    private func getIndexInChildren(_ point: V, relativeTo originalPoint: V) -> Int {
+    @inlinable func getIndexInChildren(_ point: V, relativeTo originalPoint: V) -> Int {
         var index = 0
         for i in 0..<V.scalarCount {
             if point[i] >= originalPoint[i] {  // isOnHigherRange in this dimension

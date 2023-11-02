@@ -12,7 +12,7 @@ public protocol ForceLike {
 
     /// Takes a simulation state and modifies its node positions and velocities. 
     /// This is executed in each tick of the simulation.
-    func apply()
+    @inlinable func apply()
 }
 
 public protocol NDTreeBasedForceLike: ForceLike {

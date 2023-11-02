@@ -7,10 +7,11 @@
 
 
 
-enum ManyBodyForceError: Error {
+public enum ManyBodyForceError: Error {
     case buildQuadTreeBeforeSimulationInitialized
 }
 
+@usableFromInline
 struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
 
     public var accumulatedMass: V.Scalar = .zero
@@ -19,13 +20,13 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
 
     @usableFromInline let massProvider: (NodeID) -> V.Scalar
 
-    init(
+    @inlinable init(
         massProvider: @escaping (NodeID) -> V.Scalar
     ) {
         self.massProvider = massProvider
     }
 
-    internal init(
+    @inlinable internal init(
         initialAccumulatedProperty: V.Scalar,
         initialAccumulatedCount: Int,
         initialWeightedAccumulatedNodePositions: V,
@@ -82,36 +83,36 @@ extension SimulationKD {
     final public class ManyBodyForce: ForceLike
     where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
 
-        var strength: V.Scalar
+        @usableFromInline var strength: V.Scalar
 
         public enum NodeMass {
             case constant(V.Scalar)
             case varied((NodeID) -> V.Scalar)
         }
-        var mass: NodeMass
-        var precalculatedMass: [V.Scalar] = []
+        @usableFromInline var mass: NodeMass
+        @usableFromInline var precalculatedMass: [V.Scalar] = []
 
-        weak var simulation: SimulationKD<NodeID, V>? {
-            didSet {
-                guard let sim = self.simulation else { return }
-                self.precalculatedMass = self.mass.calculated(for: sim)
-                self.forces = [V](repeating: .zero, count: sim.nodePositions.count)
-            }
+        @usableFromInline weak var simulation: SimulationKD<NodeID, V>? 
+        
+        @inlinable func didSetSimulation(sim: SimulationKD) {
+            self.precalculatedMass = self.mass.calculated(for: sim)
+            self.forces = [V](repeating: .zero, count: sim.nodePositions.count)
         }
+        
 
-        var theta2: V.Scalar
-        var theta: V.Scalar {
+        @usableFromInline var theta2: V.Scalar
+        @usableFromInline var theta: V.Scalar {
             didSet {
                 theta2 = theta * theta
             }
         }
 
-        var distanceMin2: V.Scalar = 1
-        var distanceMax2: V.Scalar = V.Scalar.infinity
-        var distanceMin: V.Scalar = 1
-        var distanceMax: V.Scalar = V.Scalar.infinity
+        @usableFromInline var distanceMin2: V.Scalar = 1
+        @usableFromInline var distanceMax2: V.Scalar = V.Scalar.infinity
+        @usableFromInline var distanceMin: V.Scalar = 1
+        @usableFromInline var distanceMax: V.Scalar = V.Scalar.infinity
 
-        internal init(
+        @inlinable internal init(
             strength: V.Scalar,
             nodeMass: NodeMass = .constant(1.0),
             theta: V.Scalar = 0.9
@@ -122,7 +123,7 @@ extension SimulationKD {
             self.theta2 = theta * theta
         }
 
-        var forces: [V] = []
+        @usableFromInline var forces: [V] = []
         public func apply() {
             guard let simulation else { return }
 
@@ -154,7 +155,7 @@ extension SimulationKD {
         //
         //    }
 
-        func calculateForce(alpha: V.Scalar) throws {
+        @inlinable func calculateForce(alpha: V.Scalar) throws {
 
             guard let sim = self.simulation else {
                 throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized
@@ -315,6 +316,7 @@ extension SimulationKD {
         let manyBodyForce = ManyBodyForce(
             strength: strength, nodeMass: nodeMass)
         manyBodyForce.simulation = self
+        manyBodyForce.didSetSimulation(sim: self)
         self.forces.append(manyBodyForce)
         return manyBodyForce
     }

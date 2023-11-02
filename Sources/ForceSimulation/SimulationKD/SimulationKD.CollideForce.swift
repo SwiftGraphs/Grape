@@ -6,18 +6,19 @@
 //
 
 
+@usableFromInline
 struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
 
     public var maxNodeRadius: V.Scalar
 
     @usableFromInline var radiusProvider: (NodeID) -> V.Scalar
 
-    mutating func didAddNode(_ nodeId: NodeID, at position: V) {
+    @inlinable mutating func didAddNode(_ nodeId: NodeID, at position: V) {
         let p = radiusProvider(nodeId)
         maxNodeRadius = max(maxNodeRadius, p)
     }
 
-    mutating func didRemoveNode(_ nodeId: NodeID, at position: V) {
+    @inlinable mutating func didRemoveNode(_ nodeId: NodeID, at position: V) {
         if radiusProvider(nodeId) >= maxNodeRadius {
             // 🤯 for Collide force, set to 0 is fine
             // Otherwise you need to traverse the delegate again
@@ -25,15 +26,15 @@ struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, 
         }
     }
 
-    func copy() -> MaxRadiusTreeDelegate<NodeID, V> {
+    @inlinable func copy() -> MaxRadiusTreeDelegate<NodeID, V> {
         return Self(maxNodeRadius: maxNodeRadius, radiusProvider: radiusProvider)
     }
 
-    func spawn() -> MaxRadiusTreeDelegate<NodeID, V> {
+    @inlinable func spawn() -> MaxRadiusTreeDelegate<NodeID, V> {
         return Self(radiusProvider: radiusProvider)
     }
 
-    init(maxNodeRadius: V.Scalar = 0, radiusProvider: @escaping (NodeID) -> V.Scalar) {
+    @inlinable init(maxNodeRadius: V.Scalar = 0, radiusProvider: @escaping (NodeID) -> V.Scalar) {
         self.maxNodeRadius = maxNodeRadius
         self.radiusProvider = radiusProvider
     }
@@ -48,24 +49,24 @@ extension SimulationKD {
     public final class CollideForce: ForceLike
     where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
 
-        weak var simulation: SimulationKD? {
-            didSet {
-                guard let sim = simulation else { return }
-                self.calculatedRadius = radius.calculated(for: sim)
-            }
-        }
+        @usableFromInline weak var simulation: SimulationKD? 
+//        {
+//            didSet {
+//                
+//            }
+//        }
 
         public enum CollideRadius {
             case constant(V.Scalar)
             case varied((NodeID) -> V.Scalar)
         }
         public var radius: CollideRadius
-        var calculatedRadius: [V.Scalar] = []
+        @usableFromInline var calculatedRadius: [V.Scalar] = []
 
         public let iterationsPerTick: UInt
         public var strength: V.Scalar
 
-        internal init(
+        @inlinable internal init(
             radius: CollideRadius,
             strength: V.Scalar = 1.0,
             iterationsPerTick: UInt = 1
@@ -77,7 +78,7 @@ extension SimulationKD {
 
         public func apply() {
             guard let sim = self.simulation else { return }
-            let alpha = sim.alpha
+//            let alpha = sim.alpha
 
             for _ in 0..<iterationsPerTick {
 
@@ -193,6 +194,10 @@ extension SimulationKD {
             iterationsPerTick: iterationsPerTick
         )
         f.simulation = self
+        
+//        guard let sim = simulation else { return }
+        f.calculatedRadius = radius.calculated(for: self)
+        
         self.forces.append(f)
         return f
     }

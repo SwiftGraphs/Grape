@@ -16,16 +16,16 @@ extension SimulationKD {
 
         public var center: V
         public var strength: V.Scalar
-        weak var simulation: SimulationKD?
+        @usableFromInline weak var simulation: SimulationKD?
 
-        internal init(center: V, strength: V.Scalar) {
+        @usableFromInline init(center: V, strength: V.Scalar) {
             self.center = center
             self.strength = strength
         }
 
         public func apply() {
             guard let sim = self.simulation else { return }
-            let alpha = sim.alpha
+//            let alpha = sim.alpha
 
             var meanPosition = V.zero
             for n in sim.nodePositions {

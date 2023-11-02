@@ -36,7 +36,7 @@ extension SimulationKD {
         public var targetOnDirection: TargetOnDirection
         public var calculatedTargetOnDirection: [V.Scalar] = []
 
-        internal init(
+        @inlinable internal init(
             direction: Direction, targetOnDirection: TargetOnDirection,
             strength: Strength = .constant(1.0)
         ) {
@@ -46,7 +46,7 @@ extension SimulationKD {
             self.targetOnDirection = targetOnDirection
         }
 
-        weak var simulation: SimulationKD? {
+        @usableFromInline weak var simulation: SimulationKD? {
             didSet {
                 guard let sim = self.simulation else { return }
                 self.calculatedStrength = strength.calculated(for: sim)

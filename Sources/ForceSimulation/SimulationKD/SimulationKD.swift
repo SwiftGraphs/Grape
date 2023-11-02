@@ -7,7 +7,7 @@
 
 
 
-enum SimulationKDError: Error {
+public enum SimulationKDError: Error {
     case subscriptionToNonexistentNode
 }
 
@@ -29,26 +29,30 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     public var velocityDecay: Scalar
     
     
-    public internal(set) var forces: [any ForceLike] = []
+    @usableFromInline var forces: [any ForceLike] = []
 
     /// The position of points stored in simulation.
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
-    public internal(set) var nodePositions: [V]
+    @usableFromInline var nodePositions: [V]
+    
+    public var nodePositisions: [V] {
+        return self.nodePositions
+    }
 
     /// The velocities of points stored in simulation.
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
-    public internal(set) var nodeVelocities: [V]
+    @usableFromInline var nodeVelocities: [V]
 
     /// The fixed positions of points stored in simulation.
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
-    public internal(set) var nodeFixations: [V?]
+    @usableFromInline var nodeFixations: [V?]
 
-    public private(set) var nodeIds: [NodeID]
+    @usableFromInline var nodeIds: [NodeID]
 
-    @usableFromInline internal private(set) var nodeIdToIndexLookup: [NodeID: Int] = [:]
+    @usableFromInline var nodeIdToIndexLookup: [NodeID: Int] = [:]
 
     /// Create a new simulation.
     /// - Parameters:

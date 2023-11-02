@@ -48,7 +48,7 @@ public struct FloatLinearCongruentialGenerator {
 }
 
 public protocol SimulatableFloatingPoint: ExpressibleByFloatLiteral {
-    func jiggled() -> Self
+    @inlinable func jiggled() -> Self
 }
 
 extension Double: SimulatableFloatingPoint {

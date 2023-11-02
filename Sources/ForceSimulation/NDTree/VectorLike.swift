@@ -52,10 +52,10 @@ public protocol VectorLike: CustomStringConvertible, Decodable, Encodable, Expre
     @inlinable static var scalarCount: Int { get }
     @inlinable static var zero: Self { get }
 
-    init()
+    @inlinable init()
 
-    subscript(index: Int) -> Self.Scalar { get set }
+    @inlinable subscript(index: Int) -> Self.Scalar { get set }
     
-    var indices: Range<Int> { get }
+    @inlinable var indices: Range<Int> { get }
 }
 

@@ -56,6 +56,9 @@ let materialColors: [UIColor] = [
 
 
 struct ContentView: View {
+    
+    @State var test = false
+    
     var body: some View {
         
         VStack {
