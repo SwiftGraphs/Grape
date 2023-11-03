@@ -36,7 +36,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     /// They are always updated.
     @usableFromInline var nodePositions: [V]
     
-    public var nodePositisions: [V] {
+    @inlinable public var nodePositisions: [V] {
         return self.nodePositions
     }
 
@@ -63,7 +63,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     ///   - alphaTarget:
     ///   - velocityDecay:
     ///   - getInitialPosition: The closure to set the initial position of the node. If not provided, the initial position is set to zero.
-    public init(
+    @inlinable public init(
         nodeIds: [NodeID],
         alpha: Scalar = 1,
         alphaMin: Scalar = 1e-3,
@@ -105,12 +105,12 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
 
     /// Get the index in the nodeArray for `nodeId`
     /// - **Complexity**: O(1)
-    public func getIndex(of nodeId: NodeID) -> Int {
+    @inlinable public func getIndex(of nodeId: NodeID) -> Int {
         return nodeIdToIndexLookup[nodeId]!
     }
 
     /// Reset the alpha. The points will move faster as alpha gets larger.
-    public func resetAlpha(_ alpha: Scalar) {
+    @inlinable public func resetAlpha(_ alpha: Scalar) {
         self.alpha = alpha
     }
 
@@ -118,7 +118,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     /// Goes through all the forces created.
     /// The forces will call  `apply` then the positions and velocities will be modified.
     /// - Parameter iterationCount: Default to 1.
-    public func tick(iterationCount: UInt = 1) {
+    @inlinable public func tick(iterationCount: UInt = 1) {
         for _ in 0..<iterationCount {
             alpha += (alphaTarget - alpha) * alphaDecay
 

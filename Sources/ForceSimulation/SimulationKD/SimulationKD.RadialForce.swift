@@ -42,13 +42,13 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     public var strength: Strength
     @usableFromInline var calculatedStrength: [V.Scalar] = []
 
-    public init(center: V, radius: NodeRadius, strength: Strength) {
+    @inlinable public init(center: V, radius: NodeRadius, strength: Strength) {
         self.center = center
         self.radius = radius
         self.strength = strength
     }
 
-    public func apply() {
+    @inlinable public func apply() {
         guard let sim = self.simulation else { return }
         let alpha = sim.alpha
         for i in sim.nodePositions.indices {
@@ -76,7 +76,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     ///   - radius: The radius of the force.
     ///   - strength: The strength of the force.
     @discardableResult
-    public func createRadialForce(
+    @inlinable public func createRadialForce(
         center: V = .zero,
         radius: RadialForce.NodeRadius,
         strength: RadialForce.Strength = .constant(0.1)
@@ -92,7 +92,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
 
 
 extension SimulationKD.RadialForce.Strength {
-    public func calculated(for simulation: SimulationKD<NodeID, V>) -> [V.Scalar] {
+    @inlinable public func calculated(for simulation: SimulationKD<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let s):
             return simulation.nodeIds.map { _ in s }
@@ -103,7 +103,7 @@ extension SimulationKD.RadialForce.Strength {
 }
 
 extension SimulationKD.RadialForce.NodeRadius {
-    public func calculated(for simulation: SimulationKD<NodeID, V>) -> [V.Scalar] {
+    @inlinable public func calculated(for simulation: SimulationKD<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let r):
             return simulation.nodeIds.map { _ in r }

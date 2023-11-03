@@ -54,7 +54,7 @@ extension SimulationKD {
             }
         }
 
-        public func apply() {
+        @inlinable public func apply() {
             guard let sim = self.simulation else { return }
             let alpha = sim.alpha
             let lane = self.direction
@@ -71,7 +71,7 @@ extension SimulationKD {
     /// where `n` is the number of nodes.
     /// See [Position Force - D3](https://d3js.org/d3-force/position).
     @discardableResult
-    public func createPositionForce(
+    @inlinable public func createPositionForce(
         direction: DirectionForce.Direction,
         targetOnDirection: DirectionForce.TargetOnDirection,
         strength: DirectionForce.Strength = .constant(1.0)
@@ -88,7 +88,7 @@ extension SimulationKD {
 }
 
 extension SimulationKD.DirectionForce.Strength {
-    public func calculated(for simulation: SimulationKD) -> [V.Scalar] {
+    @inlinable public func calculated(for simulation: SimulationKD) -> [V.Scalar] {
         switch self {
         case .constant(let value):
             return Array(repeating: value, count: simulation.nodeIds.count)
@@ -99,7 +99,7 @@ extension SimulationKD.DirectionForce.Strength {
 }
 
 extension SimulationKD.DirectionForce.TargetOnDirection {
-    public func calculated(for simulation: SimulationKD) -> [V.Scalar] {
+    @inlinable public func calculated(for simulation: SimulationKD) -> [V.Scalar] {
         switch self {
         case .constant(let value):
             return Array(repeating: value, count: simulation.nodeIds.count)

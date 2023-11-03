@@ -98,7 +98,7 @@ extension SimulationKD {
 
         }
 
-        public func apply() {
+        @inlinable public func apply() {
             guard let sim = self.simulation else { return }
 
             let alpha = sim.alpha
@@ -149,7 +149,7 @@ extension SimulationKD {
     ///  - stiffness: The stiffness of the spring (or links).
     ///  - originalLength: The original length of the spring (or links).
     @discardableResult
-    public func createLinkForce(
+    @inlinable public func createLinkForce(
         _ links: [EdgeID<NodeID>],
         stiffness: LinkForce.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
         originalLength: LinkForce.LinkLength = .constant(30.0),
@@ -172,7 +172,7 @@ extension SimulationKD {
     ///  - stiffness: The stiffness of the spring (or links).
     ///  - originalLength: The original length of the spring (or links).
     @discardableResult
-    public func createLinkForce(
+    @inlinable public func createLinkForce(
         _ linkTuples: [(NodeID, NodeID)],
         stiffness: LinkForce.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
         originalLength: LinkForce.LinkLength = .constant(30.0),

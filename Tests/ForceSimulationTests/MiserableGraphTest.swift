@@ -28,10 +28,10 @@ final class MiserableGraphTest: XCTestCase {
         linkForce.apply()
         
         
-//        let manybodyForce = sim.createManyBodyForce(strength: -30)
+        let manybodyForce = sim.createManyBodyForce(strength: -30)
 
-//        let centerForce = sim.createCenterForce(center: .zero)
-//        let collideForce = sim.createCollideForce(radius: .constant(5))
+        let centerForce = sim.createCenterForce(center: .zero)
+        let collideForce = sim.createCollideForce(radius: .constant(5))
 //
 //        //        for _ in 0..<120{
 //        //            sim.tick()
@@ -45,7 +45,26 @@ final class MiserableGraphTest: XCTestCase {
 //
         measure {
             for i in 0..<120 {
+
+                
+//                for _ in 0..<iterationCount {
+                sim.alpha += (sim.alphaTarget - sim.alpha) * sim.alphaDecay
+
                 linkForce.apply()
+                manybodyForce.apply()
+                centerForce.apply()
+                collideForce.apply()
+
+                for i in sim.nodePositions.indices {
+                    if let fixation = sim.nodeFixations[i] {
+                        sim.nodePositions[i] = fixation
+                        } else {
+                            sim.nodeVelocities[i] *= sim.velocityDecay
+                            sim.nodePositions[i] += sim.nodeVelocities[i]
+                        }
+                    }
+
+//                }
 //                sim.tick()
 //                print(i)
             }

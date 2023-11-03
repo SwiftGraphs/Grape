@@ -76,7 +76,7 @@ extension SimulationKD {
             self.strength = strength
         }
 
-        public func apply() {
+        @inlinable public func apply() {
             guard let sim = self.simulation else { return }
 //            let alpha = sim.alpha
 
@@ -183,6 +183,7 @@ extension SimulationKD {
     ///   - strength: The strength of the force.
     ///   - iterationsPerTick: The number of iterations per tick.
     @discardableResult
+    @inlinable
     public func createCollideForce(
         radius: CollideForce.CollideRadius = .constant(3.0),
         strength: V.Scalar = 1.0,
@@ -205,7 +206,7 @@ extension SimulationKD {
 }
 
 extension SimulationKD.CollideForce.CollideRadius {
-    public func calculated(for simulation: SimulationKD) -> [V.Scalar] {
+    @inlinable public func calculated(for simulation: SimulationKD) -> [V.Scalar] {
         switch self {
         case .constant(let r):
             return Array(repeating: r, count: simulation.nodePositions.count)

@@ -68,7 +68,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         self.delegate = parentDelegate.spawn()
     }
 
-    public init(
+    @inlinable public init(
         box: Box,
         clusterDistance: V.Scalar,
         buildRootDelegate: () -> D
@@ -80,7 +80,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         self.delegate = buildRootDelegate()
     }
 
-    public convenience init(
+    @inlinable public convenience init(
         covering nodes: [NodeIndex: V],
         clusterDistance: V.Scalar,
         buildRootDelegate: () -> D
@@ -95,7 +95,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         }
     }
 
-    public func add(_ nodeIndex: NodeIndex, at point: V) {
+    @inlinable public func add(_ nodeIndex: NodeIndex, at point: V) {
         cover(point)
         addWithoutCover(nodeIndex, at: point)
     }
@@ -267,7 +267,7 @@ extension NDTree where D.NodeID == Int {
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
     ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the root.
     ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the root delegate.
-    public convenience init(
+    @inlinable public convenience init(
         covering points: [V],
         clusterDistance: V.Scalar,
         buildRootDelegate: () -> D
@@ -288,7 +288,7 @@ extension NDTree where D.NodeID == Int {
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
     ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the root.
     ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the root delegate.
-    public convenience init<T>(
+    @inlinable public convenience init<T>(
         covering points: [T],
         keyPath: KeyPath<T, V>,
         clusterDistance: V.Scalar,

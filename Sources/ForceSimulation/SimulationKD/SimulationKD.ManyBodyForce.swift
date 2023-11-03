@@ -124,7 +124,7 @@ extension SimulationKD {
         }
 
         @usableFromInline var forces: [V] = []
-        public func apply() {
+        @inlinable public func apply() {
             guard let simulation else { return }
 
             let alpha = simulation.alpha
@@ -309,7 +309,7 @@ extension SimulationKD {
     ///  - nodeMass: The mass of the nodes. The mass is used to calculate the force. The default value is 1.0.
     ///  - theta: Determines how approximate the calculation is. The default value is 0.9. The higher the value, the more approximate and fast the calculation is.
     @discardableResult
-    public func createManyBodyForce(
+    @inlinable public func createManyBodyForce(
         strength: V.Scalar,
         nodeMass: ManyBodyForce.NodeMass = .constant(1.0)
     ) -> ManyBodyForce {
@@ -323,7 +323,7 @@ extension SimulationKD {
 }
 
 extension SimulationKD.ManyBodyForce.NodeMass {
-    public func calculated(for simulation: SimulationKD<NodeID, V>) -> [V.Scalar] {
+    @inlinable public func calculated(for simulation: SimulationKD<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let m):
             return Array(repeating: m, count: simulation.nodePositions.count)
