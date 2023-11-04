@@ -36,14 +36,18 @@ extension Dimension {
 
 typealias Float2D<ID: Hashable> = Dimension<ID, simd_double2>
 
+extension Float2D {
+    struct MyComposition: ForceComposition {
+        var composition: some ForceProtocol {
+            ManyBody()
+            ManyBody()
+        }
+    }
+}
 
 
 // extension Float2D {
 func test() {
-    let f = Float2D.Simulation(nodeIds: [0, 3]) {
-        Center(center: [0.0, 0.0], strength: 0.0)
-        ManyBody()
-        
-    }
+    let f = Float2D.Simulation(nodeIds: [0, 3], force: Float2D<Int>.MyComposition().composition)
 }
 // }

@@ -20,6 +20,16 @@ extension Dimension {
 
         public func apply() {
             guard let state = self.state else { return }
+
+            var meanPosition = V.zero
+            for n in state.nodePositions {
+                meanPosition += n  //.position
+            }
+            let delta = meanPosition * (self.strength / V.Scalar(state.nodePositions.count))
+
+            for i in state.nodePositions.indices {
+                state.nodePositions[i] -= delta
+            }
         }
 
         static public func create(from descriptor: Center<V>) -> CenterForce {

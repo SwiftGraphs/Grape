@@ -9,9 +9,9 @@ extension Dimension {
 
         init(
             nodeIds: [NodeID],
-            @ForceBuilder _ buildForceDescriptor: () -> CompositedForce
+            force: CompositedForce
         ) {
-            self.field = buildForceDescriptor()
+            self.field = force // buildForceDescriptor()
             self.nodeIds = nodeIds
             self.state = PhysicalState()
         }
