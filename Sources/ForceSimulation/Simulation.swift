@@ -72,34 +72,6 @@ extension Simulation where F == EmptyForce<NodeID, V> {
 
 }
 
-// extension Simulation {
-//     @inlinable
-//     static func create<Vector>(
-//         nodeIds: [NodeID],
-//         alpha: Vector.Scalar = 1,
-//         alphaMin: Vector.Scalar = 1e-3,
-//         alphaDecay: Vector.Scalar = 2e-3,
-//         alphaTarget: Vector.Scalar = 0.0,
-//         velocityDecay: Vector.Scalar = 0.6,
-//         setInitialStatus getInitialPosition: (
-//             (NodeID) -> Vector
-//         )? = nil
-//     ) -> Simulation<NodeID, Vector, EmptyForce<NodeID, Vector>> {
-//         return .init(
-//             simulation: SimulationState<NodeID, Vector>(
-//                 nodeIds: nodeIds,
-//                 alpha: alpha,
-//                 alphaMin: alphaMin,
-//                 alphaDecay: alphaDecay,
-//                 alphaTarget: alphaTarget,
-//                 velocityDecay: velocityDecay,
-//                 setInitialStatus: getInitialPosition
-//             ),
-//             force: EmptyForce()
-//         )
-//     }
-// }
-
 public enum SimulationError: Error {
     case nodeNotFound
     case buildQuadTreeBeforeSimulationInitialized
@@ -108,9 +80,11 @@ public enum SimulationError: Error {
 #if canImport(simd)
     import simd
 
+    
     public typealias Simulation2D<NodeID> = Simulation<
         NodeID, simd_double2, EmptyForce<NodeID, simd_double2>
     > where NodeID: Hashable
+
     public typealias Simulation3D<NodeID> = Simulation<
         NodeID, simd_float3, EmptyForce<NodeID, simd_float3>
     > where NodeID: Hashable

@@ -1,5 +1,6 @@
 /// A force that chains two forces.
 /// This is a helper for creating a strong-typed set of forces.
+/// TODO: replace with generic packing
 public struct ForceTuple<NodeID, V, F1, F2>: ForceProtocol
 where
     F1: ForceProtocol, F2: ForceProtocol, NodeID: Hashable, V: VectorLike,
@@ -23,14 +24,9 @@ where
         self.f2 = f2
     }
 
-    @inlinable public func tupledWith<F>(_ another: F) -> some ForceProtocol where F: ForceProtocol, F.NodeID == NodeID, F.V == V {
+    @inlinable public func tupledWith<F>(_ another: F) -> some ForceProtocol
+    where F: ForceProtocol, F.NodeID == NodeID, F.V == V {
         return ForceTuple<NodeID, V, Self, F>(self, another)
     }
 
-}
-
-extension ForceTuple: CustomDebugStringConvertible {
-    @inlinable public var debugDescription: String {
-        return "\(f1)\n\n\(f2)"
-    }
 }

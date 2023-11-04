@@ -21,14 +21,14 @@ final class MiserableGraphTest: XCTestCase {
                 n.id
             }
         )
-        .createLinkForce(
+        .withLinkForce(
             data.links.map({ l in
                 (l.source, l.target)
             })
         )
-        .createManyBodyForce(strength: -30)
-        .createCenterForce(center: .zero)
-        .createCollideForce(radius: .constant(5.0))
+        .withManyBodyForce(strength: -30)
+        .withCenterForce(center: .zero)
+        .withCollideForce(radius: .constant(5.0))
 
         measure {
             for i in 0..<120 {
@@ -45,14 +45,14 @@ final class MiserableGraphTest: XCTestCase {
                 n.id
             }
         )
-        .createLinkForce(
+        .withLinkForce(
             data.links.map({ l in
                 (l.source, l.target)
             })
         )
-        .createManyBodyForce(strength: -30)
-        .createCenterForce(center: .zero)
-        .createCollideForce(radius: .constant(5.0))
+        .withManyBodyForce(strength: -30)
+        .withCenterForce(center: .zero)
+        .withCollideForce(radius: .constant(5.0))
 
         measure {
             for i in 0..<120 {

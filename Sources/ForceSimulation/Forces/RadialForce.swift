@@ -59,7 +59,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 ///   - radius: The radius of the force.
 ///   - strength: The strength of the force.
 // @discardableResult
-// @inlinable public func createRadialForce(
+// @inlinable public func withRadialForce(
 //     center: V = .zero,
 //     radius: RadialForce.NodeRadius,
 //     strength: RadialForce.Strength = .constant(0.1)
@@ -94,7 +94,7 @@ extension RadialForce.NodeRadius {
 
 extension Simulation {
     @inlinable
-    public func createRadialForce(
+    public func withRadialForce(
         center: V = .zero,
         radius: RadialForce<NodeID, V>.NodeRadius,
         strength: RadialForce<NodeID, V>.Strength = .constant(0.1)

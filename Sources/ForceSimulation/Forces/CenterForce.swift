@@ -43,7 +43,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 
 extension Simulation {
     @inlinable
-    public func createCenterForce(center: V, strength: V.Scalar = 0.1) -> Simulation<
+    public func withCenterForce(center: V, strength: V.Scalar = 0.1) -> Simulation<
         NodeID, V, ForceTuple<NodeID, V, F, CenterForce<NodeID, V>>
     > where F.NodeID == NodeID, F.V == V {
         let f = CenterForce<NodeID, V>(center: center, strength: strength)

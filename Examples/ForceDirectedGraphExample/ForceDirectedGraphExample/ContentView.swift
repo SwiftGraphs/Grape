@@ -36,7 +36,7 @@ struct ContentView: View {
     
     @State var points: [simd_double2] = []
     
-    var sim: Simulation<String, simd_double2, some ForceProtocol> = {
+    var sim = {
         let data = getData(miserables)
         return Simulation2D(
             nodeIds: data.nodes.map { n in
@@ -44,15 +44,16 @@ struct ContentView: View {
             },
             alphaDecay: 0.01
         )
-            .createManyBodyForce(strength: -12)
-            .createLinkForce(
+            .withManyBodyForce(strength: -12)
+            .withLinkForce(
                 data.links.map { l in (l.source, l.target) },
                 stiffness: .weightedByDegree { _, _ in 1.0 },
                 originalLength: .constant(35)
             )
-            .createCenterForce(center: .zero, strength: 0.4)
-            .createCollideForce(radius: .constant(3.0))
+            .withCenterForce(center: .zero, strength: 0.4)
+            .withCollideForce(radius: .constant(3.0))
     }()
+    
     let data: Miserable
     
     
@@ -62,14 +63,14 @@ struct ContentView: View {
         self.data = getData(miserables)
 //        self.sim = Simulation2D(nodeIds: data.nodes.map {$0.id}, alphaDecay: 0.01)
         
-//        sim.createManyBodyForce(strength: -12)
-//        self.linkForce = sim.createLinkForce(
+//        sim.withManyBodyForce(strength: -12)
+//        self.linkForce = sim.withLinkForce(
 //            data.links.map { l in (l.source, l.target) },
 //            stiffness: .weightedByDegree { _, _ in 1.0 },
 //            originalLength: .constant(35)
 //        )
-//        sim.createCenterForce(center: [0, 0], strength: 0.4)
-//        sim.createCollideForce(radius: .constant(3))
+//        sim.withCenterForce(center: [0, 0], strength: 0.4)
+//        sim.withCollideForce(radius: .constant(3))
         
     }
     

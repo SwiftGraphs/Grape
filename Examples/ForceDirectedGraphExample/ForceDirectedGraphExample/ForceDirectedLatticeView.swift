@@ -42,8 +42,8 @@ struct ForceDirectedLatticeView: View {
         //        }
         self.edgeIds = edge
         self.sim = Simulation2D(nodeIds: nodeIds)
-        sim.createLinkForce(self.edgeIds, stiffness: .constant(1), originalLength: .constant(1))
-        sim.createManyBodyForce(strength: -1)
+        sim.withLinkForce(self.edgeIds, stiffness: .constant(1), originalLength: .constant(1))
+        sim.withManyBodyForce(strength: -1)
         
 
     }

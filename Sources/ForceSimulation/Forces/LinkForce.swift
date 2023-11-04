@@ -68,19 +68,6 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
     @usableFromInline internal var linksOfIndices: [EdgeID<Int>] = []
     @usableFromInline var links: [EdgeID<NodeID>]
 
-    public struct LinkLookup<_NodeID> where _NodeID: Hashable {
-        @usableFromInline let sources: [_NodeID: [_NodeID]]
-        @usableFromInline let targets: [_NodeID: [_NodeID]]
-        @usableFromInline let count: [_NodeID: Int]
-
-        @inlinable init(
-            sources: [_NodeID: [_NodeID]], targets: [_NodeID: [_NodeID]], count: [_NodeID: Int]
-        ) {
-            self.sources = sources
-            self.targets = targets
-            self.count = count
-        }
-    }
     @usableFromInline var lookup = LinkLookup<Int>(sources: [:], targets: [:], count: [:])
 
     @inlinable internal init(
@@ -93,7 +80,6 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
         self.iterationsPerTick = iterationsPerTick
         self.linkStiffness = stiffness
         self.linkLength = originalLength
-
     }
 
     @inlinable public func apply() {
@@ -148,7 +134,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 ///  - stiffness: The stiffness of the spring (or links).
 ///  - originalLength: The original length of the spring (or links).
 // @discardableResult
-// @inlinable public func createLinkForce(
+// @inlinable public func withLinkForce(
 //     _ links: [EdgeID<NodeID>],
 //     stiffness: LinkForce.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
 //     originalLength: LinkForce.LinkLength = .constant(30.0),
@@ -171,7 +157,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 ///  - stiffness: The stiffness of the spring (or links).
 ///  - originalLength: The original length of the spring (or links).
 // @discardableResult
-// @inlinable public func createLinkForce(
+// @inlinable public func withLinkForce(
 //     _ linkTuples: [(NodeID, NodeID)],
 //     stiffness: LinkForce.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
 //     originalLength: LinkForce.LinkLength = .constant(30.0),
@@ -186,25 +172,25 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 //     return linkForce
 // }
 
-extension LinkForce.LinkLookup {
-    @inlinable static func buildFromLinks(_ links: [EdgeID<_NodeID>]) -> Self {
-        var sources: [_NodeID: [_NodeID]] = [:]
-        var targets: [_NodeID: [_NodeID]] = [:]
-        var count: [_NodeID: Int] = [:]
+extension LinkLookup {
+    @inlinable static func buildFromLinks(_ links: [EdgeID<NodeID>]) -> Self {
+        var sources: [NodeID: [NodeID]] = [:]
+        var targets: [NodeID: [NodeID]] = [:]
+        var count: [NodeID: Int] = [:]
         for link in links {
             sources[link.source, default: []].append(link.target)
             targets[link.target, default: []].append(link.source)
             count[link.source, default: 0] += 1
             count[link.target, default: 0] += 1
         }
-        return LinkForce.LinkLookup(sources: sources, targets: targets, count: count)
+        return LinkLookup(sources: sources, targets: targets, count: count)
     }
 }
 
 extension LinkForce.LinkLength {
     @inlinable func calculated(
         for links: [EdgeID<NodeID>],
-        connectionLookupTable: LinkForce.LinkLookup<NodeID>
+        connectionLookupTable: LinkLookup<NodeID>
     ) -> [V.Scalar] {
         switch self {
         case .constant(let value):
@@ -220,7 +206,7 @@ extension LinkForce.LinkLength {
 extension LinkForce.LinkStiffness {
     @inlinable func calculated(
         for links: [EdgeID<NodeID>],
-        connectionLookupTable lookup: LinkForce.LinkLookup<NodeID>
+        connectionLookupTable lookup: LinkLookup<NodeID>
     ) -> [V.Scalar] {
         switch self {
         case .constant(let value):
@@ -245,7 +231,7 @@ extension LinkForce.LinkStiffness {
 
 extension Simulation {
     @inlinable
-    public func createLinkForce(
+    public func withLinkForce(
         _ links: [EdgeID<NodeID>],
         stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
         originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30.0),
@@ -261,7 +247,7 @@ extension Simulation {
     }
 
     @inlinable
-    public func createLinkForce(
+    public func withLinkForce(
         _ linkTuples: [(NodeID, NodeID)],
         stiffness: LinkForce<NodeID, V>.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
         originalLength: LinkForce<NodeID, V>.LinkLength = .constant(30.0),
@@ -275,5 +261,19 @@ extension Simulation {
             iterationsPerTick: iterationsPerTick)
         //        f.bindSimulation(self.simulation)
         return with(f)
+    }
+}
+
+public struct LinkLookup<NodeID> where NodeID: Hashable {
+    @usableFromInline let sources: [NodeID: [NodeID]]
+    @usableFromInline let targets: [NodeID: [NodeID]]
+    @usableFromInline let count: [NodeID: Int]
+
+    @inlinable init(
+        sources: [NodeID: [NodeID]], targets: [NodeID: [NodeID]], count: [NodeID: Int]
+    ) {
+        self.sources = sources
+        self.targets = targets
+        self.count = count
     }
 }

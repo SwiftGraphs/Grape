@@ -30,7 +30,6 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
         direction: Direction, targetOnDirection: TargetOnDirection,
         strength: Strength = .constant(1.0)
     ) {
-
         self.strength = strength
         self.direction = direction.lane
         self.targetOnDirection = targetOnDirection
@@ -65,7 +64,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 /// where `n` is the number of nodes.
 /// See [Position Force - D3](https://d3js.org/d3-force/position).
 // @discardableResult
-// @inlinable public func createPositionForce(
+// @inlinable public func withPositionForce(
 //     direction: DirectionForce.Direction,
 //     targetOnDirection: DirectionForce.TargetOnDirection,
 //     strength: DirectionForce.Strength = .constant(1.0)
@@ -114,7 +113,7 @@ extension DirectionForce.Direction {
 
 extension Simulation {
     @inlinable
-    func createDirectionForce(
+    func withDirectionForce(
         direction: DirectionForce<NodeID, V>.Direction,
         targetOnDirection: DirectionForce<NodeID, V>.TargetOnDirection,
         strength: DirectionForce<NodeID, V>.Strength = .constant(1.0)

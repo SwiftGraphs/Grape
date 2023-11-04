@@ -182,7 +182,7 @@ extension CollideForce.CollideRadius {
 
 extension Simulation {
     @inlinable
-    public func createCollideForce(
+    public func withCollideForce(
         radius: CollideForce<NodeID, V>.CollideRadius = .constant(3.0),
         strength: V.Scalar = 1.0,
         iterationsPerTick: UInt = 1

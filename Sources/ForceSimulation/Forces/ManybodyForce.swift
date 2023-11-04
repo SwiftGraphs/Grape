@@ -308,7 +308,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 ///  - nodeMass: The mass of the nodes. The mass is used to calculate the force. The default value is 1.0.
 ///  - theta: Determines how approximate the calculation is. The default value is 0.9. The higher the value, the more approximate and fast the calculation is.
 //     @discardableResult
-//     @inlinable public func createManyBodyForce(
+//     @inlinable public func withManyBodyForce(
 //         strength: V.Scalar,
 //         nodeMass: ManyBodyForce.NodeMass = .constant(1.0)
 //     ) -> ManyBodyForce {
@@ -337,7 +337,7 @@ extension ManyBodyForce.NodeMass {
 
 extension Simulation {
     @inlinable
-    public func createManyBodyForce(
+    public func withManyBodyForce(
         strength: V.Scalar,
         nodeMass: ManyBodyForce<NodeID, V>.NodeMass = .constant(1.0)
     ) -> Simulation<
