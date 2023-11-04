@@ -7,13 +7,9 @@
 
 
 
-public enum SimulationKDError: Error {
-    case subscriptionToNonexistentNode
-}
-
 /// An N-Dimensional force simulation.
-public final class SimulationKD<NodeID, V>
-where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
+public final class Simulation<NodeID, V, each Force>
+where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint, repeat each Force: ForceLike {
 
     /// The type of the vector used in the simulation.
     /// Usually this is `Scalar` if you are on Apple platforms.
@@ -29,7 +25,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     public var velocityDecay: Scalar
     
     
-    @usableFromInline var forces: [any ForceLike] = []
+    @usableFromInline var forces: ForceField<repeat each Force>
 
     /// The position of points stored in simulation.
     /// Ordered as the nodeIds you passed in when initializing simulation.
@@ -65,6 +61,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     ///   - getInitialPosition: The closure to set the initial position of the node. If not provided, the initial position is set to zero.
     @inlinable public init(
         nodeIds: [NodeID],
+        forceField: ForceField<repeat each Force>, 
         alpha: Scalar = 1,
         alphaMin: Scalar = 1e-3,
         alphaDecay: Scalar = 2e-3,
@@ -85,6 +82,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
         self.alphaTarget = alphaTarget
 
         self.velocityDecay = velocityDecay
+        self.forces = forceField
 
         if let getInitialPosition {
             self.nodePositions = nodeIds.map(getInitialPosition)
@@ -122,9 +120,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
         for _ in 0..<iterationCount {
             alpha += (alphaTarget - alpha) * alphaDecay
 
-            for f in forces {
-                f.apply()
-            }
+            forces.apply()
 
             for i in nodePositions.indices {
                 if let fixation = nodeFixations[i] {
@@ -138,9 +134,3 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
         }
     }
 }
-
-#if canImport(simd) 
-import simd
-public typealias Simulation2D<NodeID> = SimulationKD<NodeID, SIMD2<Double>> where NodeID: Hashable
-public typealias Simulation3D<NodeID> = SimulationKD<NodeID, SIMD3<Float>> where NodeID: Hashable
-#endif
