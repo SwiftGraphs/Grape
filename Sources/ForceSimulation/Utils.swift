@@ -5,9 +5,6 @@
 //  Created by li3zhen1 on 10/1/23.
 //
 
-
-
-
 // TODO: https://forums.swift.org/t/deterministic-randomness-in-swift/20835/5
 
 /// A random number generator that generates deterministic random numbers.
@@ -52,7 +49,8 @@ public protocol SimulatableFloatingPoint: ExpressibleByFloatLiteral {
 }
 
 extension Double: SimulatableFloatingPoint {
-    @inlinable public func jiggled() -> Double {
+    @inlinable 
+    public func jiggled() -> Double {
         if self == 0 || self == .nan {
             // return Double.random(in: -5e-6..<5e-6)
             return (LinearCongruentialGenerator.next() - 0.5) * 1e-5
@@ -62,7 +60,8 @@ extension Double: SimulatableFloatingPoint {
 }
 
 extension Float: SimulatableFloatingPoint {
-    @inlinable public func jiggled() -> Float {
+    @inlinable 
+    public func jiggled() -> Float {
         if self == 0 || self == .nan {
             // return Double.random(in: -5e-6..<5e-6)
             return (FloatLinearCongruentialGenerator.next() - 0.5) * 1e-5
@@ -98,7 +97,8 @@ extension simd_float3 {
 #endif
 
 extension VectorLike where Scalar: SimulatableFloatingPoint {
-    @inlinable public func jiggled() -> Self {
+    @inlinable 
+    public func jiggled() -> Self {
         var result = Self.zero
         for i in indices {
             result[i] = self[i].jiggled()

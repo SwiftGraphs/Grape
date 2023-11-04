@@ -51,4 +51,7 @@
     public typealias QuadBox = NDBox<simd_double2>
     public typealias OctBox = NDBox<simd_float3>
 
+    public typealias Quadtree<D> = NDTree<simd_double2, D> where D: NDTreeDelegate, D.V == simd_double2
+    public typealias Octree<D> = NDTree<simd_float3, D> where D: NDTreeDelegate, D.V == simd_float3
+
 #endif

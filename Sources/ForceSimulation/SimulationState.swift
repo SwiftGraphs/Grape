@@ -5,11 +5,9 @@
 //  Created by li3zhen1 on 10/16/23.
 //
 
-
-
 /// An N-Dimensional force simulation.
-public final class Simulation<NodeID, V, each Force>
-where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint, repeat each Force: ForceLike {
+public final class SimulationState<NodeID, V>
+where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 
     /// The type of the vector used in the simulation.
     /// Usually this is `Scalar` if you are on Apple platforms.
@@ -23,15 +21,14 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint, repe
     public var alphaTarget: Scalar
 
     public var velocityDecay: Scalar
-    
-    
-    @usableFromInline var forces: ForceField<repeat each Force>
+
+    // @usableFromInline var forces: ForceField
 
     /// The position of points stored in simulation.
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
     @usableFromInline var nodePositions: [V]
-    
+
     @inlinable public var nodePositisions: [V] {
         return self.nodePositions
     }
@@ -61,7 +58,6 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint, repe
     ///   - getInitialPosition: The closure to set the initial position of the node. If not provided, the initial position is set to zero.
     @inlinable public init(
         nodeIds: [NodeID],
-        forceField: ForceField<repeat each Force>, 
         alpha: Scalar = 1,
         alphaMin: Scalar = 1e-3,
         alphaDecay: Scalar = 2e-3,
@@ -82,7 +78,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint, repe
         self.alphaTarget = alphaTarget
 
         self.velocityDecay = velocityDecay
-        self.forces = forceField
+        // self.forces = forceField
 
         if let getInitialPosition {
             self.nodePositions = nodeIds.map(getInitialPosition)
@@ -103,34 +99,14 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint, repe
 
     /// Get the index in the nodeArray for `nodeId`
     /// - **Complexity**: O(1)
-    @inlinable public func getIndex(of nodeId: NodeID) -> Int {
+    @inlinable
+    public func getIndex(of nodeId: NodeID) -> Int {
         return nodeIdToIndexLookup[nodeId]!
     }
 
     /// Reset the alpha. The points will move faster as alpha gets larger.
-    @inlinable public func resetAlpha(_ alpha: Scalar) {
+    @inlinable
+    public func resetAlpha(_ alpha: Scalar) {
         self.alpha = alpha
-    }
-
-    /// Run the simulation for a number of iterations.
-    /// Goes through all the forces created.
-    /// The forces will call  `apply` then the positions and velocities will be modified.
-    /// - Parameter iterationCount: Default to 1.
-    @inlinable public func tick(iterationCount: UInt = 1) {
-        for _ in 0..<iterationCount {
-            alpha += (alphaTarget - alpha) * alphaDecay
-
-            forces.apply()
-
-            for i in nodePositions.indices {
-                if let fixation = nodeFixations[i] {
-                    nodePositions[i] = fixation
-                } else {
-                    nodeVelocities[i] *= velocityDecay
-                    nodePositions[i] += nodeVelocities[i]
-                }
-            }
-
-        }
     }
 }

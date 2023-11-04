@@ -3,7 +3,7 @@ import simd
 
 @testable import ForceSimulation
 
-final class DummyQuadtreeDelegate: QuadtreeDelegate {
+final class DummyQuadtreeDelegate: NDTreeDelegate {
     func didAddNode(_ node: Int, at position: SIMD2<Double>) {
         count += 1
     }

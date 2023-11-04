@@ -11,8 +11,8 @@ import SwiftUI
 struct ForceDirectedGraphExampleApp: App {
     var body: some Scene {
         WindowGroup {
-//            ContentView().padding(0)
-            ForceDirectedLatticeView().padding(0)//.ignoresSafeArea()
+            ContentView().padding(0)
+//            ForceDirectedLatticeView().padding(0)//.ignoresSafeArea()
         }
     }
 }

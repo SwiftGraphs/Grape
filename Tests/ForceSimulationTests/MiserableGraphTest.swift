@@ -5,178 +5,60 @@
 //  Created by li3zhen1 on 10/4/23.
 //
 
+import XCTest
 // import ForceSimulation
 import simd
-import XCTest
 
 @testable import ForceSimulation
 
 final class MiserableGraphTest: XCTestCase {
 
-    func test_Generic_2d() {
+    func test_generic_pack_3d() {
         let data = getData()
 
-        let sim = SimulationKD<String, simd_double2>(
+        let wrapped = Simulation3D(
             nodeIds: data.nodes.map { n in
                 n.id
-            })
-
-        let linkForce = sim.createLinkForce(
-            data.links.map({ l in
-                (l.source, l.target)
-            }))
-        linkForce.apply()
-        
-        
-        let manybodyForce = sim.createManyBodyForce(strength: -30)
-
-        let centerForce = sim.createCenterForce(center: .zero)
-        let collideForce = sim.createCollideForce(radius: .constant(5))
-//
-//        //        for _ in 0..<120{
-//        //            sim.tick()
-//        //        }
-//        //
-//        ////        sim.tick()
-//        //
-//        //        for _ in 0..<120{
-//        //            sim.tick()
-//        //        }
-//
-        measure {
-            for i in 0..<120 {
-
-                
-//                for _ in 0..<iterationCount {
-                sim.alpha += (sim.alphaTarget - sim.alpha) * sim.alphaDecay
-
-                linkForce.apply()
-                manybodyForce.apply()
-                centerForce.apply()
-                collideForce.apply()
-
-                for i in sim.nodePositions.indices {
-                    if let fixation = sim.nodeFixations[i] {
-                        sim.nodePositions[i] = fixation
-                        } else {
-                            sim.nodeVelocities[i] *= sim.velocityDecay
-                            sim.nodePositions[i] += sim.nodeVelocities[i]
-                        }
-                    }
-
-//                }
-//                sim.tick()
-//                print(i)
             }
-        }
-//        sim.tick()
-        //        print(sim.simulationNodes)
-
-    }
-    
-
-    func test_Inlined_2d() {
-        let data = getData()
-
-        let sim = Simulation2D<String>(
-            nodeIds: data.nodes.map { n in
-                n.id
-            })
-
-        let linkForce = sim.createLinkForce(
+        )
+        .createLinkForce(
             data.links.map({ l in
                 (l.source, l.target)
-            }))
-        let manybodyForce = sim.createManyBodyForce(strength: -30)
-
-        let centerForce = sim.createCenterForce(center: .zero)
-        let collideForce = sim.createCollideForce(radius: .constant(5))
-
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-        //
-        ////        sim.tick()
-        //
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
+            })
+        )
+        .createManyBodyForce(strength: -30)
+        .createCenterForce(center: .zero)
+        .createCollideForce(radius: .constant(5.0))
 
         measure {
             for i in 0..<120 {
-                sim.tick()
-//                print(i)
+                wrapped.tick()
             }
         }
-        sim.tick()
-        //        print(sim.simulationNodes)
-
     }
-    
-    
-    func test3d() {
+
+    func test_generic_pack_2d() {
         let data = getData()
 
-        let sim = Simulation3D(
+        let wrapped = Simulation2D(
             nodeIds: data.nodes.map { n in
                 n.id
-            })
-
-        let linkForce = sim.createLinkForce(
+            }
+        )
+        .createLinkForce(
             data.links.map({ l in
                 (l.source, l.target)
-            }))
-        let manybodyForce = sim.createManyBodyForce(strength: -30)
+            })
+        )
+        .createManyBodyForce(strength: -30)
+        .createCenterForce(center: .zero)
+        .createCollideForce(radius: .constant(5.0))
 
-        let centerForce = sim.createCenterForce(center: .zero)
-        let collideForce = sim.createCollideForce(radius: .constant(5))
-
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-        //
-        ////        sim.tick()
-        //
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-        
-        
         measure {
-            for _ in 0..<120 {
-                sim.tick()
+            for i in 0..<120 {
+                wrapped.tick()
             }
         }
-        sim.tick()
-        //        print(sim.simulationNodes)
-
     }
-    
-//    func test4d() {
-//        let data = getData()
-//
-//        let sim = Simulation<String, Vector4d>(
-//            nodeIds: data.nodes.map { n in
-//                n.id
-//            })
-//
-//        let linkForce = sim.createLinkForce(
-//            data.links.map({ l in
-//                (l.source, l.target)
-//            }))
-//        let manybodyForce = sim.createManyBodyForce(strength: -30)
-//
-//        let centerForce = sim.createCenterForce(center: .zero)
-//        let collideForce = sim.createCollideForce(radius: .constant(5))
-//        
-//        measure {
-//            for _ in 0..<120 {
-//                sim.tick()
-//            }
-//        }
-//        sim.tick()
-//        //        print(sim.simulationNodes)
-//
-//    }
 
 }
