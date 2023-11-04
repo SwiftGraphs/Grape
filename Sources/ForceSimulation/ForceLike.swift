@@ -96,10 +96,43 @@ where
         self.forces = forces
     }
 
-    func withF1() -> SimulationBuilder<NodeID, V, repeat each Force, Sim.CenterForce> {
+    func withCenterForce(center: V, strength: V.Scalar = 0.1) -> SimulationBuilder<NodeID, V, repeat each Force, Sim.CenterForce> {
         let newForceField = self.forces.append(
-            Sim.CenterForce(center: .zero, strength: 1)
+            Sim.CenterForce(center: center, strength: strength)
         )
         return SimulationBuilder<NodeID, V, repeat each Force, Sim.CenterForce>(forces: newForceField)
+    }
+
+    func withCollideForce(
+        radius: Sim.CollideForce.CollideRadius = .constant(3.0),
+        strength: V.Scalar = 1.0,
+        iterationsPerTick: UInt = 1
+    ) -> SimulationBuilder<NodeID, V, repeat each Force, Sim.CollideForce> {
+        let f = Sim.CollideForce(
+            radius: radius,
+            strength: strength,
+            iterationsPerTick: iterationsPerTick
+        )
+        let newForceField = self.forces.append(f)
+        
+        return SimulationBuilder<NodeID, V, repeat each Force, Sim.CollideForce>(
+            forces: newForceField
+        )
+    }
+
+    func createLinkForce(
+        _ linkTuples: [(NodeID, NodeID)],
+        stiffness: Sim.LinkForce.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
+        originalLength: Sim.LinkForce.LinkLength = .constant(30.0),
+        iterationsPerTick: UInt = 1
+    ) -> SimulationBuilder<NodeID, V, repeat each Force, Sim.LinkForce> {
+        let links = linkTuples.map { EdgeID($0.0, $0.1) }
+        let linkForce = Sim.LinkForce(
+            links, stiffness: stiffness, originalLength: originalLength)
+
+        let newForceField = self.forces.append(linkForce)
+        return SimulationBuilder<NodeID, V, repeat each Force, Sim.LinkForce>(
+            forces: newForceField
+        )
     }
 }
