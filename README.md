@@ -110,7 +110,7 @@ Grape provides a set of generic based types that works with any SIMD-like data s
 
 ```swift
 /// All required implementations should have same semantics
-/// as the SIMD protocol provided in Foundation.
+/// as the SIMD protocol provided in the standard library.
 struct SuperCool4DVector: VectorLike { ... }
 
 protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}

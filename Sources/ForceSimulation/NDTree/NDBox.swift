@@ -6,6 +6,7 @@
 //
 
 /// A box in N-dimensional space.
+///
 /// - Note: `p0` is the minimum point of the box, `p1` is the maximum point of the box.
 public struct NDBox<V> where V: VectorLike {
     /// the minimum anchor of the box
@@ -15,6 +16,7 @@ public struct NDBox<V> where V: VectorLike {
     public var p1: V
 
     /// Create a box with 2 anchors.
+    ///
     /// - Parameters:
     ///   - p0: anchor
     ///   - p1: another anchor in the diagonal position of `p0`
@@ -39,6 +41,7 @@ public struct NDBox<V> where V: VectorLike {
     }
 
     /// Create a box with 2 anchors.
+    ///
     /// - Parameters:
     ///   - pMin: minimum anchor of the box
     ///   - pMax: maximum anchor of the box
@@ -111,6 +114,7 @@ extension NDBox {
 extension NDBox {
 
     /// Get the small box that contains a list points and guarantees the box's size is at least 1x..x1.
+    ///
     /// - Parameter points: The points to be covered.
     /// - Returns: The box that contains all the points.
     @inlinable public static func cover(of points: [V]) -> Self {
@@ -141,6 +145,7 @@ extension NDBox {
     }
 
     /// Get the small box that contains a list points and guarantees the box's size is at least 1x..x1.
+    /// 
     /// Please note that KeyPath is slow.
     ///
     /// - Parameter

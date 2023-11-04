@@ -5,7 +5,7 @@
 //  Created by li3zhen1 on 10/16/23.
 //
 
-/// An N-Dimensional force simulation.
+/// Data store for the simulation.
 public final class SimulationState<NodeID, V>
 where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 
@@ -48,6 +48,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
     @usableFromInline var nodeIdToIndexLookup: [NodeID: Int] = [:]
 
     /// Create a new simulation.
+    /// 
     /// - Parameters:
     ///   - nodeIds: Hashable identifiers for the nodes. Force simulation calculate them by order once created.
     ///   - alpha:

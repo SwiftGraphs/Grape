@@ -5,7 +5,8 @@
 //  Created by li3zhen1 on 10/14/23.
 //
 
-/// The data structure carried by a node of NDTree
+/// The data structure carried by a node of NDTree.
+///
 /// It receives notifications when a node is added or removed on a node, regardless of whether the node is internal or leaf.
 /// It is designed to calculate properties like a box's center of mass.
 public protocol NDTreeDelegate {
@@ -13,7 +14,8 @@ public protocol NDTreeDelegate {
     associatedtype V: VectorLike
 
     /// Called when a node is added on a node, regardless of whether the node is internal or leaf.
-    /// If you add `n` points to the root, this method will be called `n` times in the root delegate, 
+    ///
+    /// If you add `n` points to the root, this method will be called `n` times in the root delegate,
     /// although it is probably not containing points now.
     /// - Parameters:
     ///   - node: The nodeID of the node that is added.
@@ -28,6 +30,7 @@ public protocol NDTreeDelegate {
     @inlinable func copy() -> Self
 
     /// Create new object with properties set to initial value as if the box is empty.
+    ///
     /// However, you can still carry something like a closure to get information from outside.
     /// This method is called when a leaf box is splited due to the insertion of a new node in this box.
     @inlinable func spawn() -> Self
@@ -155,6 +158,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     }
 
     /// Expand the current node multiple times by calling `expand(towards:)`, until the point is covered.
+    ///
     /// - Parameter point: The point to be covered.
     @inlinable func cover(_ point: V) {
         if box.contains(point) { return }
@@ -165,8 +169,9 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
         } while !box.contains(point)
     }
 
-    /// Expand the current node towards a direction. The expansion
-    /// will double the size on each dimension. Then the data in delegate will be copied to the new children.
+    /// Expand the current node towards a direction. 
+    ///
+    /// The expansion will double the size on each dimension. Then the data in delegate will be copied to the new children.
     /// - Parameter direction: An Integer between 0 and `directionCount - 1`, where `directionCount` equals to 2^(dimension of the vector).
     @inlinable func expand(towards direction: Direction) {
         let nailedDirection = (Self.directionCount - 1) - direction
@@ -195,6 +200,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     }
 
     /// The children count of a node in NDTree.
+    ///
     /// Should be equal to the 2^(dimension of the vector).
     /// For example, a 2D vector should have 4 children, a 3D vector should have 8 children.
     /// This property is a getter property but it is probably be inlined.
@@ -232,6 +238,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     }
 
     /// Copy object while holding the same reference to children.
+    ///
     /// Consider this function something you would do when working with linked list.
     @inlinable func shallowCopy() -> NDTree<V, D> {
         let copy = NDTree(
@@ -246,6 +253,7 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
     }
 
     /// Get the index of the child that contains the point.
+    ///
     /// **Complexity**: `O(n*(2^n))`, where `n` is the dimension of the vector.
     @inlinable func getIndexInChildren(_ point: V, relativeTo originalPoint: V) -> Int {
         var index = 0
@@ -262,7 +270,8 @@ public final class NDTree<V, D> where V: VectorLike, D: NDTreeDelegate, D.V == V
 extension NDTree where D.NodeID == Int {
 
     /// Initialize a NDTree with a list of points and a key path to the vector.
-    /// - Parameters: 
+    ///
+    /// - Parameters:
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
     ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the root.
@@ -282,7 +291,8 @@ extension NDTree where D.NodeID == Int {
     }
 
     /// Initialize a NDTree with a list of points and a key path to the vector.
-    /// - Parameters: 
+    ///
+    /// - Parameters:
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
     ///  - keyPath: A key path to the vector in the element of the list.
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
@@ -309,10 +319,14 @@ extension NDTree {
     /// The bounding box of the current node
     @inlinable public var extent: Box { box }
 
-    /// Returns true is the current tree node is leaf. Does not guarantee that the tree node has point in it.
+    /// Returns true is the current tree node is leaf. 
+    ///
+    /// Does not guarantee that the tree node has point in it.
     @inlinable public var isLeaf: Bool { children == nil }
 
-    /// Returns true is the current tree node is internal. Internal tree node are always empty and do not contain any points.
+    /// Returns true is the current tree node is internal. 
+    ///
+    /// Internal tree node are always empty and do not contain any points.
     @inlinable public var isInternalNode: Bool { children != nil }
 
     /// Returns true is the current tree node is leaf and has point in it.
@@ -323,6 +337,7 @@ extension NDTree {
 
 
     /// Visit the tree in pre-order.
+    /// 
     /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
     @inlinable public func visit(shouldVisitChildren: (NDTree<V,D>) -> Bool) {
         if shouldVisitChildren(self), let children {
@@ -334,6 +349,7 @@ extension NDTree {
     }
     
     /// Visit the tree in post-order.
+    ///
     /// - Parameter action: a closure that takes a tree as its argument.
     @inlinable public func visitPostOrdered(
         _ action: (NDTree<V, D>) -> ()

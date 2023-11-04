@@ -36,23 +36,7 @@ struct ContentView: View {
     
     @State var points: [simd_double2] = []
     
-    var sim = {
-        let data = getData(miserables)
-        return Simulation2D(
-            nodeIds: data.nodes.map { n in
-                n.id
-            },
-            alphaDecay: 0.01
-        )
-            .withManyBodyForce(strength: -12)
-            .withLinkForce(
-                data.links.map { l in (l.source, l.target) },
-                stiffness: .weightedByDegree { _, _ in 1.0 },
-                originalLength: .constant(35)
-            )
-            .withCenterForce(center: .zero, strength: 0.4)
-            .withCollideForce(radius: .constant(3.0))
-    }()
+    var sim: Simulation<String, simd_double2, any ForceProtocol>
     
     let data: Miserable
     
@@ -61,6 +45,22 @@ struct ContentView: View {
         
         
         self.data = getData(miserables)
+        
+        self.sim = Simulation2D(
+                nodeIds: self.data.nodes.map { n in
+                    n.id
+                },
+                alphaDecay: 0.01
+            )
+            .withManyBodyForce(strength: -12)
+            .withLinkForce(
+                data.links.map { l in (l.source, l.target) },
+                stiffness: .weightedByDegree { _, _ in 1.0 },
+                originalLength: .constant(35)
+            )
+            .withCenterForce(center: .zero, strength: 0.4)
+            .withCollideForce(radius: .constant(3.0))
+            
 //        self.sim = Simulation2D(nodeIds: data.nodes.map {$0.id}, alphaDecay: 0.01)
         
 //        sim.withManyBodyForce(strength: -12)

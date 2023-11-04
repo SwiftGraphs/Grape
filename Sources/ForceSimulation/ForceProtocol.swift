@@ -23,3 +23,6 @@ public protocol ForceProtocol {
     @inlinable func bindSimulation(_ simulation: SimulationState<NodeID, V>?)
 
 }
+
+public struct Force
+{}

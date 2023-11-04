@@ -1,22 +1,22 @@
 public struct Simulation<NodeID, V, F>
 where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint, F: ForceProtocol {
-    @usableFromInline var simulation: SimulationState<NodeID, V>
+    public var state: SimulationState<NodeID, V>
     @usableFromInline var force: F
 
     @inlinable
     public init(simulation: SimulationState<NodeID, V>, force: F) {
-        self.simulation = simulation
+        self.state = simulation
         self.force = force
     }
 
     @inlinable
     public func with<NewForce: ForceProtocol>(_ f: NewForce) -> Simulation<
-        NodeID, V, ForceTuple<NodeID, V, F, NewForce>
+        NodeID, V, Force.ForceField<NodeID, V, F, NewForce>
     > where NewForce.NodeID == NodeID, NewForce.V == V, F.V == V, F.NodeID == NodeID {
-        f.bindSimulation(self.simulation)
+        f.bindSimulation(self.state)
         return .init(
-            simulation: self.simulation,
-            force: ForceTuple(self.force, f)
+            simulation: self.state,
+            force: Force.ForceField(self.force, f)
         )
     }
 
@@ -27,25 +27,25 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint, F: Fo
     @inlinable
     public func tick(iterationCount: UInt = 1) {
         for _ in 0..<iterationCount {
-            simulation.alpha += (simulation.alphaTarget - simulation.alpha) * simulation.alphaDecay
+            state.alpha += (state.alphaTarget - state.alpha) * state.alphaDecay
 
             force.apply()
 
-            for i in simulation.nodePositions.indices {
-                if let fixation = simulation.nodeFixations[i] {
-                    simulation.nodePositions[i] = fixation
+            for i in state.nodePositions.indices {
+                if let fixation = state.nodeFixations[i] {
+                    state.nodePositions[i] = fixation
                 } else {
-                    simulation.nodeVelocities[i] *= simulation.velocityDecay
-                    simulation.nodePositions[i] += simulation.nodeVelocities[i]
+                    state.nodeVelocities[i] *= state.velocityDecay
+                    state.nodePositions[i] += state.nodeVelocities[i]
                 }
             }
         }
     }
 
-    @inlinable public var nodePositions: [V] { simulation.nodePositions }
+    @inlinable public var nodePositions: [V] { state.nodePositions }
 }
 
-extension Simulation where F == EmptyForce<NodeID, V> {
+extension Simulation where F == Force.EmptyForce<NodeID, V> {
     @inlinable
     public init(
         nodeIds: [NodeID],
@@ -58,7 +58,7 @@ extension Simulation where F == EmptyForce<NodeID, V> {
             (NodeID) -> V
         )? = nil
     ) {
-        self.simulation = SimulationState<NodeID, V>(
+        self.state = SimulationState<NodeID, V>(
             nodeIds: nodeIds,
             alpha: alpha,
             alphaMin: alphaMin,
@@ -67,7 +67,7 @@ extension Simulation where F == EmptyForce<NodeID, V> {
             velocityDecay: velocityDecay,
             setInitialStatus: getInitialPosition
         )
-        self.force = EmptyForce()
+        self.force = Force.EmptyForce()
     }
 
 }
@@ -80,13 +80,15 @@ public enum SimulationError: Error {
 #if canImport(simd)
     import simd
 
-    
     public typealias Simulation2D<NodeID> = Simulation<
-        NodeID, simd_double2, EmptyForce<NodeID, simd_double2>
+        NodeID, simd_double2, Force.EmptyForce<NodeID, simd_double2>
     > where NodeID: Hashable
 
     public typealias Simulation3D<NodeID> = Simulation<
-        NodeID, simd_float3, EmptyForce<NodeID, simd_float3>
+        NodeID, simd_float3, Force.EmptyForce<NodeID, simd_float3>
     > where NodeID: Hashable
+
+    public typealias SimulationState2D<NodeID> = SimulationState<NodeID, simd_double2> where NodeID: Hashable
+    public typealias SimulationState3D<NodeID> = SimulationState<NodeID, simd_float3> where NodeID: Hashable
 
 #endif

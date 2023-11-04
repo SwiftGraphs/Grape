@@ -1,53 +1,55 @@
-final public class RadialForce<NodeID, V>: ForceProtocol
-where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
-    @usableFromInline weak var simulation: SimulationState<NodeID, V>?
+extension Force {
 
-    @inlinable
-    public func bindSimulation(_ simulation: SimulationState<NodeID, V>?) {
-        self.simulation = simulation
-        guard let sim = self.simulation else { return }
-        self.calculatedStrength = strength.calculated(for: sim)
-        self.calculatedRadius = radius.calculated(for: sim)
-    }
+    final public class RadialForce<NodeID, V>: ForceProtocol
+    where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
+        @usableFromInline weak var simulation: SimulationState<NodeID, V>?
 
-    public var center: V
+        @inlinable
+        public func bindSimulation(_ simulation: SimulationState<NodeID, V>?) {
+            self.simulation = simulation
+            guard let sim = self.simulation else { return }
+            self.calculatedStrength = strength.calculated(for: sim)
+            self.calculatedRadius = radius.calculated(for: sim)
+        }
 
-    /// Radius accessor
-    public enum NodeRadius {
-        case constant(V.Scalar)
-        case varied((NodeID) -> V.Scalar)
-    }
-    public var radius: NodeRadius
-    @usableFromInline var calculatedRadius: [V.Scalar] = []
+        public var center: V
 
-    /// Strength accessor
-    public enum Strength {
-        case constant(V.Scalar)
-        case varied((NodeID) -> V.Scalar)
-    }
-    public var strength: Strength
-    @usableFromInline var calculatedStrength: [V.Scalar] = []
+        /// Radius accessor
+        public enum NodeRadius {
+            case constant(V.Scalar)
+            case varied((NodeID) -> V.Scalar)
+        }
+        public var radius: NodeRadius
+        @usableFromInline var calculatedRadius: [V.Scalar] = []
 
-    @inlinable public init(center: V, radius: NodeRadius, strength: Strength) {
-        self.center = center
-        self.radius = radius
-        self.strength = strength
-    }
+        /// Strength accessor
+        public enum Strength {
+            case constant(V.Scalar)
+            case varied((NodeID) -> V.Scalar)
+        }
+        public var strength: Strength
+        @usableFromInline var calculatedStrength: [V.Scalar] = []
 
-    @inlinable public func apply() {
-        guard let sim = self.simulation else { return }
-        let alpha = sim.alpha
-        for i in sim.nodePositions.indices {
-            let nodeId = i
-            let deltaPosition = (sim.nodePositions[i] - self.center).jiggled()
-            let r = deltaPosition.length()
-            let k =
-                (self.calculatedRadius[nodeId]
-                    * self.calculatedStrength[nodeId] * alpha) / r
-            sim.nodeVelocities[i] += deltaPosition * k
+        @inlinable public init(center: V, radius: NodeRadius, strength: Strength) {
+            self.center = center
+            self.radius = radius
+            self.strength = strength
+        }
+
+        @inlinable public func apply() {
+            guard let sim = self.simulation else { return }
+            let alpha = sim.alpha
+            for i in sim.nodePositions.indices {
+                let nodeId = i
+                let deltaPosition = (sim.nodePositions[i] - self.center).jiggled()
+                let r = deltaPosition.length()
+                let k =
+                    (self.calculatedRadius[nodeId]
+                        * self.calculatedStrength[nodeId] * alpha) / r
+                sim.nodeVelocities[i] += deltaPosition * k
+            }
         }
     }
-
 }
 
 /// Create a radial force that applies a radial force to all nodes.
@@ -70,7 +72,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 //     return f
 // }
 
-extension RadialForce.Strength {
+extension Force.RadialForce.Strength {
     @inlinable public func calculated(for simulation: SimulationState<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let s):
@@ -81,7 +83,7 @@ extension RadialForce.Strength {
     }
 }
 
-extension RadialForce.NodeRadius {
+extension Force.RadialForce.NodeRadius {
     @inlinable public func calculated(for simulation: SimulationState<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let r):
@@ -96,12 +98,12 @@ extension Simulation {
     @inlinable
     public func withRadialForce(
         center: V = .zero,
-        radius: RadialForce<NodeID, V>.NodeRadius,
-        strength: RadialForce<NodeID, V>.Strength = .constant(0.1)
+        radius: Force.RadialForce<NodeID, V>.NodeRadius,
+        strength: Force.RadialForce<NodeID, V>.Strength = .constant(0.1)
     ) -> Simulation<
-        NodeID, V, ForceTuple<NodeID, V, F, RadialForce<NodeID, V>>
+        NodeID, V, Force.ForceField<NodeID, V, F, Force.RadialForce<NodeID, V>>
     > where F.NodeID == NodeID, F.V == V {
-        let f = RadialForce<NodeID, V>(center: center, radius: radius, strength: strength)
+        let f = Force.RadialForce<NodeID, V>(center: center, radius: radius, strength: strength)
         //        f.bindSimulation(self.simulation)
         return with(f)
     }
