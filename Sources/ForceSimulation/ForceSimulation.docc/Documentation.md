@@ -16,29 +16,18 @@ Run force simulation on any dimensions.
 ### Creating a simulation
 
 * <doc:Creating2DAnd3DSimulations>
-* ``Simulation2D``
-* ``Simulation3D``
-* ``SimulationKD``
+* ``Simulation``
 
 ### Creating forces in a simulation
 
-* ``Simulation2D/CenterForce``
-* ``Simulation2D/CollideForce``
-* ``Simulation2D/LinkForce``
-* ``Simulation2D/ManyBodyForce``
-* ``Simulation2D/DirectionForce``
-* ``Simulation2D/RadialForce``
+* ``CenterForce``
+* ``CollideForce``
+* ``LinkForce``
+* ``ManyBodyForce``
+* ``DirectionForce``
+* ``RadialForce``
 
-* ``Simulation3D/CenterForce``
-* ``Simulation3D/CollideForce``
-* ``Simulation3D/LinkForce``
-* ``Simulation3D/ManyBodyForce``
-* ``Simulation3D/DirectionForce``
-* ``Simulation3D/RadialForce``
+### Forces for advanced usages
 
-* ``SimulationKD/CenterForce``
-* ``SimulationKD/CollideForce``
-* ``SimulationKD/LinkForce``
-* ``SimulationKD/ManyBodyForce``
-* ``SimulationKD/DirectionForce``
-* ``SimulationKD/RadialForce``
+* ``EmptyForce``
+* ``TupleForce``
