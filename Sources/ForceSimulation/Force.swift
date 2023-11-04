@@ -136,23 +136,35 @@ public protocol Simulation {
 
 extension Dimension {
 
-    struct MySimulation<CompositedForce> where CompositedForce: ForceProtocol, CompositedForce.NodeID == NodeID, CompositedForce.V == V {
+    public struct MySimulation<CompositedForce> where CompositedForce: ForceProtocol, CompositedForce.NodeID == NodeID, CompositedForce.V == V {
 
-        var nodeIds: [NodeID]
-        // var field: CompositedForce
+
+        public var nodeIds: [NodeID]
+        public var field: CompositedForce
         
         init(
             nodeIds: [NodeID],
             @FieldBuilder _ buildForceDescriptor: () -> CompositedForce
         ) {
-            let descriptors = buildForceDescriptor()
-
+            self.field = buildForceDescriptor()
+            
             self.nodeIds = nodeIds
         }
 
     }
 
 }
+
+// extension Dimension.MySimulation: Simulation {
+
+//     public typealias CompositedForce = CompositedForce
+
+//     public typealias NodeID = NodeID
+
+//     public typealias V = V
+
+
+// }
 
 typealias Float2D<ID: Hashable> = Dimension<ID, simd_double2>
 
@@ -175,6 +187,8 @@ public struct Empty: ForceDescriptor {}
 func test() {
 
     let f = Float2D.MySimulation(nodeIds: [0, 3]) {
+        Center()
+        ManyBody()
         Center()
         ManyBody()
     }
