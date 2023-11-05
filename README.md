@@ -66,6 +66,8 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 
 ## Usage
 
+<br/>
+
 ### `Grape`
 
 ```swift
@@ -107,6 +109,7 @@ Check another example here: [ForceDirectedGraphExample/MyRing.swift](https://git
 > [!IMPORTANT]
 > `ForceDirectedGraph` is only a minimal working example. Please refer to the next section to create a more complex view.
 
+<br/>
 
 
 
