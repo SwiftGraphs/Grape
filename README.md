@@ -66,15 +66,13 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 
 ## Usage
 
-### `Grape` (WIP)
-
-`Grape` provides a SwiftUI view `ForceDirectedGraph`:
+### `Grape`
 
 > [!IMPORTANT]
 > `ForceDirectedGraph` is only a minimal working example. Please refer to the next section to create a more complex view.
 
 ```swift
-struct ForceDirectedGraphSwiftUIExample: View {
+struct MyGraph: View {
     let graphController = ForceDirectedGraph2DController<Int>()
     var body: some View {
         ForceDirectedGraph(controller: graphController) {
