@@ -74,7 +74,10 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 import Grape
 
 struct MyGraph: View {
-    let myProxy = ForceDirectedGraph<Int>.Proxy() // A proxy that helps to control the simulation.
+
+    // A proxy that helps to control the simulation.
+    let myProxy = ForceDirectedGraph<Int>.Proxy()
+    
     var body: some View {
         ForceDirectedGraph(proxy: myProxy) {
             
