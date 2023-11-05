@@ -10,7 +10,7 @@
 		B70B52AD2AF822FF00A1E6CD /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = B70B52AC2AF822FF00A1E6CD /* ForceSimulation */; };
 		B70B52AF2AF822FF00A1E6CD /* Grape in Frameworks */ = {isa = PBXBuildFile; productRef = B70B52AE2AF822FF00A1E6CD /* Grape */; };
 		B719E4112AE5FBFC009D6C24 /* ForceDirectedLatticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B719E4102AE5FBFC009D6C24 /* ForceDirectedLatticeView.swift */; };
-		B7A830CD2AF822BB00A7AF6B /* ForceDirectedGraphSwiftUIExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A830CC2AF822BB00A7AF6B /* ForceDirectedGraphSwiftUIExample.swift */; };
+		B780DD7A2AF84ECB001C605F /* MyRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B780DD792AF84ECB001C605F /* MyRing.swift */; };
 		B7AFA55B2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */; };
 		B7AFA55D2ADF4997009C7154 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA55C2ADF4997009C7154 /* ContentView.swift */; };
 		B7AFA55F2ADF4999009C7154 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7AFA55E2ADF4999009C7154 /* Assets.xcassets */; };
@@ -21,7 +21,7 @@
 
 /* Begin PBXFileReference section */
 		B719E4102AE5FBFC009D6C24 /* ForceDirectedLatticeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForceDirectedLatticeView.swift; sourceTree = "<group>"; };
-		B7A830CC2AF822BB00A7AF6B /* ForceDirectedGraphSwiftUIExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceDirectedGraphSwiftUIExample.swift; sourceTree = "<group>"; };
+		B780DD792AF84ECB001C605F /* MyRing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyRing.swift; sourceTree = "<group>"; };
 		B7AFA5572ADF4997009C7154 /* ForceDirectedGraphExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForceDirectedGraphExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceDirectedGraphExampleApp.swift; sourceTree = "<group>"; };
 		B7AFA55C2ADF4997009C7154 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -64,6 +64,7 @@
 		B7AFA5592ADF4997009C7154 /* ForceDirectedGraphExample */ = {
 			isa = PBXGroup;
 			children = (
+				B780DD792AF84ECB001C605F /* MyRing.swift */,
 				B719E4102AE5FBFC009D6C24 /* ForceDirectedLatticeView.swift */,
 				B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */,
 				B7AFA55C2ADF4997009C7154 /* ContentView.swift */,
@@ -71,7 +72,6 @@
 				B7AFA5632ADF4999009C7154 /* ForceDirectedGraphExample.entitlements */,
 				B7AFA5602ADF4999009C7154 /* Preview Content */,
 				B7AFA56E2ADF49D6009C7154 /* Data.swift */,
-				B7A830CC2AF822BB00A7AF6B /* ForceDirectedGraphSwiftUIExample.swift */,
 			);
 			path = ForceDirectedGraphExample;
 			sourceTree = "<group>";
@@ -162,9 +162,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B780DD7A2AF84ECB001C605F /* MyRing.swift in Sources */,
 				B7AFA55D2ADF4997009C7154 /* ContentView.swift in Sources */,
 				B719E4112AE5FBFC009D6C24 /* ForceDirectedLatticeView.swift in Sources */,
-				B7A830CD2AF822BB00A7AF6B /* ForceDirectedGraphSwiftUIExample.swift in Sources */,
 				B7AFA56F2ADF49D6009C7154 /* Data.swift in Sources */,
 				B7AFA55B2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift in Sources */,
 			);

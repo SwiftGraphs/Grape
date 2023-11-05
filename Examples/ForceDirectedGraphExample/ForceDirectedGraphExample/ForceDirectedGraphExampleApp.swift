@@ -13,7 +13,7 @@ struct ForceDirectedGraphExampleApp: App {
         WindowGroup {
 //            ContentView().padding(0)
 //            ForceDirectedLatticeView().padding(0)//.ignoresSafeArea()
-            ForceDirectedGraphSwiftUIExample()
+            MyRing()
             
         }
     }

@@ -68,16 +68,14 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 
 ### `Grape`
 
-> [!IMPORTANT]
-> `ForceDirectedGraph` is only a minimal working example. Please refer to the next section to create a more complex view.
-
 ```swift
 import Grape
 
 struct MyGraph: View {
-    let graphController = ForceDirectedGraph2DController<Int>()
+    let myProxy = ForceDirectedGraph<Int>.Proxy() // A proxy that helps to control the simulation.
     var body: some View {
-        ForceDirectedGraph(controller: graphController) {
+        ForceDirectedGraph(proxy: myProxy) {
+            
             // Declare nodes and links like you would do in Swift Charts.
             NodeMark(id: 0, fill: .green)
             NodeMark(id: 1, fill: .blue)
@@ -85,20 +83,30 @@ struct MyGraph: View {
             for i in 0..<2 {
                 LinkMark(from: i, to: i+1)
             }
+            
         } forceField: {
+
             // Declare forces like you would do in D3.js.
             LinkForce()
             CenterForce()
             ManyBodyForce()
+
         }
         .onAppear {
+
             // Let's start moving!
-            graphController.start()
+            myProxy.start()
+
         }
 
     }
 }
 ```
+Check another example here: [ForceDirectedGraphExample/MyRing.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift)
+
+> [!IMPORTANT]
+> `ForceDirectedGraph` is only a minimal working example. Please refer to the next section to create a more complex view.
+
 
 
 

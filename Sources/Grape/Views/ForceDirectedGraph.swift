@@ -98,12 +98,15 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
 
         for forceDescriptor in forceFieldDescriptor {
             if var linkForceDescriptor = forceDescriptor as? LinkForce {
+
                 // inject links
-                linkForceDescriptor.links = content.links.map {
-                    .init(
-                        lookup[$0.id.source]!,
-                        lookup[$0.id.target]!
-                    )
+                linkForceDescriptor.links = content.links.compactMap {
+                    if let sourceId = lookup[$0.id.source],
+                       let targetId = lookup[$0.id.target] {
+                        return EdgeID(sourceId, targetId)
+                    }
+                    return nil
+                    
                 }
                 linkForceDescriptor.attachToSimulation(simulation)
             } else {
