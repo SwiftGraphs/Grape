@@ -90,12 +90,9 @@ struct MyGraph: View {
             }
             
         } forceField: {
-
-            // Declare forces like you would do in D3.js.
             LinkForce()
             CenterForce()
             ManyBodyForce()
-
         }
         .onAppear {
 
