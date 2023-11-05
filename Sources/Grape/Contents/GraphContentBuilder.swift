@@ -37,7 +37,10 @@ public final class PartialGraphMark<NodeID: Hashable>: GraphContent {
 }
 
 public struct FullyConnected<NodeID: Hashable>: GraphContent {
+    
     public var connectedPartial: PartialGraphMark<NodeID>
+
+    @inlinable
     public init(@GraphContentBuilder<NodeID> builder: () -> PartialGraphMark<NodeID>) {
         let result = builder()
         result.links = []

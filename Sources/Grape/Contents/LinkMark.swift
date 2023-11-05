@@ -32,6 +32,7 @@ public struct LinkMark<NodeID: Hashable>: GraphContent {
 
     public var arrowStyle: ArrowStyle
 
+    @inlinable
     public init(
         from: NodeID,
         to: NodeID,
@@ -55,6 +56,7 @@ public struct LinkMark<NodeID: Hashable>: GraphContent {
         self.arrowStyle = arrowStyle
     }
 
+    @inlinable
     public func dynamicallyCall(withArguments: [(inout Self) -> Void]) -> Self {
         var _self = self
         for argument in withArguments {
@@ -68,10 +70,13 @@ infix operator --> : AssignmentPrecedence
 infix operator <-- : AssignmentPrecedence
 
 extension Hashable {
+
+    @inlinable
     public static func --> (lhs: Self, rhs: Self) -> LinkMark<Self> {
         return LinkMark(from: lhs, to: rhs)
     }
 
+    @inlinable
     public static func <-- (lhs: Self, rhs: Self) -> LinkMark<Self> {
         return LinkMark(from: lhs, to: rhs)
     }

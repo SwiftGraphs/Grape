@@ -2,7 +2,7 @@ import Observation
 
 
 @Observable
-public class ForceDirectedGraph2DController<NodeID> {
+public class ForceDirectedGraph2DProxy<NodeID> {
 
     @ObservationIgnored
     @usableFromInline

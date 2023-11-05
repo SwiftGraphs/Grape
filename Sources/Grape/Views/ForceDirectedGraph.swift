@@ -9,6 +9,10 @@ public struct ForceFieldBuilder {
 }
 
 public struct ForceDirectedGraph<NodeID: Hashable>: View {
+
+    public typealias Proxy = ForceDirectedGraph2DProxy<NodeID>
+    public typealias LayoutEngine = ForceDirectedGraph2DLayoutEngine
+
     public struct Content {
         public var nodes: [NodeMark<NodeID>]
         public var links: [LinkMark<NodeID>]
@@ -69,34 +73,17 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
         }
     }
 
-    // @inlinable
-    func paintNodes(context: inout GraphicsContext, centerX: Double, centerY: Double) {
-
-        for i in model.simulation.nodePositions.indices {
-            let node = content.nodes[i]
-            let x = centerX + model.simulation.nodePositions[i].x
-            let y = centerY + model.simulation.nodePositions[i].y
-
-            let rect = CGRect(origin: .init(x: x, y: y), size: CGSize(width: 8.0, height: 8.0))
-
-            context.fill(
-                Path(ellipseIn: rect), with: .color(node.fill))
-            context.stroke(
-                Path(ellipseIn: rect), with: .color(Color(nsColor: .windowBackgroundColor)),
-                style: StrokeStyle(lineWidth: 1.5))
-        }
-    }
 
     @usableFromInline
-    @State var model: ForceDirectedGraph2DLayoutEngine
-    @usableFromInline var controller: ForceDirectedGraph2DController<NodeID>
+    @State var model: LayoutEngine
+    @usableFromInline let proxy: Proxy
 
     @usableFromInline let content: Content
     @usableFromInline let forceFieldDescriptor: [ForceDescriptor]
 
     @inlinable
     public init(
-        controller: ForceDirectedGraph2DController<NodeID>,
+        proxy: Proxy,
         @GraphContentBuilder<NodeID> _ buildGraphContent: () -> PartialGraphMark<NodeID>,
         @ForceFieldBuilder forceField buildForceField: () -> [ForceDescriptor]
     ) {
@@ -128,9 +115,9 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
         let model = ForceDirectedGraph2DLayoutEngine(
             initialSimulation: simulation
         )
-        controller.layoutEngine = model
+        proxy.layoutEngine = model
         self.model = model
-        self.controller = controller
+        self.proxy = proxy
     }
 
 }
