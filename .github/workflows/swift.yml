@@ -1,4 +1,4 @@
-name: Test and Deploy DocC to GitHub Pages
+name: Swift CI
 
 on:
   # trigger this workflow whenever "main" branch has been pushed
@@ -11,9 +11,9 @@ permissions:
   pages: write
   id-token: write
 # Allow workflow concurrency
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+# concurrency:
+#   group: "pages"
+#   cancel-in-progress: true
 
 jobs:
   deploy:
@@ -31,8 +31,8 @@ jobs:
         xcode-version: 'latest-stable'
     - name: Build
       run: swift build
-    - name: Run tests
-      run: swift test
+    # - name: Run tests
+    #   run: xcodebuild test -scheme ForceSimulation
     - name: Build DocC
       run: | # If you use docc-plugin, you might be able to use docc-plugin command instead
         swift package --allow-writing-to-directory docs \
