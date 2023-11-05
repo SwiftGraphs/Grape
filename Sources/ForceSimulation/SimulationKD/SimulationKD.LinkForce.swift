@@ -5,19 +5,35 @@
 //  Created by li3zhen1 on 10/16/23.
 //
 
-
-
 enum LinkForceError: Error {
     case useBeforeSimulationInitialized
 }
 
+public struct LinkLookup<_NodeID> where _NodeID: Hashable {
+    public let sources: [_NodeID: [_NodeID]]
+    public let targets: [_NodeID: [_NodeID]]
+    public let count: [_NodeID: Int]
+
+    @inlinable
+    public init(
+        sources: [_NodeID: [_NodeID]],
+        targets: [_NodeID: [_NodeID]],
+        count: [_NodeID: Int]
+    ) {
+        self.sources = sources
+        self.targets = targets
+        self.count = count
+    }
+    
+}
+
 extension SimulationKD {
     /// A force that represents links between nodes.
-    /// 
+    ///
     /// The complexity is `O(e)`, where `e` is the number of links.
     /// See [Link Force - D3](https://d3js.org/d3-force/link).
     final public class LinkForce: ForceLike
-    where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
+    where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 
         ///
         public enum LinkStiffness {
@@ -25,8 +41,8 @@ extension SimulationKD {
             case varied((EdgeID<NodeID>, LinkLookup<NodeID>) -> V.Scalar)
             case weightedByDegree(k: (EdgeID<NodeID>, LinkLookup<NodeID>) -> V.Scalar)
         }
-        var linkStiffness: LinkStiffness
-        var calculatedStiffness: [V.Scalar] = []
+        @usableFromInline var linkStiffness: LinkStiffness
+        @usableFromInline var calculatedStiffness: [V.Scalar] = []
 
         ///
         public typealias LengthScalar = V.Scalar
@@ -34,14 +50,15 @@ extension SimulationKD {
             case constant(LengthScalar)
             case varied((EdgeID<NodeID>, LinkLookup<NodeID>) -> LengthScalar)
         }
-        var linkLength: LinkLength
-        var calculatedLength: [LengthScalar] = []
+        @usableFromInline var linkLength: LinkLength
+        @usableFromInline var calculatedLength: [LengthScalar] = []
 
         /// Bias
-        var calculatedBias: [V.Scalar] = []
+        @usableFromInline var calculatedBias: [V.Scalar] = []
 
         /// Binding to simulation
         ///
+        @usableFromInline
         weak var simulation: SimulationKD? {
             didSet {
 
@@ -70,18 +87,19 @@ extension SimulationKD {
             }
         }
 
+        @usableFromInline
         var iterationsPerTick: UInt
 
+        @usableFromInline
         internal var linksOfIndices: [EdgeID<Int>] = []
+
+        @usableFromInline
         var links: [EdgeID<NodeID>]
 
-        public struct LinkLookup<_NodeID> where _NodeID: Hashable {
-            let sources: [_NodeID: [_NodeID]]
-            let targets: [_NodeID: [_NodeID]]
-            let count: [_NodeID: Int]
-        }
-        private var lookup = LinkLookup<Int>(sources: [:], targets: [:], count: [:])
+        @usableFromInline
+        var lookup = LinkLookup<Int>(sources: [:], targets: [:], count: [:])
 
+        @inlinable
         internal init(
             _ links: [EdgeID<NodeID>],
             stiffness: LinkStiffness,
@@ -94,7 +112,7 @@ extension SimulationKD {
             self.linkLength = originalLength
 
         }
-
+        @inlinable
         public func apply() {
             guard let sim = self.simulation else { return }
 
@@ -145,7 +163,7 @@ extension SimulationKD {
     ///  - links: The links between nodes.
     ///  - stiffness: The stiffness of the spring (or links).
     ///  - originalLength: The original length of the spring (or links).
-    @discardableResult
+    @discardableResult @inlinable
     public func createLinkForce(
         _ links: [EdgeID<NodeID>],
         stiffness: LinkForce.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
@@ -167,7 +185,7 @@ extension SimulationKD {
     ///  - links: The links between nodes.
     ///  - stiffness: The stiffness of the spring (or links).
     ///  - originalLength: The original length of the spring (or links).
-    @discardableResult
+    @discardableResult @inlinable
     public func createLinkForce(
         _ linkTuples: [(NodeID, NodeID)],
         stiffness: LinkForce.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
@@ -183,8 +201,9 @@ extension SimulationKD {
     }
 }
 
-extension SimulationKD.LinkForce.LinkLookup {
-    static func buildFromLinks(_ links: [EdgeID<_NodeID>]) -> Self {
+extension LinkLookup {
+    @inlinable
+    public static func buildFromLinks(_ links: [EdgeID<_NodeID>]) -> Self {
         var sources: [_NodeID: [_NodeID]] = [:]
         var targets: [_NodeID: [_NodeID]] = [:]
         var count: [_NodeID: Int] = [:]
@@ -199,9 +218,10 @@ extension SimulationKD.LinkForce.LinkLookup {
 }
 
 extension SimulationKD.LinkForce.LinkLength {
+    @inlinable
     func calculated(
         for links: [EdgeID<NodeID>],
-        connectionLookupTable: SimulationKD.LinkForce.LinkLookup<NodeID>
+        connectionLookupTable: LinkLookup<NodeID>
     ) -> [V.Scalar] {
         switch self {
         case .constant(let value):
@@ -215,9 +235,10 @@ extension SimulationKD.LinkForce.LinkLength {
 }
 
 extension SimulationKD.LinkForce.LinkStiffness {
+    @inlinable
     func calculated(
         for links: [EdgeID<NodeID>],
-        connectionLookupTable lookup: SimulationKD.LinkForce.LinkLookup<NodeID>
+        connectionLookupTable lookup: LinkLookup<NodeID>
     ) -> [V.Scalar] {
         switch self {
         case .constant(let value):

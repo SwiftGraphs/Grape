@@ -5,8 +5,6 @@
 //  Created by li3zhen1 on 10/1/23.
 //
 
-
-
 extension SimulationKD {
     /// A force that moves nodes to a target position.
     ///
@@ -14,7 +12,7 @@ extension SimulationKD {
     /// where `n` is the number of nodes.
     /// See [Position Force - D3](https://d3js.org/d3-force/position).
     final public class DirectionForce: ForceLike
-    where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
+    where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 
         public enum Direction {
             case x
@@ -37,6 +35,7 @@ extension SimulationKD {
         public var targetOnDirection: TargetOnDirection
         public var calculatedTargetOnDirection: [V.Scalar] = []
 
+        @inlinable
         internal init(
             direction: Direction, targetOnDirection: TargetOnDirection,
             strength: Strength = .constant(1.0)
@@ -46,7 +45,7 @@ extension SimulationKD {
             self.direction = direction.lane
             self.targetOnDirection = targetOnDirection
         }
-
+        @usableFromInline
         weak var simulation: SimulationKD? {
             didSet {
                 guard let sim = self.simulation else { return }
@@ -54,7 +53,7 @@ extension SimulationKD {
                 self.calculatedTargetOnDirection = targetOnDirection.calculated(for: sim)
             }
         }
-
+        @inlinable
         public func apply() {
             guard let sim = self.simulation else { return }
             let alpha = sim.alpha
@@ -68,11 +67,11 @@ extension SimulationKD {
     }
 
     /// Create a direction force that moves nodes to a target position.
-    /// 
+    ///
     /// Center force is relatively fast, the complexity is `O(n)`,
     /// where `n` is the number of nodes.
     /// See [Position Force - D3](https://d3js.org/d3-force/position).
-    @discardableResult
+    @discardableResult @inlinable
     public func createPositionForce(
         direction: DirectionForce.Direction,
         targetOnDirection: DirectionForce.TargetOnDirection,
@@ -90,6 +89,7 @@ extension SimulationKD {
 }
 
 extension SimulationKD.DirectionForce.Strength {
+    @inlinable
     public func calculated(for simulation: SimulationKD) -> [V.Scalar] {
         switch self {
         case .constant(let value):
@@ -101,6 +101,7 @@ extension SimulationKD.DirectionForce.Strength {
 }
 
 extension SimulationKD.DirectionForce.TargetOnDirection {
+    @inlinable
     public func calculated(for simulation: SimulationKD) -> [V.Scalar] {
         switch self {
         case .constant(let value):

@@ -5,68 +5,65 @@
 //  Created by li3zhen1 on 10/1/23.
 //
 
-
-
-
 extension SimulationKD {
 
-/// A force that applies a radial force to all nodes.
-    /// 
-/// Center force is relatively fast, the complexity is `O(n)`,
-/// where `n` is the number of nodes.
-/// See [Position Force - D3](https://d3js.org/d3-force/position).
-final public class RadialForce: ForceLike
-where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
-    weak var simulation: SimulationKD<NodeID, V>? {
-        didSet {
+    /// A force that applies a radial force to all nodes.
+    ///
+    /// Center force is relatively fast, the complexity is `O(n)`,
+    /// where `n` is the number of nodes.
+    /// See [Position Force - D3](https://d3js.org/d3-force/position).
+    final public class RadialForce: ForceLike
+    where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
+        @usableFromInline
+        weak var simulation: SimulationKD<NodeID, V>? {
+            didSet {
+                guard let sim = self.simulation else { return }
+                self.calculatedStrength = strength.calculated(for: sim)
+                self.calculatedRadius = radius.calculated(for: sim)
+            }
+        }
+
+        public var center: V
+
+        /// Radius accessor
+        public enum NodeRadius {
+            case constant(V.Scalar)
+            case varied((NodeID) -> V.Scalar)
+        }
+        public var radius: NodeRadius
+        @usableFromInline var calculatedRadius: [V.Scalar] = []
+
+        /// Strength accessor
+        public enum Strength {
+            case constant(V.Scalar)
+            case varied((NodeID) -> V.Scalar)
+        }
+        public var strength: Strength
+        @usableFromInline var calculatedStrength: [V.Scalar] = []
+
+        @inlinable
+        public init(center: V, radius: NodeRadius, strength: Strength) {
+            self.center = center
+            self.radius = radius
+            self.strength = strength
+        }
+
+        @inlinable
+        public func apply() {
             guard let sim = self.simulation else { return }
-            self.calculatedStrength = strength.calculated(for: sim)
-            self.calculatedRadius = radius.calculated(for: sim)
+            let alpha = sim.alpha
+            for i in sim.nodePositions.indices {
+                let nodeId = i
+                let deltaPosition = (sim.nodePositions[i] - self.center).jiggled()
+                let r = deltaPosition.length()
+                let k =
+                    (self.calculatedRadius[nodeId]
+                        * self.calculatedStrength[nodeId] * alpha) / r
+                sim.nodeVelocities[i] += deltaPosition * k
+            }
         }
+
     }
-
-    public var center: V
-
-    /// Radius accessor
-    public enum NodeRadius {
-        case constant(V.Scalar)
-        case varied((NodeID) -> V.Scalar)
-    }
-    public var radius: NodeRadius
-    private var calculatedRadius: [V.Scalar] = []
-
-    /// Strength accessor
-    public enum Strength {
-        case constant(V.Scalar)
-        case varied((NodeID) -> V.Scalar)
-    }
-    public var strength: Strength
-    private var calculatedStrength: [V.Scalar] = []
-
-    public init(center: V, radius: NodeRadius, strength: Strength) {
-        self.center = center
-        self.radius = radius
-        self.strength = strength
-    }
-
-    public func apply() {
-        guard let sim = self.simulation else { return }
-        let alpha = sim.alpha
-        for i in sim.nodePositions.indices {
-            let nodeId = i
-            let deltaPosition = (sim.nodePositions[i] - self.center).jiggled()
-            let r = deltaPosition.length()
-            let k =
-                (self.calculatedRadius[nodeId]
-                    * self.calculatedStrength[nodeId] * alpha) / r
-            sim.nodeVelocities[i] += deltaPosition * k
-        }
-    }
-
-}
-
-
-
 
     /// Create a radial force that applies a radial force to all nodes.
     /// Center force is relatively fast, the complexity is `O(n)`,
@@ -77,6 +74,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     ///   - radius: The radius of the force.
     ///   - strength: The strength of the force.
     @discardableResult
+    @inlinable
     public func createRadialForce(
         center: V = .zero,
         radius: RadialForce.NodeRadius,
@@ -90,9 +88,8 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
 
 }
 
-
-
 extension SimulationKD.RadialForce.Strength {
+    @inlinable
     public func calculated(for simulation: SimulationKD<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let s):
@@ -104,6 +101,7 @@ extension SimulationKD.RadialForce.Strength {
 }
 
 extension SimulationKD.RadialForce.NodeRadius {
+    @inlinable
     public func calculated(for simulation: SimulationKD<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let r):

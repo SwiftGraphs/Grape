@@ -32,6 +32,8 @@ struct MyRing: View {
             LinkForce(originalLength: .constant(10.0))
             CenterForce()
             ManyBodyForce(strength: -5)
+            DirectionForce(direction: .x, targetOnDirection: .constant(100), strength: .constant(0.01))
+            DirectionForce(direction: .y, targetOnDirection: .constant(50), strength: .constant(0.02))
         }
         .onAppear {
             myProxy.start()

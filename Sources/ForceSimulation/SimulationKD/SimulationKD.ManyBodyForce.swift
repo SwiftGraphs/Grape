@@ -5,13 +5,12 @@
 //  Created by li3zhen1 on 10/1/23.
 //
 
-
-
-enum ManyBodyForceError: Error {
+public enum ManyBodyForceError: Error {
     case buildQuadTreeBeforeSimulationInitialized
 }
 
-struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
+public struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate
+where NodeID: Hashable, V: VectorLike {
 
     public var accumulatedMass: V.Scalar = .zero
     public var accumulatedCount = 0
@@ -19,12 +18,13 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
 
     @usableFromInline let massProvider: (NodeID) -> V.Scalar
 
+    @inlinable
     init(
         massProvider: @escaping (NodeID) -> V.Scalar
     ) {
         self.massProvider = massProvider
     }
-
+    @inlinable
     internal init(
         initialAccumulatedProperty: V.Scalar,
         initialAccumulatedCount: Int,
@@ -37,7 +37,7 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
         self.massProvider = massProvider
     }
 
-    @inlinable mutating func didAddNode(_ node: NodeID, at position: V) {
+    @inlinable mutating public func didAddNode(_ node: NodeID, at position: V) {
         let p = massProvider(node)
         #if DEBUG
             assert(p > 0)
@@ -47,7 +47,7 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
         accumulatedMassWeightedPositions += position * p
     }
 
-    @inlinable mutating func didRemoveNode(_ node: NodeID, at position: V) {
+    @inlinable mutating public func didRemoveNode(_ node: NodeID, at position: V) {
         let p = massProvider(node)
         accumulatedCount -= 1
         accumulatedMass -= p
@@ -55,7 +55,7 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
         // TODO: parent removal?
     }
 
-    @inlinable func copy() -> Self {
+    @inlinable public func copy() -> Self {
         return Self(
             initialAccumulatedProperty: self.accumulatedMass,
             initialAccumulatedCount: self.accumulatedCount,
@@ -64,7 +64,7 @@ struct MassQuadtreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V
         )
     }
 
-    @inlinable func spawn() -> Self {
+    @inlinable public func spawn() -> Self {
         return Self(massProvider: self.massProvider)
     }
 
@@ -81,17 +81,18 @@ extension SimulationKD {
     /// where `n` is the number of nodes. The complexity might degrade to `O(n^2)` if the nodes are too close to each other.
     /// See [Manybody Force - D3](https://d3js.org/d3-force/many-body).
     final public class ManyBodyForce: ForceLike
-    where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
+    where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
 
-        var strength: V.Scalar
+        @usableFromInline var strength: V.Scalar
 
         public enum NodeMass {
             case constant(V.Scalar)
             case varied((NodeID) -> V.Scalar)
         }
-        var mass: NodeMass
-        var precalculatedMass: [V.Scalar] = []
+        @usableFromInline var mass: NodeMass
+        @usableFromInline var precalculatedMass: [V.Scalar] = []
 
+        @usableFromInline
         weak var simulation: SimulationKD<NodeID, V>? {
             didSet {
                 guard let sim = self.simulation else { return }
@@ -100,18 +101,26 @@ extension SimulationKD {
             }
         }
 
+        @usableFromInline
         var theta2: V.Scalar
+
+        @usableFromInline
         var theta: V.Scalar {
             didSet {
                 theta2 = theta * theta
             }
         }
 
+        @usableFromInline
         var distanceMin2: V.Scalar = 1
+        @usableFromInline
         var distanceMax2: V.Scalar = V.Scalar.infinity
+        @usableFromInline
         var distanceMin: V.Scalar = 1
+        @usableFromInline
         var distanceMax: V.Scalar = V.Scalar.infinity
 
+        @inlinable
         internal init(
             strength: V.Scalar,
             nodeMass: NodeMass = .constant(1.0),
@@ -123,7 +132,10 @@ extension SimulationKD {
             self.theta2 = theta * theta
         }
 
+        @usableFromInline
         var forces: [V] = []
+
+        @inlinable
         public func apply() {
             guard let simulation else { return }
 
@@ -155,7 +167,8 @@ extension SimulationKD {
         //
         //    }
 
-        func calculateForce(alpha: V.Scalar) throws {
+        @inlinable
+        public func calculateForce(alpha: V.Scalar) throws {
 
             guard let sim = self.simulation else {
                 throw ManyBodyForceError.buildQuadTreeBeforeSimulationInitialized
@@ -300,7 +313,7 @@ extension SimulationKD {
     }
 
     /// Create a many-body force that simulate the many-body force.
-    /// 
+    ///
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes. The complexity might degrade to `O(n^2)` if the nodes are too close to each other.
     /// The force mimics the gravity force or electrostatic force.
@@ -310,6 +323,7 @@ extension SimulationKD {
     ///  - nodeMass: The mass of the nodes. The mass is used to calculate the force. The default value is 1.0.
     ///  - theta: Determines how approximate the calculation is. The default value is 0.9. The higher the value, the more approximate and fast the calculation is.
     @discardableResult
+    @inlinable
     public func createManyBodyForce(
         strength: V.Scalar,
         nodeMass: ManyBodyForce.NodeMass = .constant(1.0)
@@ -323,6 +337,7 @@ extension SimulationKD {
 }
 
 extension SimulationKD.ManyBodyForce.NodeMass {
+    @inlinable
     public func calculated(for simulation: SimulationKD<NodeID, V>) -> [V.Scalar] {
         switch self {
         case .constant(let m):

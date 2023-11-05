@@ -5,34 +5,34 @@
 //  Created by li3zhen1 on 10/17/23.
 //
 
-
-struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate where NodeID: Hashable, V: VectorLike {
+public struct MaxRadiusTreeDelegate<NodeID, V>: NDTreeDelegate
+where NodeID: Hashable, V: VectorLike {
 
     public var maxNodeRadius: V.Scalar
 
     @usableFromInline var radiusProvider: (NodeID) -> V.Scalar
 
-    mutating func didAddNode(_ nodeId: NodeID, at position: V) {
+    @inlinable mutating public func didAddNode(_ nodeId: NodeID, at position: V) {
         let p = radiusProvider(nodeId)
         maxNodeRadius = max(maxNodeRadius, p)
     }
-
-    mutating func didRemoveNode(_ nodeId: NodeID, at position: V) {
+    @inlinable
+    mutating public func didRemoveNode(_ nodeId: NodeID, at position: V) {
         if radiusProvider(nodeId) >= maxNodeRadius {
             // 🤯 for Collide force, set to 0 is fine
             // Otherwise you need to traverse the delegate again
             maxNodeRadius = 0
         }
     }
-
-    func copy() -> MaxRadiusTreeDelegate<NodeID, V> {
+    @inlinable
+    public func copy() -> MaxRadiusTreeDelegate<NodeID, V> {
         return Self(maxNodeRadius: maxNodeRadius, radiusProvider: radiusProvider)
     }
-
-    func spawn() -> MaxRadiusTreeDelegate<NodeID, V> {
+    @inlinable
+    public func spawn() -> MaxRadiusTreeDelegate<NodeID, V> {
         return Self(radiusProvider: radiusProvider)
     }
-
+    @inlinable
     init(maxNodeRadius: V.Scalar = 0, radiusProvider: @escaping (NodeID) -> V.Scalar) {
         self.maxNodeRadius = maxNodeRadius
         self.radiusProvider = radiusProvider
@@ -47,8 +47,8 @@ extension SimulationKD {
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
     public final class CollideForce: ForceLike
-    where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
-
+    where NodeID: Hashable, V: VectorLike, V.Scalar: SimulatableFloatingPoint {
+        @usableFromInline
         weak var simulation: SimulationKD? {
             didSet {
                 guard let sim = simulation else { return }
@@ -61,11 +61,11 @@ extension SimulationKD {
             case varied((NodeID) -> V.Scalar)
         }
         public var radius: CollideRadius
-        var calculatedRadius: [V.Scalar] = []
+        @usableFromInline var calculatedRadius: [V.Scalar] = []
 
         public let iterationsPerTick: UInt
         public var strength: V.Scalar
-
+        @inlinable
         internal init(
             radius: CollideRadius,
             strength: V.Scalar = 1.0,
@@ -75,7 +75,7 @@ extension SimulationKD {
             self.iterationsPerTick = iterationsPerTick
             self.strength = strength
         }
-
+        @inlinable
         public func apply() {
             guard let sim = self.simulation else { return }
             let alpha = sim.alpha
@@ -175,7 +175,7 @@ extension SimulationKD {
     }
 
     /// Create a collide force that prevents nodes from overlapping.
-    /// 
+    ///
     /// This is a very expensive force, the complexity is `O(n log(n))`,
     /// where `n` is the number of nodes.
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
@@ -183,7 +183,7 @@ extension SimulationKD {
     ///   - radius: The radius of the force.
     ///   - strength: The strength of the force.
     ///   - iterationsPerTick: The number of iterations per tick.
-    @discardableResult
+    @discardableResult @inlinable
     public func createCollideForce(
         radius: CollideForce.CollideRadius = .constant(3.0),
         strength: V.Scalar = 1.0,
@@ -202,6 +202,7 @@ extension SimulationKD {
 }
 
 extension SimulationKD.CollideForce.CollideRadius {
+    @inlinable
     public func calculated(for simulation: SimulationKD) -> [V.Scalar] {
         switch self {
         case .constant(let r):

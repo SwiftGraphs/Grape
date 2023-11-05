@@ -28,25 +28,25 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
 
     public var velocityDecay: Scalar
     
-    
-    public internal(set) var forces: [any ForceLike] = []
+    @usableFromInline 
+    var forces: [ForceLike] = []
 
     /// The position of points stored in simulation.
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
-    public internal(set) var nodePositions: [V]
+    public var nodePositions: [V]
 
     /// The velocities of points stored in simulation.
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
-    public internal(set) var nodeVelocities: [V]
+    public var nodeVelocities: [V]
 
     /// The fixed positions of points stored in simulation.
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
-    public internal(set) var nodeFixations: [V?]
+    public var nodeFixations: [V?]
 
-    public private(set) var nodeIds: [NodeID]
+    public var nodeIds: [NodeID]
 
     @usableFromInline internal private(set) var nodeIdToIndexLookup: [NodeID: Int] = [:]
 
@@ -60,6 +60,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     ///   - alphaTarget:
     ///   - velocityDecay:
     ///   - getInitialPosition: The closure to set the initial position of the node. If not provided, the initial position is set to zero.
+    @inlinable
     public init(
         nodeIds: [NodeID],
         alpha: Scalar = 1,
@@ -101,12 +102,14 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     }
 
     /// Get the index in the nodeArray for `nodeId`
-    /// - **Complexity**: O(1)
+    /// - **Complexity**: O(1)    
+    @inlinable
     public func getIndex(of nodeId: NodeID) -> Int {
         return nodeIdToIndexLookup[nodeId]!
     }
 
     /// Reset the alpha. The points will move faster as alpha gets larger.
+    @inlinable
     public func resetAlpha(_ alpha: Scalar) {
         self.alpha = alpha
     }
@@ -116,6 +119,7 @@ where NodeID: Hashable, V: VectorLike, V.Scalar : SimulatableFloatingPoint {
     /// Goes through all the forces created.
     /// The forces will call  `apply` then the positions and velocities will be modified.
     /// - Parameter iterationCount: Default to 1.
+    @inlinable
     public func tick(iterationCount: UInt = 1) {
         for _ in 0..<iterationCount {
             alpha += (alphaTarget - alpha) * alphaDecay
