@@ -24,6 +24,11 @@ let package = Package(
             targets: ["ForceSimulation"]
         ),
 
+        .library(
+            name: "Grape",
+            targets: ["Grape"]
+        ),
+
     ],
 
     dependencies: [
@@ -32,6 +37,12 @@ let package = Package(
     ],
 
     targets: [
+
+        .target(
+            name: "Grape",
+            dependencies: ["ForceSimulation"],
+            path: "Sources/Grape"
+        ),
 
         // .target(
         //     name: "NDTree",
@@ -43,7 +54,7 @@ let package = Package(
         //             // "-whole-module-optimization",
         //             // "-Ounchecked",
         //         ]),
-                
+
         //     ]
         // ),
 
@@ -62,14 +73,14 @@ let package = Package(
             name: "ForceSimulation",
             // dependencies: ["NDTree"],
             path: "Sources/ForceSimulation"
-            // ,
-            // swiftSettings: [
-            //     .unsafeFlags([
-            //          "-cross-module-optimization",
-            //         // "-whole-module-optimization",
-            //         // "-Ounchecked",
-            //     ])
-            // ]
+                // ,
+                // swiftSettings: [
+                //     .unsafeFlags([
+                //          "-cross-module-optimization",
+                //         // "-whole-module-optimization",
+                //         // "-Ounchecked",
+                //     ])
+                // ]
         ),
 
         .testTarget(
@@ -83,6 +94,6 @@ let package = Package(
             //         // "-Ounchecked",
             //     ])
             // ]
-            ),
+        ),
     ]
 )
