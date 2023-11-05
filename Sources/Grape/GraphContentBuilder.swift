@@ -1,29 +1,34 @@
 public final class PartialGraphMark<NodeID: Hashable>: GraphContent {
-    var nodes: [NodeMark<NodeID>]
-    var links: [LinkMark<NodeID>]
+    @usableFromInline var nodes: [NodeMark<NodeID>]
+    @usableFromInline var links: [LinkMark<NodeID>]
 
+    @inlinable
     init(nodes: [NodeMark<NodeID>], links: [LinkMark<NodeID>]) {
         self.nodes = nodes
         self.links = links
     }
 
+    @inlinable
     static var empty: PartialGraphMark<NodeID> {
         return .init(nodes: [], links: [])
     }
 
     @discardableResult
+    @inlinable
     func with(node: NodeMark<NodeID>) -> Self {
         nodes.append(node)
         return self
     }
 
     @discardableResult
+    @inlinable
     func with(link: LinkMark<NodeID>) -> Self {
         links.append(link)
         return self
     }
 
     @discardableResult
+    @initializes
     func with(partial: PartialGraphMark<NodeID>) -> Self {
         links.append(contentsOf: partial.links)
         nodes.append(contentsOf: partial.nodes)
