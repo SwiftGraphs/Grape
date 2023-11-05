@@ -23,11 +23,11 @@ struct TestGraphView: View {
 
     var body: some View {
         ForceDirectedGraph(controller: controller) {
-            NodeMark(id: 2, fill: .accentColor, radius: 3.0, label: "Hello")
-            NodeMark(id: 3)
-            NodeMark(id: 4)
-            3 <-- 4
-            4 --> 2
+            // NodeMark(id: 2, fill: .accentColor, radius: 3.0, label: "Hello")
+            // NodeMark(id: 3)
+            // NodeMark(id: 4)
+            // 3 <-- 4
+            // 4 --> 2
             for i in 20..<40 {
                 NodeMark(id: i)
                 i --> i + 1

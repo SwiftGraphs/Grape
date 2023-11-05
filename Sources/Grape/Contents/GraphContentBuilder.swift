@@ -66,6 +66,10 @@ public struct GraphContentBuilder<NodeID: Hashable> {
         return PartialGraph(nodes: [], links: [content])
     }
 
+    public static func buildPartialBlock(first content: PartialGraph) -> PartialGraph {
+        return content
+    }
+
     public static func buildPartialBlock(accumulated: PartialGraph, next: Link) -> PartialGraph {
         return accumulated.with(link: next)
     }
