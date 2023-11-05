@@ -9,7 +9,7 @@ protocol LayoutEngine {
 @Observable
 public class ForceDirectedGraph2DLayoutEngine: LayoutEngine {
 
-    public var simulation: Simulation2D<Int>
+    var simulation: Simulation2D<Int>
 
     @ObservationIgnored
     let frameRate: Double = 60.0
@@ -17,7 +17,6 @@ public class ForceDirectedGraph2DLayoutEngine: LayoutEngine {
     @ObservationIgnored
     var scheduledTimer: Timer? = nil
 
-    @inlinable
     public init(initialSimulation: Simulation2D<Int>) {
         self.simulation = initialSimulation
     }

@@ -43,7 +43,7 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
         }
     }
 
-    @inlinable
+    // @inlinable
     func paintNodes(context: inout GraphicsContext, centerX: Double, centerY: Double) {
 
         for i in model.simulation.nodePositions.indices {
@@ -98,9 +98,9 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
             }
         }
         
-        self.nodeIdToIndexLookup = consume lookup
+        self.nodeIdToIndexLookup = lookup
         let model = ForceDirectedGraph2DLayoutEngine(
-            initialSimulation: consume simulation
+            initialSimulation: simulation
         )
         controller.layoutEngine = model
         self.model = model

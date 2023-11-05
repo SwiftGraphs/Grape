@@ -67,11 +67,48 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 
 ## Usage
 
-Grape provides 2 kinds of classes, `NDTree` and `Simulation`. 
+### `Grape`
+
+`Grape` provides a SwiftUI view `ForceDirectedGraph`:
+
+```swift
+struct ForceDirectedGraphSwiftUIExample: View {
+    let graphController = ForceDirectedGraph2DController<Int>()
+    var body: some View {
+        ForceDirectedGraph(controller: graphController) {
+            // Declare nodes and links like you would do in Swift Charts.
+            NodeMark(id: 0, fill: .green)
+            NodeMark(id: 1, fill: .blue)
+            NodeMark(id: 2, fill: .yellow)
+            for i in 0..<2 {
+                LinkMark(from: i, to: i+1)
+            }
+            
+        } forceField: {
+            // Declare forces like you would do in D3.js.
+            LinkForce()
+            CenterForce()
+            ManyBodyForce()
+        }
+        .onAppear {
+            // Let's start moving!
+            graphController.start()
+        }
+
+    }
+}
+```
+> [!NOTE]
+> `ForceDirectedGraph` is only a minimal working example. Please refere to the next section if you need a view that really works.
+
+
+### `ForceSimulation`
+
+`ForceSimulation` module provides 2 kinds of classes, `NDTree` and `Simulation`. 
 - `NDTree` is a KD-Tree data structure, which is used to accelerate the force simulation with [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/).
 - `Simulation` is a force simulation class, that enables you to create any dimensional simulation with velocity Verlet integration.
 
-### Basic
+#### Basic
 
 The basic concepts of simulations and forces can be found here: [Force simulations - D3](https://d3js.org/d3-force/simulation). You can simply create 2D or 3D simulations by using `Simulation2D` or `Simulation3D`:
 
@@ -104,7 +141,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 <br/>
 
-### Advanced
+#### Advanced
 
 Grape provides a set of generic based types that works with any SIMD-like data structures. To integrate Grape into platforms where `import simd` isn't supported, or higher dimensions, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
 
