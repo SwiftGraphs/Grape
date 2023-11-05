@@ -72,6 +72,8 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 > `ForceDirectedGraph` is only a minimal working example. Please refer to the next section to create a more complex view.
 
 ```swift
+import Grape
+
 struct MyGraph: View {
     let graphController = ForceDirectedGraph2DController<Int>()
     var body: some View {
