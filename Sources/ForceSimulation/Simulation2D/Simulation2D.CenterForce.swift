@@ -24,7 +24,7 @@
             @usableFromInline weak var simulation: Simulation2D<NodeID>?
 
             @inlinable
-            internal init(center: V, strength: V.Scalar) {
+            init(center: V, strength: V.Scalar) {
                 self.center = center
                 self.strength = strength
             }
