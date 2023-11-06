@@ -21,14 +21,14 @@ final class MiserableGraphTest: XCTestCase {
                 n.id
             })
 
-        let linkForce = sim.createLinkForce(
+        let _ = sim.createLinkForce(
             data.links.map({ l in
                 (l.source, l.target)
             }))
-        let manybodyForce = sim.createManyBodyForce(strength: -30)
+        let _ = sim.createManyBodyForce(strength: -30)
 
-        let centerForce = sim.createCenterForce(center: .zero)
-        let collideForce = sim.createCollideForce(radius: .constant(5))
+        let _ = sim.createCenterForce(center: .zero)
+        let _ = sim.createCollideForce(radius: .constant(5))
 
         //        for _ in 0..<120{
         //            sim.tick()
@@ -41,7 +41,7 @@ final class MiserableGraphTest: XCTestCase {
         //        }
 
         measure {
-            for i in 0..<120 {
+            for _ in 0..<120 {
                 sim.tick()
 //                print(i)
             }
@@ -60,14 +60,14 @@ final class MiserableGraphTest: XCTestCase {
                 n.id
             })
 
-        let linkForce = sim.createLinkForce(
+        let _ = sim.createLinkForce(
             data.links.map({ l in
                 (l.source, l.target)
             }))
-        let manybodyForce = sim.createManyBodyForce(strength: -30)
+        let _ = sim.createManyBodyForce(strength: -30)
 
-        let centerForce = sim.createCenterForce(center: .zero)
-        let collideForce = sim.createCollideForce(radius: .constant(5))
+        let _ = sim.createCenterForce(center: .zero)
+        let _ = sim.createCollideForce(radius: .constant(5))
 
         //        for _ in 0..<120{
         //            sim.tick()
@@ -80,7 +80,7 @@ final class MiserableGraphTest: XCTestCase {
         //        }
 
         measure {
-            for i in 0..<120 {
+            for _ in 0..<120 {
                 sim.tick()
 //                print(i)
             }
@@ -99,14 +99,14 @@ final class MiserableGraphTest: XCTestCase {
                 n.id
             })
 
-        let linkForce = sim.createLinkForce(
+        let _ = sim.createLinkForce(
             data.links.map({ l in
                 (l.source, l.target)
             }))
-        let manybodyForce = sim.createManyBodyForce(strength: -30)
+        let _ = sim.createManyBodyForce(strength: -30)
 
-        let centerForce = sim.createCenterForce(center: .zero)
-        let collideForce = sim.createCollideForce(radius: .constant(5))
+        let _ = sim.createCenterForce(center: .zero)
+        let _ = sim.createCollideForce(radius: .constant(5))
 
         //        for _ in 0..<120{
         //            sim.tick()

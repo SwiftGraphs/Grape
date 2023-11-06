@@ -19,7 +19,7 @@
 
         public var velocityDecay: Scalar
 
-        public var forces: [any ForceLike] = []
+        public var forces: [ForceLike] = []
 
         /// The position of points stored in simulation.
         ///

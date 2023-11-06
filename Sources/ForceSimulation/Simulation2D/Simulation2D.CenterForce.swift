@@ -23,11 +23,13 @@
             public var strength: V.Scalar
             @usableFromInline weak var simulation: Simulation2D<NodeID>?
 
-            @inlinable internal init(center: V, strength: V.Scalar) {
+            @inlinable
+            internal init(center: V, strength: V.Scalar) {
                 self.center = center
                 self.strength = strength
             }
 
+            @inlinable
             public func apply() {
                 guard let sim = self.simulation else { return }
                 // let alpha = sim.alpha
@@ -54,6 +56,7 @@
         ///  - center: The center of the force.
         ///  - strength: The strength of the force.
         @discardableResult
+        @inlinable
         public func createCenterForce(center: V, strength: V.Scalar = 0.1) -> CenterForce {
             let f = CenterForce(center: center, strength: strength)
             f.simulation = self
