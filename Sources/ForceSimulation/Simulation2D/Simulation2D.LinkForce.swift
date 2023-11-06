@@ -14,8 +14,7 @@
         ///
         /// The complexity is `O(e)`, where `e` is the number of links.
         /// See [Link Force - D3](https://d3js.org/d3-force/link).
-        final public class LinkForce: ForceLike
-        where NodeID: Hashable {
+        final public class LinkForce: ForceLike where NodeID: Hashable {
 
             public typealias V = simd_double2
 
@@ -25,6 +24,7 @@
                 case varied((EdgeID<NodeID>, LinkLookup<NodeID>) -> V.Scalar)
                 case weightedByDegree(k: (EdgeID<NodeID>, LinkLookup<NodeID>) -> V.Scalar)
             }
+            
             @usableFromInline
             var linkStiffness: LinkStiffness
             
@@ -33,12 +33,15 @@
 
             ///
             public typealias LengthScalar = V.Scalar
+            
             public enum LinkLength {
                 case constant(LengthScalar)
                 case varied((EdgeID<NodeID>, LinkLookup<NodeID>) -> LengthScalar)
             }
+            
             @usableFromInline
             var linkLength: LinkLength
+            
             @usableFromInline
             var calculatedLength: [LengthScalar] = []
 
@@ -87,7 +90,7 @@
             var lookup = LinkLookup<Int>(sources: [:], targets: [:], count: [:])
 
             @inlinable
-            internal init(
+            init(
                 _ links: [EdgeID<NodeID>],
                 stiffness: LinkStiffness,
                 originalLength: LinkLength = .constant(30),

@@ -15,8 +15,7 @@
         /// Center force is relatively fast, the complexity is `O(n)`,
         /// where `n` is the number of nodes.
         /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
-        final public class CenterForce: ForceLike
-        where NodeID: Hashable {
+        final public class CenterForce: ForceLike where NodeID: Hashable {
             public typealias V = simd_double2
 
             public var center: V
@@ -24,7 +23,7 @@
             @usableFromInline weak var simulation: Simulation2D<NodeID>?
 
             @inlinable
-            internal init(center: V, strength: V.Scalar) {
+            init(center: V, strength: V.Scalar) {
                 self.center = center
                 self.strength = strength
             }

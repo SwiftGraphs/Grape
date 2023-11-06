@@ -16,9 +16,8 @@
         /// Center force is relatively fast, the complexity is `O(n)`,
         /// where `n` is the number of nodes.
         /// See [Position Force - D3](https://d3js.org/d3-force/position).
-        final public class DirectionForce2D: ForceLike
-        where NodeID: Hashable {
-
+        final public class DirectionForce2D: ForceLike where NodeID: Hashable {
+            
             public typealias V = simd_double2
 
             public enum Direction {
@@ -26,6 +25,7 @@
                 case y
                 case entryOfVector(Int)
             }
+            
             public enum Strength {
                 case constant(V.Scalar)
                 case varied((NodeID) -> V.Scalar)
@@ -42,11 +42,11 @@
             public var targetOnDirection: TargetOnDirection
             public var calculatedTargetOnDirection: [V.Scalar] = []
 
-            @inlinable internal init(
+            @inlinable
+            init(
                 direction: Direction, targetOnDirection: TargetOnDirection,
                 strength: Strength = .constant(1.0)
             ) {
-
                 self.strength = strength
                 self.direction = direction.lane
                 self.targetOnDirection = targetOnDirection
