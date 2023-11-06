@@ -13,3 +13,4 @@ DerivedData/
 
 /docs
 *.kts
+Package.resolved
