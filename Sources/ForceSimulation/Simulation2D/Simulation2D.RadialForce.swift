@@ -15,8 +15,7 @@
         /// Center force is relatively fast, the complexity is `O(n)`,
         /// where `n` is the number of nodes.
         /// See [Position Force - D3](https://d3js.org/d3-force/position).
-        final public class RadialForce: ForceLike
-        where NodeID: Hashable {
+        final public class RadialForce: ForceLike where NodeID: Hashable {
 
             public typealias V = simd_double2
 
@@ -36,7 +35,9 @@
                 case constant(V.Scalar)
                 case varied((NodeID) -> V.Scalar)
             }
+            
             public var radius: NodeRadius
+            
             @usableFromInline
             var calculatedRadius: [V.Scalar] = []
 
@@ -45,7 +46,9 @@
                 case constant(V.Scalar)
                 case varied((NodeID) -> V.Scalar)
             }
+            
             public var strength: Strength
+            
             @usableFromInline
             var calculatedStrength: [V.Scalar] = []
 
@@ -54,6 +57,7 @@
                 self.radius = radius
                 self.strength = strength
             }
+            
             @inlinable
             public func apply() {
                 guard let sim = self.simulation else { return }
