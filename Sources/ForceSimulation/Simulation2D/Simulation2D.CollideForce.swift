@@ -38,8 +38,8 @@
             return Self(radiusProvider: radiusProvider)
         }
 
-        @inlinable init(maxNodeRadius: V.Scalar = 0, radiusProvider: @escaping (NodeID) -> V.Scalar)
-        {
+        @inlinable 
+        init(maxNodeRadius: V.Scalar = 0, radiusProvider: @escaping (NodeID) -> V.Scalar) {
             self.maxNodeRadius = maxNodeRadius
             self.radiusProvider = radiusProvider
         }
@@ -53,8 +53,7 @@
         /// This is a very expensive force, the complexity is `O(n log(n))`,
         /// where `n` is the number of nodes.
         /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
-        public final class CollideForce: ForceLike
-        where NodeID: Hashable {
+        public final class CollideForce: ForceLike where NodeID: Hashable {
 
             public typealias V = simd_double2
 
@@ -79,7 +78,7 @@
             public var strength: V.Scalar
 
             @inlinable
-            internal init(
+            init(
                 radius: CollideRadius,
                 strength: V.Scalar = 1.0,
                 iterationsPerTick: UInt = 1
