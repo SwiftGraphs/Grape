@@ -35,7 +35,7 @@ jobs:
     #   run: xcodebuild test -scheme ForceSimulation
     - name: Build DocC
       run: | # If you use docc-plugin, you might be able to use docc-plugin command instead
-        mkdir docs &&
+        mkdir -p docs &&
         swift package --allow-writing-to-directory docs/ForceSimulation \
           generate-documentation --target ForceSimulation \
           --disable-indexing \
