@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Simulation2D.ManyBodyForce.swift
 //
 //
 //  Created by li3zhen1 on 10/1/23.
@@ -13,8 +13,7 @@
         case buildQuadTreeBeforeSimulationInitialized
     }
 
-    public struct MassQuadtreeDelegate2D<NodeID>: QuadtreeDelegate
-    where NodeID: Hashable {
+    public struct MassQuadtreeDelegate2D<NodeID>: QuadtreeDelegate where NodeID: Hashable {
 
         public var accumulatedMass: Double = .zero
         public var accumulatedCount: Int = 0
@@ -22,13 +21,13 @@
 
         @usableFromInline let massProvider: (NodeID) -> Double
 
-        @inlinable init(
-            massProvider: @escaping (NodeID) -> Double
-        ) {
+        @inlinable 
+        init(massProvider: @escaping (NodeID) -> Double) {
             self.massProvider = massProvider
         }
 
-        @inlinable internal init(
+        @inlinable
+        init(
             initialAccumulatedProperty: Double,
             initialAccumulatedCount: Int,
             initialWeightedAccumulatedNodePositions: simd_double2,
@@ -84,8 +83,7 @@
         /// This is a very expensive force, the complexity is `O(n log(n))`,
         /// where `n` is the number of nodes. The complexity might degrade to `O(n^2)` if the nodes are too close to each other.
         /// See [Manybody Force - D3](https://d3js.org/d3-force/many-body).
-        final public class ManyBodyForce: ForceLike
-        where NodeID: Hashable {
+        final public class ManyBodyForce: ForceLike where NodeID: Hashable {
 
             @usableFromInline var strength: Double
 
@@ -116,7 +114,8 @@
             @usableFromInline var distanceMin: Double = 1
             @usableFromInline var distanceMax: Double = Double.infinity
 
-            @inlinable internal init(
+            @inlinable
+            init(
                 strength: Double,
                 nodeMass: NodeMass = .constant(1.0),
                 theta: Double = 0.9
@@ -161,8 +160,9 @@
             //
             //    }
 
-            @inlinable func calculateForce(alpha: Double) throws {
-
+            @inlinable 
+            func calculateForce(alpha: Double) throws {
+                
                 guard let sim = self.simulation else {
                     throw ManyBodyForce2DError.buildQuadTreeBeforeSimulationInitialized
                 }
