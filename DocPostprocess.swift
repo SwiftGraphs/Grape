@@ -3,7 +3,7 @@ import Foundation
 // Define the paths for the files
 let docsDirectoryPath = "./docs"
 let iconSourcePath = "./assets/grape_icon_256.png"
-let iconDestPath = "./docs/favicon.png"
+let iconDestPath = "./docs/favicon.png" 
 
 do {
     let fileManager = FileManager.default

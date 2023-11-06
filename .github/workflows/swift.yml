@@ -35,12 +35,20 @@ jobs:
     #   run: xcodebuild test -scheme ForceSimulation
     - name: Build DocC
       run: | # If you use docc-plugin, you might be able to use docc-plugin command instead
-        swift package --allow-writing-to-directory docs \
+        mkdir docs &&
+        swift package --allow-writing-to-directory docs/ForceSimulation \
           generate-documentation --target ForceSimulation \
           --disable-indexing \
           --transform-for-static-hosting \
-          --hosting-base-path Grape \
-          --output-path docs && swift ./DocPostprocess.swift
+          --hosting-base-path Grape/ForceSimulation \
+          --output-path docs/ForceSimulation &&
+        swift package --allow-writing-to-directory docs/Grape \
+          generate-documentation --target Grape \
+          --disable-indexing \
+          --transform-for-static-hosting \
+          --hosting-base-path Grape/Grape \
+          --output-path docs/Grape &&
+        swift ./DocPostprocess.swift
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
       with:
