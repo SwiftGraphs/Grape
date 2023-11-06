@@ -3,9 +3,9 @@
     import simd
 
     /// A 2-Dimensional force simulation running on `double` and `simd_double3` types.
-    public final class Simulation2D<NodeID>
-    where NodeID: Hashable {
+    public final class Simulation2D<NodeID> where NodeID: Hashable {
         public typealias V = simd_double2
+        
         /// The type of the vector used in the simulation.
         /// Usually this is `Scalar` if you are on Apple platforms.
         public typealias Scalar = V.Scalar
@@ -41,7 +41,8 @@
 
         public var nodeIds: [NodeID]
 
-        @usableFromInline internal private(set) var nodeIdToIndexLookup: [NodeID: Int] = [:]
+        @usableFromInline
+        private(set) var nodeIdToIndexLookup: [NodeID: Int] = [:]
 
         /// Create a new simulation.
         ///
