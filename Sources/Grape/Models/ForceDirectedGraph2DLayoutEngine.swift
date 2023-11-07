@@ -23,7 +23,10 @@ public class ForceDirectedGraph2DLayoutEngine: LayoutEngine {
 
     public func start() {
         guard self.scheduledTimer == nil else { return }
-        self.scheduledTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / frameRate, repeats: true) { [weak self] _ in
+        self.scheduledTimer = Timer.scheduledTimer(
+            withTimeInterval: 1.0 / frameRate,
+            repeats: true
+        ) { [weak self] _ in
             self?.tick()
         }
     }

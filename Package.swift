@@ -52,5 +52,10 @@ let package = Package(
             name: "ForceSimulationTests",
             dependencies: ["ForceSimulation"]
         ),
+        
+            .testTarget(
+                name: "GrapeTests",
+                dependencies: ["Grape"]
+            ),
     ]
 )

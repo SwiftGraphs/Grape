@@ -36,7 +36,8 @@ struct MyRing: View {
             CenterForce()
             ManyBodyForce(strength: -15)
         }
-        
+//        .gravityPerceptive()
+//        .dragGesturePerceptive()
         .onAppear {
             myProxy.start()
         }

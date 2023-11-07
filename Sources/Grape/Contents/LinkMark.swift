@@ -2,7 +2,7 @@ import ForceSimulation
 import SwiftUI
 
 @dynamicCallable
-public struct LinkMark<NodeID: Hashable>: GraphContent {
+public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     public enum LabelDisplayStrategy {
         case auto
