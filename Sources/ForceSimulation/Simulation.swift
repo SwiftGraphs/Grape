@@ -1,34 +1,33 @@
-extension Dimension {
+class Simulation<Vector, ForceField>
+where Vector: SIMD, Vector.Scalar: FloatingPoint, ForceField: ForceProtocol<Vector> {
+    let forceField: ForceField
+    let kinetics: Kinetics<Vector>
 
-    public struct Simulation<CompositedForce>: SimulationProtocol
-    where CompositedForce: ForceProtocol, CompositedForce.NodeID == NodeID, CompositedForce.V == V {
-
-        public var nodeIds: [NodeID]
-        public var state: PhysicalState
-        public var field: CompositedForce
-
-        init(
-            nodeIds: [NodeID],
-            force: CompositedForce
-        ) {
-            self.field = force // buildForceDescriptor()
-            self.nodeIds = nodeIds
-            self.state = PhysicalState()
-        }
+    init(
+        nodeCount: Int,
+        forceField: ForceField
+    ) {
+        self.kinetics = Kinetics.createZeros(count: nodeCount)
+        self.forceField = forceField
     }
 
 }
 
-extension Dimension {
-    public final class PhysicalState {
-        var nodeVelocities: [V]
-        var nodePositions: [V]
-        var nodeFixations: [V?]
+struct MyForceField: ForceField {
 
-        init() {
-            self.nodeVelocities = []
-            self.nodePositions = []
-            self.nodeFixations = []
-        }
+    typealias Vector = SIMD2<Double>
+
+    var force: some ForceProtocol<Vector> {
+        CompositedForce(force1: CenterForce(), force2: CenterForce())
     }
+}
+
+struct Test {
+    var simulation = Simulation<
+        SIMD2<Double>,
+        CompositedForce<SIMD2<Double>, CenterForce<SIMD2<Double>>, CenterForce<SIMD2<Double>>>
+    >(nodeCount: 10, forceField: CompositedForce(force1: CenterForce(), force2: CenterForce()))
+
+    var mySimulation = Simulation(nodeCount: 10, forceField: MyForceField())
+
 }

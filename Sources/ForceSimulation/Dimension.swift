@@ -1,2 +1,2 @@
-public struct Dimension<NodeID, V>
-where NodeID: Hashable, V: SIMD, V.Scalar: FloatingPoint {}
+public struct Dimension<Vector>
+where Vector: SIMD, Vector.Scalar: FloatingPoint {}
