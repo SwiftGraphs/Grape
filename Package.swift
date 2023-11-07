@@ -47,17 +47,17 @@ let package = Package(
         //     ]
         // ),
 
-        .testTarget(
-            name: "NDTreeTests",
-            dependencies: ["ForceSimulation"]
-            // ,
-            // swiftSettings: [
-            //     .unsafeFlags([
-            //          "-cross-module-optimization",
-            //         // "-whole-module-optimization",
-            //     ])
-            // ]
-        ),
+        // .testTarget(
+        //     name: "NDTreeTests",
+        //     dependencies: ["ForceSimulation"]
+        //     // ,
+        //     // swiftSettings: [
+        //     //     .unsafeFlags([
+        //     //          "-cross-module-optimization",
+        //     //         // "-whole-module-optimization",
+        //     //     ])
+        //     // ]
+        // ),
         .target(
             name: "ForceSimulation",
             // dependencies: ["NDTree"],

@@ -102,7 +102,3 @@ extension Kinetics {
     }
 
 }
-
-// struct UnsafeKinetics {
-//     var position: ManagedBufferPointer<Int, SIMD2<Double>>
-// }

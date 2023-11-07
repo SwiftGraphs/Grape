@@ -8,6 +8,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
     let kinetics: Kinetics<Vector>
 
     @inlinable
+    public
     init(
         nodeCount: Int,
         forceField: ForceField,
@@ -40,24 +41,13 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
 
 }
 
-struct MyForceField: ForceField {
 
-    typealias Vector = SIMD2<Double>
+// struct Test {
+//     // var simulation = Simulation<
+//     //     SIMD2<Double>,
+//     //     CompositedForce<SIMD2<Double>, CenterForce<SIMD2<Double>>, CenterForce<SIMD2<Double>>>
+//     // >(nodeCount: 10, forceField: CompositedForce(force1: CenterForce(), force2: CenterForce()))
 
-    var force: some ForceProtocol<Vector> {
-        CompositedForce(
-            Kinetics<Vector>.CenterForce(center: 0, strength: 0.3),
-            Kinetics<Vector>.CenterForce(center: 0, strength: 0.3)
-        )
-    }
-}
+//     var mySimulation = Simulation(nodeCount: 10, forceField: MyForceField())
 
-struct Test {
-    // var simulation = Simulation<
-    //     SIMD2<Double>,
-    //     CompositedForce<SIMD2<Double>, CenterForce<SIMD2<Double>>, CenterForce<SIMD2<Double>>>
-    // >(nodeCount: 10, forceField: CompositedForce(force1: CenterForce(), force2: CenterForce()))
-
-    var mySimulation = Simulation(nodeCount: 10, forceField: MyForceField())
-
-}
+// }

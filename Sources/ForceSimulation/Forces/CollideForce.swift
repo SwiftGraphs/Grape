@@ -1,6 +1,6 @@
 @usableFromInline
 internal struct MaxRadiusKDTreeDelegate<Vector>: KDTreeDelegate
-where Vector: SIMD, Vector.Scalar: FloatingPoint & ExpressibleByFloatLiteral {
+where Vector: SimulatableVector {
     @inlinable
     mutating func didAddNode(_ node: Int, at position: Vector) {
         let p = radiusGetter(node)

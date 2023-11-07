@@ -21,6 +21,6 @@ extension ForceField {
     }
 
     func bindKinetics(_ kinetics: Kinetics<Vector>) {
-        self.bindKinetics(kinetics)
+        self.force.bindKinetics(kinetics)
     }
 }
