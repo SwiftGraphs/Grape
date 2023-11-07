@@ -32,20 +32,14 @@ https://github.com/li3zhen1/Grape/assets/45376537/d80dc797-1980-4755-85b9-18ee26
 
 Source code: [ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ContentView.swift). 
 
+
 <br/>
 
-### Lattice Simulation
+### Draggable Ring
 
-This is a 36x36 force directed lattice like [Force Directed Lattice](https://observablehq.com/@d3/force-directed-lattice):
+This is a ring with 60 vertices created with a SwiftUI View `ForceDirectedGraph` from `Grape`, with out-of-the-box drag support:
 
-
-
-https://github.com/li3zhen1/Grape/assets/45376537/5b76fddc-dd5c-4d35-bced-29c01269dd2b
-
-
-
-Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ForceDirectedLatticeView.swift)
-
+Source code: [MyRing.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift)
 
 <br/>
 
@@ -61,7 +55,21 @@ https://github.com/li3zhen1/Grape/assets/45376537/4585471e-2339-4aee-8f39-0c11fd
 
 Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift)
 
+
 <br/>
+
+### Lattice Simulation
+
+This is a 36x36 force directed lattice like [Force Directed Lattice](https://observablehq.com/@d3/force-directed-lattice):
+
+
+
+https://github.com/li3zhen1/Grape/assets/45376537/5b76fddc-dd5c-4d35-bced-29c01269dd2b
+
+
+
+Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ForceDirectedLatticeView.swift)
+
 
 
 ## Usage

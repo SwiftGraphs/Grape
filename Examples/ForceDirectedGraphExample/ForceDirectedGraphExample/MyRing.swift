@@ -29,12 +29,14 @@ struct MyRing: View {
             }
 
         } forceField: {
-            LinkForce(originalLength: .constant(10.0))
+            LinkForce(
+                originalLength: .constant(20.0),
+                stiffness: .weightedByDegree(k: { _, _ in 3.0})
+            )
             CenterForce()
-            ManyBodyForce(strength: -5)
-            DirectionForce(direction: .x, targetOnDirection: .constant(100), strength: .constant(0.01))
-            DirectionForce(direction: .y, targetOnDirection: .constant(50), strength: .constant(0.02))
+            ManyBodyForce(strength: -15)
         }
+        
         .onAppear {
             myProxy.start()
         }

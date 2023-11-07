@@ -49,6 +49,7 @@ struct ForceDirectedLatticeView: View {
 
     var body: some View {
         Canvas { context, sz in
+        
             guard let points else { return }
             for l in self.edgeIds {
                 let s = points[l.0]

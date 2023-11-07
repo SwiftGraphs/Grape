@@ -30,7 +30,7 @@ public struct NodeMark<NodeID: Hashable>: GraphContent {
     public init(
         id: NodeID,
         fill: Color = .accentColor,
-        radius: Double = 3.0,
+        radius: Double = 4.0,
         label: String? = nil,
         labelColor: Color = .accentColor,
         labelDisplayStrategy: LabelDisplayStrategy = .auto,

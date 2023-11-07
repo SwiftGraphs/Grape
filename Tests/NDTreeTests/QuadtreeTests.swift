@@ -3,7 +3,7 @@ import simd
 
 @testable import ForceSimulation
 
-final class DummyQuadtreeDelegate: QuadtreeDelegate {
+final class DummyQuadtreeDelegate: QuadtreeDelegate & NDTreeDelegate {
     func didAddNode(_ node: Int, at position: SIMD2<Double>) {
         count += 1
     }
@@ -29,6 +29,17 @@ final class DummyQuadtreeDelegate: QuadtreeDelegate {
 }
 
 final class AddTests: XCTestCase {
+    
+    func testRandomTest() {
+        var q = t([[0, 0]])
+        
+        for i in 0..<100000 {
+            q.add(i, at: [
+                Double.random(in: -100..<100),
+                Double.random(in: -100..<100)
+            ])
+        }
+    }
 
     // tests below are mainly generate by github copilot with d3 source code
     private func t(

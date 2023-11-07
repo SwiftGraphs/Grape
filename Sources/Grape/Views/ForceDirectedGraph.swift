@@ -25,9 +25,11 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
 
     @usableFromInline
     var nodeIdToIndexLookup: [NodeID: Int]
+    
 
     public var body: some View {
         Canvas { context, cgSize in
+            self.proxy.lastRenderedSize = cgSize
             let centerX = cgSize.width / 2.0
             let centerY = cgSize.height / 2.0
 
@@ -70,7 +72,49 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
                         style: StrokeStyle(lineWidth: node.strokeWidth))
                 }
             }
-        }
+        }.gesture(
+            DragGesture(minimumDistance: 1.0)
+                .onChanged { value in
+                    
+                    let locationX = value.location.x - self.proxy.lastRenderedSize.width/2
+                    let locationY = value.location.y - self.proxy.lastRenderedSize.height/2
+                    
+                    guard let draggingNodeID = self.proxy.draggingNodeID else {
+                        
+                        
+                        let nodeIndex = self.model.simulation.nodePositions.firstIndex { node in
+                            // Quad tree
+                            let x = node.x
+                            let y = node.y
+                            let radius = 6.0
+                            return locationX >= x - radius
+                                && locationX <= x + radius
+                                && locationY >= y - radius
+                                && locationY <= y + radius
+                        }
+                        
+                        if let nodeIndex {
+                            self.proxy.draggingNodeID = self.content.nodes[nodeIndex].id
+//                            action(self.proxy.draggingNodeID!, value)
+                        }
+                        return
+                    }
+                    self.model.simulation.nodeFixations[
+                        self.nodeIdToIndexLookup[draggingNodeID]!
+                    ] = [locationX, locationY]
+//                    action(draggingNodeID, value)
+                    
+                }
+                .onEnded { _ in
+                    if self.proxy.draggingNodeID != nil {
+                        self.model.simulation.nodeFixations[
+                            self.nodeIdToIndexLookup[self.proxy.draggingNodeID!]!
+                        ] = nil
+                    }
+                    self.proxy.draggingNodeID = nil
+                    
+                }
+        )
     }
 
 
@@ -123,4 +167,79 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
         self.proxy = proxy
     }
 
+}
+
+
+extension ForceDirectedGraph {
+//    public func onDragGesture(
+//        minimumDistance: CGFloat = 10,
+//        coordinateSpace: CoordinateSpace = .local,
+//        _ action: @escaping (NodeID, DragGesture.Value) -> Void
+//    ) -> Self {
+//        self.gesture(
+//            DragGesture(minimumDistance: 1.0)
+//                .onChanged { value in
+//                    
+//                    let locationX = value.location.x - self.proxy.lastRenderedSize.width/2
+//                    let locationY = value.location.y - self.proxy.lastRenderedSize.height/2
+//                    
+//                    guard let draggingNodeID = self.proxy.draggingNodeID else {
+//                        
+//                        
+//                        let nodeIndex = self.model.simulation.nodePositions.firstIndex { node in
+//                            // Quad tree
+//                            let x = node.x
+//                            let y = node.y
+//                            let radius = 4.0
+//                            return locationX >= x - radius
+//                                && locationX <= x + radius
+//                                && locationY >= y - radius
+//                                && locationY <= y + radius
+//                        }
+//                        
+//                        if let nodeIndex {
+//                            self.proxy.draggingNodeID = self.content.nodes[nodeIndex].id
+//                            action(self.proxy.draggingNodeID!, value)
+//                        }
+//                        return
+//                    }
+//                    self.model.simulation.nodeFixations[
+//                        self.nodeIdToIndexLookup[draggingNodeID]!
+//                    ] = [locationX, locationY]
+//                    action(draggingNodeID, value)
+//                    
+//                }
+//                .onEnded { _ in
+//                    self.proxy.draggingNodeID = nil
+//                }
+//        )
+//        
+//    }
+
+    public func onClickGesture(
+        coordinateSpace: CoordinateSpace = .local,
+        _ action: @escaping (NodeID) -> Void
+    ) -> Self {
+        self.onTapGesture {
+            
+            let locationX = $0.x - self.proxy.lastRenderedSize.width/2
+            let locationY = $0.y - self.proxy.lastRenderedSize.height/2
+            
+            let nodeIndex = self.model.simulation.nodePositions.firstIndex { node in
+                // Quad tree?
+                let x = node.x
+                let y = node.y
+                let radius = 6.0
+                return locationX >= x - radius
+                    && locationX <= x + radius
+                    && locationY >= y - radius
+                    && locationY <= y + radius
+            }
+            if let nodeIndex {
+                action(
+                    self.content.nodes[nodeIndex].id)
+            }
+        }
+        return self
+    }
 }

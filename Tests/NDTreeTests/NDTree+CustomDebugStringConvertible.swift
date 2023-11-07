@@ -92,3 +92,35 @@ extension Quadtree: CustomDebugStringConvertible where D.NodeID == Int {
         }
     }
 }
+
+
+extension KDTree: CustomDebugStringConvertible where D: NDTreeDelegate, D.NodeID == Int {
+    public var debugDescription: String {
+        if let children {
+            return "[\(children.map{$0.debugDescription}.joined(separator: ","))]"
+        } else {
+            if nodeIndices.count == 0 {
+                return ""
+            } else if nodeIndices.count == 1 {
+                let p = nodePosition!
+                return "{data: \(p.compactDebugString)}"
+            } else {
+                let p = nodePosition!
+
+                var r1 = ""
+                var r2 = ""
+
+                for i in nodeIndices {
+                    if i == nodeIndices.count - 1 {
+                        r1 += "{data: \(p)"
+                    } else {
+                        r1 += "{data: \(p), next:"
+                    }
+                    r2 += "}"
+                }
+
+                return r1 + r2
+            }
+        }
+    }
+}
