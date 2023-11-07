@@ -33,13 +33,6 @@ https://github.com/li3zhen1/Grape/assets/45376537/d80dc797-1980-4755-85b9-18ee26
 Source code: [ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ContentView.swift). 
 
 
-<br/>
-
-### Draggable Ring
-
-This is a ring with 60 vertices created with a SwiftUI View `ForceDirectedGraph` from `Grape`, with out-of-the-box drag support:
-
-Source code: [MyRing.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift)
 
 <br/>
 
@@ -78,6 +71,7 @@ Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/
 
 ### `Grape`
 
+
 ```swift
 import Grape
 
@@ -112,7 +106,15 @@ struct MyGraph: View {
     }
 }
 ```
-Check another example here: [ForceDirectedGraphExample/MyRing.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift)
+
+Here's another [example](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift) rendering a ring with 60 vertices created with a SwiftUI View `ForceDirectedGraph` from `Grape`, with out-of-the-box dragging support:
+
+
+https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e58355045d2
+
+
+
+
 
 > [!IMPORTANT]
 > `ForceDirectedGraph` is only a minimal working example. Please refer to the next section to create a more complex view.
