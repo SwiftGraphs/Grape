@@ -5,7 +5,7 @@ extension Kinetics {
 
         }
 
-        @inlinable
+        @usableFromInline
         internal var links: [EdgeID<Int>]
 
         @inlinable
