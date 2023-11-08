@@ -40,9 +40,9 @@ let package = Package(
         .target(
             name: "Grape",
             dependencies: ["ForceSimulation"],
-            path: "Sources/Grape",
+            path: "Sources/Grape"
             // link ForceSimulation in release mode
-            swiftSettings: [.unsafeFlags(["-Xfrontend", "-disable-availability-checking"])]
+            // swiftSettings: [.unsafeFlags(["-Xfrontend", "-disable-availability-checking"])]
         ),
 
         // .testTarget(

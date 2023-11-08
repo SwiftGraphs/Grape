@@ -1,12 +1,6 @@
 import ForceSimulation
 import simd
 
-public protocol ForceDescriptor<ConcreteForce> {
-    associatedtype ConcreteForce: ForceProtocol
-    func createForce() -> ConcreteForce
-    // func attachToSimulation<Vector>(_ simulation: Simulation<Vector>) where Vector: SimulatableVector & L2NormCalculatable
-}
-
 
 public struct CenterForce: ForceDescriptor {
     public var x: Double
@@ -26,9 +20,13 @@ public struct CenterForce: ForceDescriptor {
     public func createForce() -> Kinetics2D.CenterForce {
         return .init(center: [x, y], strength: strength)
     }
-    // public func attachToSimulation(_ simulation: Simulation2D<Int>) {
-    //     simulation.createCenterForce(center: [x, y], strength: strength)
-    // }
+
+}
+
+extension Kinetics.CenterForce where Vector == SIMD2<Double> {
+    public init(descriptor: CenterForce) {
+        self.init(center: [descriptor.x, descriptor.y], strength: descriptor.strength)
+    }
 }
 
 public struct ManyBodyForce: ForceDescriptor {
@@ -113,7 +111,7 @@ public struct PositionForce: ForceDescriptor {
         self.direction = direction
         self.targetOnDirection = targetOnDirection
     }
-    
+
     public func createForce() -> Kinetics2D.PositionForce {
         return .init(
             direction: direction,

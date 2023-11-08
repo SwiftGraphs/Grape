@@ -35,9 +35,9 @@ where
 public struct ForceBuilder<Vector>
 where Vector: SimulatableVector & L2NormCalculatable {
 
-    public static func buildPartialBlock<F>(first: F) ->  CompositedForce<Vector, Kinetics<Vector>.EmptyForce, F>
+    public static func buildPartialBlock<F>(first: F) -> F// CompositedForce<Vector, Kinetics<Vector>.EmptyForce, F>
     where F: ForceProtocol<Vector>, Vector: SimulatableVector & L2NormCalculatable {
-        return .init(force2: first)
+        return first //.init(force2: first)
     }
 
     public static func buildPartialBlock<F1, F2>(
@@ -64,4 +64,10 @@ where Vector: SimulatableVector & L2NormCalculatable {
         return CompositedForce(force1: force1, force2: force2)
     }
 
+
+    public static func buildExpression<Descriptor: ForceDescriptor>(
+        _ expression: Descriptor
+    ) -> Descriptor.ConcreteForce {
+        expression.createForce()
+    }
 }

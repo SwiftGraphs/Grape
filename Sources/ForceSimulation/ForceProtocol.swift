@@ -5,6 +5,11 @@ public protocol ForceProtocol<Vector>{
 }
 
 
+public protocol ForceDescriptor {
+    associatedtype ConcreteForce: ForceProtocol
+    func createForce() -> ConcreteForce
+}
+
 
 public protocol ForceField<Vector>: ForceProtocol where Vector: SimulatableVector & L2NormCalculatable {
     associatedtype F: ForceProtocol<Vector> where F.Vector == Vector

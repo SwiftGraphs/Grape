@@ -136,19 +136,19 @@ where ForceField.Vector == SIMD2<Double> {
                 //                    self.content.nodes[nodeIndex].id)
             }
         }
-
+        
     }
 
     @usableFromInline
     @State var model: LayoutEngine<ForceField>
-    @usableFromInline let proxy: Proxy
+    public let proxy: Proxy
 
     @usableFromInline let content: Content
     // @usableFromInline let forceField: ForceField
 
     @inlinable
     public init(
-        proxy: Proxy,
+        proxy: Proxy? = nil,
         @GraphContentBuilder<NodeID> _ buildGraphContent: () -> PartialGraphMark<NodeID>,
         @ForceBuilder<SIMD2<Double>> forceField buildForceField: () -> ForceField
     ) {
@@ -188,9 +188,10 @@ where ForceField.Vector == SIMD2<Double> {
         let _model = ForceDirectedGraph2DLayoutEngine(
             initialSimulation: simulation
         )
-        proxy.layoutEngine = _model
+        self.proxy = Proxy()
+        self.proxy.layoutEngine = _model
         self.model = _model
-        self.proxy = proxy
+        // self.proxy = sproxy
     }
 
 }
