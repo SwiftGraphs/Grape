@@ -104,17 +104,28 @@ extension Kinetics {
 
         @inlinable
         internal func calculateForce(alpha: Vector.Scalar) {
+
+
+            let theta2 = self.theta2
+            let distanceMin2 = self.distanceMin2
+            let distanceMax2 = self.distanceMax2
+            let strength = self.strength
+            // let positions = kinetics.position
+            let precalculatedMass = self.precalculatedMass
+            let mass = self.mass
+
+
             let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
 
             let tree = KDTree(
                 box: coveringBox
             ) {
-                return switch self.mass {
+                return switch mass {
                 case .constant(let m):
                     MassCentroidKDTreeDelegate<Vector> { _ in m }
                 case .varied(_):
                     MassCentroidKDTreeDelegate<Vector> { index in
-                        self.precalculatedMass[index]
+                        precalculatedMass[index]
                     }
                 }
             }
@@ -128,36 +139,37 @@ extension Kinetics {
 
             }
 
-            //        var forces = [simd_double2](repeating: .zero, count: sim.nodePositions.count)
+            // Avoid capturing self
 
             for i in kinetics.position.indices {
+                let pos = kinetics.position[i]
                 var f = Vector.zero
-                tree.visit { [self] t in
+                tree.visit { t in
 
                     guard t.delegate.accumulatedCount > 0 else { return false }
                     let centroid =
                         t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
 
-                    let vec = centroid - kinetics.position[i]
+                    let vec = centroid - pos
                     let boxWidth = (t.box.p1 - t.box.p0)[0]
                     var distanceSquared = (vec.jiggled()).lengthSquared()
 
                     let farEnough: Bool =
-                        (distanceSquared * self.theta2) > (boxWidth * boxWidth)
+                        (distanceSquared * theta2) > (boxWidth * boxWidth)
 
                     //                let distance = distanceSquared.squareRoot()
 
-                    if distanceSquared < self.distanceMin2 {
-                        distanceSquared = (self.distanceMin2 * distanceSquared).squareRoot()
+                    if distanceSquared < distanceMin2 {
+                        distanceSquared = (distanceMin2 * distanceSquared).squareRoot()
                     }
 
                     if farEnough {
 
-                        guard distanceSquared < self.distanceMax2 else { return true }
+                        guard distanceSquared < distanceMax2 else { return true }
 
                         /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
                         let k: Vector.Scalar =
-                            self.strength * alpha * t.delegate.accumulatedMass
+                            strength * alpha * t.delegate.accumulatedMass
                             / distanceSquared  // distanceSquared.squareRoot()
 
                         f += vec * k
@@ -180,7 +192,7 @@ extension Kinetics {
 
                         let massAcc = t.delegate.accumulatedMass
                         //                    t.nodeIndices.contains(i) ?  (t.delegate.accumulatedMass-self.precalculatedMass[i]) : (t.delegate.accumulatedMass)
-                        let k: Vector.Scalar = self.strength * alpha * massAcc / distanceSquared  // distanceSquared.squareRoot()
+                        let k: Vector.Scalar = strength * alpha * massAcc / distanceSquared  // distanceSquared.squareRoot()
                         f += vec * k
                         return false
                     } else {
@@ -188,7 +200,7 @@ extension Kinetics {
                     }
                 }
                 // forces[i] = f
-                kinetics.position[i] += f / self.precalculatedMass[i]
+                kinetics.position[i] += f / precalculatedMass[i]
             }
         }
 
