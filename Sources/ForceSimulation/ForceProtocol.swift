@@ -1,10 +1,6 @@
 public protocol ForceProtocol<Vector>{
     associatedtype Vector where Vector: SimulatableVector & L2NormCalculatable
-
-    // var kinetics: Kinetics<Vector>? { get set }
-
     @inlinable func apply()
-
     @inlinable mutating func bindKinetics(_ kinetics: Kinetics<Vector>) 
 }
 

@@ -67,7 +67,7 @@ let package = Package(
             //     .unsafeFlags([
             //          "-cross-module-optimization",
             //         // "-whole-module-optimization",
-            //         // "-Ounchecked",
+            //         "-Ounchecked",
             //     ])
             // ]
         ),

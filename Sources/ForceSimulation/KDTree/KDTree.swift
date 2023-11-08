@@ -1,175 +1,55 @@
-//
-//  NDTree.swift
-//
-//
-//  Created by li3zhen1 on 10/14/23.
-//
-import simd
-
-/// The data structure carried by a node of NDTree.
-///
-/// It receives notifications when a node is added or removed on a node, regardless of whether the node is internal or leaf.
-/// It is designed to calculate properties like a box's center of mass.
-public protocol KDTreeDelegate<NodeID, Vector> {
-    associatedtype NodeID: Hashable
-    associatedtype Vector: SIMD where Vector.Scalar: FloatingPoint & ExpressibleByFloatLiteral
-
-    /// Called when a node is added on a node, regardless of whether the node is internal or leaf.
-    ///
-    /// If you add `n` points to the root, this method will be called `n` times in the root delegate,
-    /// although it is probably not containing points now.
-    /// - Parameters:
-    ///   - node: The nodeID of the node that is added.
-    ///   - position: The position of the node that is added.
-    @inlinable mutating func didAddNode(_ node: NodeID, at position: Vector)
-
-    /// Called when a node is removed on a node, regardless of whether the node is internal or leaf.
-    @inlinable mutating func didRemoveNode(_ node: NodeID, at position: Vector)
-
-    /// Copy object.
-    ///
-    /// This method is called when the root box is not large enough to cover the new nodes.
-    @inlinable func copy() -> Self
-
-    /// Create new object with properties set to initial value as if the box is empty.
-    ///
-    /// However, you can still carry something like a closure to get information from outside.
-    /// This method is called when a leaf box is splited due to the insertion of a new node in this box.
-    @inlinable func spawn() -> Self
-}
-
-/// A node in NDTree
-/// - Note: `NDTree` is a generic type that can be used in any dimension.
-///        `NDTree` is a reference type.
-public final class NDTree<Vector, Delegate>
+public struct KDTree<V, D>
 where
-    Vector: SimulatableVector & L2NormCalculatable,
-    Delegate: KDTreeDelegate<Int, Vector>
+    V: SimulatableVector & L2NormCalculatable,
+    D: KDTreeDelegate<Int, V>
 {
-
-    public typealias NodeIndex = Int
-
+    public typealias NodeIndex = D.NodeID
     public typealias Direction = Int
-
-    public typealias Box = KDBox<Vector>
+    public typealias Box = KDBox<V>
 
     public var box: Box
-
-    public var children: [NDTree<Vector, Delegate>]?
-
-    public var nodePosition: Vector?
+    public var children: [KDTree<V, D>]?
+    public var nodePosition: V?
     public var nodeIndices: [NodeIndex]
 
-    @inlinable
-    public static var clusterDistance: Vector.Scalar {
-        return Vector.clusterDistance
+    // public let clusterDistance: V.Scalar
+    @inlinable var clusterDistanceSquared: V.Scalar {
+        return V.clusterDistanceSquared
     }
 
-    @inlinable
-    public static var clusterDistanceSquared: Vector.Scalar {
-        return Vector.clusterDistanceSquared
-    }
+    public var delegate: D
 
-    public var delegate: Delegate
+    @inlinable
+    public init(
+        box: Box,
+        // clusterDistanceSquared: V.Scalar,
+        spawnedDelegateBeingConsumed: consuming D
+    ) {
+        self.box = box
+        // self.clusterDistanceSquared = clusterDistanceSquared
+        self.nodeIndices = []
+        self.delegate = consume spawnedDelegateBeingConsumed
+    }
 
     @inlinable
     init(
         box: Box,
-        parentDelegate: Delegate
+        // clusterDistanceSquared: V.Scalar,
+        spawnedDelegateBeingConsumed: consuming D,
+        childrenBeingConsumed: consuming [KDTree<V, D>]
     ) {
         self.box = box
+        // self.clusterDistanceSquared = clusterDistanceSquared
         self.nodeIndices = []
-        self.delegate = parentDelegate.spawn()
-    }
-    @inlinable
-    public init(
-        box: Box,
-        buildRootDelegate: () -> Delegate
-    ) {
-        self.box = box
-        self.nodeIndices = []
-        self.delegate = buildRootDelegate()
-    }
-    @inlinable
-    public convenience init(
-        covering nodes: [NodeIndex: Vector],
-        clusterDistance: Vector.Scalar,
-        buildRootDelegate: () -> Delegate
-    ) {
-        let coveringBox = Box.cover(of: Array(nodes.values))
-        self.init(
-            box: coveringBox,
-            buildRootDelegate: buildRootDelegate)
-        for (i, p) in nodes {
-            add(i, at: p)
-        }
-    }
-    @inlinable
-    public func add(_ nodeIndex: NodeIndex, at point: Vector) {
-        cover(point)
-        addWithoutCover(nodeIndex, at: point)
+        self.delegate = consume spawnedDelegateBeingConsumed
+        self.children = consume childrenBeingConsumed
     }
 
     @inlinable
-    func addWithoutCover(_ nodeIndex: NodeIndex, at point: Vector) {
-        defer {
-            delegate.didAddNode(nodeIndex, at: point)
-        }
+    static var directionCount: Int { 1 << V.scalarCount }
 
-        guard let children = self.children else {
-            if nodePosition == nil {
-                nodeIndices.append(nodeIndex)
-                nodePosition = point
-                return
-            } else if nodePosition == point
-                || nodePosition!.distanceSquared(to: point) < Self.clusterDistanceSquared
-            {
-                nodeIndices.append(nodeIndex)
-                return
-            } else {
-
-                let spawned = Self.spawnChildren(
-                    box,
-                    //                    Self.directionCount,
-                    // clusterDistance,
-                    /*&*/delegate
-                )
-
-                if let nodePosition {
-                    let direction = getIndexInChildren(nodePosition, relativeTo: box.center)
-                    spawned[direction].nodeIndices = self.nodeIndices
-                    spawned[direction].nodePosition = self.nodePosition
-                    spawned[direction].delegate = self.delegate.copy()
-                    //                    self.delegate = self.delegate.copy()
-
-                    //                    for ni in nodeIndices {
-                    //                        delegate.didAddNode(ni, at: nodePosition)
-                    //                    }
-
-                    self.nodeIndices = []
-                    self.nodePosition = nil
-                }
-
-                let directionOfNewNode = getIndexInChildren(point, relativeTo: box.center)
-                spawned[directionOfNewNode].addWithoutCover(nodeIndex, at: point)
-
-                self.children = spawned
-                return
-
-            }
-        }
-
-        let directionOfNewNode = getIndexInChildren(point, relativeTo: box.center)
-        children[directionOfNewNode].addWithoutCover(nodeIndex, at: point)
-
-        return
-    }
-
-    /// Expand the current node multiple times by calling `expand(towards:)`, until the point is covered.
-    ///
-    /// - Parameter point: The point to be covered.
     @inlinable
-    func cover(_ point: Vector) {
+    mutating func cover(_ point: V) {
         if box.contains(point) { return }
 
         repeat {
@@ -178,117 +58,153 @@ where
         } while !box.contains(point)
     }
 
-    /// Expand the current node towards a direction.
-    ///
-    /// The expansion will double the size on each dimension. Then the data in delegate will be copied to the new children.
-    /// - Parameter direction: An Integer between 0 and `directionCount - 1`, where `directionCount` equals to 2^(dimension of the vector).
-    @inlinable
-    func expand(towards direction: Direction) {
-        let nailedDirection = (Self.directionCount - 1) - direction
-        let nailedCorner = box.getCorner(of: nailedDirection)
-
-        let _corner = box.getCorner(of: direction)
-        let expandedCorner = (_corner + _corner) - nailedCorner
-
-        let newRootBox = Box(nailedCorner, expandedCorner)
-
-        let copiedCurrentNode = shallowCopy()
-        var spawned = Self.spawnChildren(
-            newRootBox,
-            //            Self.directionCount,
-            // clusterDistance,
-            /*&*/delegate
-        )
-
-        spawned[nailedDirection] = copiedCurrentNode
-
-        self.box = newRootBox
-        self.children = spawned
-        self.nodeIndices = []
-        self.delegate = delegate.copy()
-
-    }
-
-    /// The children count of a node in NDTree.
-    ///
-    /// Should be equal to the 2^(dimension of the vector).
-    /// For example, a 2D vector should have 4 children, a 3D vector should have 8 children.
-    /// This property is a getter property but it is probably be inlined.
-    @inlinable static var directionCount: Int { 1 << Vector.scalarCount }
-
-    @inlinable
-    static func spawnChildren(
-        _ _box: Box,
-        // _ _clusterDistance: Vector.Scalar,
-        _ _delegate: Delegate
-    ) -> [NDTree<Vector, Delegate>] {
-
-        var result = [NDTree<Vector, Delegate>]()
-        result.reserveCapacity(Self.directionCount)
-        let center = _box.center
-
-        for j in 0..<Self.directionCount {
-            var __box = _box
-            for i in 0..<Vector.scalarCount {
-                let isOnTheHigherRange = (j >> i) & 0b1
-
-                // TODO: use simd mask
-                if isOnTheHigherRange != 0 {
-                    __box.p0[i] = center[i]
-                } else {
-                    __box.p1[i] = center[i]
-                }
-            }
-            result.append(
-                NDTree(
-                    box: __box, parentDelegate: /*&*/ _delegate)
-            )
-        }
-
-        return result
-    }
-
-    /// Copy object while holding the same reference to children.
-    ///
-    /// Consider this function something you would do when working with linked list.
-    @inlinable
-    func shallowCopy() -> NDTree<Vector, Delegate> {
-        let copy = NDTree(
-            box: box, parentDelegate: /*&*/ delegate)
-
-        copy.nodeIndices = nodeIndices
-        copy.nodePosition = nodePosition
-        copy.children = children
-        copy.delegate = delegate
-
-        return consume copy
-    }
-
     /// Get the index of the child that contains the point.
     ///
     /// **Complexity**: `O(n*(2^n))`, where `n` is the dimension of the vector.
-    @inlinable func getIndexInChildren(_ point: Vector, relativeTo originalPoint: Vector) -> Int {
+    @inlinable
+    func getIndexInChildren(_ point: V, relativeTo originalPoint: V) -> Int {
         var index = 0
+
         let mask = point .>= originalPoint
-        for i in 0..<Vector.scalarCount {
+
+        for i in 0..<V.scalarCount {
             if mask[i] {  // isOnHigherRange in this dimension
                 index |= (1 << i)
             }
         }
-
-        // for i in 0..<Vector.scalarCount {
-        //     if point[i] >= originalPoint[i] {  // isOnHigherRange in this dimension
-        //         index |= (1 << i)
-        //     }
-        // }
         return index
     }
 
+    @inlinable
+    mutating func expand(towards direction: Direction) {
+        let nailedDirection = (Self.directionCount - 1) - direction
+        let nailedCorner = box.getCorner(of: nailedDirection)
+        let _corner = box.getCorner(of: direction)
+        let expandedCorner = (_corner + _corner) - nailedCorner
+        let newRootBox = Box(nailedCorner, expandedCorner)
+
+        // let clusterDistanceSquared = self.clusterDistanceSquared
+        // let _delegate = delegate
+        let spawned = delegate.spawn()
+
+        // Dont reference self anymore
+        //        let tempSelf = consume self
+
+        var result = [KDTree<V, D>]()
+        result.reserveCapacity(Self.directionCount)
+        //        let center = newRootBox.center
+
+        for j in 0..<Self.directionCount {
+
+            var __box = newRootBox
+            for i in 0..<V.scalarCount {
+                let isOnTheHigherRange = (j >> i) & 0b1
+
+                // TODO: use simd mask
+                if isOnTheHigherRange != 0 {
+                    __box.p0[i] = _corner[i]
+                } else {
+                    __box.p1[i] = _corner[i]
+                }
+            }
+            result.append(
+                Self(
+                    box: __box,
+                    // clusterDistanceSquared: clusterDistanceSquared,
+                    spawnedDelegateBeingConsumed: j != nailedDirection ? self.delegate : spawned
+                )
+            )
+        }
+
+        //        result[nailedDirection] = consume tempSelf
+
+        self = Self(
+            box: newRootBox,
+            // clusterDistanceSquared: clusterDistanceSquared,
+            spawnedDelegateBeingConsumed: self.delegate,
+            childrenBeingConsumed: consume result
+        )
+
+    }
+
+    @inlinable
+    public mutating func add(_ nodeIndex: NodeIndex, at point: V) {
+        cover(point)
+        addWithoutCover(nodeIndex, at: point)
+    }
+
+    @inlinable
+    public mutating func addWithoutCover(_ nodeIndex: NodeIndex, at point: V) {
+        defer {
+            delegate.didAddNode(nodeIndex, at: point)
+        }
+
+        guard children != nil else {
+            if nodePosition == nil {
+                nodeIndices.append(nodeIndex)
+                nodePosition = point
+                return
+            } else if nodePosition == point
+                || nodePosition!.distanceSquared(to: point) < clusterDistanceSquared
+            {
+                nodeIndices.append(nodeIndex)
+                return
+            } else {
+
+                var spawnedChildren = [KDTree<V, D>]()
+                spawnedChildren.reserveCapacity(Self.directionCount)
+                let spawendDelegate = self.delegate.spawn()
+                let center = box.center
+
+                for j in 0..<Self.directionCount {
+                    var __box = self.box
+                    for i in 0..<V.scalarCount {
+                        let isOnTheHigherRange = (j >> i) & 0b1
+
+                        // TODO: use simd mask
+                        if isOnTheHigherRange != 0 {
+                            __box.p0[i] = center[i]
+                        } else {
+                            __box.p1[i] = center[i]
+                        }
+                    }
+                    spawnedChildren.append(
+                        Self(
+                            box: __box,
+                            // clusterDistanceSquared: clusterDistanceSquared,
+                            spawnedDelegateBeingConsumed: spawendDelegate
+                        )
+                    )
+                }
+
+                if let nodePosition {
+                    let direction = getIndexInChildren(nodePosition, relativeTo: box.center)
+                    spawnedChildren[direction].nodeIndices = self.nodeIndices
+                    spawnedChildren[direction].nodePosition = self.nodePosition
+                    spawnedChildren[direction].delegate = self.delegate
+                    self.nodeIndices = []
+                    self.nodePosition = nil
+                    // TODO: Consume
+                }
+
+                let directionOfNewNode = getIndexInChildren(point, relativeTo: box.center)
+                spawnedChildren[directionOfNewNode].addWithoutCover(nodeIndex, at: point)
+
+                self.children = spawnedChildren
+                return
+
+            }
+        }
+
+        let directionOfNewNode = getIndexInChildren(point, relativeTo: box.center)
+        self.children![directionOfNewNode].addWithoutCover(nodeIndex, at: point)
+        return
+    }
 }
 
-extension NDTree where Delegate.NodeID == Int {
+extension KDTree where D.NodeID == Int {
 
-    /// Initialize a NDTree with a list of points and a key path to the vector.
+    /// Initialize a KDTree with a list of points and a key path to the vector.
     ///
     /// - Parameters:
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
@@ -296,20 +212,34 @@ extension NDTree where Delegate.NodeID == Int {
     ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the root.
     ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the root delegate.
     @inlinable
-    public convenience init(
-        covering points: [Vector],
-        buildRootDelegate: () -> Delegate
+    public init(
+        covering points: [V],
+        buildRootDelegate: () -> D
     ) {
         let coveringBox = Box.cover(of: points)
         self.init(
-            box: coveringBox, buildRootDelegate: buildRootDelegate
+            box: coveringBox, spawnedDelegateBeingConsumed: buildRootDelegate()
         )
         for i in points.indices {
             add(i, at: points[i])
         }
     }
 
-    /// Initialize a NDTree with a list of points and a key path to the vector.
+    @inlinable
+    public init(
+        covering points: UnsafeArray<V>,
+        buildRootDelegate: () -> D
+    ) {
+        let coveringBox = Box.cover(of: points)
+        self.init(
+            box: coveringBox, spawnedDelegateBeingConsumed: buildRootDelegate()
+        )
+        for i in 0..<points.header {
+            add(i, at: points[i])
+        }
+    }
+
+    /// Initialize a KDTree with a list of points and a key path to the vector.
     ///
     /// - Parameters:
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
@@ -332,7 +262,7 @@ extension NDTree where Delegate.NodeID == Int {
     // }
 }
 
-extension NDTree {
+extension KDTree {
 
     /// The bounding box of the current node
     @inlinable public var extent: Box { box }
@@ -356,26 +286,13 @@ extension NDTree {
     /// Visit the tree in pre-order.
     ///
     /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
-    @inlinable public func visit(shouldVisitChildren: (NDTree<Vector, Delegate>) -> Bool) {
-        if shouldVisitChildren(self), let children {
+    @inlinable public mutating func visit(shouldVisitChildren: (inout KDTree<V, D>) -> Bool) {
+        if shouldVisitChildren(&self) && children != nil {
             // this is an internal node
-            for t in children {
-                t.visit(shouldVisitChildren: shouldVisitChildren)
+            for i in children!.indices {
+                children![i].visit(shouldVisitChildren: shouldVisitChildren)
             }
         }
     }
 
-    /// Visit the tree in post-order.
-    ///
-    /// - Parameter action: a closure that takes a tree as its argument.
-    @inlinable public func visitPostOrdered(
-        _ action: (NDTree<Vector, Delegate>) -> Void
-    ) {
-        if let children {
-            for c in children {
-                c.visitPostOrdered(action)
-            }
-        }
-        action(self)
-    }
 }

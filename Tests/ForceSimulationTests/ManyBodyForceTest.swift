@@ -22,11 +22,8 @@ struct NamedNode: Identifiable {
 }
 
 final class ManyBodyForceTests: XCTestCase {
-    
     func test() {
         
         
     }
-    
-    
 }
