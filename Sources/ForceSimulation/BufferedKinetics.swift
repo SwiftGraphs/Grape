@@ -1,123 +1,117 @@
-// class ManagedBufferArray<Vector>: ManagedBuffer<Int, UInt8> {
-//     static func create(_ size: Int) -> Self {
-//         unsafeDowncast(Buffer2.create(minimumCapacity: size) { buffer in
-//             buffer.withUnsafeMutablePointerToElements { pointer in
-//                 pointer.assign(repeating: 1, count: size)
-//             }
-//             return size
-//         }, to: Self.self)
-//     }
-// }
+public final class Kinetics<Vector>
+where Vector: SimulatableVector & L2NormCalculatable {
+    public var position: UnsafeArray<Vector>
+    public var velocity: UnsafeArray<Vector>
+    public var fixation: UnsafeArray<Vector?>
 
+    public let initializedAlpha: Vector.Scalar
 
-// public final class BufferedKinetics<Vector>
-// where Vector: SimulatableVector & L2NormCalculatable {
+    public var alpha: Vector.Scalar
+    public var alphaMin: Vector.Scalar
+    public var alphaDecay: Vector.Scalar
+    public var alphaTarget: Vector.Scalar
 
-//     public var position: ManagedBuffer<Int, Vector>
-//     public var velocity: ManagedBuffer<Int, Vector>
-//     public var fixation: ManagedBuffer<Int, Vector>
-//     // public var position: [Vector]
-//     // public var velocity: [Vector]
-//     // public var fixation: [Vector?]
+    public let velocityDecay: Vector.Scalar
 
-//     public let initializedAlpha: Vector.Scalar
+    // public var validRanges: [Range<Int>]
+    // public var validRanges: Range<Int>
+    public var validCount: Int
 
-//     public var alpha: Vector.Scalar
-//     public var alphaMin: Vector.Scalar
-//     public var alphaDecay: Vector.Scalar
-//     public var alphaTarget: Vector.Scalar
+    @inlinable
+    public var range: Range<Int> {
+        return 0..<validCount
+    }
+    // {
+    //     return validRanges.reduce(0) { $0 + $1.count }
+    // }
 
-//     public let velocityDecay: Vector.Scalar
+    @inlinable
+    init(
+        initialAlpha: Vector.Scalar,
+        alphaMin: Vector.Scalar,
+        alphaDecay: Vector.Scalar,
+        alphaTarget: Vector.Scalar,
+        velocityDecay: Vector.Scalar,
+        position: [Vector],
+        velocity: [Vector],
+        fixation: [Vector?]
+    ) {
+        self.initializedAlpha = initialAlpha
+        self.alpha = initialAlpha
+        self.alphaMin = alphaMin
+        self.alphaDecay = alphaDecay
+        self.alphaTarget = alphaTarget
+        self.velocityDecay = velocityDecay
 
-//     // public var validRanges: [Range<Int>]
-//     // public var validRanges: Range<Int>
-//     public var validCount: Int
-//     @inlinable 
-//     public var range: Range<Int> {
-//         return 0..<validCount
-//     }
-//     // {
-//     //     return validRanges.reduce(0) { $0 + $1.count }
-//     // }
+        // self.validRanges = 0..<position.count
+        self.validCount = position.count
 
-//     @inlinable
-//     init(
-//         initialAlpha: Vector.Scalar,
-//         alphaMin: Vector.Scalar,
-//         alphaDecay: Vector.Scalar,
-//         alphaTarget: Vector.Scalar,
-//         velocityDecay: Vector.Scalar,
-//         position: [Vector],
-//         velocity: [Vector],
-//         fixation: [Vector?]
-//     ) {
-//         self.initializedAlpha = initialAlpha
-//         self.alpha = initialAlpha
-//         self.alphaMin = alphaMin
-//         self.alphaDecay = alphaDecay
-//         self.alphaTarget = alphaTarget
-//         self.velocityDecay = velocityDecay
+        self.position = UnsafeArray<Vector>.createBuffer(
+            withHeader: position.count,
+            count: position.count,
+            initialValue: .zero
+        )
+        self.velocity = UnsafeArray<Vector>.createBuffer(
+            withHeader: position.count,
+            count: position.count,
+            initialValue: .zero
+        )
+        self.fixation = UnsafeArray<Vector?>.createBuffer(
+            withHeader: position.count,
+            count: position.count,
+            initialValue: nil
+        )
+    }
 
-//         // self.validRanges = 0..<position.count
-//         self.validCount = position.count
+    @inlinable
+    class func createZeros(
+        initialAlpha: Vector.Scalar,
+        alphaMin: Vector.Scalar,
+        alphaDecay: Vector.Scalar,
+        alphaTarget: Vector.Scalar,
+        velocityDecay: Vector.Scalar,
+        count: Int
+    ) -> Kinetics<Vector> {
+        return Kinetics(
+            initialAlpha: initialAlpha,
+            alphaMin: alphaMin,
+            alphaDecay: alphaDecay,
+            alphaTarget: alphaTarget,
+            velocityDecay: velocityDecay,
 
-//         self.position = .create(minimumCapacity: position.count) { buffer in
-//             buffer.initialize(from: position)
-//             return position.count
-//         }
-//         self.velocity = velocity
-//         self.fixation = fixation
-//     }
+            position: Array(repeating: .zero, count: count),
+            velocity: Array(repeating: .zero, count: count),
+            fixation: Array(repeating: nil, count: count)
+        )
+    }
+}
 
-//     @inlinable
-//     class func createZeros(
-//         initialAlpha: Vector.Scalar,
-//         alphaMin: Vector.Scalar,
-//         alphaDecay: Vector.Scalar,
-//         alphaTarget: Vector.Scalar,
-//         velocityDecay: Vector.Scalar,
-//         count: Int
-//     ) -> Kinetics<Vector> {
-//         return Kinetics(
-//             initialAlpha: initialAlpha,
-//             alphaMin: alphaMin,
-//             alphaDecay: alphaDecay,
-//             alphaTarget: alphaTarget,
-//             velocityDecay: velocityDecay,
+extension Kinetics {
+    @inlinable
+    func updatePositions() {
+        for i in range {
+            if let fix = fixation[i] {
+                position[i] = fix
+            } else {
+                velocity[i] *= velocityDecay
+                position[i] += velocity[i]
+            }
+        }
+    }
 
-//             position: Array(repeating: .zero, count: count),
-//             velocity: Array(repeating: .zero, count: count),
-//             fixation: Array(repeating: nil, count: count)
-//         )
-//     }
-// }
+    @inlinable
+    func updateAlpha() {
+        alpha += (alphaTarget - alpha) * alphaDecay
+    }
 
-// extension BufferedKinetics {
-//     @inlinable
-//     func updatePositions() {
-//         for i in position.indices {
-//             if let fix = fixation[i] {
-//                 position[i] = fix
-//             } else {
-//                 velocity[i] *= velocityDecay
-//                 position[i] += velocity[i]
-//             }
-//         }
-//     }
+    @inlinable
+    func invalidateRange(_ range: Range<Int>) {
+        fatalError("Not implemented")
+    }
 
-//     @inlinable
-//     func updateAlpha() {
-//         alpha += (alphaTarget - alpha) * alphaDecay
-//     }
+    @inlinable
+    func validateRangeAndExtendIfNeccessary(_ range: Range<Int>) {
+        fatalError("Not implemented")
+    }
 
-//     @inlinable
-//     func invalidateRange(_ range: Range<Int>) {
-//         fatalError("Not implemented")
-//     }
-
-//     @inlinable
-//     func validateRangeAndExtendIfNeccessary(_ range: Range<Int>) {
-//         fatalError("Not implemented")
-//     }
-
-// }
+}

@@ -1,4 +1,4 @@
-public final class Kinetics<Vector>
+public final class _Kinetics<Vector>
 where Vector: SimulatableVector & L2NormCalculatable {
     public var position: [Vector]
     public var velocity: [Vector]
@@ -16,7 +16,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
     // public var validRanges: [Range<Int>]
     // public var validRanges: Range<Int>
     public var validCount: Int
-    
+
     @inlinable 
     public var range: Range<Int> {
         return 0..<validCount
@@ -59,8 +59,8 @@ where Vector: SimulatableVector & L2NormCalculatable {
         alphaTarget: Vector.Scalar,
         velocityDecay: Vector.Scalar,
         count: Int
-    ) -> Kinetics<Vector> {
-        return Kinetics(
+    ) -> _Kinetics<Vector> {
+        return _Kinetics(
             initialAlpha: initialAlpha,
             alphaMin: alphaMin,
             alphaDecay: alphaDecay,
@@ -74,7 +74,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
     }
 }
 
-extension Kinetics {
+extension _Kinetics {
     @inlinable
     func updatePositions() {
         for i in range {

@@ -229,6 +229,20 @@ extension NDTree where D.NodeID == Int {
         }
     }
 
+    @inlinable
+    public init(
+        covering points: UnsafeArray<V>,
+        buildRootDelegate: () -> D
+    ) {
+        let coveringBox = Box.cover(of: points)
+        self.init(
+            box: coveringBox, spawnedDelegateBeingConsumed: buildRootDelegate()
+        )
+        for i in 0..<points.header {
+            add(i, at: points[i])
+        }
+    }
+
     /// Initialize a KDTree with a list of points and a key path to the vector.
     ///
     /// - Parameters:

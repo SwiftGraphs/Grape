@@ -169,6 +169,27 @@ extension KDBox {
         return Self(_p0, _p1)
     }
 
+
+    @inlinable public static func cover(of points: UnsafeArray<V>) -> Self {
+
+        var _p0 = points[0]
+        var _p1 = points[0]
+
+        for pi in 0..<points.header {
+            let p = points[pi]
+            for i in points[pi].indices {
+                if p[i] < _p0[i] {
+                    _p0[i] = p[i]
+                }
+                if p[i] >= _p1[i] {
+                    _p1[i] = p[i] + 1
+                }
+            }
+        }
+
+        return Self(_p0, _p1)
+    }
+
     // /// Get the small box that contains a list points and guarantees the box's size is at least 1x..x1.
     // ///
     // /// Please note that KeyPath is slow.

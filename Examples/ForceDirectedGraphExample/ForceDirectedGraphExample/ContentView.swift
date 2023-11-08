@@ -143,7 +143,8 @@ struct ContentView: View {
                 }
             }
             .onAppear {
-                self.points = sim.kinetics.position
+                self.points = sim.kinetics.position.asArray()
+                
             }
             .frame(width: 600, height: 400)
             .navigationTitle("Force Directed Graph Example")
@@ -157,7 +158,7 @@ struct ContentView: View {
                     
                     /// This is a CPU-bound task. Try to move it to other places.
                     self.sim.tick()
-                    self.points = sim.kinetics.position
+                    self.points = sim.kinetics.position.asArray()
                     
                 }
                 

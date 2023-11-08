@@ -18,7 +18,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
         alphaTarget: Vector.Scalar = 0.0,
         velocityDecay: Vector.Scalar = 0.6
     ) {
-        self.kinetics = Kinetics.createZeros(
+        self.kinetics = .createZeros(
             initialAlpha: initialAlpha,
             alphaMin: alphaMin,
             alphaDecay: alphaDecay,

@@ -8,8 +8,8 @@ extension Kinetics {
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
             var meanPosition = Vector.zero
-            for n in kinetics.position {
-                meanPosition += n  //.position
+            for i in kinetics.range {
+                meanPosition += kinetics.position[i]  //.position
             }
             let delta = meanPosition * (self.strength / Vector.Scalar(kinetics.validCount))
 

@@ -67,17 +67,17 @@ extension Kinetics {
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
-            self.calculatedRadius = self.radius.calculate(for: kinetics.validCount)
+            self.calculatedRadius = self.radius.calculateUnsafe(for: kinetics.validCount)
         }
 
         @usableFromInline
-        var calculatedRadius: [Vector.Scalar] = []
+        var calculatedRadius: UnsafeArray<Vector.Scalar>! = nil
         @inlinable
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
 
             let kinetics = self.kinetics!
-            let calculatedRadius = self.calculatedRadius
+            let calculatedRadius = self.calculatedRadius!
             let strength = self.strength
 
             for _ in 0..<iterationsPerTick {

@@ -76,7 +76,7 @@ extension Kinetics {
         @usableFromInline var distanceMax: Vector.Scalar = .infinity
 
         public var mass: NodeMass
-        @usableFromInline var precalculatedMass: [Vector.Scalar] = []
+        @usableFromInline var precalculatedMass: UnsafeArray<Vector.Scalar>! = nil
 
         // @usableFromInline var forces: [Vector] = []
 
@@ -95,15 +95,16 @@ extension Kinetics {
         @inlinable
         public func apply() {
 
-            calculateForce(alpha: self.kinetics.alpha)  //else { return }
+        //     calculateForce(alpha: self.kinetics.alpha)  //else { return }
 
-            // for i in 0..<self.kinetics.validCount {
-            //     kinetics.position[i] += self.forces[i] / self.precalculatedMass[i]
-            // }
-        }
+        //     // for i in 0..<self.kinetics.validCount {
+        //     //     kinetics.position[i] += self.forces[i] / self.precalculatedMass[i]
+        //     // }
+        // }
 
-        @inlinable
-        internal func calculateForce(alpha: Vector.Scalar) {
+        // @inlinable
+        // internal func calculateForce(alpha: Vector.Scalar) {
+            let alpha = self.kinetics.alpha
 
 
             // Avoid capturing self
@@ -111,7 +112,7 @@ extension Kinetics {
             let distanceMin2 = self.distanceMin2
             let distanceMax2 = self.distanceMax2
             let strength = self.strength
-            let precalculatedMass = self.precalculatedMass
+            let precalculatedMass = self.precalculatedMass!
             let mass = self.mass
             let kinetics = self.kinetics!
 
@@ -208,7 +209,7 @@ extension Kinetics {
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
-            self.precalculatedMass = self.mass.calculate(for: (kinetics.validCount))
+            self.precalculatedMass = self.mass.calculateUnsafe(for: (kinetics.validCount))
             // self.forces = .init(repeating: .zero, count: kinetics.validCount)
 
         }
