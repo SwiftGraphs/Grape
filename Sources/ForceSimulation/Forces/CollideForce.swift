@@ -82,21 +82,22 @@ extension Kinetics {
 
                 // let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
 
-                let tree = NDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>(covering: kinetics.position) {
+                let kinetics = self.kinetics!
+                let calculatedRadius = self.calculatedRadius
+                let strength = self.strength
+
+                var tree = NDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>(
+                    covering: kinetics.position
+                ) {
                     return switch self.radius {
                     case .constant(let m):
                         MaxRadiusNDTreeDelegate<Vector> { _ in m }
                     case .varied(_):
                         MaxRadiusNDTreeDelegate<Vector> { index in
-                            self.calculatedRadius[index]
+                            calculatedRadius[index]
                         }
                     }
                 }
-
-                let kinetics = self.kinetics!
-                let calculatedRadius = self.calculatedRadius
-                let strength = self.strength
-                
 
                 // for i in kinetics.range {
                 //     tree.add(i, at: kinetics.position[i])
@@ -148,16 +149,26 @@ extension Kinetics {
 
                         // TODO: SIMD mask
 
-                        for laneIndex in t.box.p0.indices {
-                            let _v = t.box.p0[laneIndex]
-                            if _v > iPosition[laneIndex] + deltaR /* True if no overlap */ {
-                                return false
-                            }
-                        }
+                        // for laneIndex in t.box.p0.indices {
+                        //     let _v = t.box.p0[laneIndex]
+                        //     if _v > iPosition[laneIndex] + deltaR /* True if no overlap */ {
+                        //         return false
+                        //     }
+                        // }
 
-                        for laneIndex in t.box.p1.indices {
-                            let _v = t.box.p1[laneIndex]
-                            if _v < iPosition[laneIndex] - deltaR /* True if no overlap */ {
+                        // for laneIndex in t.box.p1.indices {
+                        //     let _v = t.box.p1[laneIndex]
+                        //     if _v < iPosition[laneIndex] - deltaR /* True if no overlap */ {
+                        //         return false
+                        //     }
+                        // }
+
+                        for laneIndex in t.box.p0.indices {
+                            // let _v = t.box.p1[laneIndex]
+                            if (t.box.p0[laneIndex] > iPosition[laneIndex] + deltaR)
+                                || (t.box.p1[laneIndex] < iPosition[laneIndex]
+                                    - deltaR) /* True if no overlap */
+                            {
                                 return false
                             }
                         }

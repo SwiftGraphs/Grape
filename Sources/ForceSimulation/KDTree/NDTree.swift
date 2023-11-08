@@ -276,8 +276,8 @@ extension NDTree {
     /// Visit the tree in pre-order.
     ///
     /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
-    @inlinable public func visit(shouldVisitChildren: (borrowing NDTree<V, D>) -> Bool) {
-        if shouldVisitChildren(self) && children != nil {
+    @inlinable public mutating func visit(shouldVisitChildren: (inout NDTree<V, D>) -> Bool) {
+        if shouldVisitChildren(&self) && children != nil {
             // this is an internal node
             for i in children!.indices {
                 children![i].visit(shouldVisitChildren: shouldVisitChildren)

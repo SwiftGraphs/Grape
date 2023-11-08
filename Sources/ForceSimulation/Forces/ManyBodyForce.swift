@@ -117,7 +117,7 @@ extension Kinetics {
 
             // let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
 
-            let tree = NDTree(
+            var tree = NDTree(
                 covering: kinetics.position
             ) {
                 return switch mass {
