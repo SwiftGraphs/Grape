@@ -29,12 +29,11 @@ struct MyForceField: ForceField {
         Kinetics<Vector>.ManyBodyForce(strength: -30)
 
         Kinetics<Vector>.LinkForce(
-            getLinks(),
             stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
             originalLength: .constant(30)
         )
 
-        Kinetics<Vector>.CenterForce(center: 0, strength: 1)
+        Kinetics<Vector>.CenterForce(center: .zero, strength: 1)
 
         Kinetics<Vector>.CollideForce(radius: .constant(0))
 
@@ -50,18 +49,16 @@ struct MyForceField3D: ForceField {
         Kinetics<Vector>.ManyBodyForce(strength: -30)
 
         Kinetics<Vector>.LinkForce(
-            getLinks(),
             stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
             originalLength: .constant(30)
         )
 
-        Kinetics<Vector>.CenterForce(center: 0, strength: 1)
+        Kinetics<Vector>.CenterForce(center: .zero, strength: 1)
 
         Kinetics<Vector>.CollideForce(radius: .constant(0))
 
     }
 }
-
 
 final class MiserableGraphTest: XCTestCase {
 
@@ -71,109 +68,10 @@ final class MiserableGraphTest: XCTestCase {
 
         let simulation = Simulation(
             nodeCount: data.nodes.count,
+            links: getLinks(),
             forceField: MyForceField()
         )
 
-<<<<<<< HEAD
-        let _ = sim.createLinkForce(
-            data.links.map({ l in
-                (l.source, l.target)
-            }))
-        let _ = sim.createManyBodyForce(strength: -30)
-
-        let _ = sim.createCenterForce(center: .zero)
-        let _ = sim.createCollideForce(radius: .constant(5))
-
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-        //
-        ////        sim.tick()
-        //
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-
-        measure {
-            for _ in 0..<120 {
-                sim.tick()
-//                print(i)
-            }
-        }
-        sim.tick()
-        //        print(sim.simulationNodes)
-
-    }
-    
-
-    func test_Inlined_2d() {
-        let data = getData()
-
-        let sim = Simulation2D<String>(
-            nodeIds: data.nodes.map { n in
-                n.id
-            })
-
-        let _ = sim.createLinkForce(
-            data.links.map({ l in
-                (l.source, l.target)
-            }))
-        let _ = sim.createManyBodyForce(strength: -30)
-
-        let _ = sim.createCenterForce(center: .zero)
-        let _ = sim.createCollideForce(radius: .constant(5))
-
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-        //
-        ////        sim.tick()
-        //
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-
-        measure {
-            for _ in 0..<120 {
-                sim.tick()
-//                print(i)
-            }
-        }
-        sim.tick()
-        //        print(sim.simulationNodes)
-
-    }
-    
-    
-    func test3d() {
-        let data = getData()
-
-        let sim = Simulation3D(
-            nodeIds: data.nodes.map { n in
-                n.id
-            })
-
-        let _ = sim.createLinkForce(
-            data.links.map({ l in
-                (l.source, l.target)
-            }))
-        let _ = sim.createManyBodyForce(strength: -30)
-
-        let _ = sim.createCenterForce(center: .zero)
-        let _ = sim.createCollideForce(radius: .constant(5))
-
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-        //
-        ////        sim.tick()
-        //
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-        
-        
-=======
         // let wrapped = Simulation2D(
         //     nodeIds: data.nodes.map { n in
         //         n.id
@@ -188,7 +86,6 @@ final class MiserableGraphTest: XCTestCase {
         // .withCenterForce(center: .zero)
         // .withCollideForce(radius: .constant(5.0))
         //simulation.tick()
->>>>>>> protocol_force
         measure {
             for _ in 0..<120 {
                 simulation.tick()
@@ -202,6 +99,7 @@ final class MiserableGraphTest: XCTestCase {
 
         let simulation = Simulation(
             nodeCount: data.nodes.count,
+            links: getLinks(),
             forceField: MyForceField3D()
         )
 

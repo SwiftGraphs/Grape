@@ -16,8 +16,8 @@ func getLinks() -> [EdgeID<Int>] {
     let data = getData(miserables)
     return data.links.map { l in
         EdgeID(
-            source: data.nodes.firstIndex { n in n.id == l.source }!,
-            target: data.nodes.firstIndex { n in n.id == l.target }!
+            data.nodes.firstIndex { n in n.id == l.source }!,
+            data.nodes.firstIndex { n in n.id == l.target }!
         )
     }
 }
