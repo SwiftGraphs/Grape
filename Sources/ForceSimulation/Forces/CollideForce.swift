@@ -118,8 +118,8 @@ extension Kinetics {
                                 guard j > i else { continue }
 
                                 let jR = self.calculatedRadius[j]
-                                let jOriginalPosition = kinetics.position[j]
-                                let jOriginalVelocity = kinetics.velocity[j]
+                                let jOriginalPosition = self.kinetics.position[j]
+                                let jOriginalVelocity = self.kinetics.velocity[j]
                                 var deltaPosition =
                                     iPosition - (jOriginalPosition + jOriginalVelocity)
                                 let l = (deltaPosition).lengthSquared()
@@ -136,8 +136,8 @@ extension Kinetics {
 
                                     deltaPosition *= l
 
-                                    kinetics.velocity[i] += deltaPosition * k
-                                    kinetics.velocity[j] -= deltaPosition * (1 - k)
+                                    self.kinetics.velocity[i] += deltaPosition * k
+                                    self.kinetics.velocity[j] -= deltaPosition * (1 - k)
                                 }
                             }
                             return false

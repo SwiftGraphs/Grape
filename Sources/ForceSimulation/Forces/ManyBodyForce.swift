@@ -78,7 +78,7 @@ extension Kinetics {
         public var mass: NodeMass
         @usableFromInline var precalculatedMass: [Vector.Scalar] = []
 
-        @usableFromInline var forces: [Vector] = []
+        // @usableFromInline var forces: [Vector] = []
 
         @inlinable
         internal init(
@@ -94,13 +94,12 @@ extension Kinetics {
 
         @inlinable
         public func apply() {
-            let alpha = self.kinetics.alpha
 
-            calculateForce(alpha: alpha)  //else { return }
+            calculateForce(alpha: self.kinetics.alpha)  //else { return }
 
-            for i in 0..<self.kinetics.validCount {
-                kinetics.position[i] += self.forces[i] / self.precalculatedMass[i]
-            }
+            // for i in 0..<self.kinetics.validCount {
+            //     kinetics.position[i] += self.forces[i] / self.precalculatedMass[i]
+            // }
         }
 
         @inlinable
@@ -133,7 +132,7 @@ extension Kinetics {
 
             for i in kinetics.position.indices {
                 var f = Vector.zero
-                tree.visit { t in
+                tree.visit { [self] t in
 
                     guard t.delegate.accumulatedCount > 0 else { return false }
                     let centroid =
@@ -188,7 +187,8 @@ extension Kinetics {
                         return true
                     }
                 }
-                forces[i] = f
+                // forces[i] = f
+                kinetics.position[i] += f / self.precalculatedMass[i]
             }
         }
 
@@ -198,7 +198,7 @@ extension Kinetics {
         public func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
             self.precalculatedMass = self.mass.calculate(for: (kinetics.validCount))
-            self.forces = .init(repeating: .zero, count: kinetics.validCount)
+            // self.forces = .init(repeating: .zero, count: kinetics.validCount)
 
         }
     }

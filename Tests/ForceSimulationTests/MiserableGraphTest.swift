@@ -31,7 +31,8 @@ struct MyForceField: ForceField {
                     Kinetics<Vector>.ManyBodyForce(strength: -30)
                 ),
                 Kinetics<Vector>.CenterForce(center: 0, strength: 1)
-            ),
+            )
+            ,
             Kinetics<Vector>.CollideForce(radius: .constant(5.0))
         )
     }()
