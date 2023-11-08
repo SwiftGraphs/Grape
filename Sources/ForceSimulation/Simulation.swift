@@ -11,6 +11,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
     public
     init(
         nodeCount: Int,
+        links: [EdgeID<Int>],
         forceField: ForceField,
         initialAlpha: Vector.Scalar = 1,
         alphaMin: Vector.Scalar = 1e-3,
@@ -19,6 +20,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
         velocityDecay: Vector.Scalar = 0.6
     ) {
         self.kinetics = .createZeros(
+            links: links,
             initialAlpha: initialAlpha,
             alphaMin: alphaMin,
             alphaDecay: alphaDecay,

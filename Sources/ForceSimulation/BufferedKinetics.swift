@@ -4,6 +4,8 @@ where Vector: SimulatableVector & L2NormCalculatable {
     public var velocity: UnsafeArray<Vector>
     public var fixation: UnsafeArray<Vector?>
 
+    public var links: [EdgeID<Int>]
+
     public let initializedAlpha: Vector.Scalar
 
     public var alpha: Vector.Scalar
@@ -27,6 +29,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
 
     @inlinable
     init(
+        links: [EdgeID<Int>],
         initialAlpha: Vector.Scalar,
         alphaMin: Vector.Scalar,
         alphaDecay: Vector.Scalar,
@@ -36,6 +39,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
         velocity: [Vector],
         fixation: [Vector?]
     ) {
+        self.links = links
         self.initializedAlpha = initialAlpha
         self.alpha = initialAlpha
         self.alphaMin = alphaMin
@@ -65,6 +69,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
 
     @inlinable
     class func createZeros(
+        links: [EdgeID<Int>],
         initialAlpha: Vector.Scalar,
         alphaMin: Vector.Scalar,
         alphaDecay: Vector.Scalar,
@@ -73,6 +78,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
         count: Int
     ) -> Kinetics<Vector> {
         return Kinetics(
+            links: links,
             initialAlpha: initialAlpha,
             alphaMin: alphaMin,
             alphaDecay: alphaDecay,

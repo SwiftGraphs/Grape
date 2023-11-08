@@ -74,7 +74,6 @@ public struct LinkForce: ForceDescriptor {
     }
     public func createForce() -> Kinetics2D.LinkForce {
         return .init(
-            links,
             stiffness: stiffness, originalLength: originalLength,
             iterationsPerTick: iterationsPerTick)
     }

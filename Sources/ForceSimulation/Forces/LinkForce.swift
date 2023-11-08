@@ -94,7 +94,7 @@ extension Kinetics {
         }
 
         @usableFromInline
-        internal var links: [EdgeID<Int>]
+        internal var links: [EdgeID<Int>]! = nil
 
         @usableFromInline
         internal var linkLookup: LinkLookup<Int> = .init(links: [])
@@ -102,6 +102,7 @@ extension Kinetics {
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
+            self.links = kinetics.links
             self.links = self.links.filter {
                 $0.source < kinetics.validCount && $0.target < kinetics.validCount
             }
@@ -122,12 +123,12 @@ extension Kinetics {
 
         @inlinable
         public init(
-            _ links: [EdgeID<Int>],
+            // _ links: [EdgeID<Int>],
             stiffness: LinkStiffness,
             originalLength: LinkLength = .constant(30),
             iterationsPerTick: UInt = 1
         ) {
-            self.links = links
+            // self.links = links
             self.iterationsPerTick = iterationsPerTick
             self.linkStiffness = stiffness
             self.linkLength = originalLength
