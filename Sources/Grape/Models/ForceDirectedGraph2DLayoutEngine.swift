@@ -7,13 +7,16 @@ protocol LayoutEngine {
 }
 
 @Observable
-public class ForceDirectedGraph2DLayoutEngine<ForceField>: LayoutEngine where ForceField: ForceProtocol, ForceField.Vector == SIMD2<Double> {
+public class ForceDirectedGraph2DLayoutEngine<ForceField>: LayoutEngine
+where ForceField: ForceProtocol, ForceField.Vector == SIMD2<Double> {
 
     var simulation: Simulation2D<ForceField>
 
+    // var isRunning = false
+
     @ObservationIgnored
     let frameRate: Double = 60.0
-    
+
     @ObservationIgnored
     var scheduledTimer: Timer? = nil
 
@@ -21,7 +24,7 @@ public class ForceDirectedGraph2DLayoutEngine<ForceField>: LayoutEngine where Fo
         self.simulation = initialSimulation
     }
 
-    public func start() {
+    func start() {
         guard self.scheduledTimer == nil else { return }
         self.scheduledTimer = Timer.scheduledTimer(
             withTimeInterval: 1.0 / frameRate,
@@ -31,21 +34,21 @@ public class ForceDirectedGraph2DLayoutEngine<ForceField>: LayoutEngine where Fo
         }
     }
 
-    public func stop() {
+    func stop() {
         self.scheduledTimer?.invalidate()
         self.scheduledTimer = nil
     }
 
-    public func tick() {
+    func tick() {
         withMutation(keyPath: \.simulation) {
             simulation.tick()
         }
     }
 
-    public func tick(waitingForTickingOn queue: DispatchQueue) {
+    func tick(waitingForTickingOn queue: DispatchQueue) {
         queue.asyncAndWait {
             self.simulation.tick()
         }
-        withMutation(keyPath: \.self.simulation) { }
+        withMutation(keyPath: \.self.simulation) {}
     }
 }

@@ -1,4 +1,5 @@
 import ForceSimulation
+import Observation
 import SwiftUI
 
 // @resultBuilder
@@ -136,7 +137,25 @@ where ForceField.Vector == SIMD2<Double> {
                 //                    self.content.nodes[nodeIndex].id)
             }
         }
-        
+        .onAppear {
+            // Sync internal state with binding when the view appears
+            // model.isRunning = isRunning
+            if self.isRunning {
+                self.model.start()
+            }
+        }
+        .onChange(of: isRunning) { old, new in
+            // Update internal state when the binding's value changes
+            // print("new")
+            if new != old {
+                if new {
+                    self.model.start()
+                } else {
+                    self.model.stop()
+                }
+            }
+        }
+
     }
 
     @usableFromInline
@@ -145,10 +164,12 @@ where ForceField.Vector == SIMD2<Double> {
 
     @usableFromInline let content: Content
     // @usableFromInline let forceField: ForceField
+    @Binding var isRunning: Bool
 
-    @inlinable
+    // @inlinable
     public init(
-        proxy: Proxy? = nil,
+        // proxy: Proxy? = nil,
+        isRunning: Binding<Bool> = .constant(false),
         @GraphContentBuilder<NodeID> _ buildGraphContent: () -> PartialGraphMark<NodeID>,
         @ForceBuilder<SIMD2<Double>> forceField buildForceField: () -> ForceField
     ) {
@@ -191,7 +212,18 @@ where ForceField.Vector == SIMD2<Double> {
         self.proxy = Proxy()
         self.proxy.layoutEngine = _model
         self.model = _model
-        // self.proxy = sproxy
+        self._isRunning = isRunning
+
+        // withObservationTracking {
+        //     if self.model.isRunning {
+        //         self.proxy.start()
+        //     } else {
+        //         print(self.model.isRunning)
+        //     }
+        // } onChange: {
+            
+        // }
+
     }
 
 }
