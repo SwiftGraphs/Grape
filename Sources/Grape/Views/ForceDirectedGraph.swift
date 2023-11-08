@@ -11,7 +11,6 @@ import SwiftUI
 
 public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
 
-    public typealias Proxy = ForceDirectedGraph2DProxy<NodeID, ForceField>
     public typealias LayoutEngine = ForceDirectedGraph2DLayoutEngine
 
     public struct Content: GraphLike {
@@ -26,10 +25,19 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
 
     @usableFromInline
     var nodeIdToIndexLookup: [NodeID: Int]
+    
+    @State
+    @usableFromInline
+    var draggingNodeID: NodeID? = nil
+    
+    
 
+    @inlinable
     public var body: some View {
         Canvas { context, cgSize in
-            self.proxy.lastRenderedSize = cgSize
+            
+            self.model.access(keyPath: \.simulation)
+            self.model.lastRenderedSize = cgSize
             let centerX = cgSize.width / 2.0
             let centerY = cgSize.height / 2.0
 
@@ -75,11 +83,13 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
         }.gesture(
             DragGesture(minimumDistance: 1.0)
                 .onChanged { value in
+                    
+                    
 
-                    let locationX = value.location.x - self.proxy.lastRenderedSize.width / 2
-                    let locationY = value.location.y - self.proxy.lastRenderedSize.height / 2
+                    let locationX = value.location.x - self.model.lastRenderedSize.width / 2
+                    let locationY = value.location.y - self.model.lastRenderedSize.height / 2
 
-                    guard let draggingNodeID = self.proxy.draggingNodeID else {
+                    guard let draggingNodeID = self.draggingNodeID else {
 
                         let nodeIndex = self.model.simulation.kinetics.position.firstIndex { node in
                             // Quad tree
@@ -93,7 +103,7 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
                         }
 
                         if let nodeIndex {
-                            self.proxy.draggingNodeID = self.content.nodes[nodeIndex].id
+                            self.draggingNodeID = self.content.nodes[nodeIndex].id
                             //                            action(self.proxy.draggingNodeID!, value)
                         }
                         return
@@ -105,20 +115,20 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
 
                 }
                 .onEnded { _ in
-                    if self.proxy.draggingNodeID != nil {
+                    if self.draggingNodeID != nil {
                         self.model.simulation.kinetics.fixation[
-                            self.nodeIdToIndexLookup[self.proxy.draggingNodeID!]!
+                            self.nodeIdToIndexLookup[self.draggingNodeID!]!
                         ] = nil
                     }
-                    self.proxy.draggingNodeID = nil
+                    self.draggingNodeID = nil
 
                 }
 
         )
         .onTapGesture {
 
-            let locationX = $0.x - self.proxy.lastRenderedSize.width / 2
-            let locationY = $0.y - self.proxy.lastRenderedSize.height / 2
+            let locationX = $0.x - self.model.lastRenderedSize.width / 2
+            let locationY = $0.y - self.model.lastRenderedSize.height / 2
 
             let nodeIndex = self.model.simulation.kinetics.position.firstIndex { node in
                 // Quad tree?
@@ -156,19 +166,34 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
         }
 
     }
+    
 
     @usableFromInline
-    @State var model: LayoutEngine<ForceField>
-    public let proxy: Proxy
+//    @State 
+    var model: LayoutEngine<ForceField>
+//    public let proxy: Proxy
 
     @usableFromInline let content: Content
     // @usableFromInline let forceField: ForceField
-    @Binding var isRunning: Bool
+    
+//    @usableFromInline
+//    var _isRunning = false
+    
+    @usableFromInline
+    var isRunning: Bool// = Binding<Bool>.constant(false)
+    
+//    @usableFromInline
+//    mutating func setIsRunningBinding(binding: Binding<Bool>) {
+//        self._isRunning = binding
+//    }
 
-    // @inlinable
+
+
+//    @usableFromInline
+    @inlinable
     public init(
         // proxy: Proxy? = nil,
-        isRunning: Binding<Bool> = .constant(false),
+        isRunning externalRunningBinding: Binding<Bool>,
         @GraphContentBuilder<NodeID> _ buildGraphContent: () -> PartialGraphMark<NodeID>,
         @ForceBuilder<SIMD2<Double>> forceField buildForceField: () -> ForceField
     ) {
@@ -185,44 +210,20 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
             },
             forceField: buildForceField()
         )
-
-        // for forceDescriptor in forceFieldDescriptor {
-        //     if var linkForceDescriptor = forceDescriptor as? LinkForce {
-
-        //         // inject links
-        //         linkForceDescriptor.links = content.links.compactMap {
-        //             if let sourceId = lookup[$0.id.source],
-        //                let targetId = lookup[$0.id.target] {
-        //                 return EdgeID(sourceId, targetId)
-        //             }
-        //             return nil
-
-        //         }
-        //         linkForceDescriptor.attachToSimulation(simulation)
-        //     } else {
-        //         forceDescriptor.attachToSimulation(simulation)
-        //     }
-        // }
-
+        
         self.nodeIdToIndexLookup = lookup
-        let _model = ForceDirectedGraph2DLayoutEngine(
-            initialSimulation: simulation
-        )
-        self.proxy = Proxy()
-        self.proxy.layoutEngine = _model
-        self.model = _model
-        self._isRunning = isRunning
+        self.isRunning = externalRunningBinding.wrappedValue
 
-        // withObservationTracking {
-        //     if self.model.isRunning {
-        //         self.proxy.start()
-        //     } else {
-        //         print(self.model.isRunning)
-        //     }
-        // } onChange: {
-
-        // }
-
+        let engine = LayoutEngine(initialSimulation: simulation)
+        
+        
+        self.model = engine
+        
+        //        let _model = ForceDirectedGraph2DLayoutEngine(
+        //            initialSimulation: simulation
+        //        )
+        //        self.proxy = Proxy()
+        //        self.proxy.layoutEngine = _model
     }
 
 }
@@ -276,10 +277,13 @@ extension ForceDirectedGraph {
 }
 
 extension ForceDirectedGraph {
+    @inlinable
     public func respondToGravity() -> Self {
         return self
     }
 
+    
+    @inlinable
     public func respondToDragging(
         onDraggingStartedOnNode: ((NodeID) -> Bool)? = nil,
         onDraggingNode: ((NodeID) -> Bool)? = nil,
@@ -288,6 +292,8 @@ extension ForceDirectedGraph {
         return self
     }
 
+    
+    @inlinable
     public func respondToZoom(
         onZoomed: ((NodeID) -> Bool)? = nil
     ) -> Self {
