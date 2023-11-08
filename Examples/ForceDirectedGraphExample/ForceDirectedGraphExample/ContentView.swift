@@ -10,6 +10,20 @@ import simd
 import ForceSimulation
 import CoreGraphics
 
+
+
+func getLinks() -> [EdgeID<Int>] {
+    let data = getData(miserables)
+    return data.links.map { l in
+        EdgeID(
+            source: data.nodes.firstIndex { n in n.id == l.source }!,
+            target: data.nodes.firstIndex { n in n.id == l.target }!
+        )
+    }
+}
+
+
+
 let colors: [GraphicsContext.Shading] = [
     GraphicsContext.Shading.color(red: 17.0/255, green: 181.0/255, blue: 174.0/255),
     GraphicsContext.Shading.color(red: 64.0/255, green: 70.0/255, blue: 201.0/255),
@@ -31,29 +45,62 @@ struct MiserableNode: Identifiable {
     let name: String
 }
 
+struct MyForceField: ForceField {
+    
+    typealias Vector = SIMD2<Double>
+    
+    public var force = CompositedForce {
+        Kinetics<Vector>.ManyBodyForce(strength: -12)
+        Kinetics<Vector>.LinkForce(
+            getLinks(),
+            stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+            originalLength: .constant(35)
+        )
+        Kinetics<Vector>.CenterForce(center: 0, strength: 0.4)
+        Kinetics<Vector>.CollideForce(radius: .constant(3))
+        
+    }
+}
+
 
 struct ContentView: View {
     
     @State var points: [simd_double2] = []
     
-    var sim: Simulation2D<String>
+    var sim: Simulation<simd_double2, MyForceField>
+    
     let data: Miserable
-    var linkForce: Simulation2D<String>.LinkForce
+    
     
     init() {
         
         
         self.data = getData(miserables)
-        self.sim = Simulation2D(nodeIds: data.nodes.map {$0.id}, alphaDecay: 0.01)
         
-        sim.createManyBodyForce(strength: -12)
-        self.linkForce = sim.createLinkForce(
-            data.links.map { l in (l.source, l.target) },
-            stiffness: .weightedByDegree { _, _ in 1.0 },
-            originalLength: .constant(35)
+        self.sim = .init(
+            nodeCount: self.data.nodes.count,
+            forceField: .init(),
+            alphaDecay: 0.01
         )
-        sim.createCenterForce(center: [0, 0], strength: 0.4)
-        sim.createCollideForce(radius: .constant(3))
+//        .withManyBodyForce(strength: -12)
+//        .withLinkForce(
+//            data.links.map { l in (l.source, l.target) },
+//            stiffness: .weightedByDegree { _, _ in 1.0 },
+//            originalLength: .constant(35)
+//        )
+//        .withCenterForce(center: .zero, strength: 0.4)
+//        .withCollideForce(radius: .constant(3.0))
+        
+        //        self.sim = Simulation2D(nodeIds: data.nodes.map {$0.id}, alphaDecay: 0.01)
+        
+        //        sim.withManyBodyForce(strength: -12)
+        //        self.linkForce = sim.withLinkForce(
+        //            data.links.map { l in (l.source, l.target) },
+        //            stiffness: .weightedByDegree { _, _ in 1.0 },
+        //            originalLength: .constant(35)
+        //        )
+        //        sim.withCenterForce(center: [0, 0], strength: 0.4)
+        //        sim.withCollideForce(radius: .constant(3))
         
     }
     
@@ -69,10 +116,10 @@ struct ContentView: View {
                     if let s = self.data.nodes.firstIndex(where: { $0.id == l.source}),
                        let t = self.data.nodes.firstIndex(where: { $0.id == l.target}) {
                         /// draw a line from s to t
-                        let x1 = CGFloat( 300.0 + self.sim.nodePositions[s].x )
-                        let y1 = CGFloat( 200.0 - self.sim.nodePositions[s].y )
-                        let x2 = CGFloat( 300.0 + self.sim.nodePositions[t].x )
-                        let y2 = CGFloat( 200.0 - self.sim.nodePositions[t].y )
+                        let x1 = CGFloat( 300.0 + self.sim.kinetics.position[s].x )
+                        let y1 = CGFloat( 200.0 - self.sim.kinetics.position[s].y )
+                        let x2 = CGFloat( 300.0 + self.sim.kinetics.position[t].x )
+                        let y2 = CGFloat( 200.0 - self.sim.kinetics.position[t].y )
                         
                         context.stroke(Path { path in
                             path.move(to: CGPoint(x: x1, y: y1))
@@ -96,7 +143,8 @@ struct ContentView: View {
                 }
             }
             .onAppear {
-                self.points = sim.nodePositions
+                self.points = sim.kinetics.position.asArray()
+                
             }
             .frame(width: 600, height: 400)
             .navigationTitle("Force Directed Graph Example")
@@ -106,11 +154,11 @@ struct ContentView: View {
             Button(action: {
                 
                 /// Note that currently `Simulation` is not aware of time. It just ticks 120 times and so the points will be moving fast.
-                Timer.scheduledTimer(withTimeInterval: 1/120, repeats: true) { t in
+                Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { t in
                     
                     /// This is a CPU-bound task. Try to move it to other places.
                     self.sim.tick()
-                    self.points = sim.nodePositions
+                    self.points = sim.kinetics.position.asArray()
                     
                 }
                 

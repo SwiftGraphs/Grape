@@ -2,16 +2,16 @@ import ForceSimulation
 import SwiftUI
 
 
-@resultBuilder
-public struct ForceFieldBuilder {
-    public static func buildBlock(_ components: ForceDescriptor...) -> [ForceDescriptor] {
-        return components
-    }
-}
+// @resultBuilder
+// public struct ForceFieldBuilder {
+//     public static func buildBlock<Force>(_ components: ForceDescriptor<Force>...) -> [ForceDescriptor] {
+//         return components
+//     }
+// }
 
-public struct ForceDirectedGraph<NodeID: Hashable>: View {
+public struct ForceDirectedGraph<NodeID: Hashable, ForceField: ForceProtocol>: View where ForceField.Vector == SIMD2<Double>{
     
-    public typealias Proxy = ForceDirectedGraph2DProxy<NodeID>
+    public typealias Proxy = ForceDirectedGraph2DProxy<NodeID, ForceField>
     public typealias LayoutEngine = ForceDirectedGraph2DLayoutEngine
     
     public struct Content: GraphLike {
@@ -38,10 +38,10 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
                 let source = self.nodeIdToIndexLookup[i.id.source]!
                 let target = self.nodeIdToIndexLookup[i.id.target]!
                 
-                let sourceX = centerX + model.simulation.nodePositions[source].x
-                let sourceY = centerY + model.simulation.nodePositions[source].y
-                let targetX = centerX + model.simulation.nodePositions[target].x
-                let targetY = centerY + model.simulation.nodePositions[target].y
+                let sourceX = centerX + model.simulation.kinetics.position[source].x
+                let sourceY = centerY + model.simulation.kinetics.position[source].y
+                let targetX = centerX + model.simulation.kinetics.position[target].x
+                let targetY = centerY + model.simulation.kinetics.position[target].y
                 
                 context.stroke(
                     Path { path in
@@ -53,10 +53,10 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
                 )
             }
             
-            for i in model.simulation.nodePositions.indices {
+            for i in 0..<model.simulation.kinetics.position.header {
                 let node = content.nodes[i]
-                let x = centerX + model.simulation.nodePositions[i].x - node.radius
-                let y = centerY + model.simulation.nodePositions[i].y - node.radius
+                let x = centerX + model.simulation.kinetics.position[i].x - node.radius
+                let y = centerY + model.simulation.kinetics.position[i].y - node.radius
                 
                 let rect = CGRect(
                     origin: .init(x: x, y: y),
@@ -83,7 +83,7 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
                     guard let draggingNodeID = self.proxy.draggingNodeID else {
                         
                         
-                        let nodeIndex = self.model.simulation.nodePositions.firstIndex { node in
+                        let nodeIndex = self.model.simulation.kinetics.position.firstIndex { node in
                             // Quad tree
                             let x = node.x
                             let y = node.y
@@ -100,7 +100,7 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
                         }
                         return
                     }
-                    self.model.simulation.nodeFixations[
+                    self.model.simulation.kinetics.fixation[
                         self.nodeIdToIndexLookup[draggingNodeID]!
                     ] = [locationX, locationY]
                     //                    action(draggingNodeID, value)
@@ -108,7 +108,7 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
                 }
                 .onEnded { _ in
                     if self.proxy.draggingNodeID != nil {
-                        self.model.simulation.nodeFixations[
+                        self.model.simulation.kinetics.fixation[
                             self.nodeIdToIndexLookup[self.proxy.draggingNodeID!]!
                         ] = nil
                     }
@@ -122,7 +122,7 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
             let locationX = $0.x - self.proxy.lastRenderedSize.width/2
             let locationY = $0.y - self.proxy.lastRenderedSize.height/2
             
-            let nodeIndex = self.model.simulation.nodePositions.firstIndex { node in
+            let nodeIndex = self.model.simulation.kinetics.position.firstIndex { node in
                 // Quad tree?
                 let x = node.x
                 let y = node.y
@@ -143,17 +143,17 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
     
     
     @usableFromInline
-    @State var model: LayoutEngine
+    @State var model: LayoutEngine<ForceField>
     @usableFromInline let proxy: Proxy
     
     @usableFromInline let content: Content
-    @usableFromInline let forceFieldDescriptor: [ForceDescriptor]
+    // @usableFromInline let forceField: ForceField
     
     @inlinable
     public init(
         proxy: Proxy,
         @GraphContentBuilder<NodeID> _ buildGraphContent: () -> PartialGraphMark<NodeID>,
-        @ForceFieldBuilder forceField buildForceField: () -> [ForceDescriptor]
+        @ForceBuilder<SIMD2<Double>> forceField buildForceField: () -> ForceField
     ) {
         let graphMark = buildGraphContent()
         self.content = Content(nodes: graphMark.nodes, links: graphMark.links)
@@ -161,33 +161,35 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
         let lookup = Dictionary(
             uniqueKeysWithValues: graphMark.nodes.enumerated().map { ($1.id, $0) })
         
-        let simulation = Simulation2D<Int>(nodeIds: Array(graphMark.nodes.indices))
-        self.forceFieldDescriptor = buildForceField()
+        let simulation = Simulation2D<ForceField>(
+            nodeCount: graphMark.nodes.count,
+            forceField: buildForceField()
+        )
         
-        for forceDescriptor in forceFieldDescriptor {
-            if var linkForceDescriptor = forceDescriptor as? LinkForce {
+        // for forceDescriptor in forceFieldDescriptor {
+        //     if var linkForceDescriptor = forceDescriptor as? LinkForce {
                 
-                // inject links
-                linkForceDescriptor.links = content.links.compactMap {
-                    if let sourceId = lookup[$0.id.source],
-                       let targetId = lookup[$0.id.target] {
-                        return EdgeID(sourceId, targetId)
-                    }
-                    return nil
+        //         // inject links
+        //         linkForceDescriptor.links = content.links.compactMap {
+        //             if let sourceId = lookup[$0.id.source],
+        //                let targetId = lookup[$0.id.target] {
+        //                 return EdgeID(sourceId, targetId)
+        //             }
+        //             return nil
                     
-                }
-                linkForceDescriptor.attachToSimulation(simulation)
-            } else {
-                forceDescriptor.attachToSimulation(simulation)
-            }
-        }
+        //         }
+        //         linkForceDescriptor.attachToSimulation(simulation)
+        //     } else {
+        //         forceDescriptor.attachToSimulation(simulation)
+        //     }
+        // }
         
         self.nodeIdToIndexLookup = lookup
-        let model = ForceDirectedGraph2DLayoutEngine(
+        let _model = ForceDirectedGraph2DLayoutEngine(
             initialSimulation: simulation
         )
-        proxy.layoutEngine = model
-        self.model = model
+        proxy.layoutEngine = _model
+        self.model = _model
         self.proxy = proxy
     }
     

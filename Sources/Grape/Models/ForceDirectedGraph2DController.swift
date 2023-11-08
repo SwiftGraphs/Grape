@@ -1,13 +1,14 @@
 import Observation
 import SwiftUI
+import ForceSimulation
 
 
 @Observable
-public class ForceDirectedGraph2DProxy<NodeID> {
+public class ForceDirectedGraph2DProxy<NodeID, ForceField> where NodeID: Hashable, ForceField: ForceProtocol, ForceField.Vector == SIMD2<Double>{
 
     @ObservationIgnored
     @usableFromInline
-    weak var layoutEngine: ForceDirectedGraph2DLayoutEngine?
+    weak var layoutEngine: ForceDirectedGraph2DLayoutEngine<ForceField>?
     
     public var lastRenderedSize: CGSize = .init()
     

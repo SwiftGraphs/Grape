@@ -45,7 +45,7 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
         strokeDashArray: [Double]? = nil,
         arrowStyle: ArrowStyle = .none
     ) {
-        self.id = .init(from, to)
+        self.id = .init(source: from, target: to)
         self.label = label
         self.labelColor = labelColor
         self.labelDisplayStrategy = labelDisplayStrategy

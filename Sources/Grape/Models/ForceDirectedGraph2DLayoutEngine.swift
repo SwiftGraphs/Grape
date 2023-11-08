@@ -7,9 +7,9 @@ protocol LayoutEngine {
 }
 
 @Observable
-public class ForceDirectedGraph2DLayoutEngine: LayoutEngine {
+public class ForceDirectedGraph2DLayoutEngine<ForceField>: LayoutEngine where ForceField: ForceProtocol, ForceField.Vector == SIMD2<Double> {
 
-    var simulation: Simulation2D<Int>
+    var simulation: Simulation2D<ForceField>
 
     @ObservationIgnored
     let frameRate: Double = 60.0
@@ -17,7 +17,7 @@ public class ForceDirectedGraph2DLayoutEngine: LayoutEngine {
     @ObservationIgnored
     var scheduledTimer: Timer? = nil
 
-    public init(initialSimulation: Simulation2D<Int>) {
+    public init(initialSimulation: Simulation2D<ForceField>) {
         self.simulation = initialSimulation
     }
 

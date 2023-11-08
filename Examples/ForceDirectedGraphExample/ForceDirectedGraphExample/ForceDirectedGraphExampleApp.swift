@@ -11,10 +11,15 @@ import SwiftUI
 struct ForceDirectedGraphExampleApp: App {
     var body: some Scene {
         WindowGroup {
+<<<<<<< HEAD
 //            ContentView().padding(0)
 //            ForceDirectedLatticeView().padding(0)//.ignoresSafeArea()
             MyRing()
             
+=======
+            ContentView()//.padding(0)
+//            ForceDirectedLatticeView().padding(0)//.ignoresSafeArea()
+>>>>>>> protocol_force
         }
     }
 }
