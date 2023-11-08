@@ -161,14 +161,21 @@ extension Kinetics {
                         //     }
                         // }
 
+                        let p0Flag = t.box.p0 .> iPosition + deltaR
+                        let p1Flag = t.box.p1 .< iPosition - deltaR
+                        let flag = p0Flag .| p1Flag
+
                         for laneIndex in t.box.p0.indices {
-                            // let _v = t.box.p1[laneIndex]
-                            if (t.box.p0[laneIndex] > iPosition[laneIndex] + deltaR)
-                                || (t.box.p1[laneIndex] < iPosition[laneIndex]
-                                    - deltaR) /* True if no overlap */
-                            {
+                            if flag[laneIndex] {
                                 return false
                             }
+                            // let _v = t.box.p1[laneIndex]
+                            // if (t.box.p0[laneIndex] > iPosition[laneIndex] + deltaR)
+                            //     || (t.box.p1[laneIndex] < iPosition[laneIndex]
+                            //         - deltaR) /* True if no overlap */
+                            // {
+                            //     return false
+                            // }
                         }
                         return true
                     }
