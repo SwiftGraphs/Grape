@@ -64,8 +64,15 @@ where
     @inlinable
     func getIndexInChildren(_ point: V, relativeTo originalPoint: V) -> Int {
         var index = 0
+        // for i in 0..<V.scalarCount {
+        //     if point[i] >= originalPoint[i] {  // isOnHigherRange in this dimension
+        //         index |= (1 << i)
+        //     }
+        // }
+
+        let mask = point .>= originalPoint
         for i in 0..<V.scalarCount {
-            if point[i] >= originalPoint[i] {  // isOnHigherRange in this dimension
+            if mask[i] {  // isOnHigherRange in this dimension
                 index |= (1 << i)
             }
         }
@@ -80,7 +87,7 @@ where
         let expandedCorner = (_corner + _corner) - nailedCorner
         let newRootBox = Box(nailedCorner, expandedCorner)
 
-        let clusterDistanceSquared = self.clusterDistanceSquared
+        // let clusterDistanceSquared = self.clusterDistanceSquared
         // let _delegate = delegate
         let spawned = delegate.spawn()
 
@@ -269,11 +276,11 @@ extension NDTree {
     /// Visit the tree in pre-order.
     ///
     /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
-    @inlinable public func visit(shouldVisitChildren: (NDTree<V, D>) -> Bool) {
-        if shouldVisitChildren(self), let children {
+    @inlinable public func visit(shouldVisitChildren: (borrowing NDTree<V, D>) -> Bool) {
+        if shouldVisitChildren(self) && children != nil {
             // this is an internal node
-            for t in children {
-                t.visit(shouldVisitChildren: shouldVisitChildren)
+            for i in children!.indices {
+                children![i].visit(shouldVisitChildren: shouldVisitChildren)
             }
         }
     }

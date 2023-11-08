@@ -1,5 +1,5 @@
 @usableFromInline
-internal struct MaxRadiusKDTreeDelegate<Vector>: KDTreeDelegate
+internal struct MaxRadiusNDTreeDelegate<Vector>: KDTreeDelegate
 where Vector: SimulatableVector {
     @inlinable
     mutating func didAddNode(_ node: Int, at position: Vector) {
@@ -22,12 +22,12 @@ where Vector: SimulatableVector {
     }
 
     @inlinable
-    func copy() -> MaxRadiusKDTreeDelegate<Vector> {
+    func copy() -> MaxRadiusNDTreeDelegate<Vector> {
         return self
     }
 
     @inlinable
-    func spawn() -> MaxRadiusKDTreeDelegate<Vector> {
+    func spawn() -> MaxRadiusNDTreeDelegate<Vector> {
         return Self(radiusProvider: radiusGetter)
     }
 
@@ -80,16 +80,14 @@ extension Kinetics {
 
             for _ in 0..<iterationsPerTick {
 
-                let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
+                // let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
 
-                let tree = KDTree<Vector, MaxRadiusKDTreeDelegate<Vector>>(
-                    box: coveringBox
-                ) {
+                let tree = NDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>(covering: kinetics.position) {
                     return switch self.radius {
                     case .constant(let m):
-                        MaxRadiusKDTreeDelegate<Vector> { _ in m }
+                        MaxRadiusNDTreeDelegate<Vector> { _ in m }
                     case .varied(_):
-                        MaxRadiusKDTreeDelegate<Vector> { index in
+                        MaxRadiusNDTreeDelegate<Vector> { index in
                             self.calculatedRadius[index]
                         }
                     }
@@ -100,9 +98,9 @@ extension Kinetics {
                 let strength = self.strength
                 
 
-                for i in kinetics.range {
-                    tree.add(i, at: kinetics.position[i])
-                }
+                // for i in kinetics.range {
+                //     tree.add(i, at: kinetics.position[i])
+                // }
 
                 for i in kinetics.range {
                     let iOriginalPosition = kinetics.position[i]

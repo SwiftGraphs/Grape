@@ -115,10 +115,10 @@ extension Kinetics {
             let mass = self.mass
 
 
-            let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
+            // let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
 
-            let tree = KDTree(
-                box: coveringBox
+            let tree = NDTree(
+                covering: kinetics.position
             ) {
                 return switch mass {
                 case .constant(let m):
@@ -130,14 +130,14 @@ extension Kinetics {
                 }
             }
 
-            for i in kinetics.position.indices {
-                tree.add(i, at: kinetics.position[i])
+            // for i in kinetics.position.indices {
+            //     tree.add(i, at: kinetics.position[i])
 
-                #if DEBUG
-                    assert(tree.delegate.accumulatedCount == (i + 1))
-                #endif
+            //     #if DEBUG
+            //         assert(tree.delegate.accumulatedCount == (i + 1))
+            //     #endif
 
-            }
+            // }
 
             // Avoid capturing self
 
