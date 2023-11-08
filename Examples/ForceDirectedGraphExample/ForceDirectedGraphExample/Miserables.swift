@@ -12,9 +12,9 @@ import ForceSimulation
 
 
 //struct MyForceField: ForceField {
-//    
+//
 //    typealias Vector = SIMD2<Double>
-//    
+//
 //    public var force = CompositedForce {
 //        LinkForce(
 //            originalLength: .constant(20.0),
@@ -27,31 +27,30 @@ import ForceSimulation
 
 
 
-struct MyRing: View {
+struct MiserableGraph: View {
     
     @State var isRunning = false
+    let graphData = getData(miserables)
     
     var body: some View {
-
-
         ForceDirectedGraph(isRunning: $isRunning) {
-            for i in 0..<20 {
-                NodeMark(id: 3 * i + 0, fill: .green)
-                NodeMark(id: 3 * i + 1, fill: .blue, radius: 5.0)
-                NodeMark(id: 3 * i + 2, fill: .yellow)
-
-                LinkMark(from: 3 * i + 0, to: 3 * i + 1)
-                LinkMark(from: 3 * i + 1, to: 3 * i + 2)
-
-                for j in 0..<3 {
-                    LinkMark(from: 3 * i + j, to: 3 * ((i + 1) % 20) + j)
-                }
+            for i in graphData.nodes.indices {
+                NodeMark(id: i, fill: colors[graphData.nodes[i].group % colors.count], radius: 3.0)
+            }
+            for l in graphData.links {
+                let fromID = graphData.nodes.firstIndex { mn in
+                    mn.id == l.source
+                }!
+                let toID = graphData.nodes.firstIndex { mn in
+                    mn.id == l.target
+                }!
+                LinkMark(from: fromID, to: toID)
             }
         } forceField: {
-            ManyBodyForce(strength: -15)
+            ManyBodyForce(strength: -20)
             LinkForce(
-                originalLength: .constant(20.0),
-                stiffness: .weightedByDegree(k: { _, _ in 3.0})
+                originalLength: .constant(35.0),
+                stiffness: .weightedByDegree(k: { _, _ in 1.0})
             )
             CenterForce()
             CollideForce()

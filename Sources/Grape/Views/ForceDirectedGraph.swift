@@ -9,8 +9,7 @@ import SwiftUI
 //     }
 // }
 
-public struct ForceDirectedGraph<NodeID: Hashable, ForceField: ForceProtocol>: View
-where ForceField.Vector == SIMD2<Double> {
+public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
 
     public typealias Proxy = ForceDirectedGraph2DProxy<NodeID, ForceField>
     public typealias LayoutEngine = ForceDirectedGraph2DLayoutEngine
@@ -221,7 +220,7 @@ where ForceField.Vector == SIMD2<Double> {
         //         print(self.model.isRunning)
         //     }
         // } onChange: {
-            
+
         // }
 
     }

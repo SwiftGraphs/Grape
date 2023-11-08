@@ -91,6 +91,16 @@ public struct CollideForce: ForceDescriptor {
         )
     }
 
+    public init(
+        strength: Double = 0.5,
+        radius: Kinetics2D.CollideRadius = .constant(3.0),
+        iterationsPerTick: UInt = 1
+    ) {
+        self.strength = strength
+        self.radius = radius
+        self.iterationsPerTick = iterationsPerTick
+    }
+
     // public func attachToSimulation(_ simulation: Simulation2D<Int>) {
     //     simulation.createCollideForce(radius: radius, strength: strength, iterationsPerTick: iterationsPerTick)
     // }

@@ -79,12 +79,10 @@ Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/
 import Grape
 
 struct MyGraph: View {
-
-    // A proxy that helps to control the simulation.
-    let myProxy = ForceDirectedGraph<Int>.Proxy()
+    @State var isRunning = true // start moving once appeared.
     
     var body: some View {
-        ForceDirectedGraph(proxy: myProxy) {
+        ForceDirectedGraph(isRunning: $isRunning) {
             
             // Declare nodes and links like you would do in Swift Charts.
             NodeMark(id: 0, fill: .green)
@@ -99,13 +97,6 @@ struct MyGraph: View {
             CenterForce()
             ManyBodyForce()
         }
-        .onAppear {
-
-            // Let's start moving!
-            myProxy.start()
-
-        }
-
     }
 }
 ```
@@ -165,7 +156,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 <br/>
 
-#### Advanced
+<!-- #### Advanced
 
 Grape provides a set of generic based types that works with any SIMD-like data structures. To integrate Grape into platforms where `import simd` isn't supported, or higher dimensions, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
 
@@ -182,7 +173,7 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 ```
 
 > [!IMPORTANT]  
-> When using generic based types, you ***pay for dynamic dispatch***, in terms of performance. Although their implementations are basically the same, it's recommended to use `Simulation2D` or `Simulation3D` whenever possible.
+> When using generic based types, you ***pay for dynamic dispatch***, in terms of performance. Although their implementations are basically the same, it's recommended to use `Simulation2D` or `Simulation3D` whenever possible. -->
 
 
 <br/>
@@ -207,9 +198,9 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 
 ## Performance
 
-Grape uses simd to calculate position and velocity. Currently it takes ~0.034 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
+Grape uses simd to calculate position and velocity. Currently it takes ~0.014 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
 
-For 3D simulation, it takes ~0.052 seconds for the same graph and same configs.
+For 3D simulation, it takes ~0.019 seconds for the same graph and same configs.
 
 
 <br/>
