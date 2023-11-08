@@ -20,43 +20,76 @@ func getLinks() -> [EdgeID<Int>] {
         )
     }
 }
-struct MyForceField: ForceField {
 
-    typealias Vector = SIMD2<Double>
+//typealias Force2D = ForceProtocol<SIMD2<Double>>
 
-    var force = CompositedForce {
 
-        Kinetics<Vector>.ManyBodyForce(strength: -30)
 
-        Kinetics<Vector>.LinkForce(
+
+// struct PackF<each F>: Force2D where repeat each F: Force2D {
+//     func bindKinetics(_ kinetics: Kinetics2D) {
+//         // var f = repeat (each forces)
+//         // repeat (each f).bindKinetics(kinetics)
+//         // self.forces = (repeat each f)
+        
+// //        repeat (each forces).bindKinetics(kinetics)
+//         // f.bindKinetics(kinetics)
+// //            f.bindKinetics(kinetics)
+//     }
+    
+    
+    
+//     var forces: (repeat each F)
+//     init(forces: (repeat each F)) {
+        
+//         self.forces = (repeat each forces)
+//     }
+    
+//     func apply() {
+//         repeat (each forces).apply()
+//     }
+    
+    
+// }
+
+// func test() {
+//     let packedForce = PackF(
+//         forces: (
+//             Kinetics2D.LinkForce(
+//                 stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+//                 originalLength: .constant(30)
+//             ),
+//             Kinetics2D.ManyBodyForce(strength: -30),
+//             Kinetics2D.CenterForce(center: .zero, strength: 1),
+//             Kinetics2D.CollideForce(radius: .constant(0))
+//         )
+//     )
+// }
+
+struct MyForceField: ForceField2D {
+
+    var force = CompositedForce<Vector, _, _> {
+        Kinetics2D.ManyBodyForce(strength: -30)
+        Kinetics2D.LinkForce(
             stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
-            originalLength: .constant(30)
+            originalLength: .constant(35)
         )
-
-        Kinetics<Vector>.CenterForce(center: .zero, strength: 1)
-
-        Kinetics<Vector>.CollideForce(radius: .constant(0))
-
+        Kinetics2D.CenterForce(center: .zero, strength: 1)
+        Kinetics2D.CollideForce(radius: .constant(3))
     }
 }
 
-struct MyForceField3D: ForceField {
 
-    typealias Vector = SIMD3<Float>
 
-    var force = CompositedForce {
-
-        Kinetics<Vector>.ManyBodyForce(strength: -30)
-
-        Kinetics<Vector>.LinkForce(
+struct MyForceField3D: ForceField3D {
+    var force = CompositedForce<Vector, _, _> {
+        Kinetics3D.ManyBodyForce(strength: -30)
+        Kinetics3D.LinkForce(
             stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
-            originalLength: .constant(30)
+            originalLength: .constant(35)
         )
-
-        Kinetics<Vector>.CenterForce(center: .zero, strength: 1)
-
-        Kinetics<Vector>.CollideForce(radius: .constant(0))
-
+        Kinetics3D.CenterForce(center: .zero, strength: 1)
+        Kinetics3D.CollideForce(radius: .constant(5))
     }
 }
 
