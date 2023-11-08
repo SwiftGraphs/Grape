@@ -84,7 +84,7 @@ extension Kinetics {
 
                 // let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
 
-                var tree = NDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>(
+                var tree = KDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>(
                     covering: kinetics.position
                 ) {
                     return switch self.radius {

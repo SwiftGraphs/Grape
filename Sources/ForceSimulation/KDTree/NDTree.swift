@@ -1,4 +1,4 @@
-public struct NDTree<V, D>
+public struct KDTree<V, D>
 where
     V: SimulatableVector & L2NormCalculatable,
     D: KDTreeDelegate<Int, V>
@@ -8,7 +8,7 @@ where
     public typealias Box = KDBox<V>
 
     public var box: Box
-    public var children: [NDTree<V, D>]?
+    public var children: [KDTree<V, D>]?
     public var nodePosition: V?
     public var nodeIndices: [NodeIndex]
 
@@ -36,7 +36,7 @@ where
         box: Box,
         // clusterDistanceSquared: V.Scalar,
         spawnedDelegateBeingConsumed: consuming D,
-        childrenBeingConsumed: consuming [NDTree<V, D>]
+        childrenBeingConsumed: consuming [KDTree<V, D>]
     ) {
         self.box = box
         // self.clusterDistanceSquared = clusterDistanceSquared
@@ -90,7 +90,7 @@ where
         // Dont reference self anymore
         //        let tempSelf = consume self
 
-        var result = [NDTree<V, D>]()
+        var result = [KDTree<V, D>]()
         result.reserveCapacity(Self.directionCount)
         //        let center = newRootBox.center
 
@@ -151,7 +151,7 @@ where
                 return
             } else {
 
-                var spawnedChildren = [NDTree<V, D>]()
+                var spawnedChildren = [KDTree<V, D>]()
                 spawnedChildren.reserveCapacity(Self.directionCount)
                 let spawendDelegate = self.delegate.spawn()
                 let center = box.center
@@ -202,7 +202,7 @@ where
     }
 }
 
-extension NDTree where D.NodeID == Int {
+extension KDTree where D.NodeID == Int {
 
     /// Initialize a KDTree with a list of points and a key path to the vector.
     ///
@@ -262,7 +262,7 @@ extension NDTree where D.NodeID == Int {
     // }
 }
 
-extension NDTree {
+extension KDTree {
 
     /// The bounding box of the current node
     @inlinable public var extent: Box { box }
@@ -286,7 +286,7 @@ extension NDTree {
     /// Visit the tree in pre-order.
     ///
     /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
-    @inlinable public mutating func visit(shouldVisitChildren: (inout NDTree<V, D>) -> Bool) {
+    @inlinable public mutating func visit(shouldVisitChildren: (inout KDTree<V, D>) -> Bool) {
         if shouldVisitChildren(&self) && children != nil {
             // this is an internal node
             for i in children!.indices {

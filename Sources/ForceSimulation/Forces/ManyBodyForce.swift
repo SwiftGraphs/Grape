@@ -106,7 +106,7 @@ extension Kinetics {
             let mass = self.mass
             let kinetics = self.kinetics!
 
-            var tree = NDTree(
+            var tree = KDTree(
                 covering: kinetics.position
             ) {
                 return switch mass {

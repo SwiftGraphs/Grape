@@ -1,12 +1,12 @@
 //
-//  KDTree.swift
+//  NDTree.swift
 //
 //
 //  Created by li3zhen1 on 10/14/23.
 //
 import simd
 
-/// The data structure carried by a node of KDTree.
+/// The data structure carried by a node of NDTree.
 ///
 /// It receives notifications when a node is added or removed on a node, regardless of whether the node is internal or leaf.
 /// It is designed to calculate properties like a box's center of mass.
@@ -38,10 +38,10 @@ public protocol KDTreeDelegate<NodeID, Vector> {
     @inlinable func spawn() -> Self
 }
 
-/// A node in KDTree
-/// - Note: `KDTree` is a generic type that can be used in any dimension.
-///        `KDTree` is a reference type.
-public final class KDTree<Vector, Delegate>
+/// A node in NDTree
+/// - Note: `NDTree` is a generic type that can be used in any dimension.
+///        `NDTree` is a reference type.
+public final class NDTree<Vector, Delegate>
 where
     Vector: SimulatableVector & L2NormCalculatable,
     Delegate: KDTreeDelegate<Int, Vector>
@@ -55,7 +55,7 @@ where
 
     public var box: Box
 
-    public var children: [KDTree<Vector, Delegate>]?
+    public var children: [NDTree<Vector, Delegate>]?
 
     public var nodePosition: Vector?
     public var nodeIndices: [NodeIndex]
@@ -209,7 +209,7 @@ where
 
     }
 
-    /// The children count of a node in KDTree.
+    /// The children count of a node in NDTree.
     ///
     /// Should be equal to the 2^(dimension of the vector).
     /// For example, a 2D vector should have 4 children, a 3D vector should have 8 children.
@@ -221,9 +221,9 @@ where
         _ _box: Box,
         // _ _clusterDistance: Vector.Scalar,
         _ _delegate: Delegate
-    ) -> [KDTree<Vector, Delegate>] {
+    ) -> [NDTree<Vector, Delegate>] {
 
-        var result = [KDTree<Vector, Delegate>]()
+        var result = [NDTree<Vector, Delegate>]()
         result.reserveCapacity(Self.directionCount)
         let center = _box.center
 
@@ -240,7 +240,7 @@ where
                 }
             }
             result.append(
-                KDTree(
+                NDTree(
                     box: __box, parentDelegate: /*&*/ _delegate)
             )
         }
@@ -252,8 +252,8 @@ where
     ///
     /// Consider this function something you would do when working with linked list.
     @inlinable
-    func shallowCopy() -> KDTree<Vector, Delegate> {
-        let copy = KDTree(
+    func shallowCopy() -> NDTree<Vector, Delegate> {
+        let copy = NDTree(
             box: box, parentDelegate: /*&*/ delegate)
 
         copy.nodeIndices = nodeIndices
@@ -286,9 +286,9 @@ where
 
 }
 
-extension KDTree where Delegate.NodeID == Int {
+extension NDTree where Delegate.NodeID == Int {
 
-    /// Initialize a KDTree with a list of points and a key path to the vector.
+    /// Initialize a NDTree with a list of points and a key path to the vector.
     ///
     /// - Parameters:
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
@@ -309,7 +309,7 @@ extension KDTree where Delegate.NodeID == Int {
         }
     }
 
-    /// Initialize a KDTree with a list of points and a key path to the vector.
+    /// Initialize a NDTree with a list of points and a key path to the vector.
     ///
     /// - Parameters:
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
@@ -332,7 +332,7 @@ extension KDTree where Delegate.NodeID == Int {
     // }
 }
 
-extension KDTree {
+extension NDTree {
 
     /// The bounding box of the current node
     @inlinable public var extent: Box { box }
@@ -356,7 +356,7 @@ extension KDTree {
     /// Visit the tree in pre-order.
     ///
     /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
-    @inlinable public func visit(shouldVisitChildren: (KDTree<Vector, Delegate>) -> Bool) {
+    @inlinable public func visit(shouldVisitChildren: (NDTree<Vector, Delegate>) -> Bool) {
         if shouldVisitChildren(self), let children {
             // this is an internal node
             for t in children {
@@ -369,7 +369,7 @@ extension KDTree {
     ///
     /// - Parameter action: a closure that takes a tree as its argument.
     @inlinable public func visitPostOrdered(
-        _ action: (KDTree<Vector, Delegate>) -> Void
+        _ action: (NDTree<Vector, Delegate>) -> Void
     ) {
         if let children {
             for c in children {
