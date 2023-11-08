@@ -76,15 +76,13 @@ extension Kinetics {
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
 
-            // let alpha = kinetics.alpha
+            let kinetics = self.kinetics!
+            let calculatedRadius = self.calculatedRadius
+            let strength = self.strength
 
             for _ in 0..<iterationsPerTick {
 
                 // let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
-
-                let kinetics = self.kinetics!
-                let calculatedRadius = self.calculatedRadius
-                let strength = self.strength
 
                 var tree = NDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>(
                     covering: kinetics.position
@@ -94,7 +92,7 @@ extension Kinetics {
                         MaxRadiusNDTreeDelegate<Vector> { _ in m }
                     case .varied(_):
                         MaxRadiusNDTreeDelegate<Vector> { index in
-                            calculatedRadius[index]
+                            self.calculatedRadius[index]
                         }
                     }
                 }

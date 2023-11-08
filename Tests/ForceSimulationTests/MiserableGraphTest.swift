@@ -26,12 +26,21 @@ struct MyForceField: ForceField {
 
     var force = CompositedForce {
 
-        Kinetics<Vector>.LinkForce(getLinks(), stiffness: .weightedByDegree(k: { _, _ in 1.0 }))
+        // Kinetics<Vector>.LinkForce(getLinks(), stiffness: .weightedByDegree(k: { _, _ in 1.0 }))
+
+        // Kinetics<Vector>.ManyBodyForce(strength: -30)
+
+        // Kinetics<Vector>.CenterForce(center: 0, strength: 1)
+
+        // Kinetics<Vector>.CollideForce(radius: .constant(0))
 
         Kinetics<Vector>.ManyBodyForce(strength: -30)
-
+        
+        Kinetics<Vector>.LinkForce(getLinks(), stiffness: .weightedByDegree(k: { _, _ in 1.0 }))
+        
+        
         Kinetics<Vector>.CenterForce(center: 0, strength: 1)
-
+        
         Kinetics<Vector>.CollideForce(radius: .constant(0))
 
     }

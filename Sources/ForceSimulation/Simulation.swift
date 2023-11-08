@@ -4,8 +4,8 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
     @usableFromInline
     let forceField: ForceField
 
-    @usableFromInline
-    let kinetics: Kinetics<Vector>
+    // @usableFromInline
+    public let kinetics: Kinetics<Vector>
 
     @inlinable
     public
@@ -31,7 +31,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
     }
 
     @inlinable
-    func tick(iterations: UInt = 1) {
+    public func tick(iterations: UInt = 1) {
         for _ in 0..<iterations {
             self.kinetics.updateAlpha()
             self.forceField.apply()

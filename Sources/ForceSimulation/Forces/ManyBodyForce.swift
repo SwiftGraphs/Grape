@@ -113,6 +113,7 @@ extension Kinetics {
             let strength = self.strength
             let precalculatedMass = self.precalculatedMass
             let mass = self.mass
+            let kinetics = self.kinetics!
 
 
             // let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
@@ -156,8 +157,6 @@ extension Kinetics {
                     let farEnough: Bool =
                         (distanceSquared * theta2) > (boxWidth * boxWidth)
 
-                    //                let distance = distanceSquared.squareRoot()
-
                     if distanceSquared < distanceMin2 {
                         distanceSquared = (distanceMin2 * distanceSquared).squareRoot()
                     }
@@ -198,7 +197,8 @@ extension Kinetics {
                         return true
                     }
                 }
-                // forces[i] = f
+                
+
                 kinetics.position[i] += f / precalculatedMass[i]
             }
         }
