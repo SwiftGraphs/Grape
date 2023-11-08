@@ -95,6 +95,11 @@ extension Kinetics {
                     }
                 }
 
+                let kinetics = self.kinetics!
+                let calculatedRadius = self.calculatedRadius
+                let strength = self.strength
+                
+
                 for i in kinetics.range {
                     tree.add(i, at: kinetics.position[i])
                 }
@@ -102,7 +107,7 @@ extension Kinetics {
                 for i in kinetics.range {
                     let iOriginalPosition = kinetics.position[i]
                     let iOriginalVelocity = kinetics.velocity[i]
-                    let iR = self.calculatedRadius[i]
+                    let iR = calculatedRadius[i]
                     let iR2 = iR * iR
                     let iPosition = iOriginalPosition + iOriginalVelocity
 
@@ -117,9 +122,9 @@ extension Kinetics {
                                 // is leaf, make sure every collision happens once.
                                 guard j > i else { continue }
 
-                                let jR = self.calculatedRadius[j]
-                                let jOriginalPosition = self.kinetics.position[j]
-                                let jOriginalVelocity = self.kinetics.velocity[j]
+                                let jR = calculatedRadius[j]
+                                let jOriginalPosition = kinetics.position[j]
+                                let jOriginalVelocity = kinetics.velocity[j]
                                 var deltaPosition =
                                     iPosition - (jOriginalPosition + jOriginalVelocity)
                                 let l = (deltaPosition).lengthSquared()
@@ -128,7 +133,7 @@ extension Kinetics {
                                 if l < deltaR * deltaR {
 
                                     var l = /*simd_length*/ (deltaPosition.jiggled()).length()
-                                    l = (deltaR - l) / l * self.strength
+                                    l = (deltaR - l) / l * strength
 
                                     let jR2 = jR * jR
 
@@ -136,8 +141,8 @@ extension Kinetics {
 
                                     deltaPosition *= l
 
-                                    self.kinetics.velocity[i] += deltaPosition * k
-                                    self.kinetics.velocity[j] -= deltaPosition * (1 - k)
+                                    kinetics.velocity[i] += deltaPosition * k
+                                    kinetics.velocity[j] -= deltaPosition * (1 - k)
                                 }
                             }
                             return false
