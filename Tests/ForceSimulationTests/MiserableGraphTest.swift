@@ -89,7 +89,7 @@ final class MiserableGraphTest: XCTestCase {
         // .withCollideForce(radius: .constant(5.0))
         //simulation.tick()
         measure {
-            for i in 0..<120 {
+            for _ in 0..<120 {
                 simulation.tick()
             }
         }
@@ -119,7 +119,7 @@ final class MiserableGraphTest: XCTestCase {
         // .withCollideForce(radius: .constant(5.0))
         //simulation.tick()
         measure {
-            for i in 0..<120 {
+            for _ in 0..<120 {
                 simulation.tick()
             }
         }

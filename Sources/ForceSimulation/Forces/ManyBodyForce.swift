@@ -94,20 +94,10 @@ extension Kinetics {
 
         @inlinable
         public func apply() {
-
-        //     calculateForce(alpha: self.kinetics.alpha)  //else { return }
-
-        //     // for i in 0..<self.kinetics.validCount {
-        //     //     kinetics.position[i] += self.forces[i] / self.precalculatedMass[i]
-        //     // }
-        // }
-
-        // @inlinable
-        // internal func calculateForce(alpha: Vector.Scalar) {
+            
             let alpha = self.kinetics.alpha
 
 
-            // Avoid capturing self
             let theta2 = self.theta2
             let distanceMin2 = self.distanceMin2
             let distanceMax2 = self.distanceMax2
@@ -115,9 +105,6 @@ extension Kinetics {
             let precalculatedMass = self.precalculatedMass!
             let mass = self.mass
             let kinetics = self.kinetics!
-
-
-            // let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
 
             var tree = NDTree(
                 covering: kinetics.position
@@ -131,16 +118,6 @@ extension Kinetics {
                     }
                 }
             }
-
-            // for i in kinetics.position.indices {
-            //     tree.add(i, at: kinetics.position[i])
-
-            //     #if DEBUG
-            //         assert(tree.delegate.accumulatedCount == (i + 1))
-            //     #endif
-
-            // }
-
 
             for i in kinetics.range {
                 let pos = kinetics.position[i]
@@ -180,13 +157,6 @@ extension Kinetics {
 
                     if t.isFilledLeaf {
 
-                        //                    for j in t.nodeIndices {
-                        //                        if j != i {
-                        //                            let k: Double =
-                        //                            self.strength * alpha * self.precalculatedMass[j] / distanceSquared / distanceSquared.squareRoot()
-                        //                            f += vec * k
-                        //                        }
-                        //                    }
                         if t.nodeIndices.contains(i) { return false }
 
                         let massAcc = t.delegate.accumulatedMass

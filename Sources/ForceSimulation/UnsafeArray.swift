@@ -10,7 +10,15 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
         }
         return unsafeDowncast(buffer, to: UnsafeArray.self)
     }
+    @inlinable
+    var count : Int {
+        return header
+    }
 
+    @inlinable
+    var range: Range<Int> {
+        return 0..<header
+    }
 
     @inlinable
     func element(at index: Int) -> Element {

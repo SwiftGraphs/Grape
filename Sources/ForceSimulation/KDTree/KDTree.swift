@@ -261,7 +261,7 @@ where
         copy.children = children
         copy.delegate = delegate
 
-        return copy
+        return consume copy
     }
 
     /// Get the index of the child that contains the point.

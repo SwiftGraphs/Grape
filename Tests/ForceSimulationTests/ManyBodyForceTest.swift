@@ -24,12 +24,7 @@ struct NamedNode: Identifiable {
 final class ManyBodyForceTests: XCTestCase {
     
     func test() {
-        let nodes: [NamedNode] = [
-            .make("Alice"),
-            .make("Bob"),
-            .make("Carol"),
-            .make("David")
-        ]
+        
         
     }
     

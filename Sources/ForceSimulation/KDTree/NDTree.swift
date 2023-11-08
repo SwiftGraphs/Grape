@@ -23,7 +23,7 @@ where
     public init(
         box: Box,
         // clusterDistanceSquared: V.Scalar,
-        spawnedDelegateBeingConsumed: __owned D
+        spawnedDelegateBeingConsumed: consuming D
     ) {
         self.box = box
         // self.clusterDistanceSquared = clusterDistanceSquared
@@ -35,8 +35,8 @@ where
     init(
         box: Box,
         // clusterDistanceSquared: V.Scalar,
-        spawnedDelegateBeingConsumed: __owned D,
-        childrenBeingConsumed: __owned [NDTree<V, D>]
+        spawnedDelegateBeingConsumed: consuming D,
+        childrenBeingConsumed: consuming [NDTree<V, D>]
     ) {
         self.box = box
         // self.clusterDistanceSquared = clusterDistanceSquared
@@ -64,13 +64,9 @@ where
     @inlinable
     func getIndexInChildren(_ point: V, relativeTo originalPoint: V) -> Int {
         var index = 0
-        // for i in 0..<V.scalarCount {
-        //     if point[i] >= originalPoint[i] {  // isOnHigherRange in this dimension
-        //         index |= (1 << i)
-        //     }
-        // }
 
         let mask = point .>= originalPoint
+
         for i in 0..<V.scalarCount {
             if mask[i] {  // isOnHigherRange in this dimension
                 index |= (1 << i)
@@ -80,7 +76,7 @@ where
     }
 
     @inlinable
-    mutating /*__consuming*/ func expand(towards direction: Direction) {
+    mutating func expand(towards direction: Direction) {
         let nailedDirection = (Self.directionCount - 1) - direction
         let nailedCorner = box.getCorner(of: nailedDirection)
         let _corner = box.getCorner(of: direction)
@@ -299,17 +295,4 @@ extension NDTree {
         }
     }
 
-    /// Visit the tree in post-order.
-    ///
-    /// - Parameter action: a closure that takes a tree as its argument.
-    @inlinable public func visitPostOrdered(
-        _ action: (NDTree<V, D>) -> Void
-    ) {
-        if let children {
-            for c in children {
-                c.visitPostOrdered(action)
-            }
-        }
-        action(self)
-    }
 }

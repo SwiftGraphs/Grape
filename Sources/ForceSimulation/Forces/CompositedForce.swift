@@ -65,11 +65,3 @@ where Vector: SimulatableVector & L2NormCalculatable {
     }
 
 }
-
-
-func a() {
-    let comp = CompositedForce {
-        Kinetics<SIMD2<Double>>.CenterForce(center: 0, strength: 0)
-        Kinetics<SIMD2<Double>>.CollideForce(radius: .constant(0))
-    }
-}
