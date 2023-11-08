@@ -3,23 +3,25 @@ public protocol ForceProtocol<Vector>{
 
     // var kinetics: Kinetics<Vector>? { get set }
 
-    func apply()
+    @inlinable func apply()
 
-    func bindKinetics(_ kinetics: Kinetics<Vector>) 
+    @inlinable func bindKinetics(_ kinetics: Kinetics<Vector>) 
 }
 
 
 
 protocol ForceField<Vector>: ForceProtocol where Vector: SimulatableVector & L2NormCalculatable {
     associatedtype F: ForceProtocol<Vector> where F.Vector == Vector
-    var force: F { get }
+    @inlinable var force: F { get }
 }
 
 extension ForceField {
+    @inlinable 
     func apply() {
         self.force.apply()
     }
 
+    @inlinable 
     func bindKinetics(_ kinetics: Kinetics<Vector>) {
         self.force.bindKinetics(kinetics)
     }

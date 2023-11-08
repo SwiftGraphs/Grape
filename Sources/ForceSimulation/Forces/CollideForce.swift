@@ -42,8 +42,6 @@ where Vector: SimulatableVector {
 
 extension Kinetics {
 
-
-
     public typealias CollideRadius = AttributeDescriptor<Vector.Scalar>
 
     public final class CollideForce: ForceProtocol {
@@ -74,7 +72,7 @@ extension Kinetics {
 
         @usableFromInline
         var calculatedRadius: [Vector.Scalar] = []
-
+        @inlinable
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
 

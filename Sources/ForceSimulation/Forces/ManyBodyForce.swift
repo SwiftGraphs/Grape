@@ -193,6 +193,7 @@ extension Kinetics {
         }
 
         @usableFromInline var kinetics: Kinetics! = nil
+
         @inlinable
         public func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics

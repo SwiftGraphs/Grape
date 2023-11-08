@@ -80,7 +80,9 @@ extension Kinetics {
 
                     var l = (vec).length()
 
-                    l = (l - self.calculatedLength[i]) / l * kinetics.alpha * self.calculatedStiffness[i]
+                    l =
+                        (l - self.calculatedLength[i]) / l * kinetics.alpha
+                        * self.calculatedStiffness[i]
 
                     vec *= l
 

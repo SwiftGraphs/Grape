@@ -81,7 +81,7 @@ where
         self.nodeIndices = []
         self.delegate = parentDelegate.spawn()
     }
-
+    @inlinable
     public init(
         box: Box,
         buildRootDelegate: () -> Delegate
@@ -90,7 +90,7 @@ where
         self.nodeIndices = []
         self.delegate = buildRootDelegate()
     }
-
+    @inlinable
     public convenience init(
         covering nodes: [NodeIndex: Vector],
         clusterDistance: Vector.Scalar,
@@ -104,13 +104,14 @@ where
             add(i, at: p)
         }
     }
-
+    @inlinable
     public func add(_ nodeIndex: NodeIndex, at point: Vector) {
         cover(point)
         addWithoutCover(nodeIndex, at: point)
     }
 
-    private func addWithoutCover(_ nodeIndex: NodeIndex, at point: Vector) {
+    @inlinable
+    func addWithoutCover(_ nodeIndex: NodeIndex, at point: Vector) {
         defer {
             delegate.didAddNode(nodeIndex, at: point)
         }
@@ -167,7 +168,8 @@ where
     /// Expand the current node multiple times by calling `expand(towards:)`, until the point is covered.
     ///
     /// - Parameter point: The point to be covered.
-    private func cover(_ point: Vector) {
+    @inlinable
+    func cover(_ point: Vector) {
         if box.contains(point) { return }
 
         repeat {
@@ -180,7 +182,8 @@ where
     ///
     /// The expansion will double the size on each dimension. Then the data in delegate will be copied to the new children.
     /// - Parameter direction: An Integer between 0 and `directionCount - 1`, where `directionCount` equals to 2^(dimension of the vector).
-    private func expand(towards direction: Direction) {
+    @inlinable
+    func expand(towards direction: Direction) {
         let nailedDirection = (Self.directionCount - 1) - direction
         let nailedCorner = box.getCorner(of: nailedDirection)
 
@@ -213,7 +216,8 @@ where
     /// This property is a getter property but it is probably be inlined.
     @inlinable static var directionCount: Int { 1 << Vector.scalarCount }
 
-    private static func spawnChildren(
+    @inlinable
+    static func spawnChildren(
         _ _box: Box,
         // _ _clusterDistance: Vector.Scalar,
         _ _delegate: Delegate
@@ -247,7 +251,8 @@ where
     /// Copy object while holding the same reference to children.
     ///
     /// Consider this function something you would do when working with linked list.
-    private func shallowCopy() -> KDTree<Vector, Delegate> {
+    @inlinable
+    func shallowCopy() -> KDTree<Vector, Delegate> {
         let copy = KDTree(
             box: box, parentDelegate: /*&*/ delegate)
 
@@ -262,7 +267,7 @@ where
     /// Get the index of the child that contains the point.
     ///
     /// **Complexity**: `O(n*(2^n))`, where `n` is the dimension of the vector.
-    private func getIndexInChildren(_ point: Vector, relativeTo originalPoint: Vector) -> Int {
+    @inlinable func getIndexInChildren(_ point: Vector, relativeTo originalPoint: Vector) -> Int {
         var index = 0
         let mask = point .>= originalPoint
         for i in 0..<Vector.scalarCount {
@@ -290,6 +295,7 @@ extension KDTree where Delegate.NodeID == Int {
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
     ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the root.
     ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the root delegate.
+    @inlinable
     public convenience init(
         covering points: [Vector],
         buildRootDelegate: () -> Delegate

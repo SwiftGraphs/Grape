@@ -21,19 +21,18 @@ struct MyForceField: ForceField {
         return CompositedForce(
             CompositedForce(
                 CompositedForce(
-
-                    Kinetics<Vector>.CollideForce(radius: .constant(5.0)),
+                    Kinetics<Vector>.LinkForce(
+                        data.links.map { l in
+                            .init(
+                                source: data.nodes.firstIndex { n in n.id == l.source }!,
+                                target: data.nodes.firstIndex { n in n.id == l.target }!
+                            )
+                        }, stiffness: .weightedByDegree(k: { _, _ in 1.0 })),
                     Kinetics<Vector>.ManyBodyForce(strength: -30)
                 ),
-                Kinetics<Vector>.CenterForce(center: 0, strength: 0.3)
+                Kinetics<Vector>.CenterForce(center: 0, strength: 1)
             ),
-            Kinetics<Vector>.LinkForce(
-                data.links.map { l in
-                    .init(
-                        source: data.nodes.firstIndex { n in n.id == l.source }!,
-                        target: data.nodes.firstIndex { n in n.id == l.target }!
-                    )
-                }, stiffness: .weightedByDegree(k: { _, _ in 1.0 }))
+            Kinetics<Vector>.CollideForce(radius: .constant(5.0))
         )
     }()
 

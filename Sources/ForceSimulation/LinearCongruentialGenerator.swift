@@ -2,8 +2,8 @@
 
 public protocol DeterministicRandomGenerator<Scalar> {
     associatedtype Scalar where Scalar: FloatingPoint & ExpressibleByFloatLiteral
-    static func next() -> Scalar
-    mutating func next() -> Scalar
+    @inlinable static func next() -> Scalar
+    @inlinable mutating func next() -> Scalar
 }
 
 /// A random number generator that generates deterministic random numbers.
@@ -45,17 +45,17 @@ public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
 
 public protocol HasDeterministicRandomGenerator: FloatingPoint & ExpressibleByFloatLiteral {
     associatedtype Generator: DeterministicRandomGenerator where Generator.Scalar == Self
-    static var generator: Generator { get }
+    // static var generator: Generator { get }
 }
 
 extension Double: HasDeterministicRandomGenerator {
     public typealias Generator = DoubleLinearCongruentialGenerator
-    public static var generator: Generator { return Generator() }
+    // public static var generator: Generator { return Generator() }
 }
 
 extension Float: HasDeterministicRandomGenerator {
     public typealias Generator = FloatLinearCongruentialGenerator
-    public static var generator: Generator { return Generator() }
+    // public static var generator: Generator { return Generator() }
 }
 
 extension HasDeterministicRandomGenerator {

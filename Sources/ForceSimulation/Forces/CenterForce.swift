@@ -2,8 +2,9 @@ extension Kinetics {
 
     public final class CenterForce: ForceProtocol {
 
-        var kinetics: Kinetics! = nil
+        @usableFromInline var kinetics: Kinetics! = nil
 
+        @inlinable
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
             var meanPosition = Vector.zero
@@ -16,7 +17,7 @@ extension Kinetics {
                 kinetics.position[i] -= delta
             }
         }
-
+        @inlinable
         public func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
         }
