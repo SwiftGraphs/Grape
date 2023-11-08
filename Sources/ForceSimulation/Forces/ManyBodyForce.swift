@@ -61,7 +61,7 @@ where Vector: SimulatableVector {
 extension Kinetics {
     public typealias NodeMass = AttributeDescriptor<Vector.Scalar>
 
-    public final class ManyBodyForce: ForceProtocol {
+    public struct ManyBodyForce: ForceProtocol {
 
         @usableFromInline var strength: Vector.Scalar
         @usableFromInline var theta2: Vector.Scalar
@@ -206,7 +206,7 @@ extension Kinetics {
         @usableFromInline var kinetics: Kinetics! = nil
 
         @inlinable
-        public func bindKinetics(_ kinetics: Kinetics) {
+        public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
             self.precalculatedMass = self.mass.calculate(for: (kinetics.validCount))
             // self.forces = .init(repeating: .zero, count: kinetics.validCount)

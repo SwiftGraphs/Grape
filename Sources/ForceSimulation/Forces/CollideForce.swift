@@ -44,7 +44,7 @@ extension Kinetics {
 
     public typealias CollideRadius = AttributeDescriptor<Vector.Scalar>
 
-    public final class CollideForce: ForceProtocol {
+    public struct CollideForce: ForceProtocol {
 
         @usableFromInline var kinetics: Kinetics! = nil
 
@@ -65,7 +65,7 @@ extension Kinetics {
         }
 
         @inlinable
-        public func bindKinetics(_ kinetics: Kinetics) {
+        public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
             self.calculatedRadius = self.radius.calculate(for: kinetics.validCount)
         }
