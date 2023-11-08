@@ -1,6 +1,6 @@
 extension Kinetics {
 
-    public final class CenterForce: ForceProtocol {
+    public struct CenterForce: ForceProtocol {
 
         @usableFromInline var kinetics: Kinetics! = nil
 
@@ -18,7 +18,7 @@ extension Kinetics {
             }
         }
         @inlinable
-        public func bindKinetics(_ kinetics: Kinetics) {
+        public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
         }
 

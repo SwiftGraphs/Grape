@@ -16,6 +16,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
     // public var validRanges: [Range<Int>]
     // public var validRanges: Range<Int>
     public var validCount: Int
+    
     @inlinable 
     public var range: Range<Int> {
         return 0..<validCount
@@ -76,7 +77,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
 extension Kinetics {
     @inlinable
     func updatePositions() {
-        for i in position.indices {
+        for i in range {
             if let fix = fixation[i] {
                 position[i] = fix
             } else {

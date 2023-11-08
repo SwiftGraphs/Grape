@@ -5,8 +5,8 @@ where
     Vector: SimulatableVector & L2NormCalculatable
 {
 
-    @usableFromInline let force1: F1?
-    @usableFromInline let force2: F2
+    @usableFromInline var force1: F1?
+    @usableFromInline var force2: F2
 
     // var kinetics: Kinetics<Vector>?
     @inlinable
@@ -20,7 +20,7 @@ where
         self.force2.apply()
     }
     @inlinable
-    public func bindKinetics(_ kinetics: Kinetics<Vector>) {
+    public mutating func bindKinetics(_ kinetics: Kinetics<Vector>) {
         self.force1?.bindKinetics(kinetics)
         self.force2.bindKinetics(kinetics)
     }

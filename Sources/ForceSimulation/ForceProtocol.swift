@@ -5,7 +5,7 @@ public protocol ForceProtocol<Vector>{
 
     @inlinable func apply()
 
-    @inlinable func bindKinetics(_ kinetics: Kinetics<Vector>) 
+    @inlinable mutating func bindKinetics(_ kinetics: Kinetics<Vector>) 
 }
 
 
@@ -15,7 +15,7 @@ public protocol ForceField<Vector>: ForceProtocol where Vector: SimulatableVecto
 
     @inlinable
     @ForceBuilder<Vector> 
-    var force: F { get }
+    var force: F { get set }
 }
 
 public extension ForceField {
@@ -25,7 +25,7 @@ public extension ForceField {
     }
 
     @inlinable 
-    func bindKinetics(_ kinetics: Kinetics<Vector>) {
+    mutating func bindKinetics(_ kinetics: Kinetics<Vector>) {
         self.force.bindKinetics(kinetics)
     }
 }

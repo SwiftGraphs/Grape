@@ -50,6 +50,7 @@ struct MyForceField: ForceField {
     typealias Vector = SIMD2<Double>
     
     public var force = CompositedForce {
+        Kinetics<Vector>.ManyBodyForce(strength: -12)
         Kinetics<Vector>.LinkForce(
             getLinks(),
             stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
@@ -57,7 +58,6 @@ struct MyForceField: ForceField {
         )
         Kinetics<Vector>.CenterForce(center: 0, strength: 0.4)
         Kinetics<Vector>.CollideForce(radius: .constant(3))
-        Kinetics<Vector>.ManyBodyForce(strength: -20)
         
     }
 }

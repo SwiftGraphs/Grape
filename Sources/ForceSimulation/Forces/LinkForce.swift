@@ -12,8 +12,16 @@ extension Kinetics {
                 return Array(repeating: m, count: link.count)
             case .varied(let f):
                 return link.map { l in f(l, lookup) }
-            case .weightedByDegree(let f):
-                return link.map { l in f(l, lookup) }
+            case .weightedByDegree(let k):
+                return link.map { l in
+                    k(l, lookup)
+                        / Vector.Scalar(
+                            min(
+                                lookup.count[l.source, default: 0],
+                                lookup.count[l.target, default: 0]
+                            )
+                        )
+                }
             }
         }
     }
@@ -33,7 +41,7 @@ extension Kinetics {
         }
     }
 
-    public final class LinkForce: ForceProtocol {
+    public struct LinkForce: ForceProtocol {
         @usableFromInline
         internal var kinetics: Kinetics! = nil
 
@@ -55,30 +63,22 @@ extension Kinetics {
 
         @inlinable
         public func apply() {
-            // guard let sim = self.simulation else { return }
-
-            // let alpha = sim.alpha
-
             for _ in 0..<iterationsPerTick {
                 for i in links.indices {
 
                     let s = links[i].source
                     let t = links[i].target
 
-                    let sp = kinetics.position[s]
-                    let tp = kinetics.position[t]
-
                     let b = self.calculatedBias[i]
 
-                    #if DEBUG
-                        assert(b != 0)
-                    #endif
+                    assert(b != 0)
 
                     var vec =
-                        (tp + kinetics.velocity[t] - sp - kinetics.velocity[s])
+                        (kinetics.position[t] + kinetics.velocity[t] - kinetics.position[s]
+                        - kinetics.velocity[s])
                         .jiggled()
 
-                    var l = (vec).length()
+                    var l = vec.length()
 
                     l =
                         (l - self.calculatedLength[i]) / l * kinetics.alpha
@@ -100,7 +100,7 @@ extension Kinetics {
         internal var linkLookup: LinkLookup<Int> = .init(links: [])
 
         @inlinable
-        public func bindKinetics(_ kinetics: Kinetics) {
+        public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
             self.links = self.links.filter {
                 $0.source < kinetics.validCount && $0.target < kinetics.validCount

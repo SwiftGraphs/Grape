@@ -2,7 +2,7 @@ public final class Simulation<Vector, ForceField>
 where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<Vector> {
 
     @usableFromInline
-    let forceField: ForceField
+    var forceField: ForceField
 
     // @usableFromInline
     public let kinetics: Kinetics<Vector>

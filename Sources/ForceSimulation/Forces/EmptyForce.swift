@@ -1,6 +1,6 @@
 extension Kinetics {
 
-    public final class EmptyForce: ForceProtocol {
+    public struct EmptyForce: ForceProtocol {
         @inlinable
         public func apply() {
 

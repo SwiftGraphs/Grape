@@ -141,7 +141,7 @@ extension Kinetics {
             // }
 
 
-            for i in kinetics.position.indices {
+            for i in kinetics.range {
                 let pos = kinetics.position[i]
                 var f = Vector.zero
                 tree.visit { t in
