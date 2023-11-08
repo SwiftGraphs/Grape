@@ -26,7 +26,7 @@ extension Kinetics {
         public var strength: Vector.Scalar
 
         @inlinable
-        internal
+        public
             init(center: Vector.Scalar, strength: Vector.Scalar)
         {
             self.center = center

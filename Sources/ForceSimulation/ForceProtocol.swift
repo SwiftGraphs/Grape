@@ -10,12 +10,15 @@ public protocol ForceProtocol<Vector>{
 
 
 
-protocol ForceField<Vector>: ForceProtocol where Vector: SimulatableVector & L2NormCalculatable {
+public protocol ForceField<Vector>: ForceProtocol where Vector: SimulatableVector & L2NormCalculatable {
     associatedtype F: ForceProtocol<Vector> where F.Vector == Vector
-    @inlinable var force: F { get }
+
+    @inlinable
+    @ForceBuilder<Vector> 
+    var force: F { get }
 }
 
-extension ForceField {
+public extension ForceField {
     @inlinable 
     func apply() {
         self.force.apply()

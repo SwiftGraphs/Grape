@@ -81,7 +81,7 @@ extension Kinetics {
         // @usableFromInline var forces: [Vector] = []
 
         @inlinable
-        internal init(
+        public init(
             strength: Vector.Scalar,
             nodeMass: NodeMass = .constant(1.0),
             theta: Vector.Scalar = 0.9
@@ -106,11 +106,11 @@ extension Kinetics {
         internal func calculateForce(alpha: Vector.Scalar) {
 
 
+            // Avoid capturing self
             let theta2 = self.theta2
             let distanceMin2 = self.distanceMin2
             let distanceMax2 = self.distanceMax2
             let strength = self.strength
-            // let positions = kinetics.position
             let precalculatedMass = self.precalculatedMass
             let mass = self.mass
 
@@ -139,7 +139,6 @@ extension Kinetics {
 
             // }
 
-            // Avoid capturing self
 
             for i in kinetics.position.indices {
                 let pos = kinetics.position[i]

@@ -1,4 +1,4 @@
-class Simulation<Vector, ForceField>
+public final class Simulation<Vector, ForceField>
 where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<Vector> {
 
     @usableFromInline

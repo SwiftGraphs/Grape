@@ -54,7 +54,7 @@ extension Kinetics {
         public var strength: Vector.Scalar
 
         @inlinable
-        init(
+        public init(
             radius: CollideRadius,
             strength: Vector.Scalar = 1.0,
             iterationsPerTick: UInt = 1

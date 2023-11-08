@@ -121,7 +121,7 @@ extension Kinetics {
         @usableFromInline var iterationsPerTick: UInt
 
         @inlinable
-        internal init(
+        public init(
             _ links: [EdgeID<Int>],
             stiffness: LinkStiffness,
             originalLength: LinkLength = .constant(30),
