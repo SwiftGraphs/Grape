@@ -61,7 +61,6 @@ func getLinks() -> [EdgeID<Int>] {
 // }
 
 struct MyForceField: ForceField2D {
-
     var force = CompositedForce<Vector, _, _> {
         Kinetics2D.ManyBodyForce(strength: -30)
         Kinetics2D.LinkForce(
@@ -92,6 +91,7 @@ struct MySealedForce: ForceField2D {
     }
 }
 
+
 struct MyLatticeForce: ForceField2D {
     var force = SealedForce2D {
         Kinetics2D.LinkForce(
@@ -118,6 +118,22 @@ struct MyForceField3D: ForceField3D {
 final class MiserableGraphTest: XCTestCase {
 
     func testLattice() {
+        
+        let myForce = SealedForce2D {
+            Kinetics2D.ManyBodyForce(strength: -30)
+            Kinetics2D.LinkForce(
+                stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+                originalLength: .constant(35)
+            )
+            Kinetics2D.CenterForce(center: .zero, strength: 1)
+            Kinetics2D.CollideForce(radius: .constant(3))
+        }
+        
+        let simulation = Simulation(
+            nodeCount: width * width,
+            links: edge.map { EdgeID(source: $0.0, target: $0.1) },
+            forceField: myForce
+        )
 
         let width = 30
 
@@ -132,10 +148,11 @@ final class MiserableGraphTest: XCTestCase {
                 }
             }
         }
+        
         let simulation = Simulation(
             nodeCount: width * width,
             links: edge.map { EdgeID(source: $0.0, target: $0.1) },
-            forceField: MyLatticeForce()
+            forceField: myForce
         )
 
         measure {
