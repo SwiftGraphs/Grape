@@ -41,16 +41,23 @@ let package = Package(
             name: "Grape",
             dependencies: ["ForceSimulation"],
             path: "Sources/Grape"
+            // link ForceSimulation in release mode
+            // swiftSettings: [.unsafeFlags(["-Xfrontend", "-disable-availability-checking"])]
         ),
 
-        .testTarget(
-            name: "NDTreeTests",
-            dependencies: ["ForceSimulation"]
-        ),
+        // .testTarget(
+        //     name: "NDTreeTests",
+        //     dependencies: ["ForceSimulation"]
+        // ),
 
         .testTarget(
             name: "ForceSimulationTests",
             dependencies: ["ForceSimulation"]
         ),
+        
+        //     .testTarget(
+        //         name: "GrapeTests",
+        //         dependencies: ["Grape"]
+        //     ),
     ]
 )

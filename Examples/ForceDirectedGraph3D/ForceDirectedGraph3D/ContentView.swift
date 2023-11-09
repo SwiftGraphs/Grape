@@ -17,9 +17,9 @@ func buildSimulation() -> Simulation3D<String> {
     
     let sim = Simulation3D(nodeIds: data.nodes.map { $0.id } )
     
-    sim.createCenterForce(center: .zero)
-    sim.createManyBodyForce(strength: -1)
-    sim.createLinkForce(data.links.map { ($0.source, $0.target) }, stiffness: .constant(0.5))
+    sim.withCenterForce(center: .zero)
+    sim.withManyBodyForce(strength: -1)
+    sim.withLinkForce(data.links.map { ($0.source, $0.target) }, stiffness: .constant(0.5))
     
     for i in 0..<720 {
         sim.tick()
@@ -56,6 +56,9 @@ let materialColors: [UIColor] = [
 
 
 struct ContentView: View {
+    
+    @State var test = false
+    
     var body: some View {
         
         VStack {
@@ -143,7 +146,7 @@ struct ContentView: View {
     }
     
     
-    private func createCylinder(
+    private func withCylinder(
         from fromPosition: simd_float3,
         to toPosition: simd_float3,
         material: PhysicallyBasedMaterial

@@ -2,7 +2,7 @@ import ForceSimulation
 import SwiftUI
 
 @dynamicCallable
-public struct LinkMark<NodeID: Hashable>: GraphContent {
+public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     public enum LabelDisplayStrategy {
         case auto
@@ -45,7 +45,7 @@ public struct LinkMark<NodeID: Hashable>: GraphContent {
         strokeDashArray: [Double]? = nil,
         arrowStyle: ArrowStyle = .none
     ) {
-        self.id = .init(from, to)
+        self.id = .init(source: from, target: to)
         self.label = label
         self.labelColor = labelColor
         self.labelDisplayStrategy = labelDisplayStrategy

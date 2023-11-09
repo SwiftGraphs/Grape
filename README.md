@@ -31,7 +31,7 @@ https://github.com/li3zhen1/Grape/assets/45376537/d80dc797-1980-4755-85b9-18ee26
 
 
 
-Source code: [ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ContentView.swift). 
+Source code: [ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Miserables.swift). 
 
 
 
@@ -47,7 +47,7 @@ https://github.com/li3zhen1/Grape/assets/45376537/4585471e-2339-4aee-8f39-0c11fd
 
 
 
-Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift)
+Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift). This code is not updated for API breaking changes for version `0.5.0`.
 
 
 <br/>
@@ -62,7 +62,7 @@ https://github.com/li3zhen1/Grape/assets/45376537/5b76fddc-dd5c-4d35-bced-29c012
 
 
 
-Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/ForceDirectedLatticeView.swift)
+Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Lattice.swift)
 
 <br/>
 <br/>
@@ -79,12 +79,10 @@ Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/
 import Grape
 
 struct MyGraph: View {
-
-    // A proxy that helps to control the simulation.
-    let myProxy = ForceDirectedGraph<Int>.Proxy()
+    @State var isRunning = true // start moving once appeared.
     
     var body: some View {
-        ForceDirectedGraph(proxy: myProxy) {
+        ForceDirectedGraph(isRunning: $isRunning) {
             
             // Declare nodes and links like you would do in Swift Charts.
             NodeMark(id: 0, fill: .green)
@@ -99,13 +97,6 @@ struct MyGraph: View {
             CenterForce()
             ManyBodyForce()
         }
-        .onAppear {
-
-            // Let's start moving!
-            myProxy.start()
-
-        }
-
     }
 }
 ```
@@ -134,28 +125,35 @@ https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e5835
 
 #### Basic
 
-The basic concepts of simulations and forces can be found here: [Force simulations - D3](https://d3js.org/d3-force/simulation). You can simply create 2D or 3D simulations by using `Simulation2D` or `Simulation3D`:
+The basic concepts of simulations and forces can be found here: [Force simulations - D3](https://d3js.org/d3-force/simulation). You can simply create simulations by using `Simulation` like this:
 
 ```swift
 import simd
 import ForceSimulation
 
-struct Node: Identifiable { ... }
+/// Create a 2D force composited with 4 primitive forces.
+let myForce = SealedForce2D {
+    Kinetics2D.ManyBodyForce(strength: -30)
+    Kinetics2D.LinkForce(
+        stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+        originalLength: .constant(35)
+    )
+    Kinetics2D.CenterForce(center: .zero, strength: 1)
+    Kinetics2D.CollideForce(radius: .constant(3))
+} 
 
-let nodeIds: [Node.ID] = ... 
-let links: [(Node.ID, Node.ID)] = ... 
-
-let sim = Simulation2D(nodeIds: nodeIds, alphaDecay: 0.01)
-sim.createManyBodyForce(strength: -12)
-sim.createLinkForce(links)
-sim.createCenterForce(center: [0, 0], strength: 0.4)
-sim.createCollideForce(radius: .constant(3))
+/// Create a simulation, the dimension is inferred from the force.
+let mySimulation = Simulation(
+    nodeCount: width * width,
+    links: edge.map { EdgeID(source: $0.0, target: $0.1) },
+    forceField: myForce
+) 
 
 /// Force is ready to start! run `tick` to iterate the simulation.
 
-for i in 0..<120 {
-    sim.tick()
-    let positions = sim.nodePositions
+for mySimulation in 0..<120 {
+    mySimulation.tick()
+    let positions = mySimulation.kinetics.position
     /// Do something with the positions.
 }
 
@@ -165,7 +163,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 <br/>
 
-#### Advanced
+<!-- #### Advanced
 
 Grape provides a set of generic based types that works with any SIMD-like data structures. To integrate Grape into platforms where `import simd` isn't supported, or higher dimensions, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
 
@@ -182,7 +180,7 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 ```
 
 > [!IMPORTANT]  
-> When using generic based types, you ***pay for dynamic dispatch***, in terms of performance. Although their implementations are basically the same, it's recommended to use `Simulation2D` or `Simulation3D` whenever possible.
+> When using generic based types, you ***pay for dynamic dispatch***, in terms of performance. Although their implementations are basically the same, it's recommended to use `Simulation2D` or `Simulation3D` whenever possible. -->
 
 
 <br/>
@@ -207,9 +205,9 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 
 ## Performance
 
-Grape uses simd to calculate position and velocity. Currently it takes ~0.034 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
+Grape uses simd to calculate position and velocity. Currently it takes ~0.015 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
 
-For 3D simulation, it takes ~0.052 seconds for the same graph and same configs.
+For 3D simulation, it takes ~0.019 seconds for the same graph and same configs.
 
 
 <br/>

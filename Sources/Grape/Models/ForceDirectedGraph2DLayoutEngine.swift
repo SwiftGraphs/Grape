@@ -1,48 +1,92 @@
 import ForceSimulation
 import Observation
 import SwiftUI
+import Charts
 
 protocol LayoutEngine {
-
+    
 }
 
-@Observable
-public class ForceDirectedGraph2DLayoutEngine: LayoutEngine {
-
-    var simulation: Simulation2D<Int>
-
-    @ObservationIgnored
-    let frameRate: Double = 60.0
+//@Observable
+public class ForceDirectedGraph2DLayoutEngine: LayoutEngine & Observation.Observable {
+    
+    public var simulation: Simulation2D<SealedForce2D>
     
     @ObservationIgnored
+    public var lastRenderedSize: CGSize = .init()
+    
+    // var isRunning = false
+    
+    @ObservationIgnored 
+    @usableFromInline
+    let frameRate: Double = 60.0
+    
+    @ObservationIgnored 
+    @usableFromInline
     var scheduledTimer: Timer? = nil
-
-    public init(initialSimulation: Simulation2D<Int>) {
+    
+    @inlinable
+    public init(initialSimulation: Simulation2D<SealedForce2D>) {
         self.simulation = initialSimulation
     }
-
-    public func start() {
+    
+    @inlinable
+    func start() {
         guard self.scheduledTimer == nil else { return }
-        self.scheduledTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / frameRate, repeats: true) { [weak self] _ in
+        self.scheduledTimer = Timer.scheduledTimer(
+            withTimeInterval: 1.0 / frameRate,
+            repeats: true
+        ) { [weak self] _ in
             self?.tick()
         }
     }
-
-    public func stop() {
+    
+    @inlinable
+    func stop() {
         self.scheduledTimer?.invalidate()
         self.scheduledTimer = nil
     }
-
-    public func tick() {
+    
+    @inlinable
+    func tick() {
         withMutation(keyPath: \.simulation) {
-            simulation.tick()
+            // Task.detached {
+                self.simulation.tick()
+            // }
+//            DispatchQueue(label: "grape", qos:.background).async {
+//                simulation.tick()
+//            }
         }
     }
-
-    public func tick(waitingForTickingOn queue: DispatchQueue) {
-        queue.asyncAndWait {
-            self.simulation.tick()
+    
+    @inlinable
+    func tickDetached() {
+        withMutation(keyPath: \.simulation) {
+            _ = Task.detached {
+                self.simulation.tick()
+            }
+//            DispatchQueue(label: "grape", qos:.background).async {
+//                simulation.tick()
+//            }
         }
-        withMutation(keyPath: \.self.simulation) { }
+    }
+    
+    @ObservationIgnored
+    @usableFromInline
+    let _$observationRegistrar = Observation.ObservationRegistrar()
+    
+    @inlinable
+    nonisolated func access<Member>(
+        keyPath: KeyPath<ForceDirectedGraph2DLayoutEngine, Member>
+    ) {
+        _$observationRegistrar.access(self, keyPath: keyPath)
+    }
+    
+    @inlinable
+    nonisolated func withMutation<Member, MutationResult>(
+        keyPath: KeyPath<ForceDirectedGraph2DLayoutEngine, Member>,
+        _ mutation: () throws -> MutationResult
+    ) rethrows -> MutationResult {
+        try _$observationRegistrar.withMutation(of: self, keyPath: keyPath, mutation)
     }
 }

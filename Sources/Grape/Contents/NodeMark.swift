@@ -1,7 +1,7 @@
 import SwiftUI
 
 
-public struct NodeMark<NodeID: Hashable>: GraphContent {
+public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     public enum LabelDisplayStrategy {
         case auto
