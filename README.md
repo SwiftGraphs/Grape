@@ -205,7 +205,7 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 
 ## Performance
 
-Grape uses simd to calculate position and velocity. Currently it takes ~0.015 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
+Grape uses simd to calculate position and velocity. Currently it takes ~0.014 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
 
 For 3D simulation, it takes ~0.019 seconds for the same graph and same configs.
 
