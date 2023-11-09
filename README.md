@@ -47,7 +47,7 @@ https://github.com/li3zhen1/Grape/assets/45376537/4585471e-2339-4aee-8f39-0c11fd
 
 
 
-Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift). This code is not updated for API breaking changes for version `0.5.0`.
+Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift).
 
 
 <br/>
@@ -208,6 +208,9 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 Grape uses simd to calculate position and velocity. Currently it takes ~0.015 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
 
 For 3D simulation, it takes ~0.019 seconds for the same graph and same configs.
+
+> [!IMPORTANT]
+> Due to heavy use of generics (some of which is not inlined in Debug mode), the performance in Debug build is ~100x slower than Release build. Grape might ship a version with pre-inlined generics to address this problem.
 
 
 <br/>
