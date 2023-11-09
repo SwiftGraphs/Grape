@@ -9,7 +9,7 @@ import SwiftUI
 //     }
 // }
 
-public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
+public struct ForceDirectedGraph<NodeID: Hashable>: View {
 
     public typealias LayoutEngine = ForceDirectedGraph2DLayoutEngine
 
@@ -170,7 +170,7 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
     
 
     @usableFromInline
-    var model: LayoutEngine<ForceField>
+    var model: LayoutEngine
 //    public let proxy: Proxy
 
     @usableFromInline 
@@ -196,7 +196,7 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
         // proxy: Proxy? = nil,
         isRunning externalRunningBinding: Binding<Bool>,
         @GraphContentBuilder<NodeID> _ buildGraphContent: () -> PartialGraphMark<NodeID>,
-        @ForceBuilder<SIMD2<Double>> forceField buildForceField: () -> ForceField
+        @SealedForce2DBuilder forceField buildForceField: () -> [SealedForce2D.ForceEntry]
     ) {
         let graphMark = buildGraphContent()
         self.content = Content(nodes: graphMark.nodes, links: graphMark.links)
@@ -204,12 +204,14 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
         let lookup = Dictionary(
             uniqueKeysWithValues: graphMark.nodes.enumerated().map { ($1.id, $0) })
 
-        let simulation = Simulation2D<ForceField>(
+        let simulation = Simulation2D<SealedForce2D>(
             nodeCount: graphMark.nodes.count,
             links: graphMark.links.map {
                 .init(source: lookup[$0.id.source]!, target: lookup[$0.id.target]!)
             },
-            forceField: buildForceField()
+            forceField: SealedForce2D(
+                buildForceField()
+            )
         )
         
         self.nodeIdToIndexLookup = lookup

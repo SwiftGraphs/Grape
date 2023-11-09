@@ -8,10 +8,9 @@ protocol LayoutEngine {
 }
 
 //@Observable
-public class ForceDirectedGraph2DLayoutEngine<ForceField>: LayoutEngine & Observation.Observable
-where ForceField: ForceProtocol, ForceField.Vector == SIMD2<Double> {
+public class ForceDirectedGraph2DLayoutEngine: LayoutEngine & Observation.Observable {
     
-    public var simulation: Simulation2D<ForceField>
+    public var simulation: Simulation2D<SealedForce2D>
     
     @ObservationIgnored
     public var lastRenderedSize: CGSize = .init()
@@ -27,7 +26,7 @@ where ForceField: ForceProtocol, ForceField.Vector == SIMD2<Double> {
     var scheduledTimer: Timer? = nil
     
     @inlinable
-    public init(initialSimulation: Simulation2D<ForceField>) {
+    public init(initialSimulation: Simulation2D<SealedForce2D>) {
         self.simulation = initialSimulation
     }
     
@@ -51,9 +50,9 @@ where ForceField: ForceProtocol, ForceField.Vector == SIMD2<Double> {
     @inlinable
     func tick() {
         withMutation(keyPath: \.simulation) {
-            Task.detached {
+            // Task.detached {
                 self.simulation.tick()
-            }
+            // }
 //            DispatchQueue(label: "grape", qos:.background).async {
 //                simulation.tick()
 //            }
@@ -63,7 +62,7 @@ where ForceField: ForceProtocol, ForceField.Vector == SIMD2<Double> {
     @inlinable
     func tickDetached() {
         withMutation(keyPath: \.simulation) {
-            Task.detached {
+            _ = Task.detached {
                 self.simulation.tick()
             }
 //            DispatchQueue(label: "grape", qos:.background).async {

@@ -73,8 +73,27 @@ struct MyForceField: ForceField2D {
     }
 }
 
+struct MySealedForce: ForceField2D {
+    var force = SealedForce2D {
+        Kinetics2D.ManyBodyForce(strength: -30)
+        Kinetics2D.LinkForce(
+            stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+            originalLength: .constant(35)
+        )
+        Kinetics2D.CenterForce(center: .zero, strength: 1)
+        Kinetics2D.CollideForce(radius: .constant(3))
+        // Kinetics2D.LinkForce(
+        //     stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+        //     originalLength: .constant(35)
+        // ),
+        // Kinetics2D.CenterForce(center: .zero, strength: 1),
+        // Kinetics2D.CollideForce(radius: .constant(3))
+
+    }
+}
+
 struct MyLatticeForce: ForceField2D {
-    var force = CompositedForce<Vector, _, _> {
+    var force = SealedForce2D {
         Kinetics2D.LinkForce(
             stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
             originalLength: .constant(1)
@@ -133,7 +152,7 @@ final class MiserableGraphTest: XCTestCase {
         let simulation = Simulation(
             nodeCount: data.nodes.count,
             links: getLinks(),
-            forceField: MyForceField()
+            forceField: MySealedForce()
         )
 
         // let wrapped = Simulation2D(
