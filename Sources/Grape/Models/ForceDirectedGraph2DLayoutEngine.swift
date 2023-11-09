@@ -18,10 +18,12 @@ where ForceField: ForceProtocol, ForceField.Vector == SIMD2<Double> {
     
     // var isRunning = false
     
-    @ObservationIgnored @usableFromInline
+    @ObservationIgnored 
+    @usableFromInline
     let frameRate: Double = 60.0
     
-    @ObservationIgnored @usableFromInline
+    @ObservationIgnored 
+    @usableFromInline
     var scheduledTimer: Timer? = nil
     
     @inlinable
@@ -49,16 +51,25 @@ where ForceField: ForceProtocol, ForceField.Vector == SIMD2<Double> {
     @inlinable
     func tick() {
         withMutation(keyPath: \.simulation) {
-            simulation.tick()
+            Task.detached {
+                self.simulation.tick()
+            }
+//            DispatchQueue(label: "grape", qos:.background).async {
+//                simulation.tick()
+//            }
         }
     }
     
     @inlinable
-    func tick(waitingForTickingOn queue: DispatchQueue) {
-        queue.asyncAndWait {
-            self.simulation.tick()
+    func tickDetached() {
+        withMutation(keyPath: \.simulation) {
+            Task.detached {
+                self.simulation.tick()
+            }
+//            DispatchQueue(label: "grape", qos:.background).async {
+//                simulation.tick()
+//            }
         }
-        withMutation(keyPath: \.self.simulation) {}
     }
     
     @ObservationIgnored

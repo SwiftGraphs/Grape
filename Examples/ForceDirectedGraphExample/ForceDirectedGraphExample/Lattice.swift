@@ -11,7 +11,7 @@ import Grape
 
 struct Lattice: View {
     
-    let width = 24
+    let width = 36
     let edge: [(Int, Int)]
     @State var isRunning = false
     
@@ -30,6 +30,7 @@ struct Lattice: View {
         self.edge = edge
     }
     
+    @inlinable
     var body: some View {
         ForceDirectedGraph(isRunning: $isRunning) {
             for i in 0..<(width*width) {

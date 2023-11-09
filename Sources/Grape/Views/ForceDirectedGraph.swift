@@ -17,6 +17,7 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
         public var nodes: [NodeMark<NodeID>]
         public var links: [LinkMark<NodeID>]
 
+        @inlinable
         public init(nodes: [NodeMark<NodeID>], links: [LinkMark<NodeID>]) {
             self.nodes = nodes
             self.links = links
@@ -169,11 +170,11 @@ public struct ForceDirectedGraph<NodeID: Hashable, ForceField: Force2D>: View {
     
 
     @usableFromInline
-//    @State 
     var model: LayoutEngine<ForceField>
 //    public let proxy: Proxy
 
-    @usableFromInline let content: Content
+    @usableFromInline 
+    let content: Content
     // @usableFromInline let forceField: ForceField
     
 //    @usableFromInline
