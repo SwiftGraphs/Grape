@@ -10,16 +10,39 @@ import RealityKit
 import RealityKitContent
 import simd
 import ForceSimulation
+import Grape
 
 
-func buildSimulation() -> Simulation3D<String> {
+struct My3DForce: ForceField3D {
+    typealias Vector = SIMD3<Float>
+    
+    var force = CompositedForce<Vector, _, _> {
+        Kinetics3D.CenterForce(center: .zero, strength: 1)
+        Kinetics3D.ManyBodyForce(strength: -1)
+        Kinetics3D.LinkForce(stiffness: .constant(0.5))
+    }
+}
+
+
+func buildSimulation() -> Simulation3D<My3DForce> {
     let data = getData(miserables)
     
-    let sim = Simulation3D(nodeIds: data.nodes.map { $0.id } )
     
-    sim.withCenterForce(center: .zero)
-    sim.withManyBodyForce(strength: -1)
-    sim.withLinkForce(data.links.map { ($0.source, $0.target) }, stiffness: .constant(0.5))
+    let links = data.links.map { l in
+        let fromID = data.nodes.firstIndex { mn in
+            mn.id == l.source
+        }!
+        let toID = data.nodes.firstIndex { mn in
+            mn.id == l.target
+        }!
+        return EdgeID(source: fromID, target: toID)
+    }
+    
+    let sim = Simulation(
+        nodeCount: data.nodes.count,
+        links: links,
+        forceField: My3DForce()
+    )
     
     for i in 0..<720 {
         sim.tick()
@@ -85,7 +108,8 @@ struct ContentView: View {
                 
                 let sim = buildSimulation()
                 
-                let positions = sim.nodePositions.map { pos in  simd_float3(
+                
+                let positions = sim.kinetics.position.asArray().map { pos in  simd_float3(
                     (pos[1]) * scaleRatio,
                     -(pos[0]) * scaleRatio,
                     (pos[2]) * scaleRatio + 0.25
@@ -114,7 +138,7 @@ struct ContentView: View {
                 
                 for (f, t) in linkIds {
                     content.add(
-                        createCylinder(
+                        withCylinder(
                             from: positions[f],
                             to: positions[t],
                             material: material

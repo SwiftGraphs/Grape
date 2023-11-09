@@ -14,6 +14,8 @@
 		B783A1302AE2DA4900EC828F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B783A12F2AE2DA4900EC828F /* ContentView.swift */; };
 		B783A1322AE2DA4A00EC828F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B783A1312AE2DA4A00EC828F /* Assets.xcassets */; };
 		B783A1352AE2DA4A00EC828F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B783A1342AE2DA4A00EC828F /* Preview Assets.xcassets */; };
+		B7FEF0092AFD824000E3BD07 /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = B7FEF0082AFD824000E3BD07 /* ForceSimulation */; };
+		B7FEF00B2AFD824000E3BD07 /* Grape in Frameworks */ = {isa = PBXBuildFile; productRef = B7FEF00A2AFD824000E3BD07 /* Grape */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,8 +34,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B7FEF00B2AFD824000E3BD07 /* Grape in Frameworks */,
 				B783A12C2AE2DA4900EC828F /* RealityKitContent in Frameworks */,
 				B7786A1C2AE2DE7800FF7CA8 /* ForceSimulation in Frameworks */,
+				B7FEF0092AFD824000E3BD07 /* ForceSimulation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,6 +109,8 @@
 			packageProductDependencies = (
 				B783A12B2AE2DA4900EC828F /* RealityKitContent */,
 				B7786A1B2AE2DE7800FF7CA8 /* ForceSimulation */,
+				B7FEF0082AFD824000E3BD07 /* ForceSimulation */,
+				B7FEF00A2AFD824000E3BD07 /* Grape */,
 			);
 			productName = ForceDirectedGraph3D;
 			productReference = B783A1262AE2DA4900EC828F /* ForceDirectedGraph3D.app */;
@@ -379,6 +385,14 @@
 		B783A12B2AE2DA4900EC828F /* RealityKitContent */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RealityKitContent;
+		};
+		B7FEF0082AFD824000E3BD07 /* ForceSimulation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ForceSimulation;
+		};
+		B7FEF00A2AFD824000E3BD07 /* Grape */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Grape;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

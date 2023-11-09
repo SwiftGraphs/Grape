@@ -128,12 +128,6 @@ final class MiserableGraphTest: XCTestCase {
             Kinetics2D.CenterForce(center: .zero, strength: 1)
             Kinetics2D.CollideForce(radius: .constant(3))
         }
-        
-        let simulation = Simulation(
-            nodeCount: width * width,
-            links: edge.map { EdgeID(source: $0.0, target: $0.1) },
-            forceField: myForce
-        )
 
         let width = 30
 
