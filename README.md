@@ -147,7 +147,8 @@ let nodeCount = 4
 let links = [(0, 1), (1, 2), (2, 3), (3, 0)] 
 
 /// Create a 2D force composited with 4 primitive forces.
-/// "Seal" means you cannot add customed force here. 
+/// "Seal" means you cannot add customed force here.
+///    (But you can add any forces with any count from `ForceSimulation`)
 /// If you want to add your own force, checkout `CompositedForce`.
 let myForce = SealedForce2D {
     // Forces are namespaced under `Kinetics<Vector>`
@@ -172,7 +173,7 @@ let mySimulation = Simulation(
 
 for mySimulation in 0..<120 {
     mySimulation.tick()
-    let positions = mySimulation.kinetics.position
+    let positions = mySimulation.kinetics.position.asArray()
     /// Do something with the positions.
 }
 
