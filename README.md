@@ -70,6 +70,11 @@ Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/
 
 ## Usage
 
+Grape ships 2 module:
+
+- The `Grape` module allows you to create force-directed graphs in SwiftUI Views.
+- The `ForceSimulation` module is the underlying mechanism of `Grape`, and it helps you to create more complicated or customized force simulations. It also contains a `KDTree` data structure built with performance in mind, which can be useful for spatial partitioning tasks.
+
 <br/>
 
 ### `Grape`
@@ -119,9 +124,13 @@ https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e5835
 
 ### `ForceSimulation`
 
-`ForceSimulation` module provides 2 kinds of classes, `NDTree` and `Simulation`. 
-- `NDTree` is a KD-Tree data structure, which is used to accelerate the force simulation with [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/).
-- `Simulation` is a force simulation class, that enables you to create any dimensional simulation with velocity Verlet integration.
+`ForceSimulation` module mainly contains 3 concepts, `Kinetics`, `ForceProtocol` and `Simulation`.
+
+- `Kinetics` describes all kinetic states of your system, i.e. position, velocity, link connections, and the variable `alpha` that describes how "active" your system is.
+- Forces are any types that conforms to `Force Protocol`. It is responsible for 2 tasks: binding to a `Kinetics`, and mutating the states of `Kinetics`. This module provides most of the forces you will use in force directed graphs.
+- `Simulation` is a shell class you interact with, which enables you to create any dimensional simulation with velocity Verlet integration. It manages a `Kinetics` and a force conforming to `ForceProtocol`. Since `Simulation` only stores one force, you are responsible for compositing multiple forces into one.
+- Another data structure `KDTree` is used to accelerate the force simulation with [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/).
+
 
 #### Basic
 
@@ -138,7 +147,11 @@ let nodeCount = 4
 let links = [(0, 1), (1, 2), (2, 3), (3, 0)] 
 
 /// Create a 2D force composited with 4 primitive forces.
+/// "Seal" means you cannot add customed force here. 
+/// If you want to add your own force, checkout `CompositedForce`.
 let myForce = SealedForce2D {
+    // Forces are namespaced under `Kinetics<Vector>`
+    // here we only use `Kinetics<SIMD2<Double>>`, i.e. `Kinetics2D`
     Kinetics2D.ManyBodyForce(strength: -30)
     Kinetics2D.LinkForce(
         stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
@@ -146,7 +159,7 @@ let myForce = SealedForce2D {
     )
     Kinetics2D.CenterForce(center: .zero, strength: 1)
     Kinetics2D.CollideForce(radius: .constant(3))
-} 
+}
 
 /// Create a simulation, the dimension is inferred from the force.
 let mySimulation = Simulation(
