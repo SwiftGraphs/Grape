@@ -1,7 +1,10 @@
+/// A wrapper of managed buffer that stores an array of elements.
 public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
 
     @inlinable
-    class func createBuffer(withHeader header: Int, count: Int, initialValue: Element) -> UnsafeArray {
+    class func createBuffer(withHeader header: Int, count: Int, initialValue: Element)
+        -> UnsafeArray
+    {
         let buffer = self.create(minimumCapacity: count) { _ in header }
         buffer.withUnsafeMutablePointerToElements {
             $0.initialize(repeating: initialValue, count: count)
@@ -9,7 +12,7 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
         return unsafeDowncast(buffer, to: UnsafeArray.self)
     }
     @inlinable
-    var count : Int {
+    var count: Int {
         return header
     }
 

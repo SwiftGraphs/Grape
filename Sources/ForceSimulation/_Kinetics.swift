@@ -1,10 +1,9 @@
-public final class Kinetics<Vector>
+@available(*, deprecated, renamed: "Kinetics")
+public final class _Kinetics<Vector>
 where Vector: SimulatableVector & L2NormCalculatable {
-    public var position: UnsafeArray<Vector>
-    public var velocity: UnsafeArray<Vector>
-    public var fixation: UnsafeArray<Vector?>
-
-    public var links: [EdgeID<Int>]
+    public var position: [Vector]
+    public var velocity: [Vector]
+    public var fixation: [Vector?]
 
     public let initializedAlpha: Vector.Scalar
 
@@ -19,7 +18,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
     // public var validRanges: Range<Int>
     public var validCount: Int
 
-    @inlinable
+    @inlinable 
     public var range: Range<Int> {
         return 0..<validCount
     }
@@ -29,7 +28,6 @@ where Vector: SimulatableVector & L2NormCalculatable {
 
     @inlinable
     init(
-        links: [EdgeID<Int>],
         initialAlpha: Vector.Scalar,
         alphaMin: Vector.Scalar,
         alphaDecay: Vector.Scalar,
@@ -39,7 +37,6 @@ where Vector: SimulatableVector & L2NormCalculatable {
         velocity: [Vector],
         fixation: [Vector?]
     ) {
-        self.links = links
         self.initializedAlpha = initialAlpha
         self.alpha = initialAlpha
         self.alphaMin = alphaMin
@@ -50,35 +47,21 @@ where Vector: SimulatableVector & L2NormCalculatable {
         // self.validRanges = 0..<position.count
         self.validCount = position.count
 
-        self.position = UnsafeArray<Vector>.createBuffer(
-            withHeader: position.count,
-            count: position.count,
-            initialValue: .zero
-        )
-        self.velocity = UnsafeArray<Vector>.createBuffer(
-            withHeader: position.count,
-            count: position.count,
-            initialValue: .zero
-        )
-        self.fixation = UnsafeArray<Vector?>.createBuffer(
-            withHeader: position.count,
-            count: position.count,
-            initialValue: nil
-        )
+        self.position = position
+        self.velocity = velocity
+        self.fixation = fixation
     }
 
     @inlinable
     class func createZeros(
-        links: [EdgeID<Int>],
         initialAlpha: Vector.Scalar,
         alphaMin: Vector.Scalar,
         alphaDecay: Vector.Scalar,
         alphaTarget: Vector.Scalar,
         velocityDecay: Vector.Scalar,
         count: Int
-    ) -> Kinetics<Vector> {
-        return Kinetics(
-            links: links,
+    ) -> _Kinetics<Vector> {
+        return _Kinetics(
             initialAlpha: initialAlpha,
             alphaMin: alphaMin,
             alphaDecay: alphaDecay,
@@ -92,7 +75,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
     }
 }
 
-extension Kinetics {
+extension _Kinetics {
     @inlinable
     func updatePositions() {
         for i in range {
@@ -121,7 +104,3 @@ extension Kinetics {
     }
 
 }
-
-
-public typealias Kinetics2D = Kinetics<SIMD2<Double>>
-public typealias Kinetics3D = Kinetics<SIMD3<Float>>

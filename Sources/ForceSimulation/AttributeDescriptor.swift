@@ -37,14 +37,3 @@ extension AttributeDescriptor {
         }
     }
 }
-
-
-public struct EdgeID<NodeID: Hashable>: Hashable {
-    public var source: NodeID
-    public var target: NodeID
-
-    public init(source: NodeID, target: NodeID) {
-        self.source = source
-        self.target = target
-    }
-}

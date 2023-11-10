@@ -44,6 +44,11 @@ extension Kinetics {
 
     public typealias CollideRadius = AttributeDescriptor<Vector.Scalar>
 
+    /// A force that prevents nodes from overlapping.
+    ///
+    /// This is a very expensive force, the complexity is `O(n log(n))`,
+    /// where `n` is the number of nodes.
+    /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
     public struct CollideForce: ForceProtocol {
 
         @usableFromInline var kinetics: Kinetics! = nil

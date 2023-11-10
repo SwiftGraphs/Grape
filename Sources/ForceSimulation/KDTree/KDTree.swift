@@ -1,3 +1,6 @@
+/// A node in NDTree
+/// - Note: `NDTree` is a generic type that can be used in any dimension.
+///        `NDTree` is a value type.
 public struct KDTree<Vector, Delegate>
 where
     Vector: SimulatableVector & L2NormCalculatable,
@@ -74,6 +77,10 @@ where
         return index
     }
 
+    /// Expand the current node towards a direction. 
+    ///
+    /// The expansion will double the size on each dimension. Then the data in delegate will be copied to the new children.
+    /// - Parameter direction: An Integer between 0 and `directionCount - 1`, where `directionCount` equals to 2^(dimension of the vector).
     @inlinable
     mutating func expand(towards direction: Direction) {
         let nailedDirection = (Self.directionCount - 1) - direction
@@ -131,6 +138,7 @@ where
         cover(point)
         addWithoutCover(nodeIndex, at: point)
     }
+    
     @inlinable
     public mutating func addWithoutCover(_ nodeIndex: NodeIndex, at point: Vector) {
         defer {

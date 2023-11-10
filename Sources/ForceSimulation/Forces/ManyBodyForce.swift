@@ -61,6 +61,11 @@ where Vector: SimulatableVector {
 extension Kinetics {
     public typealias NodeMass = AttributeDescriptor<Vector.Scalar>
 
+    /// A force that simulate the many-body force.
+    ///
+    /// This is a very expensive force, the complexity is `O(n log(n))`,
+    /// where `n` is the number of nodes. The complexity might degrade to `O(n^2)` if the nodes are too close to each other.
+    /// See [Manybody Force - D3](https://d3js.org/d3-force/many-body).
     public struct ManyBodyForce: ForceProtocol {
 
         @usableFromInline var strength: Vector.Scalar
@@ -94,9 +99,8 @@ extension Kinetics {
 
         @inlinable
         public func apply() {
-            
-            let alpha = self.kinetics.alpha
 
+            let alpha = self.kinetics.alpha
 
             let theta2 = self.theta2
             let distanceMin2 = self.distanceMin2
@@ -168,7 +172,6 @@ extension Kinetics {
                         return true
                     }
                 }
-                
 
                 kinetics.position[i] += f / precalculatedMass[i]
             }

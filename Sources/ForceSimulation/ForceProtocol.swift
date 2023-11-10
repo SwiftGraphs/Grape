@@ -1,6 +1,16 @@
+
+/// A protocol that represents a force.
+///
+/// A force takes a simulation state and modifies its node positions and velocities.
 public protocol ForceProtocol<Vector> {
     associatedtype Vector where Vector: SimulatableVector & L2NormCalculatable
+
+    /// Takes a simulation state and modifies its node positions and velocities.
+    /// This is executed in each tick of the simulation.
     @inlinable func apply()
+
+    /// Bind to a kinetic system that describes the state of all nodes in your simulation.
+    /// This has to be called before `apply` is called.
     @inlinable mutating func bindKinetics(_ kinetics: Kinetics<Vector>)
 }
 
@@ -31,6 +41,8 @@ public protocol ForceDescriptor {
     func createForce() -> ConcreteForce
 }
 
+/// A helper force for hiding long type signatures you composed with `CompositedForce`.
+/// You can easily build a force with a result builder.
 public protocol ForceField: ForceProtocol
 where Vector: SimulatableVector & L2NormCalculatable {
     associatedtype F: ForceProtocol<Vector> where F.Vector == Vector

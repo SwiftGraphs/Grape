@@ -1,3 +1,15 @@
+
+/// A force that can be composed of one or multiple forces. The forces you can add
+/// here include:
+/// - `Kinetics2D.CenterForce`
+/// - `Kinetics2D.RadialForce`
+/// - `Kinetics2D.ManyBodyForce`
+/// - `Kinetics2D.LinkForce`
+/// - `Kinetics2D.CollideForce`
+/// - `Kinetics2D.PositionForce`
+/// - `Kinetics2D.EmptyForce`
+/// 
+/// If you want to add a custom force, checkout `CompositedForce`.
 public struct SealedForce2D: Force2D {
 
     public var entries: [ForceEntry] = []

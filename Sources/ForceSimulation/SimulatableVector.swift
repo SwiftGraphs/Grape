@@ -1,5 +1,10 @@
 import simd
 
+
+/// A protocol for vectors that can be jiggled, and has a certain precision for 
+/// simulation — so zero vectors could be altered
+/// into a small random non-zero vector, and then the force simulation could be
+/// could be numerically stable.
 public protocol SimulatableVector: SIMD
 where Scalar: FloatingPoint & HasDeterministicRandomGenerator {
     @inlinable
@@ -9,7 +14,12 @@ where Scalar: FloatingPoint & HasDeterministicRandomGenerator {
     static var clusterDistanceSquared: Scalar { get }
 }
 
+
+
 extension SimulatableVector {
+
+    /// If the vector is zero, returns a vector with the same magnitude as `self` but pointing in a random direction,
+    /// otherwise returns `self`.
     @inlinable
     public func jiggled() -> Self {
         var result = Self.zero
@@ -20,6 +30,7 @@ extension SimulatableVector {
     }
 }
 
+/// A protocol for vectors that can be calculated with L2 norms, i.e. Euclidean distance.
 public protocol L2NormCalculatable: SIMD where Scalar: FloatingPoint {
     @inlinable
     func distanceSquared(to point: Self) -> Scalar

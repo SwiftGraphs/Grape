@@ -1,12 +1,13 @@
 // TODO: https://forums.swift.org/t/deterministic-randomness-in-swift/20835/5
 
+/// A random number generator that generates deterministic random numbers.
 public protocol DeterministicRandomGenerator<Scalar> {
     associatedtype Scalar where Scalar: FloatingPoint & ExpressibleByFloatLiteral
     @inlinable static func next() -> Scalar
     @inlinable mutating func next() -> Scalar
 }
 
-/// A random number generator that generates deterministic random numbers.
+/// A random number generator that generates deterministic random numbers for `Double`.
 public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
     @usableFromInline internal static let a: Double = 1_664_525
     @usableFromInline internal static let c: Double = 1_013_904_223
@@ -25,6 +26,7 @@ public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
     }
 }
 
+/// A random number generator that generates deterministic random numbers for `Float`.
 public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
     @usableFromInline internal static let a: Float = 75
     @usableFromInline internal static let c: Float = 74
@@ -43,6 +45,8 @@ public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
     }
 }
 
+
+/// A floating point type that can be generated with a deterministic random number generator ``DeterministicRandomGenerator``.
 public protocol HasDeterministicRandomGenerator: FloatingPoint & ExpressibleByFloatLiteral {
     associatedtype Generator: DeterministicRandomGenerator where Generator.Scalar == Self
     // static var generator: Generator { get }

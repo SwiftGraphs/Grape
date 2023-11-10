@@ -41,6 +41,10 @@ extension Kinetics {
         }
     }
 
+    /// A force that represents links between nodes.
+    ///
+    /// The complexity is `O(e)`, where `e` is the number of links.
+    /// See [Link Force - D3](https://d3js.org/d3-force/link).
     public struct LinkForce: ForceProtocol {
         @usableFromInline
         internal var kinetics: Kinetics! = nil
