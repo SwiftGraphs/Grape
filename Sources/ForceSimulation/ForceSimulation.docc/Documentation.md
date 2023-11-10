@@ -23,13 +23,31 @@ For more information on force simulations, read: [Force simulations - D3](https:
 * ``Kinetics``
 * ``EdgeID``
 
+### Built-in forces
+
+* ``ManyBodyForce``
+* ``LinkForce``
+* ``CenterForce``
+* ``CollideForce``
+* ``PositionForce``
+* ``RadialForce``
+
+### Utility forces for compositing a force field
+
+* ``ForceField``
+* ``SealedForce2D``
+* ``EmptyForce``
+* ``CompositedForce``
+
+
+
 ### Spatial partitioning data structures
 
 - ``KDTree``
 - ``KDBox``
 - ``KDTreeDelegate``
 
-### Deterministic Randomness
+### Deterministic randomness
 
 
 - ``SimulatableFloatingPoint``
@@ -39,7 +57,7 @@ For more information on force simulations, read: [Force simulations - D3](https:
 - ``FloatLinearCongruentialGenerator``
 
 
-### Supporting Protocols
+### Supporting protocols
 
 - ``ForceProtocol``
 
