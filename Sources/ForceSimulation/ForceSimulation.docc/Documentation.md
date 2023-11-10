@@ -25,19 +25,19 @@ For more information on force simulations, read: [Force simulations - D3](https:
 
 ### Built-in forces
 
-* ``Kinetics.ManyBodyForce``
-* ``Kinetics.LinkForce``
-* ``Kinetics.CenterForce``
-* ``Kinetics.CollideForce``
-* ``Kinetics.PositionForce``
-* ``Kinetics.RadialForce``
+* ``Kinetics/ManyBodyForce``
+* ``Kinetics/LinkForce``
+* ``Kinetics/CenterForce``
+* ``Kinetics/CollideForce``
+* ``Kinetics/PositionForce``
+* ``Kinetics/RadialForce``
 
 ### Utility forces for compositing a force field
 
 * ``ForceField``
 * ``SealedForce2D``
 * ``CompositedForce``
-* ``Kinetics.EmptyForce``
+* ``Kinetics/EmptyForce``
 
 
 
