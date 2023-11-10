@@ -131,6 +131,12 @@ The basic concepts of simulations and forces can be found here: [Force simulatio
 import simd
 import ForceSimulation
 
+// assuming you’re simulating 4 nodes
+let nodeCount = 4 
+
+// Connect them
+let links = [(0, 1), (1, 2), (2, 3), (3, 0)] 
+
 /// Create a 2D force composited with 4 primitive forces.
 let myForce = SealedForce2D {
     Kinetics2D.ManyBodyForce(strength: -30)
@@ -144,8 +150,8 @@ let myForce = SealedForce2D {
 
 /// Create a simulation, the dimension is inferred from the force.
 let mySimulation = Simulation(
-    nodeCount: width * width,
-    links: edge.map { EdgeID(source: $0.0, target: $0.1) },
+    nodeCount: nodeCount,
+    links: links.map { EdgeID(source: $0.0, target: $0.1) },
     forceField: myForce
 ) 
 
