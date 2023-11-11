@@ -123,6 +123,9 @@ https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e5835
 ### `ForceSimulation`
 
 `ForceSimulation` module mainly contains 3 concepts, `Kinetics`, `ForceProtocol` and `Simulation`.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/li3zhen1/Grape/main/Assets/SimulationDiagram.svg" alt="A diagram showing the relationships of `Kinetics`, `ForceProtocol` and `Simulation`. A `Simulation` contains a `Kinetics` and a `ForceProtocol`.">
+</p>
 
 - `Kinetics` describes all kinetic states of your system, i.e. position, velocity, link connections, and the variable `alpha` that describes how "active" your system is.
 - Forces are any types that conforms to `ForceProtocol`. This module provides most of the forces you will use in force directed graphs. And you can also create your own forces. They should be responsible for 2 tasks:
