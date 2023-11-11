@@ -23,7 +23,7 @@
 ## Examples
 
 ### Force Directed Graph
-This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component), iterating at 120FPS. Take a closer look at the animation:
+This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component). Take a closer look at the animation:
 
 
 
@@ -31,7 +31,7 @@ https://github.com/li3zhen1/Grape/assets/45376537/d80dc797-1980-4755-85b9-18ee26
 
 
 
-Source code: [ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Miserables.swift). 
+Source code: [Miserables.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Miserables.swift). 
 
 
 
@@ -62,13 +62,18 @@ https://github.com/li3zhen1/Grape/assets/45376537/5b76fddc-dd5c-4d35-bced-29c012
 
 
 
-Source code: [ForceDirectedLatticeView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Lattice.swift)
+Source code: [Lattice.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Lattice.swift)
 
 <br/>
 <br/>
 
 
 ## Usage
+
+Grape ships 2 module:
+
+- The `Grape` module allows you to create force-directed graphs in SwiftUI Views.
+- The `ForceSimulation` module is the underlying mechanism of `Grape`, and it helps you to create more complicated or customized force simulations. It also contains a `KDTree` data structure built with performance in mind, which can be useful for spatial partitioning tasks.
 
 <br/>
 
@@ -119,9 +124,13 @@ https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e5835
 
 ### `ForceSimulation`
 
-`ForceSimulation` module provides 2 kinds of classes, `NDTree` and `Simulation`. 
-- `NDTree` is a KD-Tree data structure, which is used to accelerate the force simulation with [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/).
-- `Simulation` is a force simulation class, that enables you to create any dimensional simulation with velocity Verlet integration.
+`ForceSimulation` module mainly contains 3 concepts, `Kinetics`, `ForceProtocol` and `Simulation`.
+
+- `Kinetics` describes all kinetic states of your system, i.e. position, velocity, link connections, and the variable `alpha` that describes how "active" your system is.
+- Forces are any types that conforms to `Force Protocol`. It is responsible for 2 tasks: binding to a `Kinetics`, and mutating the states of `Kinetics`. This module provides most of the forces you will use in force directed graphs.
+- `Simulation` is a shell class you interact with, which enables you to create any dimensional simulation with velocity Verlet integration. It manages a `Kinetics` and a force conforming to `ForceProtocol`. Since `Simulation` only stores one force, you are responsible for compositing multiple forces into one.
+- Another data structure `KDTree` is used to accelerate the force simulation with [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/).
+
 
 #### Basic
 
@@ -131,8 +140,19 @@ The basic concepts of simulations and forces can be found here: [Force simulatio
 import simd
 import ForceSimulation
 
+// assuming you’re simulating 4 nodes
+let nodeCount = 4 
+
+// Connect them
+let links = [(0, 1), (1, 2), (2, 3), (3, 0)] 
+
 /// Create a 2D force composited with 4 primitive forces.
+/// "Seal" means you cannot add customed force here.
+///    (But you can add any provided forces any times in any order)
+/// If you want to add your own force, checkout `CompositedForce`.
 let myForce = SealedForce2D {
+    // Forces are namespaced under `Kinetics<Vector>`
+    // here we only use `Kinetics<SIMD2<Double>>`, i.e. `Kinetics2D`
     Kinetics2D.ManyBodyForce(strength: -30)
     Kinetics2D.LinkForce(
         stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
@@ -140,12 +160,12 @@ let myForce = SealedForce2D {
     )
     Kinetics2D.CenterForce(center: .zero, strength: 1)
     Kinetics2D.CollideForce(radius: .constant(3))
-} 
+}
 
 /// Create a simulation, the dimension is inferred from the force.
 let mySimulation = Simulation(
-    nodeCount: width * width,
-    links: edge.map { EdgeID(source: $0.0, target: $0.1) },
+    nodeCount: nodeCount,
+    links: links.map { EdgeID(source: $0.0, target: $0.1) },
     forceField: myForce
 ) 
 
@@ -153,7 +173,7 @@ let mySimulation = Simulation(
 
 for mySimulation in 0..<120 {
     mySimulation.tick()
-    let positions = mySimulation.kinetics.position
+    let positions = mySimulation.kinetics.position.asArray()
     /// Do something with the positions.
 }
 
