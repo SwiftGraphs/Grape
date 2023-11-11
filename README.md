@@ -68,7 +68,7 @@ Source code: [Lattice.swift](https://github.com/li3zhen1/Grape/blob/main/Example
 <br/>
 
 
-## Usage
+## Get started
 
 Grape ships 2 module:
 
@@ -78,7 +78,6 @@ Grape ships 2 module:
 <br/>
 
 ### `Grape`
-
 
 ```swift
 import Grape
@@ -106,8 +105,7 @@ struct MyGraph: View {
 }
 ```
 
-Here's another [example](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift) rendering a ring with 60 vertices created with a SwiftUI View `ForceDirectedGraph` from `Grape`, with out-of-the-box dragging support:
-
+Below is another [example](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift) rendering a ring with 60 vertices, with out-of-the-box dragging support:
 
 https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e58355045d2
 
@@ -125,14 +123,18 @@ https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e5835
 ### `ForceSimulation`
 
 `ForceSimulation` module mainly contains 3 concepts, `Kinetics`, `ForceProtocol` and `Simulation`.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/li3zhen1/Grape/main/Assets/SimulationDiagram.svg" alt="A diagram showing the relationships of `Kinetics`, `ForceProtocol` and `Simulation`. A `Simulation` contains a `Kinetics` and a `ForceProtocol`.">
+</p>
 
 - `Kinetics` describes all kinetic states of your system, i.e. position, velocity, link connections, and the variable `alpha` that describes how "active" your system is.
-- Forces are any types that conforms to `Force Protocol`. It is responsible for 2 tasks: binding to a `Kinetics`, and mutating the states of `Kinetics`. This module provides most of the forces you will use in force directed graphs.
+- Forces are any types that conforms to `ForceProtocol`. This module provides most of the forces you will use in force directed graphs. And you can also create your own forces. They should be responsible for 2 tasks:
+    - `bindKinetics(_ kinetics: Kinetics<Vector>)`: binding to a `Kinetics`. In most cases the force should keep a reference of the `Kinetics` so they know what to mutate when `apply` is called.
+    - `apply()`: Mutating the states of `Kinetics`. For example, a gravity force should add velocities on each node in this function.
 - `Simulation` is a shell class you interact with, which enables you to create any dimensional simulation with velocity Verlet integration. It manages a `Kinetics` and a force conforming to `ForceProtocol`. Since `Simulation` only stores one force, you are responsible for compositing multiple forces into one.
 - Another data structure `KDTree` is used to accelerate the force simulation with [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/).
 
-
-#### Basic
+<br/>
 
 The basic concepts of simulations and forces can be found here: [Force simulations - D3](https://d3js.org/d3-force/simulation). You can simply create simulations by using `Simulation` like this:
 
@@ -147,9 +149,6 @@ let nodeCount = 4
 let links = [(0, 1), (1, 2), (2, 3), (3, 0)] 
 
 /// Create a 2D force composited with 4 primitive forces.
-/// "Seal" means you cannot add customed force here.
-///    (But you can add any provided forces any times in any order)
-/// If you want to add your own force, checkout `CompositedForce`.
 let myForce = SealedForce2D {
     // Forces are namespaced under `Kinetics<Vector>`
     // here we only use `Kinetics<SIMD2<Double>>`, i.e. `Kinetics2D`
@@ -183,26 +182,6 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 <br/>
 
-<!-- #### Advanced
-
-Grape provides a set of generic based types that works with any SIMD-like data structures. To integrate Grape into platforms where `import simd` isn't supported, or higher dimensions, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
-
-```swift
-/// All required implementations should have same semantics
-/// as the SIMD protocol provided in the standard library.
-struct SuperCool4DVector: VectorLike { ... }
-
-protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}
-typealias HyperoctBox = NDBox<SuperCool4DVector>
-typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
-
-typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
-```
-
-> [!IMPORTANT]  
-> When using generic based types, you ***pay for dynamic dispatch***, in terms of performance. Although their implementations are basically the same, it's recommended to use `Simulation2D` or `Simulation3D` whenever possible. -->
-
-
 <br/>
 
 
@@ -223,14 +202,25 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 
 <br/>
 
+<br/>
+
 ## Performance
+
+<br/>
+
+#### Simulation
 
 Grape uses simd to calculate position and velocity. Currently it takes ~0.014 seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
 
 For 3D simulation, it takes ~0.019 seconds for the same graph and same configs.
 
 > [!IMPORTANT]
-> Due to heavy use of generics (some of which is not inlined in Debug mode), the performance in Debug build is ~100x slower than Release build. Grape might ship a version with pre-inlined generics to address this problem.
+> Due to heavy use of generics (some are not specialized in Debug mode), the performance in Debug build is ~100x slower than Release build. Grape might ship a version with pre-inlined generics to address this problem.
+
+<br/>
+
+#### KDTree
+The `KDTree` from this package is ~7x faster than `GKQuadtree` from Apple’s GameKit, according to this [testcase](https://github.com/li3zhen1/Grape/blob/main/Tests/ForceSimulationTests/GKTreeCompareTest.swift). However, please note that comparing Swift structs with NSObjects is unfair, and their behaviors are different.
 
 
 <br/>
