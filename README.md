@@ -68,7 +68,7 @@ Source code: [Lattice.swift](https://github.com/li3zhen1/Grape/blob/main/Example
 <br/>
 
 
-## Usage
+## Get started
 
 Grape ships 2 module:
 
@@ -78,7 +78,6 @@ Grape ships 2 module:
 <br/>
 
 ### `Grape`
-
 
 ```swift
 import Grape
@@ -106,8 +105,7 @@ struct MyGraph: View {
 }
 ```
 
-Here's another [example](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift) rendering a ring with 60 vertices created with a SwiftUI View `ForceDirectedGraph` from `Grape`, with out-of-the-box dragging support:
-
+Below is another [example](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift) rendering a ring with 60 vertices, with out-of-the-box dragging support:
 
 https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e58355045d2
 
@@ -131,8 +129,7 @@ https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e5835
 - `Simulation` is a shell class you interact with, which enables you to create any dimensional simulation with velocity Verlet integration. It manages a `Kinetics` and a force conforming to `ForceProtocol`. Since `Simulation` only stores one force, you are responsible for compositing multiple forces into one.
 - Another data structure `KDTree` is used to accelerate the force simulation with [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/).
 
-
-#### Basic
+<br/>
 
 The basic concepts of simulations and forces can be found here: [Force simulations - D3](https://d3js.org/d3-force/simulation). You can simply create simulations by using `Simulation` like this:
 
@@ -147,9 +144,6 @@ let nodeCount = 4
 let links = [(0, 1), (1, 2), (2, 3), (3, 0)] 
 
 /// Create a 2D force composited with 4 primitive forces.
-/// "Seal" means you cannot add customed force here.
-///    (But you can add any provided forces any times in any order)
-/// If you want to add your own force, checkout `CompositedForce`.
 let myForce = SealedForce2D {
     // Forces are namespaced under `Kinetics<Vector>`
     // here we only use `Kinetics<SIMD2<Double>>`, i.e. `Kinetics2D`
