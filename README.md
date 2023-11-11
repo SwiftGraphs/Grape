@@ -125,7 +125,9 @@ https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e5835
 `ForceSimulation` module mainly contains 3 concepts, `Kinetics`, `ForceProtocol` and `Simulation`.
 
 - `Kinetics` describes all kinetic states of your system, i.e. position, velocity, link connections, and the variable `alpha` that describes how "active" your system is.
-- Forces are any types that conforms to `Force Protocol`. It is responsible for 2 tasks: binding to a `Kinetics`, and mutating the states of `Kinetics`. This module provides most of the forces you will use in force directed graphs.
+- Forces are any types that conforms to `ForceProtocol`. This module provides most of the forces you will use in force directed graphs. And you can also create your own forces. They should be responsible for 2 tasks:
+    - `bindKinetics(_ kinetics: Kinetics<Vector>)`: binding to a `Kinetics`. In most cases the force should keep a reference of the `Kinetics` so they know what to mutate when `apply` is called.
+    - `apply()`: Mutating the states of `Kinetics`. For example, a gravity force should add velocities on each node in this function.
 - `Simulation` is a shell class you interact with, which enables you to create any dimensional simulation with velocity Verlet integration. It manages a `Kinetics` and a force conforming to `ForceProtocol`. Since `Simulation` only stores one force, you are responsible for compositing multiple forces into one.
 - Another data structure `KDTree` is used to accelerate the force simulation with [Barnes-Hut Approximation](https://jheer.github.io/barnes-hut/).
 
@@ -177,26 +179,6 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 <br/>
 
-<!-- #### Advanced
-
-Grape provides a set of generic based types that works with any SIMD-like data structures. To integrate Grape into platforms where `import simd` isn't supported, or higher dimensions, you need to create a struct conforming to the `VectorLike` protocol. For ease of use, it's also recommended to add some type aliases. Here’s how you can do it:
-
-```swift
-/// All required implementations should have same semantics
-/// as the SIMD protocol provided in the standard library.
-struct SuperCool4DVector: VectorLike { ... }
-
-protocol HyperoctreeDelegate: NDTreeDelegate where V == SuperCool4DVector {}
-typealias HyperoctBox = NDBox<SuperCool4DVector>
-typealias Hyperoctree<TD: HyperoctreeDelegate> = NDTree<SuperCool4DVector, TD>
-
-typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
-```
-
-> [!IMPORTANT]  
-> When using generic based types, you ***pay for dynamic dispatch***, in terms of performance. Although their implementations are basically the same, it's recommended to use `Simulation2D` or `Simulation3D` whenever possible. -->
-
-
 <br/>
 
 
@@ -214,6 +196,8 @@ typealias Simulation4D<NodeID: Hashable> = SimulationKD<NodeID, Vector4d>
 | &emsp;RadialForce | ✅ | ✅ |  |
 | **SwiftUI View** | 🚧 |  |  |
 
+
+<br/>
 
 <br/>
 
