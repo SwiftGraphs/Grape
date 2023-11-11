@@ -94,23 +94,15 @@ extension KDBox {
     @inlinable func contains(_ point: V) -> Bool {
         let mask = (p0 .> point) .| (point .>= p1)
 
-        // for i in mask.indices {
-        //     if mask[i] {
-        //         return false
-        //     }
-        // }
-        if mask != .init(repeating: false) {
-            return false
-        }
+        return mask == .init(repeating: false)
 
-        // let mask1 = p0 .> point
+        // equivalent to:
         // for i in point.indices {
         //     if p0[i] > point[i] || point[i] >= p1[i] {
         //         return false
         //     }
         // }
-        return true
-        //        return (p0 <= point) && (point < p1)
+        // return true
     }
 }
 
@@ -124,6 +116,7 @@ extension KDBox {
         }
         return p0.replacing(with: p1, where: mask)
 
+        // equivalent to:
         // var corner = V.zero
         // for i in 0..<V.scalarCount {
         //     corner[i] = ((direction >> i) & 0b1) == 1 ? p1[i] : p0[i]
@@ -131,9 +124,9 @@ extension KDBox {
         // return p0.replacing(with: p1, where: mask)  //corner
     }
 
-    @inlinable public var debugDescription: String {
-        return "[\(p0), \(p1)]"
-    }
+    // @inlinable public var debugDescription: String {
+    //     return "[\(p0), \(p1)]"
+    // }
 }
 
 extension KDBox {
@@ -203,40 +196,5 @@ extension KDBox {
 
         return Self(_p0, _p1)
     }
-
-    // /// Get the small box that contains a list points and guarantees the box's size is at least 1x..x1.
-    // ///
-    // /// Please note that KeyPath is slow.
-    // ///
-    // /// - Parameter
-    // ///  - points: The points to be covered.
-    // ///  - keyPath: The key path to get the vector from the point.
-    // /// - Returns: The box that contains all the points.
-    // @inlinable public static func cover<T>(of points: [T], keyPath: KeyPath<T, V>) -> Self {
-
-    //     var _p0 = points[0][keyPath: keyPath]
-    //     var _p1 = points[0][keyPath: keyPath]
-
-    //     for _p in points {
-    //         let p = _p[keyPath: keyPath]
-    //         for i in p.indices {
-    //             if p[i] < _p0[i] {
-    //                 _p0[i] = p[i]
-    //             }
-    //             if p[i] >= _p1[i] {
-    //                 _p1[i] = p[i] + 1
-    //             }
-    //         }
-    //     }
-
-    //     #if DEBUG
-    //         let _box = Self(_p0, _p1)
-    //         assert(
-    //             points.allSatisfy { p in
-    //                 _box.contains(p[keyPath: keyPath])
-    //             })
-    //     #endif
-
-    //     return Self(_p0, _p1)
-    // }
+    
 }
