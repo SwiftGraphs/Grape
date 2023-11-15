@@ -70,7 +70,7 @@ Source code: [Lattice.swift](https://github.com/li3zhen1/Grape/blob/main/Example
 
 ## Get started
 
-Grape ships 2 module:
+Grape ships 2 modules:
 
 - The `Grape` module allows you to create force-directed graphs in SwiftUI Views.
 - The `ForceSimulation` module is the underlying mechanism of `Grape`, and it helps you to create more complicated or customized force simulations. It also contains a `KDTree` data structure built with performance in mind, which can be useful for spatial partitioning tasks.

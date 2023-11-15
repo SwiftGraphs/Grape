@@ -13,7 +13,7 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
 
     public typealias LayoutEngine = ForceDirectedGraph2DLayoutEngine
 
-    public struct Content: GraphLike {
+    public struct Content: GraphProtocol {
         public var nodes: [NodeMark<NodeID>]
         public var links: [LinkMark<NodeID>]
 

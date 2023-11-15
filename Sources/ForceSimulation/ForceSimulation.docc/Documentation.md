@@ -6,6 +6,8 @@ Run force simulation within any number of dimensions.
 
 The `ForceSimulation` library enables you to create any dimensional simulation that uses velocity Verlet integration.
 
+If you’re looking for an out-of-the-box SwiftUI View to render force-directed graphs, please refer to [Grape | Documentation](/Grape/Grape/documentation/grape/).
+
 
 
 @Image(source: "ForceDirectedGraph.png", alt: "An example of 2D force directied graph.")
