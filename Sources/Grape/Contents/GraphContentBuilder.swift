@@ -1,4 +1,4 @@
-public final class PartialGraphMark<NodeID: Hashable>: GraphContent & GraphLike {
+public final class PartialGraphMark<NodeID: Hashable>: GraphContent & GraphProtocol {
     @usableFromInline var nodes: [NodeMark<NodeID>]
     @usableFromInline var links: [LinkMark<NodeID>]
 
