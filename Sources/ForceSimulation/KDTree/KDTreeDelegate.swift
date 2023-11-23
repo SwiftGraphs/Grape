@@ -29,7 +29,7 @@ public protocol KDTreeDelegate<NodeID, Vector> {
     /// Copy object.
     ///
     /// This method is called when the root box is not large enough to cover the new nodes.
-    @inlinable func copy() -> Self
+    // @inlinable func copy() -> Self
 
     /// Create new object with properties set to initial value as if the box is empty.
     ///

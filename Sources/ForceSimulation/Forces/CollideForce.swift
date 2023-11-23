@@ -21,10 +21,10 @@ where Vector: SimulatableVector {
         }
     }
 
-    @inlinable
-    func copy() -> MaxRadiusNDTreeDelegate<Vector> {
-        return self
-    }
+    // @inlinable
+    // func copy() -> MaxRadiusNDTreeDelegate<Vector> {
+    //     return self
+    // }
 
     @inlinable
     func spawn() -> MaxRadiusNDTreeDelegate<Vector> {

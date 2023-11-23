@@ -44,14 +44,14 @@ where Vector: SimulatableVector {
         // TODO: parent removal?
     }
 
-    @inlinable public func copy() -> Self {
-        return Self(
-            initialAccumulatedProperty: self.accumulatedMass,
-            initialAccumulatedCount: self.accumulatedCount,
-            initialWeightedAccumulatedNodePositions: self.accumulatedMassWeightedPositions,
-            massProvider: self.massProvider
-        )
-    }
+    // @inlinable public func copy() -> Self {
+    //     return Self(
+    //         initialAccumulatedProperty: self.accumulatedMass,
+    //         initialAccumulatedCount: self.accumulatedCount,
+    //         initialWeightedAccumulatedNodePositions: self.accumulatedMassWeightedPositions,
+    //         massProvider: self.massProvider
+    //     )
+    // }
 
     @inlinable public func spawn() -> Self {
         return Self(massProvider: self.massProvider)
