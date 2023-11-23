@@ -6,10 +6,14 @@
 //
 import simd
 
-/// The data structure carried by a node of NDTree.
+/// The data structure carried by a node of NDTree. 
 ///
-/// It receives notifications when a node is added or removed on a node, regardless of whether the node is internal or leaf.
+/// It receives notifications when a node is added or removed on a node, 
+/// regardless of whether the node is internal or leaf.
 /// It is designed to calculate properties like a box's center of mass.
+/// 
+/// When implementing your delegates, ensure they
+/// are value types to enable memberwise copy.
 public protocol KDTreeDelegate<NodeID, Vector> {
     associatedtype NodeID: Hashable
     associatedtype Vector: SIMD where Vector.Scalar: FloatingPoint & ExpressibleByFloatLiteral
