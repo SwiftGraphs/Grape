@@ -1,5 +1,5 @@
-@usableFromInline
-internal struct MassCentroidKDTreeDelegate<Vector>: KDTreeDelegate
+
+public struct MassCentroidKDTreeDelegate<Vector>: KDTreeDelegate
 where Vector: SimulatableVector {
 
     public var accumulatedMass: Vector.Scalar = .zero
@@ -177,7 +177,9 @@ extension Kinetics {
             }
         }
 
-        @usableFromInline var kinetics: Kinetics! = nil
+        // @usableFromInline 
+        public
+        var kinetics: Kinetics! = nil
 
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {

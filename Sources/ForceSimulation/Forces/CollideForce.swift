@@ -1,8 +1,7 @@
-@usableFromInline
-internal struct MaxRadiusNDTreeDelegate<Vector>: KDTreeDelegate
+public struct MaxRadiusNDTreeDelegate<Vector>: KDTreeDelegate
 where Vector: SimulatableVector {
     @inlinable
-    mutating func didAddNode(_ node: Int, at position: Vector) {
+    public mutating func didAddNode(_ node: Int, at position: Vector) {
         let p = radiusGetter(node)
         maxNodeRadius = max(maxNodeRadius, p)
     }
@@ -13,7 +12,7 @@ where Vector: SimulatableVector {
     public var maxNodeRadius: Vector.Scalar = .zero
 
     @inlinable
-    mutating func didRemoveNode(_ node: Int, at position: Vector) {
+    public mutating func didRemoveNode(_ node: Int, at position: Vector) {
         if radiusGetter(node) >= maxNodeRadius {
             // 🤯 for Collide force, set to 0 is fine
             // Otherwise you need to traverse the delegate again
@@ -27,14 +26,14 @@ where Vector: SimulatableVector {
     // }
 
     @inlinable
-    func spawn() -> MaxRadiusNDTreeDelegate<Vector> {
+    public func spawn() -> MaxRadiusNDTreeDelegate<Vector> {
         return Self(radiusProvider: radiusGetter)
     }
 
-    @usableFromInline typealias NodeID = Int
+    // public typealias NodeID = Int
 
     @inlinable
-    init(maxNodeRadius: Vector.Scalar = 0, radiusProvider: @escaping (NodeID) -> Vector.Scalar) {
+    init(maxNodeRadius: Vector.Scalar = 0, radiusProvider: @escaping (Int) -> Vector.Scalar) {
         self.maxNodeRadius = maxNodeRadius
         self.radiusGetter = radiusProvider
     }
@@ -51,7 +50,9 @@ extension Kinetics {
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
     public struct CollideForce: ForceProtocol {
 
-        @usableFromInline var kinetics: Kinetics! = nil
+        // @usableFromInline  
+        public
+        var kinetics: Kinetics! = nil
 
         public var radius: CollideRadius
 

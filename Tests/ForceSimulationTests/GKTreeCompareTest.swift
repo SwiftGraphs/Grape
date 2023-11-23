@@ -5,11 +5,14 @@
 //  Created by li3zhen1 on 10/4/23.
 //
 
-import GameKit
 import XCTest
 
 // import ForceSimulation
 @testable import ForceSimulation
+
+#if canImport(GameKit)
+    import GameKit
+#endif
 
 struct DummyQuadtreeDelegate: KDTreeDelegate {
     @inlinable
@@ -52,31 +55,33 @@ struct NamedNode: Identifiable {
 }
 
 final class ManyBodyForceTests: XCTestCase {
-    func test() {
-        // randomly generate 100000 nodes in [-100, 100] x [-100, 100]
-        let nodes: [simd_float2] = (0..<100000).map { _ in
-            let x = Float.random(in: -100...100)
-            let y = Float.random(in: -100...100)
-            return simd_float2(x, y)
-        }
-
-        measure {
-            let gkTree = GKQuadtree<NSNumber>(
-                boundingQuad: .init(quadMin: [-100.0, -100.0], quadMax: [100.0, 100.0]),
-                minimumCellSize: 1e-5
-            )
-
-            for (i, node) in nodes.enumerated() {
-                gkTree.add(NSNumber(value: i), at: node)
+    #if canImport(GameKit)
+        func test() {
+            // randomly generate 100000 nodes in [-100, 100] x [-100, 100]
+            let nodes: [simd_float2] = (0..<100000).map { _ in
+                let x = Float.random(in: -100...100)
+                let y = Float.random(in: -100...100)
+                return simd_float2(x, y)
             }
 
-            // traverse the tree
-            var count = 0
-            gkTree.elements(in: .init(quadMin: [-100.0, -100.0], quadMax: [100.0, 100.0]))
-                .forEach { _ in count += 1 }
-            XCTAssertEqual(count, nodes.count)
+            measure {
+                let gkTree = GKQuadtree<NSNumber>(
+                    boundingQuad: .init(quadMin: [-100.0, -100.0], quadMax: [100.0, 100.0]),
+                    minimumCellSize: 1e-5
+                )
+
+                for (i, node) in nodes.enumerated() {
+                    gkTree.add(NSNumber(value: i), at: node)
+                }
+
+                // traverse the tree
+                var count = 0
+                gkTree.elements(in: .init(quadMin: [-100.0, -100.0], quadMax: [100.0, 100.0]))
+                    .forEach { _ in count += 1 }
+                XCTAssertEqual(count, nodes.count)
+            }
         }
-    }
+    #endif
 
     func testGrapeKDTre() {
         let nodes: [simd_double2] = (0..<100000).map { _ in
@@ -86,8 +91,8 @@ final class ManyBodyForceTests: XCTestCase {
         }
 
         measure {
-            var kdtree = KDTree<SIMD2<Double>,DummyQuadtreeDelegate>(
-                box: .init([-100.0,-100.0], [100.0,100.0]),
+            var kdtree = KDTree<SIMD2<Double>, DummyQuadtreeDelegate>(
+                box: .init([-100.0, -100.0], [100.0, 100.0]),
                 spawnedDelegateBeingConsumed: DummyQuadtreeDelegate()
             )
 

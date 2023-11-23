@@ -242,6 +242,20 @@ extension KDTree where Delegate.NodeID == Int {
         }
     }
 
+    @inlinable
+    public init(
+        covering points: UnsafeArray<Vector>,
+        rootDelegate: @autoclosure () -> Delegate
+    ) {
+        let coveringBox = Box.cover(of: points)
+        self.init(
+            box: coveringBox, spawnedDelegateBeingConsumed: rootDelegate()
+        )
+        for i in 0..<points.header {
+            add(i, at: points[i])
+        }
+    }
+
     /// Initialize a KDTree with a list of points and a key path to the vector.
     ///
     /// - Parameters:
