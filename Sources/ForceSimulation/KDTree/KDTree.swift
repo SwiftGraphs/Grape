@@ -313,3 +313,24 @@ extension KDTree {
     }
 
 }
+
+
+public struct KDTreeRoot<Vector, Delegate, Property>
+where
+    Vector: SimulatableVector & L2NormCalculatable,
+    Delegate: KDTreeDelegate<Int, Vector>
+{
+    public let root: KDTree<Vector, Delegate>
+    @usableFromInline let propertyBuffer: UnsafeMutablePointer<Property>
+
+    @inlinable
+    public init(
+        root: KDTree<Vector, Delegate>,
+        propertyBuffer: UnsafeMutablePointer<Property>
+    ) {
+        self.root = root
+        self.propertyBuffer = propertyBuffer
+    }
+
+    
+}

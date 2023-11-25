@@ -12,13 +12,14 @@ extension Kinetics {
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
             var meanPosition = Vector.zero
+            let positionBufferPointer = kinetics!.position.withUnsafeMutablePointerToElements { $0 }
             for i in kinetics.range {
-                meanPosition += kinetics.position[i]  //.position
+                meanPosition += positionBufferPointer[i]  //.position
             }
             let delta = meanPosition * (self.strength / Vector.Scalar(kinetics.validCount))
 
-            for i in 0..<kinetics.validCount {
-                kinetics.position[i] -= delta
+            for i in kinetics.range {
+                positionBufferPointer[i] -= delta
             }
         }
         @inlinable

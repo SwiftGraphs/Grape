@@ -23,15 +23,14 @@ extension AttributeDescriptor {
                 count: count,
                 initialValue: m
             )
-        case .varied(let radiusProvider):
+        case .varied(let valueProvider):
             let array = UnsafeArray<T>.createBuffer(
                 withHeader: count,
                 count: count,
                 initialValue: .zero
             )
-
             for i in 0..<count {
-                array[i] = radiusProvider(i)
+                array[i] = valueProvider(i)
             }
             return array
         }
