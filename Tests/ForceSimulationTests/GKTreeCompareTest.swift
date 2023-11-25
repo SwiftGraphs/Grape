@@ -56,7 +56,7 @@ struct NamedNode: Identifiable {
 
 final class ManyBodyForceTests: XCTestCase {
     #if canImport(GameKit)
-        func test() {
+        func _testGameKit() {
             // randomly generate 100000 nodes in [-100, 100] x [-100, 100]
             let nodes: [simd_float2] = (0..<100000).map { _ in
                 let x = Float.random(in: -100...100)

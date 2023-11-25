@@ -12,7 +12,9 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
     /// Create a new simulation.
     ///
     /// - Parameters:
-    ///   - nodeIds: Hashable identifiers for the nodes. Force simulation calculate them by order once created.
+    ///   - nodeCount: Count of the nodes. Force simulation calculate them by order once created.
+    ///   - links: The links between nodes.
+    ///   - forceField: The force field that drives the simulation. The simulation takes ownership of the force field.
     ///   - alpha: Initial alpha value, determines how "active" the simulation is.
     ///   - alphaMin: The minimum alpha value. The simulation stops when alpha is less than this value.
     ///   - alphaDecay: The larger the value, the faster the simulation converges to the final result.
@@ -23,7 +25,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
         init(
             nodeCount: Int,
             links: [EdgeID<Int>],
-            forceField: ForceField,
+            forceField: consuming ForceField,
             initialAlpha: Vector.Scalar = 1,
             alphaMin: Vector.Scalar = 1e-3,
             alphaDecay: Vector.Scalar = 2e-3,
@@ -40,8 +42,8 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
             velocityDecay: velocityDecay,
             count: nodeCount
         )
+        forceField.bindKinetics(self.kinetics)
         self.forceField = forceField
-        self.forceField.bindKinetics(self.kinetics)
     }
 
     /// Run a number of iterations of ticks.
@@ -61,13 +63,3 @@ where ForceField: ForceProtocol<SIMD2<Double>>
 
 public typealias Simulation3D<ForceField> = Simulation<SIMD3<Float>, ForceField>
 where ForceField: ForceProtocol<SIMD3<Float>>
-
-// struct Test {
-//     // var simulation = Simulation<
-//     //     SIMD2<Double>,
-//     //     CompositedForce<SIMD2<Double>, CenterForce<SIMD2<Double>>, CenterForce<SIMD2<Double>>>
-//     // >(nodeCount: 10, forceField: CompositedForce(force1: CenterForce(), force2: CenterForce()))
-
-//     var mySimulation = Simulation(nodeCount: 10, forceField: MyForceField())
-
-// }

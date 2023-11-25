@@ -1,4 +1,3 @@
-
 public struct MassCentroidKDTreeDelegate<Vector>: KDTreeDelegate
 where Vector: SimulatableVector {
 
@@ -6,11 +5,11 @@ where Vector: SimulatableVector {
     public var accumulatedCount: Int = 0
     public var accumulatedMassWeightedPositions: Vector = .zero
 
-    @usableFromInline let massProvider: (NodeID) -> Vector.Scalar
+    @usableFromInline let massArray: UnsafeMutablePointer<Vector.Scalar>  //(NodeID) -> Vector.Scalar
 
     @inlinable
-    init(massProvider: @escaping (Int) -> Vector.Scalar) {
-        self.massProvider = massProvider
+    init(massProvider: UnsafeMutablePointer<Vector.Scalar>) {
+        self.massArray = massProvider
     }
 
     @inlinable
@@ -18,16 +17,16 @@ where Vector: SimulatableVector {
         initialAccumulatedProperty: Vector.Scalar,
         initialAccumulatedCount: Int,
         initialWeightedAccumulatedNodePositions: Vector,
-        massProvider: @escaping (Int) -> Vector.Scalar
+        massProvider: UnsafeMutablePointer<Vector.Scalar>  //@escaping (Int) -> Vector.Scalar
     ) {
         self.accumulatedMass = initialAccumulatedProperty
         self.accumulatedCount = initialAccumulatedCount
         self.accumulatedMassWeightedPositions = initialWeightedAccumulatedNodePositions
-        self.massProvider = massProvider
+        self.massArray = massProvider
     }
 
     @inlinable public mutating func didAddNode(_ node: Int, at position: Vector) {
-        let p = massProvider(node)
+        let p = massArray[node]
         #if DEBUG
             assert(p > 0)
         #endif
@@ -37,7 +36,7 @@ where Vector: SimulatableVector {
     }
 
     @inlinable public mutating func didRemoveNode(_ node: Int, at position: Vector) {
-        let p = massProvider(node)
+        let p = massArray[node]
         accumulatedCount -= 1
         accumulatedMass -= p
         accumulatedMassWeightedPositions -= position * p
@@ -54,7 +53,7 @@ where Vector: SimulatableVector {
     // }
 
     @inlinable public func spawn() -> Self {
-        return Self(massProvider: self.massProvider)
+        return Self(massProvider: self.massArray)
     }
 }
 
@@ -106,25 +105,21 @@ extension Kinetics {
             let distanceMin2 = self.distanceMin2
             let distanceMax2 = self.distanceMax2
             let strength = self.strength
-            let precalculatedMass = self.precalculatedMass!
-            let mass = self.mass
-            let kinetics = self.kinetics!
+            let precalculatedMass = self.precalculatedMass!.withUnsafeMutablePointerToElements { $0 }
+            // let mass = self.mass
 
             var tree = KDTree(
-                covering: kinetics.position
-            ) {
-                return switch mass {
-                case .constant(let m):
-                    MassCentroidKDTreeDelegate<Vector> { _ in m }
-                case .varied(_):
-                    MassCentroidKDTreeDelegate<Vector> { index in
-                        precalculatedMass[index]
-                    }
-                }
-            }
+                covering: self.kinetics.position,
+                rootDelegate: MassCentroidKDTreeDelegate<Vector>(massProvider: precalculatedMass)
+            )
 
-            for i in kinetics.range {
-                let pos = kinetics.position[i]
+
+            let positionBufferPointer = kinetics!.position.withUnsafeMutablePointerToElements { $0 }
+
+            // let kinetics: Never? = nil //self.kinetics!
+
+            for i in self.kinetics.range {
+                let pos = positionBufferPointer[i]
                 var f = Vector.zero
                 tree.visit { t in
 
@@ -173,13 +168,13 @@ extension Kinetics {
                     }
                 }
 
-                kinetics.position[i] += f / precalculatedMass[i]
+                positionBufferPointer[i] += f / precalculatedMass[i]
             }
         }
 
-        // @usableFromInline 
+        // @usableFromInline
         public
-        var kinetics: Kinetics! = nil
+            var kinetics: Kinetics! = nil
 
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {

@@ -2,18 +2,18 @@ public struct MaxRadiusNDTreeDelegate<Vector>: KDTreeDelegate
 where Vector: SimulatableVector {
     @inlinable
     public mutating func didAddNode(_ node: Int, at position: Vector) {
-        let p = radiusGetter(node)
+        let p = radiusBufferPointer[node]
         maxNodeRadius = max(maxNodeRadius, p)
     }
 
     @usableFromInline
-    var radiusGetter: (Int) -> Vector.Scalar
+    var radiusBufferPointer: UnsafeMutablePointer<Vector.Scalar>
 
     public var maxNodeRadius: Vector.Scalar = .zero
 
     @inlinable
     public mutating func didRemoveNode(_ node: Int, at position: Vector) {
-        if radiusGetter(node) >= maxNodeRadius {
+        if radiusBufferPointer[node] >= maxNodeRadius {
             // 🤯 for Collide force, set to 0 is fine
             // Otherwise you need to traverse the delegate again
             maxNodeRadius = 0
@@ -27,15 +27,15 @@ where Vector: SimulatableVector {
 
     @inlinable
     public func spawn() -> MaxRadiusNDTreeDelegate<Vector> {
-        return Self(radiusProvider: radiusGetter)
+        return Self(radiusBufferPointer: radiusBufferPointer)
     }
 
     // public typealias NodeID = Int
 
     @inlinable
-    init(maxNodeRadius: Vector.Scalar = 0, radiusProvider: @escaping (Int) -> Vector.Scalar) {
+    init(maxNodeRadius: Vector.Scalar = 0, radiusBufferPointer: UnsafeMutablePointer<Vector.Scalar>) {
         self.maxNodeRadius = maxNodeRadius
-        self.radiusGetter = radiusProvider
+        self.radiusBufferPointer = radiusBufferPointer
     }
 }
 
@@ -83,7 +83,7 @@ extension Kinetics {
             assert(self.kinetics != nil, "Kinetics not bound to force")
 
             let kinetics = self.kinetics!
-            let calculatedRadius = self.calculatedRadius!
+            let calculatedRadius = self.calculatedRadius!.withUnsafeMutablePointerToElements { $0 }
             let strength = self.strength
 
             for _ in 0..<iterationsPerTick {
@@ -91,17 +91,9 @@ extension Kinetics {
                 // let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
 
                 var tree = KDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>(
-                    covering: kinetics.position
-                ) {
-                    return switch self.radius {
-                    case .constant(let m):
-                        MaxRadiusNDTreeDelegate<Vector> { _ in m }
-                    case .varied(_):
-                        MaxRadiusNDTreeDelegate<Vector> { index in
-                            self.calculatedRadius[index]
-                        }
-                    }
-                }
+                    covering: kinetics.position,
+                    rootDelegate: MaxRadiusNDTreeDelegate<Vector>(radiusBufferPointer: calculatedRadius)
+                )
 
                 // for i in kinetics.range {
                 //     tree.add(i, at: kinetics.position[i])

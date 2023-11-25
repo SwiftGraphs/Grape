@@ -49,17 +49,14 @@ public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
 /// A floating point type that can be generated with a deterministic random number generator ``DeterministicRandomGenerator``.
 public protocol HasDeterministicRandomGenerator: FloatingPoint & ExpressibleByFloatLiteral {
     associatedtype Generator: DeterministicRandomGenerator where Generator.Scalar == Self
-    // static var generator: Generator { get }
 }
 
 extension Double: HasDeterministicRandomGenerator {
     public typealias Generator = DoubleLinearCongruentialGenerator
-    // public static var generator: Generator { return Generator() }
 }
 
 extension Float: HasDeterministicRandomGenerator {
     public typealias Generator = FloatLinearCongruentialGenerator
-    // public static var generator: Generator { return Generator() }
 }
 
 extension HasDeterministicRandomGenerator {
