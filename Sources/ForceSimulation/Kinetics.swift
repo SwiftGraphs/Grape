@@ -9,17 +9,23 @@ where Vector: SimulatableVector & L2NormCalculatable {
     /// They are always updated.
     public var position: UnsafeArray<Vector>
 
+    // public var positionBufferPointer: UnsafeMutablePointer<Vector>
+
     /// The velocities of points stored in simulation.
     ///
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
     public var velocity: UnsafeArray<Vector>
 
+    // public var velocityBufferPointer: UnsafeMutablePointer<Vector>
+
     /// The fixed positions of points stored in simulation.
     ///
     /// Ordered as the nodeIds you passed in when initializing simulation.
     /// They are always updated.
     public var fixation: UnsafeArray<Vector?>
+
+    // public var fixationBufferPointer: UnsafeMutablePointer<Vector?>
 
     public var links: [EdgeID<Int>]
 
@@ -79,6 +85,10 @@ where Vector: SimulatableVector & L2NormCalculatable {
             count: position.count,
             initialValue: nil
         )
+
+        // self.positionBufferPointer = self.position.mutablePointer
+        // self.velocityBufferPointer = self.velocity.mutablePointer
+        // self.fixationBufferPointer = self.fixation.mutablePointer
     }
 
     @inlinable

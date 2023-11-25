@@ -6,13 +6,13 @@ extension Kinetics {
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
     public struct CenterForce: ForceProtocol {
 
-        @usableFromInline var kinetics: Kinetics! = nil
+        @usableFromInline  var kinetics: Kinetics! = nil
 
         @inlinable
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
             var meanPosition = Vector.zero
-            let positionBufferPointer = kinetics!.position.withUnsafeMutablePointerToElements { $0 }
+            let positionBufferPointer = kinetics.position.mutablePointer
             for i in kinetics.range {
                 meanPosition += positionBufferPointer[i]  //.position
             }

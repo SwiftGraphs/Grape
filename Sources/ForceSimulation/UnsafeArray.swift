@@ -68,4 +68,12 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
         }
         return result
     }
+
+    @inlinable
+    public var mutablePointer: UnsafeMutablePointer<Element> {
+        return withUnsafeMutablePointerToElements {
+            $0
+        }
+    }
+
 }
