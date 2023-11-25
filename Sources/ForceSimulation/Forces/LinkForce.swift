@@ -67,6 +67,8 @@ extension Kinetics {
 
         @inlinable
         public func apply() {
+            let positionBufferPointer = kinetics.position.mutablePointer
+            let velocityBufferPointer = kinetics.velocity.mutablePointer
             for _ in 0..<iterationsPerTick {
                 for i in links.indices {
 
@@ -78,8 +80,8 @@ extension Kinetics {
                     assert(b != 0)
 
                     var vec =
-                        (kinetics.position[t] + kinetics.velocity[t] - kinetics.position[s]
-                        - kinetics.velocity[s])
+                        (positionBufferPointer[t] + velocityBufferPointer[t] 
+                        - positionBufferPointer[s] - velocityBufferPointer[s])
                         .jiggled()
 
                     var l = vec.length()
@@ -91,8 +93,8 @@ extension Kinetics {
                     vec *= l
 
                     // same as d3
-                    kinetics.velocity[t] -= vec * b
-                    kinetics.velocity[s] += vec * (1 - b)
+                    velocityBufferPointer[t] -= vec * b
+                    velocityBufferPointer[s] += vec * (1 - b)
                 }
             }
         }

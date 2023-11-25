@@ -24,7 +24,6 @@ For more information on force simulations, read: [Force simulations - D3](https:
 
 * ``Simulation``
 * ``Kinetics``
-* ``EdgeID``
 
 ### Built-in forces
 
@@ -39,8 +38,9 @@ For more information on force simulations, read: [Force simulations - D3](https:
 ### Utility forces for compositing a force field
 
 * ``ForceField``
-* ``SealedForce2D``
 * ``CompositedForce``
+* ``SealedForce2D``
+* ``SealedForce3D``
 
 
 
@@ -63,8 +63,12 @@ For more information on force simulations, read: [Force simulations - D3](https:
 ### Supporting protocols
 
 - ``ForceProtocol``
+- ``SimulatableVector``
 
 ### Utilities
 
-- ``SimulatableVector``
+- ``UnsafeArray``
+- ``EdgeID``
+- ``AttributeDescriptor``
+
 

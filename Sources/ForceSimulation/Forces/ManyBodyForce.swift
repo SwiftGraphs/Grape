@@ -74,9 +74,9 @@ extension Kinetics {
                 theta2 = theta * theta
             }
         }
+        @usableFromInline var distanceMin: Vector.Scalar = 1
         @usableFromInline var distanceMin2: Vector.Scalar = 1
         @usableFromInline var distanceMax2: Vector.Scalar = .infinity
-        @usableFromInline var distanceMin: Vector.Scalar = 1
         @usableFromInline var distanceMax: Vector.Scalar = .infinity
 
         public var mass: NodeMass
@@ -100,23 +100,17 @@ extension Kinetics {
         public func apply() {
 
             let alpha = self.kinetics.alpha
-
             let theta2 = self.theta2
             let distanceMin2 = self.distanceMin2
             let distanceMax2 = self.distanceMax2
             let strength = self.strength
-            let precalculatedMass = self.precalculatedMass!.withUnsafeMutablePointerToElements { $0 }
-            // let mass = self.mass
+            let precalculatedMass = self.precalculatedMass.mutablePointer
+            let positionBufferPointer = kinetics.position.mutablePointer
 
             var tree = KDTree(
                 covering: self.kinetics.position,
                 rootDelegate: MassCentroidKDTreeDelegate<Vector>(massProvider: precalculatedMass)
             )
-
-
-            let positionBufferPointer = kinetics!.position.withUnsafeMutablePointerToElements { $0 }
-
-            // let kinetics: Never? = nil //self.kinetics!
 
             for i in self.kinetics.range {
                 let pos = positionBufferPointer[i]
@@ -159,7 +153,7 @@ extension Kinetics {
                         if t.nodeIndices.contains(i) { return false }
 
                         let massAcc = t.delegate.accumulatedMass
-                        //                    t.nodeIndices.contains(i) ?  (t.delegate.accumulatedMass-self.precalculatedMass[i]) : (t.delegate.accumulatedMass)
+
                         let k: Vector.Scalar = strength * alpha * massAcc / distanceSquared  // distanceSquared.squareRoot()
                         f += vec * k
                         return false
@@ -172,9 +166,7 @@ extension Kinetics {
             }
         }
 
-        // @usableFromInline
-        public
-            var kinetics: Kinetics! = nil
+        public  var kinetics: Kinetics! = nil
 
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {

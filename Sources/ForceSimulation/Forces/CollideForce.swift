@@ -1,15 +1,16 @@
 public struct MaxRadiusNDTreeDelegate<Vector>: KDTreeDelegate
 where Vector: SimulatableVector {
-    @inlinable
-    public mutating func didAddNode(_ node: Int, at position: Vector) {
-        let p = radiusBufferPointer[node]
-        maxNodeRadius = max(maxNodeRadius, p)
-    }
 
     @usableFromInline
     var radiusBufferPointer: UnsafeMutablePointer<Vector.Scalar>
 
     public var maxNodeRadius: Vector.Scalar = .zero
+
+    @inlinable
+    public mutating func didAddNode(_ node: Int, at position: Vector) {
+        let p = radiusBufferPointer[node]
+        maxNodeRadius = max(maxNodeRadius, p)
+    }
 
     @inlinable
     public mutating func didRemoveNode(_ node: Int, at position: Vector) {
@@ -20,20 +21,14 @@ where Vector: SimulatableVector {
         }
     }
 
-    // @inlinable
-    // func copy() -> MaxRadiusNDTreeDelegate<Vector> {
-    //     return self
-    // }
-
     @inlinable
     public func spawn() -> MaxRadiusNDTreeDelegate<Vector> {
         return Self(radiusBufferPointer: radiusBufferPointer)
     }
 
-    // public typealias NodeID = Int
-
     @inlinable
-    init(maxNodeRadius: Vector.Scalar = 0, radiusBufferPointer: UnsafeMutablePointer<Vector.Scalar>) {
+    init(maxNodeRadius: Vector.Scalar = 0, radiusBufferPointer: UnsafeMutablePointer<Vector.Scalar>)
+    {
         self.maxNodeRadius = maxNodeRadius
         self.radiusBufferPointer = radiusBufferPointer
     }
@@ -50,9 +45,8 @@ extension Kinetics {
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
     public struct CollideForce: ForceProtocol {
 
-        // @usableFromInline  
-        public
-        var kinetics: Kinetics! = nil
+        @usableFromInline
+         var kinetics: Kinetics! = nil
 
         public var radius: CollideRadius
 
@@ -82,26 +76,24 @@ extension Kinetics {
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
 
-            let kinetics = self.kinetics!
-            let calculatedRadius = self.calculatedRadius!.withUnsafeMutablePointerToElements { $0 }
+            // let kinetics = self.kinetics!
             let strength = self.strength
+            let calculatedRadius = self.calculatedRadius!.mutablePointer
+            let positionBufferPointer = kinetics.position.mutablePointer
+            let velocityBufferPointer = kinetics.velocity.mutablePointer
 
             for _ in 0..<iterationsPerTick {
 
-                // let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
-
                 var tree = KDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>(
                     covering: kinetics.position,
-                    rootDelegate: MaxRadiusNDTreeDelegate<Vector>(radiusBufferPointer: calculatedRadius)
+                    rootDelegate: MaxRadiusNDTreeDelegate<Vector>(
+                        radiusBufferPointer: calculatedRadius
+                    )
                 )
 
-                // for i in kinetics.range {
-                //     tree.add(i, at: kinetics.position[i])
-                // }
-
                 for i in kinetics.range {
-                    let iOriginalPosition = kinetics.position[i]
-                    let iOriginalVelocity = kinetics.velocity[i]
+                    let iOriginalPosition = positionBufferPointer[i]
+                    let iOriginalVelocity = velocityBufferPointer[i]
                     let iR = calculatedRadius[i]
                     let iR2 = iR * iR
                     let iPosition = iOriginalPosition + iOriginalVelocity
@@ -118,8 +110,8 @@ extension Kinetics {
                                 guard j > i else { continue }
 
                                 let jR = calculatedRadius[j]
-                                let jOriginalPosition = kinetics.position[j]
-                                let jOriginalVelocity = kinetics.velocity[j]
+                                let jOriginalPosition = positionBufferPointer[j]
+                                let jOriginalVelocity = velocityBufferPointer[j]
                                 var deltaPosition =
                                     iPosition - (jOriginalPosition + jOriginalVelocity)
                                 let l = (deltaPosition).lengthSquared()
@@ -136,8 +128,8 @@ extension Kinetics {
 
                                     deltaPosition *= l
 
-                                    kinetics.velocity[i] += deltaPosition * k
-                                    kinetics.velocity[j] -= deltaPosition * (1 - k)
+                                    velocityBufferPointer[i] += deltaPosition * k
+                                    velocityBufferPointer[j] -= deltaPosition * (1 - k)
                                 }
                             }
                             return false
