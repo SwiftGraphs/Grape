@@ -153,8 +153,8 @@ extension Kinetics {
                         //     }
                         // }
 
-                        let p0Flag = t.box.p0 .> iPosition + deltaR
-                        let p1Flag = t.box.p1 .< iPosition - deltaR
+                        let p0Flag = t.box.p0 .> (iPosition + deltaR)
+                        let p1Flag = t.box.p1 .< (iPosition - deltaR)
                         let flag = p0Flag .| p1Flag
 
                         for laneIndex in t.box.p0.indices {
