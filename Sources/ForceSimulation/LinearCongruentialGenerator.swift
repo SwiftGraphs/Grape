@@ -5,6 +5,7 @@ public protocol DeterministicRandomGenerator<Scalar> {
     associatedtype Scalar where Scalar: FloatingPoint & ExpressibleByFloatLiteral
     @inlinable static func next() -> Scalar
     @inlinable mutating func next() -> Scalar
+    @inlinable init()
 }
 
 /// A random number generator that generates deterministic random numbers for `Double`.
@@ -24,6 +25,8 @@ public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
         Self._s = (Self.a * Self._s + Self.c).truncatingRemainder(dividingBy: Self.m)
         return Self._s / Self.m
     }
+
+    @inlinable public init() {}
 }
 
 /// A random number generator that generates deterministic random numbers for `Float`.
@@ -43,6 +46,8 @@ public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
         Self._s = (Self.a * Self._s + Self.c).truncatingRemainder(dividingBy: Self.m)
         return Self._s / Self.m
     }
+
+    @inlinable public init() {}
 }
 
 
@@ -64,6 +69,14 @@ extension HasDeterministicRandomGenerator {
     public func jiggled() -> Self {
         if self == .zero || self == .nan {
             return (Generator.next() - 0.5) * 1e-5
+        }
+        return self
+    }
+
+    @inlinable
+    public func jiggled(by: UnsafeMutablePointer<Generator>) -> Self {
+        if self == .zero || self == .nan {
+            return (by.pointee.next() - 0.5) * 1e-5
         }
         return self
     }

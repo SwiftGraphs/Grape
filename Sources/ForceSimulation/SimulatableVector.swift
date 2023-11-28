@@ -28,6 +28,15 @@ extension SimulatableVector {
         }
         return result
     }
+
+    @inlinable
+    public func jiggled(by: UnsafeMutablePointer<Scalar.Generator>) -> Self {
+        var result = Self.zero
+        for i in indices {
+            result[i] = self[i].jiggled(by: by)
+        }
+        return result
+    }
 }
 
 /// A protocol for vectors that can be calculated with L2 norms, i.e. Euclidean distance.

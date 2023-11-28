@@ -46,7 +46,7 @@ extension Kinetics {
     public struct CollideForce: ForceProtocol {
 
         @usableFromInline
-         var kinetics: Kinetics! = nil
+        var kinetics: Kinetics! = nil
 
         public var radius: CollideRadius
 
@@ -97,6 +97,7 @@ extension Kinetics {
                     let iR = calculatedRadius[i]
                     let iR2 = iR * iR
                     let iPosition = iOriginalPosition + iOriginalVelocity
+                    let random = kinetics.randomGenerator
 
                     tree.visit { t in
 
@@ -119,7 +120,8 @@ extension Kinetics {
                                 let deltaR = iR + jR
                                 if l < deltaR * deltaR {
 
-                                    var l = /*simd_length*/ (deltaPosition.jiggled()).length()
+                                    var l = /*simd_length*/ (deltaPosition.jiggled(by: random))
+                                        .length()
                                     l = (deltaR - l) / l * strength
 
                                     let jR2 = jR * jR
