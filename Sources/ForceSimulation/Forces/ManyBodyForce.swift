@@ -106,6 +106,7 @@ extension Kinetics {
             let strength = self.strength
             let precalculatedMass = self.precalculatedMass.mutablePointer
             let positionBufferPointer = kinetics.position.mutablePointer
+            let random = kinetics.randomGenerator
 
             var tree = KDTree(
                 covering: self.kinetics.position,
@@ -123,7 +124,10 @@ extension Kinetics {
 
                     let vec = centroid - pos
                     let boxWidth = (t.box.p1 - t.box.p0)[0]
-                    var distanceSquared = (vec.jiggled()).lengthSquared()
+                    var distanceSquared =
+                        (vec
+                        // .jiggled()
+                        .jiggled(by: random)).lengthSquared()
 
                     let farEnough: Bool =
                         (distanceSquared * theta2) > (boxWidth * boxWidth)
@@ -166,7 +170,7 @@ extension Kinetics {
             }
         }
 
-        public  var kinetics: Kinetics! = nil
+        public var kinetics: Kinetics! = nil
 
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {

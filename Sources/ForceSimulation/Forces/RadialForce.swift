@@ -28,7 +28,7 @@ extension Kinetics {
             let alpha = kinetics.alpha
             for i in kinetics.range {
                 let nodeId = i
-                let deltaPosition = (kinetics.position[i] - self.center).jiggled()
+                let deltaPosition = (kinetics.position[i] - self.center).jiggled(by: kinetics.randomGenerator) //.jiggled()
                 let r = (deltaPosition).length()
                 let k =
                     (self.calculatedRadius[nodeId]

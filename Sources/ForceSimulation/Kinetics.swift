@@ -38,6 +38,9 @@ where Vector: SimulatableVector & L2NormCalculatable {
 
     public let velocityDecay: Vector.Scalar
 
+    @usableFromInline 
+    let randomGenerator: UnsafeMutablePointer<Vector.Scalar.Generator>
+
     // public var validRanges: [Range<Int>]
     // public var validRanges: Range<Int>
     public var validCount: Int
@@ -89,10 +92,13 @@ where Vector: SimulatableVector & L2NormCalculatable {
         // self.positionBufferPointer = self.position.mutablePointer
         // self.velocityBufferPointer = self.velocity.mutablePointer
         // self.fixationBufferPointer = self.fixation.mutablePointer
+
+        self.randomGenerator = .allocate(capacity: 1)
+        self.randomGenerator.initialize(to: .init())
     }
 
     @inlinable
-    class func createZeros(
+    static func createZeros(
         links: [EdgeID<Int>],
         initialAlpha: Vector.Scalar,
         alphaMin: Vector.Scalar,
@@ -113,6 +119,11 @@ where Vector: SimulatableVector & L2NormCalculatable {
             velocity: Array(repeating: .zero, count: count),
             fixation: Array(repeating: nil, count: count)
         )
+    }
+
+    deinit {
+        self.randomGenerator.deinitialize(count: 1)
+        self.randomGenerator.deallocate()
     }
 }
 
