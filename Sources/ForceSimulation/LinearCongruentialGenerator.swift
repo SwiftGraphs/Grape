@@ -5,6 +5,7 @@ public protocol DeterministicRandomGenerator<Scalar> {
     associatedtype Scalar where Scalar: FloatingPoint & ExpressibleByFloatLiteral
     @inlinable static func next() -> Scalar
     @inlinable mutating func next() -> Scalar
+    @inlinable init(seed: Scalar)
     @inlinable init()
 }
 
@@ -26,7 +27,13 @@ public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
         return Self._s / Self.m
     }
 
-    @inlinable public init() {}
+    @inlinable public init(seed: Double) {
+        self.s = seed
+    }
+
+    @inlinable public init() {
+        self.init(seed: 1)
+    }
 }
 
 /// A random number generator that generates deterministic random numbers for `Float`.
@@ -47,7 +54,13 @@ public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
         return Self._s / Self.m
     }
 
-    @inlinable public init() {}
+    @inlinable public init(seed: Float) {
+        self.s = seed
+    }
+
+    @inlinable public init() {
+        self.init(seed: 1)
+    }
 }
 
 

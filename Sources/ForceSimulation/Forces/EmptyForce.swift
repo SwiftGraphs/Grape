@@ -2,13 +2,9 @@ extension Kinetics {
 
     public struct EmptyForce: ForceProtocol {
         @inlinable
-        public func apply() {
-
-        }
+        public func apply() {}
 
         @inlinable
-        public func bindKinetics(_ kinetics: Kinetics) {
-
-        }
+        public func bindKinetics(_ kinetics: Kinetics) {}
     }
 }
