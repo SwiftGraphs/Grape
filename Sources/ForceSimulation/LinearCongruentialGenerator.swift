@@ -11,24 +11,31 @@ public protocol DeterministicRandomGenerator<Scalar> {
 
 /// A random number generator that generates deterministic random numbers for `Double`.
 public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
-    @usableFromInline internal static let a: Double = 1_664_525
-    @usableFromInline internal static let c: Double = 1_013_904_223
-    @usableFromInline internal static let m: Double = 4_294_967_296
-    @usableFromInline internal static var _s: Double = 1
-    @usableFromInline internal var s: Double = 1
+    @usableFromInline internal static let a: UInt32 = 1_664_525
+    @usableFromInline internal static let c: UInt32 = 1_013_904_223
+    @usableFromInline internal static var _s: UInt32 = 1
+    @usableFromInline internal var s: UInt32 = 1
 
     @inlinable public mutating func next() -> Double {
-        s = (Self.a * s + Self.c).truncatingRemainder(dividingBy: Self.m)
-        return s / Self.m
+        // Perform the linear congruential generation with integer arithmetic.
+        // The overflow addition and multiplication automatically wrap around,
+        // thus imitating the modulo operation.
+        s = Self.a &* s &+ Self.c
+
+        // Convert the result to Double and divide by m to normalize it.
+        return Double(s) / 4_294_967_296.0
     }
 
     @inlinable public static func next() -> Double {
-        Self._s = (Self.a * Self._s + Self.c).truncatingRemainder(dividingBy: Self.m)
-        return Self._s / Self.m
+        
+        Self._s = Self.a &* Self._s &+ Self.c
+
+        // Convert the result to Double and divide by m to normalize it.
+        return Double(Self._s) / 4_294_967_296.0
     }
 
     @inlinable public init(seed: Double) {
-        self.s = seed
+        self.s = 1 //seed
     }
 
     @inlinable public init() {
@@ -38,24 +45,30 @@ public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
 
 /// A random number generator that generates deterministic random numbers for `Float`.
 public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
-    @usableFromInline internal static let a: Float = 75
-    @usableFromInline internal static let c: Float = 74
-    @usableFromInline internal static let m: Float = 65537
-    @usableFromInline internal static var _s: Float = 1
-    @usableFromInline internal var s: Float = 1
+
+    @usableFromInline internal static let a: UInt16 = 75
+    @usableFromInline internal static let c: UInt16 = 74
+    @usableFromInline internal static var _s: UInt16 = 1
+    @usableFromInline internal var s: UInt16 = 1
 
     @inlinable public mutating func next() -> Float {
-        s = (Self.a * s + Self.c).truncatingRemainder(dividingBy: Self.m)
-        return s / Self.m
+        // Perform the linear congruential generation with integer arithmetic.
+        // The overflow addition and multiplication automatically wrap around.
+        s = Self.a &* s &+ Self.c
+
+        // Convert the result to Float and divide by m to normalize it.
+        return Float(s) / 65537.0
     }
 
     @inlinable public static func next() -> Float {
-        Self._s = (Self.a * Self._s + Self.c).truncatingRemainder(dividingBy: Self.m)
-        return Self._s / Self.m
+        _s = a &* _s &+ c
+
+        // Convert the result to Float and divide by m to normalize it.
+        return Float(_s) / 65537.0
     }
 
     @inlinable public init(seed: Float) {
-        self.s = seed
+        self.s = 1 //seed
     }
 
     @inlinable public init() {
