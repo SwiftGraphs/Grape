@@ -38,7 +38,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
 
     public let velocityDecay: Vector.Scalar
 
-    @usableFromInline 
+    @usableFromInline
     let randomGenerator: UnsafeMutablePointer<Vector.Scalar.Generator>
 
     // public var validRanges: [Range<Int>]
@@ -89,12 +89,50 @@ where Vector: SimulatableVector & L2NormCalculatable {
             initialValue: nil
         )
 
-        // self.positionBufferPointer = self.position.mutablePointer
-        // self.velocityBufferPointer = self.velocity.mutablePointer
-        // self.fixationBufferPointer = self.fixation.mutablePointer
-
         self.randomGenerator = .allocate(capacity: 1)
         self.randomGenerator.initialize(to: .init())
+    }
+
+    @inlinable
+    init(
+        links: [EdgeID<Int>],
+        initialAlpha: Vector.Scalar,
+        alphaMin: Vector.Scalar,
+        alphaDecay: Vector.Scalar,
+        alphaTarget: Vector.Scalar,
+        velocityDecay: Vector.Scalar,
+        position: [Vector],
+        velocity: [Vector],
+        fixation: [Vector?],
+        randomSeed: Vector.Scalar
+    ) {
+        self.links = links
+        self.initializedAlpha = initialAlpha
+        self.alpha = initialAlpha
+        self.alphaMin = alphaMin
+        self.alphaDecay = alphaDecay
+        self.alphaTarget = alphaTarget
+        self.velocityDecay = velocityDecay
+        self.validCount = position.count
+
+        self.position = UnsafeArray<Vector>.createBuffer(
+            withHeader: position.count,
+            count: position.count,
+            initialValue: .zero
+        )
+        self.velocity = UnsafeArray<Vector>.createBuffer(
+            withHeader: position.count,
+            count: position.count,
+            initialValue: .zero
+        )
+        self.fixation = UnsafeArray<Vector?>.createBuffer(
+            withHeader: position.count,
+            count: position.count,
+            initialValue: nil
+        )
+
+        self.randomGenerator = .allocate(capacity: 1)
+        self.randomGenerator.initialize(to: .init(seed: randomSeed))
     }
 
     @inlinable
