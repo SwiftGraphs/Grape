@@ -104,7 +104,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
         position: [Vector],
         velocity: [Vector],
         fixation: [Vector?],
-        randomSeed: Vector.Scalar
+        randomSeed: Vector.Scalar.Generator.OverflowingInteger
     ) {
         self.links = links
         self.initializedAlpha = initialAlpha

@@ -3,14 +3,16 @@
 /// A random number generator that generates deterministic random numbers.
 public protocol DeterministicRandomGenerator<Scalar> {
     associatedtype Scalar where Scalar: FloatingPoint & ExpressibleByFloatLiteral
+    associatedtype OverflowingInteger: FixedWidthInteger & UnsignedInteger
     @inlinable static func next() -> Scalar
     @inlinable mutating func next() -> Scalar
-    @inlinable init(seed: Scalar)
+    @inlinable init(seed: OverflowingInteger)
     @inlinable init()
 }
 
 /// A random number generator that generates deterministic random numbers for `Double`.
 public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
+    public typealias OverflowingInteger = UInt32
     @usableFromInline internal static let a: UInt32 = 1_664_525
     @usableFromInline internal static let c: UInt32 = 1_013_904_223
     @usableFromInline internal static var _s: UInt32 = 1
@@ -27,15 +29,15 @@ public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
     }
 
     @inlinable public static func next() -> Double {
-        
+
         Self._s = Self.a &* Self._s &+ Self.c
 
         // Convert the result to Double and divide by m to normalize it.
         return Double(Self._s) / 4_294_967_296.0
     }
 
-    @inlinable public init(seed: Double) {
-        self.s = 1 //seed
+    @inlinable public init(seed: OverflowingInteger) {
+        self.s = 1  //seed
     }
 
     @inlinable public init() {
@@ -45,7 +47,7 @@ public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
 
 /// A random number generator that generates deterministic random numbers for `Float`.
 public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
-
+    public typealias OverflowingInteger = UInt16
     @usableFromInline internal static let a: UInt16 = 75
     @usableFromInline internal static let c: UInt16 = 74
     @usableFromInline internal static var _s: UInt16 = 1
@@ -67,15 +69,14 @@ public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
         return Float(_s) / 65537.0
     }
 
-    @inlinable public init(seed: Float) {
-        self.s = 1 //seed
+    @inlinable public init(seed: OverflowingInteger) {
+        self.s = seed
     }
 
     @inlinable public init() {
         self.init(seed: 1)
     }
 }
-
 
 /// A floating point type that can be generated with a deterministic random number generator ``DeterministicRandomGenerator``.
 public protocol HasDeterministicRandomGenerator: FloatingPoint & ExpressibleByFloatLiteral {
