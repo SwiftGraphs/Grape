@@ -70,7 +70,6 @@ where
     public typealias TreeNode = KDTreeNode<Vector, Delegate>
     public let root: UnsafeMutablePointer<TreeNode>
     public let treeNodeBuffer: UnsafeArray<TreeNode>
-    public var rootBox: Box
 
     ///
     public var validCount: Int = 0
@@ -83,9 +82,10 @@ where
     @inlinable
     public init(
         rootBox: Box,
+        nodeCapacity: Int,
         rootDelegate: @autoclosure () -> Delegate
     ) {
-        let maxBufferCount = 1 << Vector.scalarCount
+        let maxBufferCount = (nodeCapacity << Vector.scalarCount) + 1
         let zeroNode: TreeNode = .init(
             nodeIndices: nil,
             childrenBufferPointer: nil,
@@ -106,12 +106,13 @@ where
             box: rootBox
         )
 
-        self.rootBox = rootBox
+//        self.rootBox = rootBox
         self.validCount = 1
     }
 
     @inlinable
     public mutating func reset(
+        rootBox: Box,
         rootDelegate: @autoclosure () -> Delegate
     ) {
         root.pointee = .init(
@@ -182,6 +183,7 @@ where
                         box: __box
                     )
                 }
+                treeNode.pointee.childrenBufferPointer = root + validCount
                 validCount += Self.directionCount
 
                 if let childrenBufferPointer = treeNode.pointee.childrenBufferPointer {
@@ -223,19 +225,19 @@ where
 
     @inlinable
     internal mutating func cover(point: Vector) {
-        if rootBox.contains(point) { return }
+        if self.root.pointee.box.contains(point) { return }
 
         repeat {
-            let direction = self.getIndexInChildren(point, relativeTo: rootBox.p0)
+            let direction = self.getIndexInChildren(point, relativeTo: self.root.pointee.box.p0)
             self.expand(towards: direction)
-        } while !rootBox.contains(point)
+        } while !self.root.pointee.box.contains(point)
     }
 
     @inlinable
     internal mutating func expand(towards direction: Int) {
         let nailedDirection = (Self.directionCount - 1) - direction
-        let nailedCorner = rootBox.getCorner(of: nailedDirection)
-        let _corner = rootBox.getCorner(of: direction)
+        let nailedCorner = self.root.pointee.box.getCorner(of: nailedDirection)
+        let _corner = self.root.pointee.box.getCorner(of: direction)
         let expandedCorner = (_corner + _corner) - nailedCorner
         let newRootBox = Box(nailedCorner, expandedCorner)
 
