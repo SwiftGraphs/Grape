@@ -42,6 +42,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
             velocityDecay: velocityDecay,
             count: nodeCount
         )
+        self.kinetics.jigglePosition()
         forceField.bindKinetics(self.kinetics)
         self.forceField = forceField
     }

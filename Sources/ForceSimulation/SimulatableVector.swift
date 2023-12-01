@@ -63,7 +63,7 @@ extension SIMD2: SimulatableVector where Scalar: FloatingPoint & HasDeterministi
 
     @inlinable
     public static var clusterDistanceSquared: Scalar {
-        return 1e-10
+        return clusterDistance * clusterDistance
     }
 }
 
@@ -76,7 +76,7 @@ extension SIMD3: SimulatableVector where Scalar: FloatingPoint & HasDeterministi
 
     @inlinable
     public static var clusterDistanceSquared: Scalar {
-        return 1e-10
+        return clusterDistance * clusterDistance
     }
 }
 
