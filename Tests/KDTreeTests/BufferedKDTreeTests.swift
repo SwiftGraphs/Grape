@@ -46,9 +46,9 @@ class BufferedKDTreeTests: XCTestCase {
             [0,0]
         ])
         
-        XCTAssert(t.root.pointee.nodeIndices!.index == 0)
-        XCTAssert(t.root.pointee.childrenBufferPointer == nil)
-        XCTAssert(t.root.pointee.delegate.count == 1)
+        XCTAssert(t.root.nodeIndices!.index == 0)
+        XCTAssert(t.root.childrenBufferPointer == nil)
+        XCTAssert(t.root.delegate.count == 1)
     }
     
     func testCorner2() {
@@ -56,10 +56,10 @@ class BufferedKDTreeTests: XCTestCase {
             [1,1]
         ])
         
-        XCTAssert(t.root.pointee.nodeIndices == nil)
-        XCTAssert(t.root.pointee.delegate.count == 1)
-        XCTAssert(t.root.pointee.childrenBufferPointer![3].delegate.count == 1)
-        XCTAssert(t.root.pointee.box.p1 == [2, 2])
+        XCTAssert(t.root.nodeIndices == nil)
+        XCTAssert(t.root.delegate.count == 1)
+        XCTAssert(t.root.childrenBufferPointer![3].delegate.count == 1)
+        XCTAssert(t.root.box.p1 == [2, 2])
     }
     
     func testRandomTree() {
@@ -68,7 +68,7 @@ class BufferedKDTreeTests: XCTestCase {
         }
 
         let t = buildTree(box: .init(p0: [0,0], p1: [100,100]), points: randomPoints)
-        XCTAssert(t.root.pointee.delegate.count == randomPoints.count)
+        XCTAssert(t.root.delegate.count == randomPoints.count)
     }
     
 

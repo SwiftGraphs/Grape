@@ -5,7 +5,7 @@ where
 {
     public struct NodeIndex {
 
-        @usableFromInline 
+        @usableFromInline
         var index: Int
 
         @usableFromInline
@@ -23,8 +23,7 @@ where
         internal mutating func append(nodeIndex: Int) {
             if let next {
                 next.pointee.append(nodeIndex: nodeIndex)
-            }
-            else {
+            } else {
                 next = .allocate(capacity: 1)
                 next!.pointee = .init(nodeIndex: nodeIndex)
             }
@@ -58,7 +57,6 @@ where
         self.nodePosition = .zero
     }
 
-
 }
 
 public struct BufferedKDTree<Vector, Delegate>: ~Copyable
@@ -68,16 +66,23 @@ where
 {
     public typealias Box = KDBox<Vector>
     public typealias TreeNode = KDTreeNode<Vector, Delegate>
-    public let root: UnsafeMutablePointer<TreeNode>
-    public let treeNodeBuffer: UnsafeArray<TreeNode>
 
-    ///
-    public var validCount: Int = 0
+    @usableFromInline
+    var rootPointer: UnsafeMutablePointer<TreeNode>
+
+    @usableFromInline
+    internal var validCount: Int = 0
+
+    @usableFromInline
+    internal var treeNodeBuffer: UnsafeArray<TreeNode>
 
     @inlinable
     var clusterDistanceSquared: Vector.Scalar {
         return Vector.clusterDistanceSquared
     }
+
+    @inlinable
+    public var root: TreeNode { rootPointer.pointee }
 
     @inlinable
     public init(
@@ -97,16 +102,14 @@ where
             count: maxBufferCount,
             initialValue: zeroNode
         )
-        root = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
+        rootPointer = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
 
-        root.pointee = .init(
+        rootPointer.pointee = .init(
             nodeIndices: nil,
             childrenBufferPointer: nil,
             delegate: rootDelegate(),
             box: rootBox
         )
-
-//        self.rootBox = rootBox
         self.validCount = 1
     }
 
@@ -115,7 +118,39 @@ where
         rootBox: Box,
         rootDelegate: @autoclosure () -> Delegate
     ) {
-        root.pointee = .init(
+        rootPointer.pointee = .init(
+            nodeIndices: nil,
+            childrenBufferPointer: nil,
+            delegate: rootDelegate(),
+            box: rootBox
+        )
+        self.validCount = 1
+    }
+
+    @inlinable
+    public mutating func discardAndResize(
+        rootBox: Box,
+        rootDelegate: @autoclosure () -> Delegate,
+        forNodeCapacity capacity: Int
+    ) {
+        let maxBufferCount = (capacity << Vector.scalarCount) + 1
+
+        let zeroNode: TreeNode = .init(
+            nodeIndices: nil,
+            childrenBufferPointer: nil,
+            delegate: rootDelegate(),
+            box: rootBox
+        )
+
+        // should be deinitialized here (ManagedBuffer)
+        treeNodeBuffer = .createBuffer(
+            withHeader: maxBufferCount,
+            count: maxBufferCount,
+            initialValue: zeroNode
+        )
+        rootPointer = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
+
+        rootPointer.pointee = .init(
             nodeIndices: nil,
             childrenBufferPointer: nil,
             delegate: rootDelegate(),
@@ -126,14 +161,14 @@ where
 
     @inlinable
     public mutating func add(
-        nodeIndex: Int, 
+        nodeIndex: Int,
         at point: Vector
     ) {
         assert(validCount > 0)
         cover(point: point)
         addWithoutCover(
-            onTreeNode: root, 
-            nodeOf: nodeIndex, 
+            onTreeNode: rootPointer,
+            nodeOf: nodeIndex,
             at: point
         )
     }
@@ -144,7 +179,7 @@ where
         nodeOf nodeIndex: Int,
         at point: Vector
     ) {
-        
+
         defer {
             treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
         }
@@ -159,7 +194,7 @@ where
                 treeNode.pointee.nodeIndices!.append(nodeIndex: nodeIndex)
                 return
             } else {
-                
+
                 let spawnedDelegate = treeNode.pointee.delegate.spawn()
                 let center = treeNode.pointee.box.center
 
@@ -175,20 +210,20 @@ where
                             __box.p1[i] = center[i]
                         }
                     }
-                    
-                    treeNodeBuffer[validCount+j] = .init(
-                        nodeIndices: nil, 
-                        childrenBufferPointer: nil, 
+
+                    treeNodeBuffer[validCount + j] = .init(
+                        nodeIndices: nil,
+                        childrenBufferPointer: nil,
                         delegate: spawnedDelegate,
                         box: __box
                     )
                 }
-                treeNode.pointee.childrenBufferPointer = root + validCount
+                treeNode.pointee.childrenBufferPointer = rootPointer + validCount
                 validCount += Self.directionCount
 
                 if let childrenBufferPointer = treeNode.pointee.childrenBufferPointer {
                     let direction = getIndexInChildren(
-                        treeNode.pointee.nodePosition, 
+                        treeNode.pointee.nodePosition,
                         relativeTo: center
                     )
 
@@ -202,11 +237,10 @@ where
                 let directionOfNewNode = getIndexInChildren(point, relativeTo: center)
                 // spawnedChildren[directionOfNewNode].addWithoutCover(nodeIndex, at: point)
                 addWithoutCover(
-                    onTreeNode: treeNode.pointee.childrenBufferPointer! + directionOfNewNode, 
-                    nodeOf: nodeIndex, 
+                    onTreeNode: treeNode.pointee.childrenBufferPointer! + directionOfNewNode,
+                    nodeOf: nodeIndex,
                     at: point
                 )
-
 
                 // self.children = spawnedChildren
                 return
@@ -216,8 +250,8 @@ where
 
         let directionOfNewNode = getIndexInChildren(point, relativeTo: treeNode.pointee.box.center)
         self.addWithoutCover(
-            onTreeNode: treeNode.pointee.childrenBufferPointer! + directionOfNewNode, 
-            nodeOf: nodeIndex, 
+            onTreeNode: treeNode.pointee.childrenBufferPointer! + directionOfNewNode,
+            nodeOf: nodeIndex,
             at: point
         )
         return
@@ -225,29 +259,29 @@ where
 
     @inlinable
     internal mutating func cover(point: Vector) {
-        if self.root.pointee.box.contains(point) { return }
+        if self.root.box.contains(point) { return }
 
         repeat {
-            let direction = self.getIndexInChildren(point, relativeTo: self.root.pointee.box.p0)
+            let direction = self.getIndexInChildren(point, relativeTo: self.root.box.p0)
             self.expand(towards: direction)
-        } while !self.root.pointee.box.contains(point)
+        } while !self.root.box.contains(point)
     }
 
     @inlinable
     internal mutating func expand(towards direction: Int) {
         let nailedDirection = (Self.directionCount - 1) - direction
-        let nailedCorner = self.root.pointee.box.getCorner(of: nailedDirection)
-        let _corner = self.root.pointee.box.getCorner(of: direction)
+        let nailedCorner = self.root.box.getCorner(of: nailedDirection)
+        let _corner = self.root.box.getCorner(of: direction)
         let expandedCorner = (_corner + _corner) - nailedCorner
         let newRootBox = Box(nailedCorner, expandedCorner)
 
-        let _rootValue = self.root.pointee
+        let _rootValue = self.root
 
         // spawn the delegate with the same internal values
         // for the children, use implicit copy of spawned
         let spawned = _rootValue.delegate.spawn()
 
-        let newChildrenPointer = self.root + validCount
+        let newChildrenPointer = self.rootPointer + validCount
 
         for j in 0..<Self.directionCount {
 
@@ -272,17 +306,12 @@ where
         }
         self.validCount += Self.directionCount
 
-        self.root.pointee = .init(
-            nodeIndices: nil, 
+        self.rootPointer.pointee = .init(
+            nodeIndices: nil,
             childrenBufferPointer: newChildrenPointer,
             delegate: _rootValue.delegate,
             box: newRootBox
         )
-    }
-
-    @inlinable
-    internal mutating func resizeBuffer(to capacity: UInt) {
-        // TODO
     }
 
     @inlinable
@@ -527,8 +556,8 @@ extension KDTree where Delegate.NodeID == Int {
     /// - Parameters:
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
-    ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the root.
-    ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the root delegate.
+    ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the rootPointer.
+    ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the rootPointer delegate.
     @inlinable
     public init(
         covering points: [Vector],
@@ -577,8 +606,8 @@ extension KDTree where Delegate.NodeID == Int {
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
     ///  - keyPath: A key path to the vector in the element of the list.
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
-    ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the root.
-    ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the root delegate.
+    ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the rootPointer.
+    ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the rootPointer delegate.
     // public convenience init<T>(
     //     covering points: [T],
     //     keyPath: KeyPath<T, Vector>,
@@ -636,21 +665,21 @@ extension KDTree {
 //     Vector: SimulatableVector & L2NormCalculatable,
 //     Delegate: KDTreeDelegate<Int, Vector>
 // {
-//     public var root: KDTree<Vector, Delegate>
+//     public var rootPointer: KDTree<Vector, Delegate>
 //     @usableFromInline let propertyBuffer: UnsafeMutablePointer<Property>
 
 //     @inlinable
 //     public init(
-//         root: KDTree<Vector, Delegate>,
+//         rootPointer: KDTree<Vector, Delegate>,
 //         propertyBuffer: UnsafeMutablePointer<Property>
 //     ) {
-//         self.root = root
+//         self.rootPointer = rootPointer
 //         self.propertyBuffer = propertyBuffer
 //     }
 
 //     @inlinable
 //     public mutating func add(_ nodeIndex: Int, at point: Vector) {
-//         root.cover(point)
-//         root.addWithoutCover(nodeIndex, at: point)
+//         rootPointer.cover(point)
+//         rootPointer.addWithoutCover(nodeIndex, at: point)
 //     }
 // }
