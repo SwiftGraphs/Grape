@@ -70,6 +70,12 @@ do {
     if !fileManager.fileExists(atPath: iconDestPath) {
         try fileManager.copyItem(atPath: iconSourcePath, toPath: iconDestPath)
     }
+    for moduleName in moduleNames {
+        let iconDestPath = "./docs/\(moduleName)/favicon.png"
+        if !fileManager.fileExists(atPath: iconDestPath) {
+            try fileManager.copyItem(atPath: iconSourcePath, toPath: iconDestPath)
+        }
+    }
 
 } catch {
     // Handle errors by printing to the console for now

@@ -77,7 +77,7 @@ where
         return index
     }
 
-    /// Expand the current node towards a direction. 
+    /// Expand the current node towards a direction.
     ///
     /// The expansion will double the size on each dimension. Then the data in delegate will be copied to the new children.
     /// - Parameter direction: An Integer between 0 and `directionCount - 1`, where `directionCount` equals to 2^(dimension of the vector).
@@ -138,7 +138,7 @@ where
         cover(point)
         addWithoutCover(nodeIndex, at: point)
     }
-    
+
     @inlinable
     public mutating func addWithoutCover(_ nodeIndex: NodeIndex, at point: Vector) {
         defer {
@@ -149,9 +149,9 @@ where
                 nodeIndices.append(nodeIndex)
                 nodePosition = point
                 return
-            } else if nodePosition == point
-                || nodePosition!.distanceSquared(to: point) < clusterDistanceSquared
-            {
+            } else if nodePosition!.distanceSquared(to: point) < clusterDistanceSquared {
+                // the condition (nodePosition == point) is mostly only true when the tree is initialized
+                // hence omitted
                 nodeIndices.append(nodeIndex)
                 return
             } else {
@@ -303,7 +303,9 @@ extension KDTree {
     /// Visit the tree in pre-order.
     ///
     /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
-    @inlinable public mutating func visit(shouldVisitChildren: (inout KDTree<Vector, Delegate>) -> Bool) {
+    @inlinable public mutating func visit(
+        shouldVisitChildren: (inout KDTree<Vector, Delegate>) -> Bool
+    ) {
         if shouldVisitChildren(&self) && children != nil {
             // this is an internal node
             for i in children!.indices {
@@ -313,7 +315,6 @@ extension KDTree {
     }
 
 }
-
 
 // public struct KDTreeRoot<Vector, Delegate, Property>
 // where
@@ -331,7 +332,6 @@ extension KDTree {
 //         self.root = root
 //         self.propertyBuffer = propertyBuffer
 //     }
-
 
 //     @inlinable
 //     public mutating func add(_ nodeIndex: Int, at point: Vector) {

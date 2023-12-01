@@ -120,6 +120,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
             count: position.count,
             initialValue: .zero
         )
+
         self.velocity = UnsafeArray<Vector>.createBuffer(
             withHeader: position.count,
             count: position.count,
@@ -133,6 +134,13 @@ where Vector: SimulatableVector & L2NormCalculatable {
 
         self.randomGenerator = .allocate(capacity: 1)
         self.randomGenerator.initialize(to: .init(seed: randomSeed))
+    }
+
+    @inlinable
+    internal func jigglePosition() {
+        for i in range {
+            position[i] = position[i].jiggled(by: self.randomGenerator)
+        }
     }
 
     @inlinable
@@ -182,17 +190,7 @@ extension Kinetics {
     func updateAlpha() {
         alpha += (alphaTarget - alpha) * alphaDecay
     }
-
-    @inlinable
-    func invalidateRange(_ range: Range<Int>) {
-        fatalError("Not implemented")
-    }
-
-    @inlinable
-    func validateRangeAndExtendIfNeccessary(_ range: Range<Int>) {
-        fatalError("Not implemented")
-    }
-
+    
 }
 
 public typealias Kinetics2D = Kinetics<SIMD2<Double>>
