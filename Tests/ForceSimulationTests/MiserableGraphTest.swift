@@ -91,7 +91,6 @@ struct MySealedForce: ForceField2D {
     }
 }
 
-
 struct MyLatticeForce: ForceField2D {
     var force = SealedForce2D {
         Kinetics2D.LinkForce(
@@ -118,7 +117,7 @@ struct MyForceField3D: ForceField3D {
 final class MiserableGraphTest: XCTestCase {
 
     func testLattice() {
-        
+
         let myForce = SealedForce2D {
             Kinetics2D.ManyBodyForce(strength: -30)
             Kinetics2D.LinkForce(
@@ -142,7 +141,7 @@ final class MiserableGraphTest: XCTestCase {
                 }
             }
         }
-        
+
         let simulation = Simulation(
             nodeCount: width * width,
             links: edge.map { EdgeID(source: $0.0, target: $0.1) },
@@ -151,6 +150,7 @@ final class MiserableGraphTest: XCTestCase {
 
         measure {
             for _ in 0..<120 {
+                //  print(i)
                 simulation.tick()
             }
         }

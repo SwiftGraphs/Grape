@@ -1,3 +1,4 @@
+
 /// A node in NDTree
 /// - Note: `NDTree` is a generic type that can be used in any dimension.
 ///        `NDTree` is a value type.
@@ -212,8 +213,8 @@ extension KDTree where Delegate.NodeID == Int {
     /// - Parameters:
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
-    ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the root.
-    ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the root delegate.
+    ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the rootPointer.
+    ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the rootPointer delegate.
     @inlinable
     public init(
         covering points: [Vector],
@@ -262,8 +263,8 @@ extension KDTree where Delegate.NodeID == Int {
     ///  - points: A list of points. The points are only used to calculate the covering box. You should still call `add` to add the points to the tree.
     ///  - keyPath: A key path to the vector in the element of the list.
     ///  - clusterDistance: If 2 points are close enough, they will be clustered into the same leaf node.
-    ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the root.
-    ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the root delegate.
+    ///  - buildRootDelegate: A closure that tells the tree how to initialize the data you want to store in the rootPointer.
+    ///                  The closure is called only once. The `NDTreeDelegate` will then be created in children tree nods by calling `spawn` on the rootPointer delegate.
     // public convenience init<T>(
     //     covering points: [T],
     //     keyPath: KeyPath<T, Vector>,
@@ -315,27 +316,3 @@ extension KDTree {
     }
 
 }
-
-// public struct KDTreeRoot<Vector, Delegate, Property>
-// where
-//     Vector: SimulatableVector & L2NormCalculatable,
-//     Delegate: KDTreeDelegate<Int, Vector>
-// {
-//     public var root: KDTree<Vector, Delegate>
-//     @usableFromInline let propertyBuffer: UnsafeMutablePointer<Property>
-
-//     @inlinable
-//     public init(
-//         root: KDTree<Vector, Delegate>,
-//         propertyBuffer: UnsafeMutablePointer<Property>
-//     ) {
-//         self.root = root
-//         self.propertyBuffer = propertyBuffer
-//     }
-
-//     @inlinable
-//     public mutating func add(_ nodeIndex: Int, at point: Vector) {
-//         root.cover(point)
-//         root.addWithoutCover(nodeIndex, at: point)
-//     }
-// }

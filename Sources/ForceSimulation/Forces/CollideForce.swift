@@ -68,10 +68,28 @@ extension Kinetics {
         public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
             self.calculatedRadius = self.radius.calculateUnsafe(for: kinetics.validCount)
+            self.tree = .allocate(capacity: 1)
+            self.tree.initialize(
+                to:
+                    BufferedKDTree(
+                        rootBox: .init(
+                            p0: .init(repeating: 0),
+                            p1: .init(repeating: 1)
+                        ),
+                        nodeCapacity: kinetics.validCount,
+                        rootDelegate: .init(
+                            radiusBufferPointer: self.calculatedRadius.mutablePointer)
+                    )
+            )
         }
 
         @usableFromInline
         var calculatedRadius: UnsafeArray<Vector.Scalar>! = nil
+
+        @usableFromInline
+        internal var tree:
+            UnsafeMutablePointer<BufferedKDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>>! = nil
+
         @inlinable
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
@@ -82,14 +100,27 @@ extension Kinetics {
             let positionBufferPointer = kinetics.position.mutablePointer
             let velocityBufferPointer = kinetics.velocity.mutablePointer
 
+            let tree = self.tree!
+
             for _ in 0..<iterationsPerTick {
 
-                var tree = KDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>(
-                    covering: kinetics.position,
-                    rootDelegate: MaxRadiusNDTreeDelegate<Vector>(
-                        radiusBufferPointer: calculatedRadius
-                    )
+                let coveringBox = KDBox<Vector>.cover(of: self.kinetics.position)
+
+                tree.pointee.reset(
+                    rootBox: coveringBox,
+                    rootDelegate: .init(radiusBufferPointer: calculatedRadius)
                 )
+                assert(tree.pointee.validCount == 1)
+
+                for p in kinetics.range {
+                    //                    #if DEBUG
+                    //                    let validCountBeforeAdd = tree.pointee.validCount
+                    //                    #endif
+                    tree.pointee.add(nodeIndex: p, at: positionBufferPointer[p])
+                    //                    #if DEBUG
+                    //                    assert(validCountBeforeAdd >= tree.pointee.validCount - 8)
+                    //                    #endif
+                }
 
                 for i in kinetics.range {
                     let iOriginalPosition = positionBufferPointer[i]
@@ -99,39 +130,46 @@ extension Kinetics {
                     let iPosition = iOriginalPosition + iOriginalVelocity
                     let random = kinetics.randomGenerator
 
-                    tree.visit { t in
+                    tree.pointee.visit { t in
 
                         let maxRadiusOfQuad = t.delegate.maxNodeRadius
                         let deltaR = maxRadiusOfQuad + iR
 
-                        if t.nodePosition != nil {
-                            for j in t.nodeIndices {
+                        if var jNode = t.nodeIndices {
+                            while true {
+                                let j = jNode.index
                                 //                            print("\(i)<=>\(j)")
                                 // is leaf, make sure every collision happens once.
-                                guard j > i else { continue }
+                                if j > i {
 
-                                let jR = calculatedRadius[j]
-                                let jOriginalPosition = positionBufferPointer[j]
-                                let jOriginalVelocity = velocityBufferPointer[j]
-                                var deltaPosition =
-                                    iPosition - (jOriginalPosition + jOriginalVelocity)
-                                let l = (deltaPosition).lengthSquared()
+                                    let jR = calculatedRadius[j]
+                                    let jOriginalPosition = positionBufferPointer[j]
+                                    let jOriginalVelocity = velocityBufferPointer[j]
+                                    var deltaPosition =
+                                        iPosition - (jOriginalPosition + jOriginalVelocity)
+                                    let l = (deltaPosition).lengthSquared()
 
-                                let deltaR = iR + jR
-                                if l < deltaR * deltaR {
+                                    let deltaR = iR + jR
+                                    if l < deltaR * deltaR {
 
-                                    var l = /*simd_length*/ (deltaPosition.jiggled(by: random))
-                                        .length()
-                                    l = (deltaR - l) / l * strength
+                                        var l = /*simd_length*/ (deltaPosition.jiggled(by: random))
+                                            .length()
+                                        l = (deltaR - l) / l * strength
 
-                                    let jR2 = jR * jR
+                                        let jR2 = jR * jR
 
-                                    let k = jR2 / (iR2 + jR2)
+                                        let k = jR2 / (iR2 + jR2)
 
-                                    deltaPosition *= l
+                                        deltaPosition *= l
 
-                                    velocityBufferPointer[i] += deltaPosition * k
-                                    velocityBufferPointer[j] -= deltaPosition * (1 - k)
+                                        velocityBufferPointer[i] += deltaPosition * k
+                                        velocityBufferPointer[j] -= deltaPosition * (1 - k)
+                                    }
+                                }
+                                if jNode.next == nil {
+                                    break
+                                } else {
+                                    jNode = jNode.next!.pointee
                                 }
                             }
                             return false
@@ -173,6 +211,11 @@ extension Kinetics {
                     }
                 }
             }
+        }
+
+        @inlinable
+        public func dispose() {
+            self.tree.deinitialize(count: 1)
         }
 
     }

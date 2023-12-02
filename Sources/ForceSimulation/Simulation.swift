@@ -1,7 +1,7 @@
 /// An any-dimensional force simulation.
 /// The points are placed in a space where you use a SIMD data structure
 /// to describe their coordinates.
-public struct Simulation<Vector, ForceField>
+public final class Simulation<Vector, ForceField>
 where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<Vector> {
 
     @usableFromInline
@@ -55,6 +55,11 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
             self.forceField.apply()
             self.kinetics.updatePositions()
         }
+    }
+    
+    
+    deinit {
+        self.forceField.dispose()
     }
 
 }

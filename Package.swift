@@ -45,10 +45,10 @@ let package = Package(
             // swiftSettings: [.unsafeFlags(["-Xfrontend", "-disable-availability-checking"])]
         ),
 
-        // .testTarget(
-        //     name: "NDTreeTests",
-        //     dependencies: ["ForceSimulation"]
-        // ),
+        .testTarget(
+            name: "KDTreeTests",
+            dependencies: ["ForceSimulation"]
+        ),
 
         .testTarget(
             name: "ForceSimulationTests",

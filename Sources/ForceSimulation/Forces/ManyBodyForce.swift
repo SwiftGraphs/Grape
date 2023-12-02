@@ -1,3 +1,5 @@
+import simd
+
 public struct MassCentroidKDTreeDelegate<Vector>: KDTreeDelegate
 where Vector: SimulatableVector {
 
@@ -82,8 +84,6 @@ extension Kinetics {
         public var mass: NodeMass
         @usableFromInline var precalculatedMass: UnsafeArray<Vector.Scalar>! = nil
 
-        // @usableFromInline var forces: [Vector] = []
-
         @inlinable
         public init(
             strength: Vector.Scalar,
@@ -94,11 +94,13 @@ extension Kinetics {
             self.mass = nodeMass
             self.theta = theta
             self.theta2 = theta * theta
+
         }
 
         @inlinable
         public func apply() {
-
+            
+            // Avoid capturing self
             let alpha = self.kinetics.alpha
             let theta2 = self.theta2
             let distanceMin2 = self.distanceMin2
@@ -107,16 +109,18 @@ extension Kinetics {
             let precalculatedMass = self.precalculatedMass.mutablePointer
             let positionBufferPointer = kinetics.position.mutablePointer
             let random = kinetics.randomGenerator
+            let tree = self.tree!
 
-            var tree = KDTree(
-                covering: self.kinetics.position,
-                rootDelegate: MassCentroidKDTreeDelegate<Vector>(massProvider: precalculatedMass)
-            )
+            let coveringBox = KDBox<Vector>.cover(of: self.kinetics.position)
+            tree.pointee.reset(rootBox: coveringBox, rootDelegate: .init(massProvider: precalculatedMass))
+            for p in kinetics.range {
+                tree.pointee.add(nodeIndex: p, at: positionBufferPointer[p])
+            }
 
             for i in self.kinetics.range {
                 let pos = positionBufferPointer[i]
                 var f = Vector.zero
-                tree.visit { t in
+                tree.pointee.visit { t in
 
                     guard t.delegate.accumulatedCount > 0 else { return false }
                     let centroid =
@@ -148,13 +152,13 @@ extension Kinetics {
                         f += vec * k
                         return false
 
-                    } else if t.children != nil {
+                    } else if t.childrenBufferPointer != nil {
                         return true
                     }
 
                     if t.isFilledLeaf {
 
-                        if t.nodeIndices.contains(i) { return false }
+                        if t.nodeIndices!.contains(i) { return false }
 
                         let massAcc = t.delegate.accumulatedMass
 
@@ -176,8 +180,29 @@ extension Kinetics {
         public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
             self.precalculatedMass = self.mass.calculateUnsafe(for: (kinetics.validCount))
-            // self.forces = .init(repeating: .zero, count: kinetics.validCount)
 
+            self.tree = .allocate(capacity: 1)
+            self.tree.initialize(
+                to:
+                    BufferedKDTree(
+                        rootBox: .init(
+                            p0: .init(repeating: 0),
+                            p1: .init(repeating: 1)
+                        ),
+                        nodeCapacity: kinetics.validCount,
+                        rootDelegate: MassCentroidKDTreeDelegate<Vector>(
+                            massProvider: precalculatedMass.mutablePointer)
+                    )
+            )
+        }
+
+        @usableFromInline
+        internal var tree:
+            UnsafeMutablePointer<BufferedKDTree<Vector, MassCentroidKDTreeDelegate<Vector>>>! = nil
+        
+        @inlinable
+        public func dispose() {
+            self.tree.deinitialize(count: 1)
         }
     }
 }

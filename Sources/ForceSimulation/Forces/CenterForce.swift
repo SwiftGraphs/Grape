@@ -6,7 +6,7 @@ extension Kinetics {
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
     public struct CenterForce: ForceProtocol {
 
-        @usableFromInline  var kinetics: Kinetics! = nil
+        @usableFromInline var kinetics: Kinetics! = nil
 
         @inlinable
         public func apply() {
