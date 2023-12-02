@@ -68,10 +68,27 @@ extension Kinetics {
         public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
             self.calculatedRadius = self.radius.calculateUnsafe(for: kinetics.validCount)
+            self.tree = .allocate(capacity: 1)
+            self.tree.initialize(
+                to:
+                    BufferedKDTree(
+                        rootBox: .init(
+                            p0: .init(repeating: 0),
+                            p1: .init(repeating: 1)
+                        ),
+                        nodeCapacity: kinetics.validCount,
+                        rootDelegate: .init(radiusBufferPointer: self.calculatedRadius.mutablePointer)
+                    )
+            )
         }
 
         @usableFromInline
         var calculatedRadius: UnsafeArray<Vector.Scalar>! = nil
+
+        @usableFromInline
+        internal var tree:
+            UnsafeMutablePointer<BufferedKDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>>! = nil
+
         @inlinable
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
@@ -82,14 +99,20 @@ extension Kinetics {
             let positionBufferPointer = kinetics.position.mutablePointer
             let velocityBufferPointer = kinetics.velocity.mutablePointer
 
+            let tree = self.tree!
+
             for _ in 0..<iterationsPerTick {
 
-                var tree = KDTree<Vector, MaxRadiusNDTreeDelegate<Vector>>(
-                    covering: kinetics.position,
-                    rootDelegate: MaxRadiusNDTreeDelegate<Vector>(
-                        radiusBufferPointer: calculatedRadius
-                    )
+                let coveringBox = KDBox<Vector>.cover(of: self.kinetics.position)
+                tree.pointee.reset(
+                    rootBox: coveringBox, 
+                    rootDelegate: .init(radiusBufferPointer: calculatedRadius)
                 )
+                assert(tree.pointee.validCount == 1)
+                for p in kinetics.range {
+//                    print("==\(tree.pointee.validCount)")
+                    tree.pointee.add(nodeIndex: p, at: positionBufferPointer[p])
+                }
 
                 for i in kinetics.range {
                     let iOriginalPosition = positionBufferPointer[i]
@@ -99,59 +122,43 @@ extension Kinetics {
                     let iPosition = iOriginalPosition + iOriginalVelocity
                     let random = kinetics.randomGenerator
 
-                    tree.visit { t in
+                    tree.pointee.visit { t in
 
                         let maxRadiusOfQuad = t.delegate.maxNodeRadius
                         let deltaR = maxRadiusOfQuad + iR
 
-                        if t.nodePosition != nil {
-                            for j in t.nodeIndices {
-                                //                            print("\(i)<=>\(j)")
-                                // is leaf, make sure every collision happens once.
-                                guard j > i else { continue }
+                        if let jLinkNode = t.nodeIndices {
+                            let j = jLinkNode.index
+                            //                            print("\(i)<=>\(j)")
+                            // is leaf, make sure every collision happens once.
+                            guard j > i else { return false }
 
-                                let jR = calculatedRadius[j]
-                                let jOriginalPosition = positionBufferPointer[j]
-                                let jOriginalVelocity = velocityBufferPointer[j]
-                                var deltaPosition =
-                                    iPosition - (jOriginalPosition + jOriginalVelocity)
-                                let l = (deltaPosition).lengthSquared()
+                            let jR = calculatedRadius[j]
+                            let jOriginalPosition = positionBufferPointer[j]
+                            let jOriginalVelocity = velocityBufferPointer[j]
+                            var deltaPosition =
+                                iPosition - (jOriginalPosition + jOriginalVelocity)
+                            let l = (deltaPosition).lengthSquared()
 
-                                let deltaR = iR + jR
-                                if l < deltaR * deltaR {
+                            let deltaR = iR + jR
+                            if l < deltaR * deltaR {
 
-                                    var l = /*simd_length*/ (deltaPosition.jiggled(by: random))
-                                        .length()
-                                    l = (deltaR - l) / l * strength
+                                var l = /*simd_length*/ (deltaPosition.jiggled(by: random))
+                                    .length()
+                                l = (deltaR - l) / l * strength
 
-                                    let jR2 = jR * jR
+                                let jR2 = jR * jR
 
-                                    let k = jR2 / (iR2 + jR2)
+                                let k = jR2 / (iR2 + jR2)
 
-                                    deltaPosition *= l
+                                deltaPosition *= l
 
-                                    velocityBufferPointer[i] += deltaPosition * k
-                                    velocityBufferPointer[j] -= deltaPosition * (1 - k)
-                                }
+                                velocityBufferPointer[i] += deltaPosition * k
+                                velocityBufferPointer[j] -= deltaPosition * (1 - k)
                             }
+
                             return false
                         }
-
-                        // TODO: SIMD mask
-
-                        // for laneIndex in t.box.p0.indices {
-                        //     let _v = t.box.p0[laneIndex]
-                        //     if _v > iPosition[laneIndex] + deltaR /* True if no overlap */ {
-                        //         return false
-                        //     }
-                        // }
-
-                        // for laneIndex in t.box.p1.indices {
-                        //     let _v = t.box.p1[laneIndex]
-                        //     if _v < iPosition[laneIndex] - deltaR /* True if no overlap */ {
-                        //         return false
-                        //     }
-                        // }
 
                         let p0Flag = t.box.p0 .> (iPosition + deltaR)
                         let p1Flag = t.box.p1 .< (iPosition - deltaR)
@@ -161,18 +168,16 @@ extension Kinetics {
                             if flag[laneIndex] {
                                 return false
                             }
-                            // let _v = t.box.p1[laneIndex]
-                            // if (t.box.p0[laneIndex] > iPosition[laneIndex] + deltaR)
-                            //     || (t.box.p1[laneIndex] < iPosition[laneIndex]
-                            //         - deltaR) /* True if no overlap */
-                            // {
-                            //     return false
-                            // }
                         }
                         return true
                     }
                 }
             }
+        }
+        
+        @inlinable
+        public func dispose() {
+            self.tree.deinitialize(count: 1)
         }
 
     }

@@ -36,6 +36,16 @@ where
                 next.deallocate()
             }
         }
+
+        @inlinable
+        internal func contains(_ nodeIndex: Int) -> Bool {
+            if index == nodeIndex { return true }
+            if let next {
+                return next.pointee.contains(nodeIndex)
+            } else {
+                return false
+            }
+        }
     }
     public var nodeIndices: NodeIndex?
     public var box: KDBox<Vector>
@@ -59,7 +69,7 @@ where
 
 }
 
-public struct BufferedKDTree<Vector, Delegate>: ~Copyable
+public struct BufferedKDTree<Vector, Delegate>
 where
     Vector: SimulatableVector & L2NormCalculatable,
     Delegate: KDTreeDelegate<Int, Vector>
@@ -315,7 +325,7 @@ where
     }
 
     @inlinable
-    static var directionCount: Int { 1 << Vector.scalarCount }
+    static internal var directionCount: Int { 1 << Vector.scalarCount }
 
     @inlinable
     internal func deinitializeBuffer() {
@@ -328,7 +338,7 @@ where
     ///
     /// **Complexity**: `O(n*(2^n))`, where `n` is the dimension of the vector.
     @inlinable
-    func getIndexInChildren(_ point: Vector, relativeTo originalPoint: Vector) -> Int {
+    internal func getIndexInChildren(_ point: Vector, relativeTo originalPoint: Vector) -> Int {
         var index = 0
 
         let mask = point .>= originalPoint
@@ -658,6 +668,56 @@ extension KDTree {
         }
     }
 
+}
+
+
+
+extension BufferedKDTree {
+
+    /// The bounding box of the current node
+    @inlinable public var extent: Box { self.root.box }
+
+    /// Visit the tree in pre-order.
+    ///
+    /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
+    @inlinable public func visit(
+        shouldVisitChildren: (inout KDTreeNode<Vector, Delegate>) -> Bool
+    ) {
+        rootPointer.pointee.visit(shouldVisitChildren: shouldVisitChildren)
+    }
+
+}
+
+extension KDTreeNode {
+    /// Returns true is the current tree node is leaf.
+    ///
+    /// Does not guarantee that the tree node has point in it.
+    @inlinable public var isLeaf: Bool { childrenBufferPointer == nil }
+
+    /// Returns true is the current tree node is internal.
+    ///
+    /// Internal tree node are always empty and do not contain any points.
+    @inlinable public var isInternalNode: Bool { childrenBufferPointer != nil }
+
+    /// Returns true is the current tree node is leaf and has point in it.
+    @inlinable public var isFilledLeaf: Bool { nodeIndices != nil }
+
+    /// Returns true is the current tree node is leaf and does not have point in it.
+    @inlinable public var isEmptyLeaf: Bool { nodeIndices == nil }
+
+        /// Visit the tree in pre-order.
+    ///
+    /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
+    @inlinable public mutating func visit(
+        shouldVisitChildren: (inout KDTreeNode<Vector, Delegate>) -> Bool
+    ) {
+        if shouldVisitChildren(&self) && childrenBufferPointer != nil {
+            // this is an internal node
+            for i in 0..<BufferedKDTree<Vector, Delegate>.directionCount {
+                childrenBufferPointer![i].visit(shouldVisitChildren: shouldVisitChildren)
+            }
+        }
+    }
 }
 
 // public struct KDTreeRoot<Vector, Delegate, Property>
