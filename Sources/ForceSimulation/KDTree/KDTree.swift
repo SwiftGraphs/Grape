@@ -11,41 +11,6 @@ where
         @usableFromInline
         var next: UnsafeMutablePointer<NodeIndex>?
 
-        @inlinable
-        internal init(
-            nodeIndex: Int
-        ) {
-            self.index = nodeIndex
-            self.next = nil
-        }
-
-        @inlinable
-        internal mutating func append(nodeIndex: Int) {
-            if let next {
-                next.pointee.append(nodeIndex: nodeIndex)
-            } else {
-                next = .allocate(capacity: 1)
-                next!.pointee = .init(nodeIndex: nodeIndex)
-            }
-        }
-
-        @inlinable
-        internal func deinitialize() {
-            if let next {
-                next.pointee.deinitialize()
-                next.deallocate()
-            }
-        }
-
-        @inlinable
-        internal func contains(_ nodeIndex: Int) -> Bool {
-            if index == nodeIndex { return true }
-            if let next {
-                return next.pointee.contains(nodeIndex)
-            } else {
-                return false
-            }
-        }
     }
     public var nodeIndices: NodeIndex?
     public var box: KDBox<Vector>
@@ -78,7 +43,7 @@ where
     public typealias TreeNode = KDTreeNode<Vector, Delegate>
 
     @usableFromInline
-    var rootPointer: UnsafeMutablePointer<TreeNode>
+    internal var rootPointer: UnsafeMutablePointer<TreeNode>
 
     @usableFromInline
     internal var validCount: Int = 0
@@ -87,7 +52,7 @@ where
     internal var treeNodeBuffer: UnsafeArray<TreeNode>
 
     @inlinable
-    var clusterDistanceSquared: Vector.Scalar {
+    static internal var clusterDistanceSquared: Vector.Scalar {
         return Vector.clusterDistanceSquared
     }
 
@@ -153,7 +118,8 @@ where
             )
         )
         newTreeNodeBuffer.withUnsafeMutablePointerToElements {
-            $0.moveInitialize(from: treeNodeBuffer.withUnsafeMutablePointerToElements{$0}, count: validCount)
+            $0.moveInitialize(
+                from: treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }, count: validCount)
         }
         treeNodeBuffer = newTreeNodeBuffer
         rootPointer = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
@@ -193,8 +159,8 @@ where
                 treeNode.pointee.nodeIndices = .init(nodeIndex: nodeIndex)
                 treeNode.pointee.nodePosition = point
                 return
-            } else if treeNode.pointee.nodePosition == point
-                || treeNode.pointee.nodePosition.distanceSquared(to: point) < clusterDistanceSquared
+            } else if treeNode.pointee.nodePosition.distanceSquared(to: point)
+                < Self.clusterDistanceSquared
             {
                 treeNode.pointee.nodeIndices!.append(nodeIndex: nodeIndex)
                 return
@@ -292,7 +258,6 @@ where
         let spawned = _rootValue.delegate.spawn()
 
         let newChildrenPointer = self.rootPointer + validCount
-
 
         if validCount + Self.directionCount > treeNodeBuffer.header {
             resize(by: 2)
@@ -689,6 +654,54 @@ extension BufferedKDTree {
         rootPointer.pointee.visit(shouldVisitChildren: shouldVisitChildren)
     }
 
+}
+
+extension KDTreeNode.NodeIndex {
+
+    @inlinable
+    internal init(
+        nodeIndex: Int
+    ) {
+        self.index = nodeIndex
+        self.next = nil
+    }
+
+    @inlinable
+    internal mutating func append(nodeIndex: Int) {
+        if let next {
+            next.pointee.append(nodeIndex: nodeIndex)
+        } else {
+            next = .allocate(capacity: 1)
+            next!.initialize(to: .init(nodeIndex: nodeIndex))
+            // next!.pointee = .init(nodeIndex: nodeIndex)
+        }
+    }
+
+    @inlinable
+    internal func deinitialize() {
+        if let next {
+            next.pointee.deinitialize()
+            next.deallocate()
+        }
+    }
+
+    @inlinable
+    internal func contains(_ nodeIndex: Int) -> Bool {
+        if index == nodeIndex { return true }
+        if let next {
+            return next.pointee.contains(nodeIndex)
+        } else {
+            return false
+        }
+    }
+
+    @inlinable
+    internal func forEach(_ body: (Int) -> Void) {
+        body(index)
+        if let next {
+            next.pointee.forEach(body)
+        }
+    }
 }
 
 extension KDTreeNode {
