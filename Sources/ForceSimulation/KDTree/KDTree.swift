@@ -138,35 +138,30 @@ where
     }
 
     @inlinable
-    public mutating func discardAndResize(
-        rootBox: Box,
-        rootDelegate: @autoclosure () -> Delegate,
-        forNodeCapacity capacity: Int
+    internal mutating func resize(
+        to newTreeNodeBufferSize: Int
     ) {
-        let maxBufferCount = (capacity << Vector.scalarCount) + 1
-
-        let zeroNode: TreeNode = .init(
-            nodeIndices: nil,
-            childrenBufferPointer: nil,
-            delegate: rootDelegate(),
-            box: rootBox
+        assert(newTreeNodeBufferSize >= treeNodeBuffer.header)
+        let newTreeNodeBuffer = UnsafeArray<TreeNode>.createBuffer(
+            withHeader: newTreeNodeBufferSize,
+            count: newTreeNodeBufferSize,
+            initialValue: .init(
+                nodeIndices: nil,
+                childrenBufferPointer: nil,
+                delegate: root.delegate,
+                box: root.box
+            )
         )
-
-        // should be deinitialized here (ManagedBuffer)
-        treeNodeBuffer = .createBuffer(
-            withHeader: maxBufferCount,
-            count: maxBufferCount,
-            initialValue: zeroNode
-        )
+        newTreeNodeBuffer.withUnsafeMutablePointerToElements {
+            $0.moveInitialize(from: treeNodeBuffer.withUnsafeMutablePointerToElements{$0}, count: validCount)
+        }
+        treeNodeBuffer = newTreeNodeBuffer
         rootPointer = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
+    }
 
-        rootPointer.pointee = .init(
-            nodeIndices: nil,
-            childrenBufferPointer: nil,
-            delegate: rootDelegate(),
-            box: rootBox
-        )
-        self.validCount = 1
+    @inlinable
+    internal mutating func resize(by factor: Int) {
+        resize(to: treeNodeBuffer.header * factor)
     }
 
     @inlinable
@@ -208,6 +203,10 @@ where
                 let spawnedDelegate = treeNode.pointee.delegate.spawn()
                 let center = treeNode.pointee.box.center
 
+                if validCount + Self.directionCount > treeNodeBuffer.header {
+                    resize(by: 2)
+                }
+
                 for j in 0..<Self.directionCount {
                     var __box = treeNode.pointee.box
 
@@ -227,6 +226,7 @@ where
                         delegate: spawnedDelegate,
                         box: __box
                     )
+
                 }
                 treeNode.pointee.childrenBufferPointer = rootPointer + validCount
                 validCount += Self.directionCount
@@ -292,6 +292,11 @@ where
         let spawned = _rootValue.delegate.spawn()
 
         let newChildrenPointer = self.rootPointer + validCount
+
+
+        if validCount + Self.directionCount > treeNodeBuffer.header {
+            resize(by: 2)
+        }
 
         for j in 0..<Self.directionCount {
 
@@ -670,8 +675,6 @@ extension KDTree {
 
 }
 
-
-
 extension BufferedKDTree {
 
     /// The bounding box of the current node
@@ -705,7 +708,7 @@ extension KDTreeNode {
     /// Returns true is the current tree node is leaf and does not have point in it.
     @inlinable public var isEmptyLeaf: Bool { nodeIndices == nil }
 
-        /// Visit the tree in pre-order.
+    /// Visit the tree in pre-order.
     ///
     /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
     @inlinable public mutating func visit(

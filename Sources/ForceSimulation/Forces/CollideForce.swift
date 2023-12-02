@@ -104,14 +104,22 @@ extension Kinetics {
             for _ in 0..<iterationsPerTick {
 
                 let coveringBox = KDBox<Vector>.cover(of: self.kinetics.position)
+                
                 tree.pointee.reset(
                     rootBox: coveringBox, 
                     rootDelegate: .init(radiusBufferPointer: calculatedRadius)
                 )
                 assert(tree.pointee.validCount == 1)
+                
+                
                 for p in kinetics.range {
-//                    print("==\(tree.pointee.validCount)")
+//                    #if DEBUG
+//                    let validCountBeforeAdd = tree.pointee.validCount
+//                    #endif
                     tree.pointee.add(nodeIndex: p, at: positionBufferPointer[p])
+//                    #if DEBUG
+//                    assert(validCountBeforeAdd >= tree.pointee.validCount - 8)
+//                    #endif
                 }
 
                 for i in kinetics.range {

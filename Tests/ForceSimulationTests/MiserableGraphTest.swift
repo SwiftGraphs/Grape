@@ -128,7 +128,7 @@ final class MiserableGraphTest: XCTestCase {
             Kinetics2D.CollideForce(radius: .constant(3))
         }
 
-        let width = 20
+        let width = 30
 
         var edge = [(Int, Int)]()
         for i in 0..<width {
@@ -150,7 +150,7 @@ final class MiserableGraphTest: XCTestCase {
 
         measure {
             for _ in 0..<120 {
-                // print(i)
+                //  print(i)
                 simulation.tick()
             }
         }

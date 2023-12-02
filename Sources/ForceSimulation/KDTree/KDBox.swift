@@ -193,6 +193,12 @@ extension KDBox {
             //     }
             // }
         }
+        #if DEBUG
+        let testBox = Self(_p0, _p1)
+        for i in points.range {
+            assert(testBox.contains(points[i]))
+        }
+        #endif
 
         return Self(_p0, _p1)
     }
