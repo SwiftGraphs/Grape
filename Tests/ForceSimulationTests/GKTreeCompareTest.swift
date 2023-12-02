@@ -91,13 +91,14 @@ final class ManyBodyForceTests: XCTestCase {
         }
 
         measure {
-            var kdtree = KDTree<SIMD2<Double>, DummyQuadtreeDelegate>(
-                box: .init([-100.0, -100.0], [100.0, 100.0]),
-                spawnedDelegateBeingConsumed: DummyQuadtreeDelegate()
+            var kdtree = BufferedKDTree<SIMD2<Double>, DummyQuadtreeDelegate>(
+                rootBox: .init([-100.0, -100.0], [100.0, 100.0]),
+                nodeCapacity: nodes.count,
+                rootDelegate: DummyQuadtreeDelegate()
             )
 
             for (i, node) in nodes.enumerated() {
-                kdtree.add(i, at: node)
+                kdtree.add(nodeIndex: i, at: node)
             }
 
             // traverse the tree

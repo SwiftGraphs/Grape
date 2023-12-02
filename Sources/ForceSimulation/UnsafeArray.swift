@@ -11,6 +11,20 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
         }
         return unsafeDowncast(buffer, to: UnsafeArray.self)
     }
+
+    @inlinable
+    class func createUninitializedBuffer(
+        count: Int
+    ) -> UnsafeArray {
+        let buffer = self.create(minimumCapacity: count) { _ in count }
+        // buffer.withUnsafeMutablePointerToElements {
+        //     $0.initialize(repeating: Element(), count: count)
+        // }
+        return unsafeDowncast(buffer, to: UnsafeArray.self)
+    }
+
+
+
     @inlinable
     var count: Int {
         return header

@@ -12,6 +12,14 @@ public protocol ForceProtocol<Vector> {
     /// Bind to a kinetic system that describes the state of all nodes in your simulation.
     /// This has to be called before `apply` is called.
     @inlinable mutating func bindKinetics(_ kinetics: Kinetics<Vector>)
+    
+}
+
+public extension ForceProtocol {
+    @inlinable
+    func dispose() {
+        
+    }
 }
 
 public protocol Force2D: ForceProtocol where Vector == SIMD2<Double> {}
