@@ -210,7 +210,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 #### Simulation
 
-Grape uses simd to calculate position and velocity. Currently it takes **~0.005** seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
+Grape uses simd to calculate position and velocity. Currently it takes **~0.005** seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, [tested](https://github.com/li3zhen1/Grape/blob/main/Tests/ForceSimulationTests/MiserableGraphTest.swift) with command `swift test -c release`)
 
 For 3D simulation, it takes **~0.008** seconds for the same graph and same configs.
 
