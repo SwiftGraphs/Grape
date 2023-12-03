@@ -6,5 +6,8 @@ extension Kinetics {
 
         @inlinable
         public func bindKinetics(_ kinetics: Kinetics) {}
+
+        @inlinable
+        public func dispose() {}
     }
 }

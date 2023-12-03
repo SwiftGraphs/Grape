@@ -50,6 +50,9 @@ extension Kinetics {
             self.strength = strength
         }
 
+
+        @inlinable
+        public func dispose() {}
     }
 
 }

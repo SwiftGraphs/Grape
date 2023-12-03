@@ -48,6 +48,7 @@ For more information on force simulations, read: [Force simulations - D3](https:
 
 - ``KDTree``
 - ``KDBox``
+- ``BufferedKDTree``
 - ``KDTreeDelegate``
 
 ### Deterministic randomness

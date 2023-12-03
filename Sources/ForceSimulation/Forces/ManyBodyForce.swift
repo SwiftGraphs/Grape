@@ -196,13 +196,17 @@ extension Kinetics {
             )
         }
 
+        /// The buffered KDTree used across all ticks.
         @usableFromInline
         internal var tree:
             UnsafeMutablePointer<BufferedKDTree<Vector, MassCentroidKDTreeDelegate<Vector>>>! = nil
         
+        /// Deinitialize the tree and deallocate the memory.
+        /// Called when `Simulation` is deinitialized.
         @inlinable
         public func dispose() {
             self.tree.deinitialize(count: 1)
+            self.tree.deallocate()
         }
     }
 }

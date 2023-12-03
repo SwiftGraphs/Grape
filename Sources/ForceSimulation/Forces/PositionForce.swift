@@ -54,6 +54,9 @@ extension Kinetics {
             self.targetOnDirection = targetOnDirection
         }
 
+
+        @inlinable
+        public func dispose() {}
     }
 
 }

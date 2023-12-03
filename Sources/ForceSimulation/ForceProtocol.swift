@@ -1,9 +1,10 @@
-
 /// A protocol that represents a force.
 ///
 /// A force takes a simulation state and modifies its node positions and velocities.
 public protocol ForceProtocol<Vector> {
     associatedtype Vector where Vector: SimulatableVector & L2NormCalculatable
+
+
 
     /// Takes a simulation state and modifies its node positions and velocities.
     /// This is executed in each tick of the simulation.
@@ -13,14 +14,11 @@ public protocol ForceProtocol<Vector> {
     /// This has to be called before `apply` is called.
     @inlinable mutating func bindKinetics(_ kinetics: Kinetics<Vector>)
     
+    /// Deinitialize the tree and deallocate the memory.
+    /// Called when `Simulation` is deinitialized.
+    @inlinable func dispose()
 }
 
-public extension ForceProtocol {
-    @inlinable
-    func dispose() {
-        
-    }
-}
 
 public protocol Force2D: ForceProtocol where Vector == SIMD2<Double> {}
 public protocol Force3D: ForceProtocol where Vector == SIMD3<Float> {}
@@ -33,7 +31,6 @@ extension Kinetics2D.PositionForce: Force2D {}
 extension Kinetics2D.RadialForce: Force2D {}
 extension Kinetics2D.EmptyForce: Force2D {}
 extension CompositedForce: Force2D where Vector == SIMD2<Double> {}
-
 
 extension Kinetics3D.LinkForce: Force3D {}
 extension Kinetics3D.ManyBodyForce: Force3D {}
@@ -65,6 +62,11 @@ extension ForceField {
     public func apply() {
         self.force.apply()
     }
+    
+    @inlinable
+    public func dispose() {
+        self.force.dispose()
+    }
 
     @inlinable
     public mutating func bindKinetics(_ kinetics: Kinetics<Vector>) {
@@ -72,7 +74,6 @@ extension ForceField {
     }
 }
 
+public protocol ForceField2D: ForceField & Force2D {}
 
-public protocol ForceField2D: ForceField & Force2D { }
-
-public protocol ForceField3D: ForceField & Force3D { }
+public protocol ForceField3D: ForceField & Force3D {}

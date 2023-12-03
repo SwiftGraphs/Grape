@@ -94,7 +94,6 @@ extension Kinetics {
         public func apply() {
             assert(self.kinetics != nil, "Kinetics not bound to force")
 
-            // let kinetics = self.kinetics!
             let strength = self.strength
             let calculatedRadius = self.calculatedRadius!.mutablePointer
             let positionBufferPointer = kinetics.position.mutablePointer
@@ -113,13 +112,7 @@ extension Kinetics {
                 assert(tree.pointee.validCount == 1)
 
                 for p in kinetics.range {
-                    //                    #if DEBUG
-                    //                    let validCountBeforeAdd = tree.pointee.validCount
-                    //                    #endif
                     tree.pointee.add(nodeIndex: p, at: positionBufferPointer[p])
-                    //                    #if DEBUG
-                    //                    assert(validCountBeforeAdd >= tree.pointee.validCount - 8)
-                    //                    #endif
                 }
 
                 for i in kinetics.range {
@@ -213,9 +206,12 @@ extension Kinetics {
             }
         }
 
+        /// Deinitialize the tree and deallocate the memory.
+        /// Called when `Simulation` is deinitialized.
         @inlinable
         public func dispose() {
             self.tree.deinitialize(count: 1)
+            self.tree.deallocate()
         }
 
     }
