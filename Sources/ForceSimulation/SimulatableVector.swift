@@ -1,7 +1,6 @@
 import simd
 
-
-/// A protocol for vectors that can be jiggled, and has a certain precision for 
+/// A protocol for vectors that can be jiggled, and has a certain precision for
 /// simulation — so zero vectors could be altered
 /// into a small random non-zero vector, and then the force simulation could be
 /// could be numerically stable.
@@ -12,32 +11,24 @@ where Scalar: FloatingPoint & HasDeterministicRandomGenerator {
 
     @inlinable
     static var clusterDistanceSquared: Scalar { get }
-}
-
-
-
-extension SimulatableVector {
-
-    /// If the vector is zero, returns a vector with the same magnitude as `self` but pointing in a random direction,
-    /// otherwise returns `self`.
-    @inlinable
-    public func jiggled() -> Self {
-        var result = Self.zero
-        for i in indices {
-            result[i] = self[i].jiggled()
-        }
-        return result
-    }
 
     @inlinable
-    public func jiggled(by: UnsafeMutablePointer<Scalar.Generator>) -> Self {
-        var result = Self.zero
-        for i in indices {
-            result[i] = self[i].jiggled(by: by)
-        }
-        return result
-    }
+    func jiggled(by: UnsafeMutablePointer<Scalar.Generator>) -> Self
 }
+
+// extension SimulatableVector {
+
+//     /// If the vector is zero, returns a vector with the same magnitude as `self` but pointing in a random direction,
+//     /// otherwise returns `self`.
+//     @inlinable
+//     public func jiggled() -> Self {
+//         var result = Self.zero
+//         for i in indices {
+//             result[i] = self[i].jiggled()
+//         }
+//         return result
+//     }
+// }
 
 /// A protocol for vectors that can be calculated with L2 norms, i.e. Euclidean distance.
 public protocol L2NormCalculatable: SIMD where Scalar: FloatingPoint {
@@ -65,6 +56,11 @@ extension SIMD2: SimulatableVector where Scalar: FloatingPoint & HasDeterministi
     public static var clusterDistanceSquared: Scalar {
         return clusterDistance * clusterDistance
     }
+
+    @inlinable
+    public func jiggled(by: UnsafeMutablePointer<Scalar.Generator>) -> Self {
+        return .init(x: self.x.jiggled(by: by), y: self.y.jiggled(by: by))
+    }
 }
 
 extension SIMD3: SimulatableVector where Scalar: FloatingPoint & HasDeterministicRandomGenerator {
@@ -77,6 +73,15 @@ extension SIMD3: SimulatableVector where Scalar: FloatingPoint & HasDeterministi
     @inlinable
     public static var clusterDistanceSquared: Scalar {
         return clusterDistance * clusterDistance
+    }
+
+    @inlinable
+    public func jiggled(by: UnsafeMutablePointer<Scalar.Generator>) -> Self {
+        return .init(
+            x: self.x.jiggled(by: by), 
+            y: self.y.jiggled(by: by), 
+            z: self.z.jiggled(by: by)
+        )
     }
 }
 

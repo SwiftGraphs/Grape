@@ -7,7 +7,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
     @usableFromInline
     var forceField: ForceField
 
-    public let kinetics: Kinetics<Vector>
+    public var kinetics: Kinetics<Vector>
 
     /// Create a new simulation.
     ///
