@@ -129,7 +129,7 @@ where
     @inlinable
     internal mutating func resizeIfNeededBeforeAllocation(for count: Int) {
         if validCount + Self.directionCount > treeNodeBuffer.count {
-            let factor = (count / self.treeNodeBuffer.count) + 1
+            let factor = (count / self.treeNodeBuffer.count) + 2
             resize(to: treeNodeBuffer.header * factor)
         }
     }
@@ -158,17 +158,15 @@ where
         defer {
             treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
         }
+
         guard treeNode.pointee.childrenBufferPointer != nil else {
             if treeNode.pointee.nodeIndices == nil {
                 treeNode.pointee.nodeIndices = .init(nodeIndex: nodeIndex)
                 treeNode.pointee.nodePosition = point
                 return
             } else if treeNode.pointee.nodePosition.distanceSquared(to: point)
-                < Self.clusterDistanceSquared
+                > Self.clusterDistanceSquared
             {
-                treeNode.pointee.nodeIndices!.append(nodeIndex: nodeIndex)
-                return
-            } else {
 
                 let spawnedDelegate = treeNode.pointee.delegate.spawn()
                 let center = treeNode.pointee.box.center
@@ -213,16 +211,18 @@ where
                 }
 
                 let directionOfNewNode = getIndexInChildren(point, relativeTo: center)
-                // spawnedChildren[directionOfNewNode].addWithoutCover(nodeIndex, at: point)
+                
                 addWithoutCover(
                     onTreeNode: treeNode.pointee.childrenBufferPointer! + directionOfNewNode,
                     nodeOf: nodeIndex,
                     at: point
                 )
-
-                // self.children = spawnedChildren
+                
                 return
-
+            }
+            else {
+                treeNode.pointee.nodeIndices!.append(nodeIndex: nodeIndex)
+                return
             }
         }
 
