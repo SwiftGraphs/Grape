@@ -50,6 +50,10 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
         _ = withUnsafeMutablePointerToElements { buffer in
             buffer.deinitialize(count: self.header)
         }
+        
+        _ = withUnsafeMutablePointerToHeader { headPtr in
+            headPtr.deinitialize(count: 1)
+        }
     }
 
     @inlinable

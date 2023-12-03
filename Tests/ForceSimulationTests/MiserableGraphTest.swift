@@ -103,7 +103,6 @@ struct MyLatticeForce: ForceField2D {
 
 struct MyForceField3D: ForceField3D {
     var force = CompositedForce<Vector, _, _> {
-
         Kinetics3D.ManyBodyForce(strength: -30)
         Kinetics3D.LinkForce(
             stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
@@ -180,10 +179,10 @@ final class MiserableGraphTest: XCTestCase {
         // .withCenterForce(center: .zero)
         // .withCollideForce(radius: .constant(5.0))
         //simulation.tick()
-        measure {
+//        measure {
             for _ in 0..<120 {
                 simulation.tick()
-            }
+//            }
         }
     }
 

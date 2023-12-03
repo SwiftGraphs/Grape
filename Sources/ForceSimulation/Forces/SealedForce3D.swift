@@ -20,6 +20,13 @@ public struct SealedForce3D: Force3D {
             force.apply()
         }
     }
+    
+    @inlinable
+    public func dispose() {
+        for force in self.entries {
+            force.dispose()
+        }
+    }
 
     @inlinable
     public init(
@@ -80,6 +87,26 @@ public struct SealedForce3D: Force3D {
                 force.apply()
             case .position(let force):
                 force.apply()
+            default:
+                break
+            }
+        }
+        
+        @inlinable
+        public func dispose() {
+            switch self {
+            case .center(let force):
+                force.dispose()
+            case .radial(let force):
+                force.dispose()
+            case .manyBody(let force):
+                force.dispose()
+            case .link(let force):
+                force.dispose()
+            case .collide(let force):
+                force.dispose()
+            case .position(let force):
+                force.dispose()
             default:
                 break
             }

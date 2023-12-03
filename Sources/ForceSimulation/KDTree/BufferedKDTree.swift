@@ -12,16 +12,17 @@ where
         var next: UnsafeMutablePointer<NodeIndex>?
 
     }
-    public var nodeIndices: NodeIndex?
     public var box: KDBox<Vector>
     public var nodePosition: Vector
-    public var childrenBufferPointer: UnsafeMutablePointer<KDTreeNode<Vector, Delegate>>?
+    public var childrenBufferPointer: UnsafeMutablePointer<KDTreeNode>?
+
+    public var nodeIndices: NodeIndex?
     public var delegate: Delegate
 
     @inlinable
     init(
         nodeIndices: NodeIndex?,
-        childrenBufferPointer: UnsafeMutablePointer<KDTreeNode<Vector, Delegate>>?,
+        childrenBufferPointer: UnsafeMutablePointer<KDTreeNode>?,
         delegate: consuming Delegate,
         box: consuming KDBox<Vector>
     ) {
@@ -126,8 +127,11 @@ where
     }
 
     @inlinable
-    internal mutating func resize(by factor: Int) {
-        resize(to: treeNodeBuffer.header * factor)
+    internal mutating func resizeIfNeededBeforeAllocation(for count: Int) {
+        if validCount + Self.directionCount > treeNodeBuffer.count {
+            let factor = (count / self.treeNodeBuffer.count) + 1
+            resize(to: treeNodeBuffer.header * factor)
+        }
     }
 
     @inlinable
@@ -169,9 +173,7 @@ where
                 let spawnedDelegate = treeNode.pointee.delegate.spawn()
                 let center = treeNode.pointee.box.center
 
-                if validCount + Self.directionCount > treeNodeBuffer.header {
-                    resize(by: 2)
-                }
+                resizeIfNeededBeforeAllocation(for: Self.directionCount)
 
                 for j in 0..<Self.directionCount {
                     var __box = treeNode.pointee.box
@@ -259,9 +261,7 @@ where
 
         let newChildrenPointer = self.rootPointer + validCount
 
-        if validCount + Self.directionCount > treeNodeBuffer.header {
-            resize(by: 2)
-        }
+        resizeIfNeededBeforeAllocation(for: Self.directionCount)
 
         for j in 0..<Self.directionCount {
 

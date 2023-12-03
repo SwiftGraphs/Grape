@@ -142,6 +142,10 @@ extension Kinetics {
             self.linkLength = originalLength
 
         }
+
+
+        @inlinable
+        public func dispose() {}
     }
 }
 

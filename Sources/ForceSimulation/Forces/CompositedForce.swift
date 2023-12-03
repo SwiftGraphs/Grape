@@ -20,6 +20,14 @@ where
         self.force1?.apply()
         self.force2.apply()
     }
+    
+    @inlinable
+    public func dispose() {
+        self.force1?.dispose()
+        self.force2.dispose()
+    }
+    
+    
     @inlinable
     public mutating func bindKinetics(_ kinetics: Kinetics<Vector>) {
         self.force1?.bindKinetics(kinetics)
