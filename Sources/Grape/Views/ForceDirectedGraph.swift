@@ -81,12 +81,11 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
                         style: StrokeStyle(lineWidth: node.strokeWidth))
                 }
             }
-        }.gesture(
+        }
+        #if os(iOS) || os(macOS) || os(xrOS)
+        .gesture(
             DragGesture(minimumDistance: 1.0)
                 .onChanged { value in
-                    
-                    
-
                     let locationX = value.location.x - self.model.lastRenderedSize.width / 2
                     let locationY = value.location.y - self.model.lastRenderedSize.height / 2
 
@@ -127,7 +126,6 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
 
         )
         .onTapGesture {
-
             let locationX = $0.x - self.model.lastRenderedSize.width / 2
             let locationY = $0.y - self.model.lastRenderedSize.height / 2
 
@@ -147,6 +145,7 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
                 //                    self.content.nodes[nodeIndex].id)
             }
         }
+        #endif
         .onAppear {
             // Sync internal state with binding when the view appears
             // model.isRunning = isRunning

@@ -179,10 +179,10 @@ final class MiserableGraphTest: XCTestCase {
         // .withCenterForce(center: .zero)
         // .withCollideForce(radius: .constant(5.0))
         //simulation.tick()
-//        measure {
+        measure {
             for _ in 0..<120 {
                 simulation.tick()
-//            }
+            }
         }
     }
 
