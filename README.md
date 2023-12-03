@@ -210,7 +210,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 #### Simulation
 
-Grape uses simd to calculate position and velocity. Currently it takes **~0.005** seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, tested with command `swift test -c release`)
+Grape uses simd to calculate position and velocity. Currently it takes **~0.005** seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, [tested](https://github.com/li3zhen1/Grape/blob/main/Tests/ForceSimulationTests/MiserableGraphTest.swift) with command `swift test -c release`)
 
 For 3D simulation, it takes **~0.008** seconds for the same graph and same configs.
 
@@ -220,7 +220,7 @@ For 3D simulation, it takes **~0.008** seconds for the same graph and same confi
 <br/>
 
 #### KDTree
-The `BufferedKDTree` from this package is ~7x faster than `GKQuadtree` from Apple’s GameKit, according to this [testcase](https://github.com/li3zhen1/Grape/blob/main/Tests/ForceSimulationTests/GKTreeCompareTest.swift). However, please note that comparing Swift structs with NSObjects is unfair, and their behaviors are different.
+The `BufferedKDTree` from this package is **~22x** faster than `GKQuadtree` from Apple’s GameKit, according to this [test case](https://github.com/li3zhen1/Grape/blob/main/Tests/ForceSimulationTests/GKTreeCompareTest.swift). However, please note that comparing Swift structs with NSObjects is unfair, and their behaviors are different.
 
 
 <br/>
