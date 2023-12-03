@@ -66,6 +66,11 @@ where
         nodeCapacity: Int,
         rootDelegate: @autoclosure () -> Delegate
     ) {
+        // Assuming each add creates 2^Vector.scalarCount nodes
+        // In most situations this is sufficient (for example the miserable graph)
+        // But It's possible to exceed this limit:
+        // 2 additions very close but not clustered in the same box
+        // In this case there's no upperbound for addition so `resize` is needed
         let maxBufferCount = (nodeCapacity << Vector.scalarCount) + 1
         let zeroNode: TreeNode = .init(
             nodeIndices: nil,
@@ -122,8 +127,8 @@ where
             $0.moveInitialize(
                 from: treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }, count: validCount)
         }
-        treeNodeBuffer = newTreeNodeBuffer
-        rootPointer = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
+        self.treeNodeBuffer = newTreeNodeBuffer
+        self.rootPointer = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
     }
 
     @inlinable
