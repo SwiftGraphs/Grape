@@ -21,45 +21,6 @@ func getLinks() -> [EdgeID<Int>] {
     }
 }
 
-//typealias Force2D = ForceProtocol<SIMD2<Double>>
-
-// struct PackF<each F>: Force2D where repeat each F: Force2D {
-//     func bindKinetics(_ kinetics: Kinetics2D) {
-//         // var f = repeat (each forces)
-//         // repeat (each f).bindKinetics(kinetics)
-//         // self.forces = (repeat each f)
-
-// //        repeat (each forces).bindKinetics(kinetics)
-//         // f.bindKinetics(kinetics)
-// //            f.bindKinetics(kinetics)
-//     }
-
-//     var forces: (repeat each F)
-//     init(forces: (repeat each F)) {
-
-//         self.forces = (repeat each forces)
-//     }
-
-//     func apply() {
-//         repeat (each forces).apply()
-//     }
-
-// }
-
-// func test() {
-//     let packedForce = PackF(
-//         forces: (
-//             Kinetics2D.LinkForce(
-//                 stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
-//                 originalLength: .constant(30)
-//             ),
-//             Kinetics2D.ManyBodyForce(strength: -30),
-//             Kinetics2D.CenterForce(center: .zero, strength: 1),
-//             Kinetics2D.CollideForce(radius: .constant(0))
-//         )
-//     )
-// }
-
 struct MyForceField: ForceField2D {
     var force = CompositedForce<Vector, _, _> {
         Kinetics2D.ManyBodyForce(strength: -30)
@@ -81,12 +42,6 @@ struct MySealedForce: ForceField2D {
         )
         Kinetics2D.CenterForce(center: .zero, strength: 1)
         Kinetics2D.CollideForce(radius: .constant(3))
-        // Kinetics2D.LinkForce(
-        //     stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
-        //     originalLength: .constant(35)
-        // ),
-        // Kinetics2D.CenterForce(center: .zero, strength: 1),
-        // Kinetics2D.CollideForce(radius: .constant(3))
 
     }
 }
@@ -127,7 +82,7 @@ final class MiserableGraphTest: XCTestCase {
             Kinetics2D.CollideForce(radius: .constant(3))
         }
 
-        let width = 30
+        let width = 20
 
         var edge = [(Int, Int)]()
         for i in 0..<width {
@@ -149,13 +104,12 @@ final class MiserableGraphTest: XCTestCase {
 
         measure {
             for _ in 0..<120 {
-                //  print(i)
                 simulation.tick()
             }
         }
     }
 
-    func test_generic_pack_2d() {
+    func testMiserable2d() {
 
         let data = getData()
 
@@ -165,20 +119,6 @@ final class MiserableGraphTest: XCTestCase {
             forceField: MySealedForce()
         )
 
-        // let wrapped = Simulation2D(
-        //     nodeIds: data.nodes.map { n in
-        //         n.id
-        //     }
-        // )
-        // .withLinkForce(
-        //     data.links.map({ l in
-        //         (l.source, l.target)
-        //     })
-        // )
-        // .withManyBodyForce(strength: -30)
-        // .withCenterForce(center: .zero)
-        // .withCollideForce(radius: .constant(5.0))
-        //simulation.tick()
         measure {
             for _ in 0..<120 {
                 simulation.tick()
@@ -186,7 +126,7 @@ final class MiserableGraphTest: XCTestCase {
         }
     }
 
-    func test_generic_pack_3d() {
+    func testMiserable3d() {
 
         let data = getData()
 
@@ -196,20 +136,6 @@ final class MiserableGraphTest: XCTestCase {
             forceField: MyForceField3D()
         )
 
-        // let wrapped = Simulation2D(
-        //     nodeIds: data.nodes.map { n in
-        //         n.id
-        //     }
-        // )
-        // .withLinkForce(
-        //     data.links.map({ l in
-        //         (l.source, l.target)
-        //     })
-        // )
-        // .withManyBodyForce(strength: -30)
-        // .withCenterForce(center: .zero)
-        // .withCollideForce(radius: .constant(5.0))
-        //simulation.tick()
         measure {
             for _ in 0..<120 {
                 simulation.tick()
