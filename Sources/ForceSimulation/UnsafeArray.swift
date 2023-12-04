@@ -13,6 +13,34 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
     }
 
     @inlinable
+    class func createBuffer(withHeader header: Int, count: Int, initializer: (Int) -> Element)
+        -> UnsafeArray
+    {
+        let buffer = self.create(minimumCapacity: count) { _ in header }
+        buffer.withUnsafeMutablePointerToElements {
+            for i in 0..<count {
+                $0[i] = initializer(i)
+            }
+        }
+        return unsafeDowncast(buffer, to: UnsafeArray.self)
+    }
+
+    @inlinable
+    class func createBuffer(
+        withHeader header: Int, 
+        count: Int, 
+        moving: UnsafeMutablePointer<Element>, 
+        movingCount: Int
+    ) -> UnsafeArray {
+        let buffer = self.create(minimumCapacity: count) { _ in header }
+        buffer.withUnsafeMutablePointerToElements {
+            $0.moveInitialize(from: moving, count: movingCount)
+        }
+        return unsafeDowncast(buffer, to: UnsafeArray.self)
+    }
+
+    @available(*, deprecated, renamed: "createBuffer(withHeader:count:initialValue:)")
+    @inlinable
     class func createUninitializedBuffer(
         count: Int
     ) -> UnsafeArray {

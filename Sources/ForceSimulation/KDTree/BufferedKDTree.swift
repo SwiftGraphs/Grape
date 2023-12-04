@@ -66,6 +66,11 @@ where
         nodeCapacity: Int,
         rootDelegate: @autoclosure () -> Delegate
     ) {
+        // Assuming each add creates 2^Vector.scalarCount nodes
+        // In most situations this is sufficient (for example the miserable graph)
+        // But It's possible to exceed this limit:
+        // 2 additions very close but not clustered in the same box
+        // In this case there's no upperbound for addition so `resize` is needed
         let maxBufferCount = (nodeCapacity << Vector.scalarCount) + 1
         let zeroNode: TreeNode = .init(
             nodeIndices: nil,
@@ -107,31 +112,63 @@ where
     internal mutating func resize(
         to newTreeNodeBufferSize: Int
     ) {
-        assert(newTreeNodeBufferSize >= treeNodeBuffer.header)
+
+        #if DEBUG
+
+            assert(newTreeNodeBufferSize > treeNodeBuffer.header)
+            let rootCopy = root
+        #endif
+        let oldRootPointer = rootPointer
+
         let newTreeNodeBuffer = UnsafeArray<TreeNode>.createBuffer(
             withHeader: newTreeNodeBufferSize,
             count: newTreeNodeBufferSize,
-            initialValue: .init(
-                nodeIndices: nil,
-                childrenBufferPointer: nil,
-                delegate: root.delegate,
-                box: root.box
-            )
+            moving: treeNodeBuffer.mutablePointer,
+            movingCount: validCount
         )
-        newTreeNodeBuffer.withUnsafeMutablePointerToElements {
-            $0.moveInitialize(
-                from: treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }, count: validCount)
+
+        let newRootPointer = newTreeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
+
+        for i in 0..<validCount {
+            if newTreeNodeBuffer[i].childrenBufferPointer != nil {
+                newTreeNodeBuffer[i].childrenBufferPointer! =
+                    newRootPointer + (newTreeNodeBuffer[i].childrenBufferPointer! - oldRootPointer)
+            }
         }
-        treeNodeBuffer = newTreeNodeBuffer
-        rootPointer = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
+
+        self.rootPointer = newRootPointer
+        self.treeNodeBuffer = newTreeNodeBuffer
+
+        // UnsafeArray<TreeNode>.createBuffer(
+        //     withHeader: newTreeNodeBufferSize,
+        //     count: newTreeNodeBufferSize,
+        //     initialValue: .init(
+        //         nodeIndices: nil,
+        //         childrenBufferPointer: nil,
+        //         delegate: root.delegate,
+        //         box: root.box
+        //     )
+        // )
+        // newTreeNodeBuffer.withUnsafeMutablePointerToElements {
+        //     $0.moveInitialize(
+        //         from: treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }, count: validCount)
+        // }
+
+        #if DEBUG
+            assert(rootCopy.box == root.box)
+            assert(oldRootPointer != rootPointer)
+        #endif
     }
 
     @inlinable
-    internal mutating func resizeIfNeededBeforeAllocation(for count: Int) {
-        if validCount + Self.directionCount > treeNodeBuffer.count {
-            let factor = (count / self.treeNodeBuffer.count) + 1
-            resize(to: treeNodeBuffer.header * factor)
+    internal mutating func resizeIfNeededBeforeAllocation(for count: Int) -> Bool {
+        if validCount + count > treeNodeBuffer.count {
+            let factor = (count / self.treeNodeBuffer.count) + 2
+            assert(treeNodeBuffer.count * factor > validCount + count)
+            resize(to: treeNodeBuffer.count * factor)
+            return true
         }
+        return false
     }
 
     @inlinable
@@ -155,28 +192,38 @@ where
         at point: Vector
     ) {
 
-        defer {
-            treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
-        }
         guard treeNode.pointee.childrenBufferPointer != nil else {
             if treeNode.pointee.nodeIndices == nil {
                 treeNode.pointee.nodeIndices = .init(nodeIndex: nodeIndex)
                 treeNode.pointee.nodePosition = point
+
+                treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
+
                 return
             } else if treeNode.pointee.nodePosition.distanceSquared(to: point)
-                < Self.clusterDistanceSquared
+                > Self.clusterDistanceSquared
             {
-                treeNode.pointee.nodeIndices!.append(nodeIndex: nodeIndex)
-                return
-            } else {
+
+                //                let __treeNode = treeNode
+                //                let __rootPointer = rootPointer
+                let treeNodeOffset = (consume treeNode) - rootPointer
+                let resized = resizeIfNeededBeforeAllocation(for: Self.directionCount)
 
                 let spawnedDelegate = treeNode.pointee.delegate.spawn()
                 let center = treeNode.pointee.box.center
 
-                resizeIfNeededBeforeAllocation(for: Self.directionCount)
+                let newTreeNode = self.rootPointer + treeNodeOffset
+
+                //                if (resized) {
+                //                    print("\(__treeNode) => \(newTreeNode)")
+                //                    assert(__rootPointer != rootPointer)
+                //                }
+                //                else {
+                //                    print("no need to resize")
+                //                }
 
                 for j in 0..<Self.directionCount {
-                    var __box = treeNode.pointee.box
+                    var __box = newTreeNode.pointee.box
 
                     for i in 0..<Vector.scalarCount {
                         let isOnTheHigherRange = (j >> i) & 0b1
@@ -188,7 +235,7 @@ where
                         }
                     }
 
-                    treeNodeBuffer[validCount + j] = .init(
+                    self.treeNodeBuffer[validCount + j] = .init(
                         nodeIndices: nil,
                         childrenBufferPointer: nil,
                         delegate: spawnedDelegate,
@@ -196,33 +243,38 @@ where
                     )
 
                 }
-                treeNode.pointee.childrenBufferPointer = rootPointer + validCount
+                newTreeNode.pointee.childrenBufferPointer = rootPointer + validCount
                 validCount += Self.directionCount
 
-                if let childrenBufferPointer = treeNode.pointee.childrenBufferPointer {
+                if let childrenBufferPointer = newTreeNode.pointee.childrenBufferPointer {
                     let direction = getIndexInChildren(
-                        treeNode.pointee.nodePosition,
+                        newTreeNode.pointee.nodePosition,
                         relativeTo: center
                     )
 
-                    childrenBufferPointer[direction].nodeIndices = treeNode.pointee.nodeIndices
-                    childrenBufferPointer[direction].nodePosition = treeNode.pointee.nodePosition
-                    childrenBufferPointer[direction].delegate = treeNode.pointee.delegate
-                    treeNode.pointee.nodeIndices = nil
-                    treeNode.pointee.nodePosition = .zero
+                    childrenBufferPointer[direction].nodeIndices = newTreeNode.pointee.nodeIndices
+                    childrenBufferPointer[direction].nodePosition = newTreeNode.pointee.nodePosition
+                    childrenBufferPointer[direction].delegate = newTreeNode.pointee.delegate
+                    newTreeNode.pointee.nodeIndices = nil
+                    newTreeNode.pointee.nodePosition = .zero
                 }
 
                 let directionOfNewNode = getIndexInChildren(point, relativeTo: center)
-                // spawnedChildren[directionOfNewNode].addWithoutCover(nodeIndex, at: point)
+
+                // This add might also resize this buffer!
                 addWithoutCover(
-                    onTreeNode: treeNode.pointee.childrenBufferPointer! + directionOfNewNode,
+                    onTreeNode: newTreeNode.pointee.childrenBufferPointer! + directionOfNewNode,
                     nodeOf: nodeIndex,
                     at: point
                 )
 
-                // self.children = spawnedChildren
+                rootPointer[treeNodeOffset].delegate.didAddNode(nodeIndex, at: point)
                 return
+            } else {
+                treeNode.pointee.nodeIndices!.append(nodeIndex: nodeIndex)
 
+                treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
+                return
             }
         }
 
@@ -232,6 +284,8 @@ where
             nodeOf: nodeIndex,
             at: point
         )
+
+        treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
         return
     }
 

@@ -71,5 +71,9 @@ class BufferedKDTreeTests: XCTestCase {
         XCTAssert(t.root.delegate.count == randomPoints.count)
     }
     
+    func testResize() {
+        var t = buildTree(box: .init(p0: [0,0], p1: [1,1]), points: [SIMD2<Double>(0.125, 0.125)])
+        t.add(nodeIndex: 1, at: [0.1251, 0.1251])
+    }
 
 }

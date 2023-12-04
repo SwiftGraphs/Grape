@@ -204,3 +204,7 @@ extension KDBox {
     }
     
 }
+
+extension KDBox: Equatable {
+    
+}
