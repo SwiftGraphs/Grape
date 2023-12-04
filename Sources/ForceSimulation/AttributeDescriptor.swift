@@ -24,13 +24,8 @@ extension AttributeDescriptor {
                 initialValue: m
             )
         case .varied(let valueProvider):
-            let array = UnsafeArray<T>.createBuffer(
-                withHeader: count,
-                count: count,
-                initialValue: .zero
-            )
-            for i in 0..<count {
-                array[i] = valueProvider(i)
+            let array = UnsafeArray<T>.createBuffer(withHeader: count, count: count) {
+                valueProvider($0)
             }
             return array
         }
