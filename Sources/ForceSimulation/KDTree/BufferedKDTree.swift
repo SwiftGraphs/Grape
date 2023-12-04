@@ -139,21 +139,6 @@ where
         self.rootPointer = newRootPointer
         self.treeNodeBuffer = newTreeNodeBuffer
 
-        // UnsafeArray<TreeNode>.createBuffer(
-        //     withHeader: newTreeNodeBufferSize,
-        //     count: newTreeNodeBufferSize,
-        //     initialValue: .init(
-        //         nodeIndices: nil,
-        //         childrenBufferPointer: nil,
-        //         delegate: root.delegate,
-        //         box: root.box
-        //     )
-        // )
-        // newTreeNodeBuffer.withUnsafeMutablePointerToElements {
-        //     $0.moveInitialize(
-        //         from: treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }, count: validCount)
-        // }
-
         #if DEBUG
             assert(rootCopy.box == root.box)
             assert(oldRootPointer != rootPointer)
@@ -161,11 +146,15 @@ where
     }
 
     @inlinable
+    @discardableResult
     internal mutating func resizeIfNeededBeforeAllocation(for count: Int) -> Bool {
         if validCount + count > treeNodeBuffer.count {
             let factor = (count / self.treeNodeBuffer.count) + 2
-            assert(treeNodeBuffer.count * factor > validCount + count)
+            
             resize(to: treeNodeBuffer.count * factor)
+
+            assert(treeNodeBuffer.count >= validCount + count)
+
             return true
         }
         return false
@@ -207,7 +196,7 @@ where
                 //                let __treeNode = treeNode
                 //                let __rootPointer = rootPointer
                 let treeNodeOffset = (consume treeNode) - rootPointer
-                let resized = resizeIfNeededBeforeAllocation(for: Self.directionCount)
+                resizeIfNeededBeforeAllocation(for: Self.directionCount)
 
                 let spawnedDelegate = treeNode.pointee.delegate.spawn()
                 let center = treeNode.pointee.box.center
