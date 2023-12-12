@@ -21,16 +21,17 @@ where
 
     @inlinable
     init(
-        nodeIndices: NodeIndex?,
-        childrenBufferPointer: UnsafeMutablePointer<KDTreeNode>?,
+        nodeIndices: consuming NodeIndex?,
+        childrenBufferPointer: consuming UnsafeMutablePointer<KDTreeNode>?,
         delegate: consuming Delegate,
-        box: consuming KDBox<Vector>
+        box: consuming KDBox<Vector>,
+        nodePosition: consuming Vector = .zero
     ) {
-        self.childrenBufferPointer = childrenBufferPointer
-        self.nodeIndices = nodeIndices
+        self.childrenBufferPointer = consume childrenBufferPointer
+        self.nodeIndices = consume nodeIndices
         self.delegate = consume delegate
         self.box = consume box
-        self.nodePosition = .zero
+        self.nodePosition = consume nodePosition
     }
 
 }
@@ -44,7 +45,9 @@ where
     public typealias TreeNode = KDTreeNode<Vector, Delegate>
 
     @usableFromInline
-    internal var rootPointer: UnsafeMutablePointer<TreeNode>
+    internal var rootPointer: UnsafeMutablePointer<TreeNode> {
+        treeNodeBuffer.mutablePointer
+    }
 
     @usableFromInline
     internal var validCount: Int = 0
@@ -83,7 +86,7 @@ where
             count: maxBufferCount,
             initialValue: zeroNode
         )
-        rootPointer = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
+        // rootPointer = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
 
         rootPointer.pointee = .init(
             nodeIndices: nil,
@@ -136,23 +139,8 @@ where
             }
         }
 
-        self.rootPointer = newRootPointer
+        // self.rootPointer = newRootPointer
         self.treeNodeBuffer = newTreeNodeBuffer
-
-        // UnsafeArray<TreeNode>.createBuffer(
-        //     withHeader: newTreeNodeBufferSize,
-        //     count: newTreeNodeBufferSize,
-        //     initialValue: .init(
-        //         nodeIndices: nil,
-        //         childrenBufferPointer: nil,
-        //         delegate: root.delegate,
-        //         box: root.box
-        //     )
-        // )
-        // newTreeNodeBuffer.withUnsafeMutablePointerToElements {
-        //     $0.moveInitialize(
-        //         from: treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }, count: validCount)
-        // }
 
         #if DEBUG
             assert(rootCopy.box == root.box)
@@ -160,12 +148,19 @@ where
         #endif
     }
 
+    /// Extend the size of the buffer. 
+    /// - Parameter count: the number of elements to extend
+    /// - Returns: true if the buffer is resized
     @inlinable
+    @discardableResult
     internal mutating func resizeIfNeededBeforeAllocation(for count: Int) -> Bool {
         if validCount + count > treeNodeBuffer.count {
             let factor = (count / self.treeNodeBuffer.count) + 2
-            assert(treeNodeBuffer.count * factor > validCount + count)
+            
             resize(to: treeNodeBuffer.count * factor)
+
+            assert(treeNodeBuffer.count >= validCount + count)
+
             return true
         }
         return false
@@ -204,10 +199,10 @@ where
                 > Self.clusterDistanceSquared
             {
 
-                //                let __treeNode = treeNode
-                //                let __rootPointer = rootPointer
+                //                let __treeNode = copy treeNode
+                //                let __rootPointer = copy rootPointer
                 let treeNodeOffset = (consume treeNode) - rootPointer
-                let resized = resizeIfNeededBeforeAllocation(for: Self.directionCount)
+                resizeIfNeededBeforeAllocation(for: Self.directionCount)
 
                 let spawnedDelegate = treeNode.pointee.delegate.spawn()
                 let center = treeNode.pointee.box.center
@@ -252,9 +247,18 @@ where
                         relativeTo: center
                     )
 
-                    childrenBufferPointer[direction].nodeIndices = newTreeNode.pointee.nodeIndices
-                    childrenBufferPointer[direction].nodePosition = newTreeNode.pointee.nodePosition
-                    childrenBufferPointer[direction].delegate = newTreeNode.pointee.delegate
+                    childrenBufferPointer[direction] = .init(
+                        nodeIndices: newTreeNode.pointee.nodeIndices, 
+                        childrenBufferPointer: childrenBufferPointer[direction].childrenBufferPointer, 
+                        delegate: newTreeNode.pointee.delegate, 
+                        box: childrenBufferPointer[direction].box,
+                        nodePosition: newTreeNode.pointee.nodePosition
+                    )
+                    // childrenBufferPointer[direction].nodePosition = newTreeNode.pointee.nodePosition
+
+                    // childrenBufferPointer[direction].nodeIndices = newTreeNode.pointee.nodeIndices
+                    // childrenBufferPointer[direction].nodePosition = newTreeNode.pointee.nodePosition
+                    // childrenBufferPointer[direction].delegate = newTreeNode.pointee.delegate
                     newTreeNode.pointee.nodeIndices = nil
                     newTreeNode.pointee.nodePosition = .zero
                 }
@@ -364,7 +368,6 @@ where
     @inlinable
     internal func getIndexInChildren(_ point: Vector, relativeTo originalPoint: Vector) -> Int {
         var index = 0
-
         let mask = point .>= originalPoint
 
         for i in 0..<Vector.scalarCount {

@@ -16,7 +16,6 @@ where
     public var nodePosition: Vector?
     public var nodeIndices: [NodeIndex]
 
-    // public let clusterDistance: Vector.Scalar
     @inlinable var clusterDistanceSquared: Vector.Scalar {
         return Vector.clusterDistanceSquared
     }
@@ -30,7 +29,6 @@ where
         spawnedDelegateBeingConsumed: consuming Delegate
     ) {
         self.box = box
-        // self.clusterDistanceSquared = clusterDistanceSquared
         self.nodeIndices = []
         self.delegate = consume spawnedDelegateBeingConsumed
     }
@@ -38,12 +36,10 @@ where
     @inlinable
     init(
         box: Box,
-        // clusterDistanceSquared: Vector.Scalar,
         spawnedDelegateBeingConsumed: consuming Delegate,
         childrenBeingConsumed: consuming [KDTree<Vector, Delegate>]
     ) {
         self.box = box
-        // self.clusterDistanceSquared = clusterDistanceSquared
         self.nodeIndices = []
         self.delegate = consume spawnedDelegateBeingConsumed
         self.children = consume childrenBeingConsumed
@@ -127,7 +123,6 @@ where
 
         self = Self(
             box: newRootBox,
-            // clusterDistanceSquared: clusterDistanceSquared,
             spawnedDelegateBeingConsumed: self.delegate,
             childrenBeingConsumed: consume result
         )
