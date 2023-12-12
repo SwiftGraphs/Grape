@@ -1,4 +1,3 @@
-import simd
 
 /// A protocol for vectors that can be jiggled, and has a certain precision for
 /// simulation — so zero vectors could be altered
@@ -85,6 +84,10 @@ extension SIMD3: SimulatableVector where Scalar: FloatingPoint & HasDeterministi
     }
 }
 
+#if canImport(simd)
+import simd
+
+
 extension SIMD2: L2NormCalculatable where Scalar == Double {
     @inlinable
     public func distanceSquared(to point: SIMD2<Scalar>) -> Scalar {
@@ -128,3 +131,5 @@ extension SIMD3: L2NormCalculatable where Scalar == Float {
         return simd_length(self)
     }
 }
+
+#endif

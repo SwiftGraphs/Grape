@@ -10,3 +10,10 @@ public struct EdgeID<NodeID: Hashable>: Hashable {
         self.target = target
     }
 }
+
+extension EdgeID {
+    public init(_ source: NodeID, _ target: NodeID) {
+        self.source = source
+        self.target = target
+    }
+}
