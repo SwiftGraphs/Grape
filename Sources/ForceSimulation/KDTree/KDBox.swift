@@ -9,7 +9,7 @@ import simd
 /// A box in N-dimensional space.
 ///
 /// - Note: `p0` is the minimum point of the box, `p1` is the maximum point of the box.
-public struct KDBox<V> where V: SIMD, V.Scalar: FloatingPoint & ExpressibleByFloatLiteral {
+public struct KDBox<V>: Equatable where V: SIMD, V.Scalar: FloatingPoint & ExpressibleByFloatLiteral {
     /// the minimum anchor of the box
     public var p0: V
 
@@ -209,9 +209,5 @@ extension KDBox {
 
         return Self(_p0, _p1)
     }
-
-}
-
-extension KDBox: Equatable {
 
 }

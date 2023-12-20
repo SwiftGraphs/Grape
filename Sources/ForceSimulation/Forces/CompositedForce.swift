@@ -9,7 +9,6 @@ where
     @usableFromInline var force1: F1?
     @usableFromInline var force2: F2
 
-    // var kinetics: Kinetics<Vector>?
     @inlinable
     public init(force1: F1? = nil, force2: F2) {
         self.force1 = force1
