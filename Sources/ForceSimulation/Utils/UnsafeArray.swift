@@ -75,12 +75,9 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
 
     @inlinable
     deinit {
-        _ = withUnsafeMutablePointerToElements { buffer in
-            buffer.deinitialize(count: self.header)
-        }
-        
-        _ = withUnsafeMutablePointerToHeader { headPtr in
-            headPtr.deinitialize(count: 1)
+        withUnsafeMutablePointers { headerPtr, elementPtr in
+            elementPtr.deinitialize(count: self.header)
+            headerPtr.deinitialize(count: 1)
         }
     }
 
