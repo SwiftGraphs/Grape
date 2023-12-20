@@ -170,27 +170,17 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
 
     @usableFromInline
     var model: LayoutEngine
-//    public let proxy: Proxy
-
+    
     @usableFromInline 
     let content: Content
-    // @usableFromInline let forceField: ForceField
     
-//    @usableFromInline
-//    var _isRunning = false
+    @Binding
+    public var isRunning: Bool 
+
+    // @usableFromInline
+    // var _isRunning: Binding<Bool>
     
-    @usableFromInline
-    var isRunning: Bool// = Binding<Bool>.constant(false)
     
-//    @usableFromInline
-//    mutating func setIsRunningBinding(binding: Binding<Bool>) {
-//        self._isRunning = binding
-//    }
-
-
-
-//    @usableFromInline
-    @inlinable
     public init(
         // proxy: Proxy? = nil,
         isRunning externalRunningBinding: Binding<Bool>,
@@ -214,12 +204,9 @@ public struct ForceDirectedGraph<NodeID: Hashable>: View {
         )
         
         self.nodeIdToIndexLookup = lookup
-        self.isRunning = externalRunningBinding.wrappedValue
-
-        let engine = LayoutEngine(initialSimulation: simulation)
+        self._isRunning = externalRunningBinding
         
-        
-        self.model = engine
+        self.model = LayoutEngine(initialSimulation: simulation)
         
         //        let _model = ForceDirectedGraph2DLayoutEngine(
         //            initialSimulation: simulation

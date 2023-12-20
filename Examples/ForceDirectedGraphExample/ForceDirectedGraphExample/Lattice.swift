@@ -11,7 +11,7 @@ import Grape
 
 struct Lattice: View {
     
-    let width = 36
+    let width = 20
     let edge: [(Int, Int)]
     @State var isRunning = false
     
@@ -39,7 +39,7 @@ struct Lattice: View {
                 let _j = Double(i % width) / Double(width)
                 
                 
-                NodeMark(id: i, fill: .init(red: 1, green: _i, blue: _j), radius: 3.0)
+                NodeMark(id: i, fill: .init(red: 1, green: _i, blue: _j), radius: 3.0, strokeColor: .white, strokeWidth: 0.5)
             }
             for l in edge {
                 
@@ -47,10 +47,10 @@ struct Lattice: View {
             }
         } forceField: {
             LinkForce(
-                originalLength: .constant(1),
+                originalLength: .constant(0.8),
                 stiffness: .weightedByDegree(k: { _, _ in 1})
             )
-            ManyBodyForce(strength: -1)
+            ManyBodyForce(strength: -0.8)
 
         }
         .toolbar {
