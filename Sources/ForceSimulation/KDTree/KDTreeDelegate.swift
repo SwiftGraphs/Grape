@@ -4,7 +4,6 @@
 //
 //  Created by li3zhen1 on 10/14/23.
 //
-import simd
 
 /// The data structure carried by a node of NDTree. 
 ///

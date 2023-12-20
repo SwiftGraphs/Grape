@@ -320,11 +320,10 @@ where
 
     @inlinable
     public func dispose() {
-        _ = treeNodeBuffer.withUnsafeMutablePointerToElements {
+        treeNodeBuffer.withUnsafeMutablePointerToElements {
             for i in 0..<validCount {
                 $0[i].dispose()
             }
-            $0.deinitialize(count: Self.directionCount)
         }
     }
 
