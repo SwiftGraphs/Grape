@@ -153,100 +153,104 @@ where
         nodeOf nodeIndex: Int,
         at point: Vector
     ) {
+        if treeNode.pointee.childrenBufferPointer != nil {
 
-        guard treeNode.pointee.childrenBufferPointer != nil else {
-            if treeNode.pointee.nodeIndices == nil {
+            let directionOfNewNode = getIndexInChildren(
+                point, relativeTo: treeNode.pointee.box.center)
+            let treeNodeOffset = (consume treeNode) - rootPointer
+            self.addWithoutCover(
+                onTreeNode: treeNode.pointee.childrenBufferPointer! + directionOfNewNode,
+                nodeOf: nodeIndex,
+                at: point
+            )
+            rootPointer[treeNodeOffset].delegate.didAddNode(nodeIndex, at: point)
+            return
 
-                treeNode.pointee.nodeIndices = TreeNode.NodeIndex(nodeIndex)
-                treeNode.pointee.nodePosition = point
-                treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
+        } else if treeNode.pointee.nodeIndices == nil {
+            // empty leaf
 
-                return
-            } else if treeNode.pointee.nodePosition.distanceSquared(to: point)
-                > Self.clusterDistanceSquared
-            {
-                let treeNodeOffset = (consume treeNode) - rootPointer
-                resizeIfNeededBeforeAllocation(for: Self.directionCount)
+            treeNode.pointee.nodeIndices = TreeNode.NodeIndex(nodeIndex)
+            treeNode.pointee.nodePosition = point
+            treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
 
-                let spawnedDelegate = treeNode.pointee.delegate.spawn()
-                let center = treeNode.pointee.box.center
+            return
+        } else if treeNode.pointee.nodePosition.distanceSquared(to: point)
+            > Self.clusterDistanceSquared
+        {
+            // filled leaf
 
-                let newTreeNode = self.rootPointer + treeNodeOffset
-                let _box = newTreeNode.pointee.box
-                for j in 0..<Self.directionCount {
-                    var __box = _box
-                    for i in 0..<Vector.scalarCount {
-                        let isOnTheHigherRange = (j >> i) & 0b1
-                        if isOnTheHigherRange != 0 {
-                            __box.p0[i] = center[i]
-                        } else {
-                            __box.p1[i] = center[i]
-                        }
+            let treeNodeOffset = (consume treeNode) - rootPointer
+            resizeIfNeededBeforeAllocation(for: Self.directionCount)
+
+            let spawnedDelegate = treeNode.pointee.delegate.spawn()
+            let center = treeNode.pointee.box.center
+
+            let newTreeNode = self.rootPointer + treeNodeOffset
+            let _box = newTreeNode.pointee.box
+            for j in 0..<Self.directionCount {
+                var __box = _box
+                for i in 0..<Vector.scalarCount {
+                    let isOnTheHigherRange = (j >> i) & 0b1
+                    if isOnTheHigherRange != 0 {
+                        __box.p0[i] = center[i]
+                    } else {
+                        __box.p1[i] = center[i]
                     }
-
-                    let obsoletePtr = self.rootPointer + validCount + j
-
-                    obsoletePtr.pointee.disposeNodeIndices()
-                    obsoletePtr.pointee = TreeNode(
-                        nodeIndices: nil,
-                        childrenBufferPointer: nil,
-                        delegate: spawnedDelegate,
-                        box: __box
-                    )
-
-                }
-                newTreeNode.pointee.childrenBufferPointer = rootPointer + validCount
-                validCount += Self.directionCount
-
-                if let childrenBufferPointer = newTreeNode.pointee.childrenBufferPointer {
-                    let direction = getIndexInChildren(
-                        newTreeNode.pointee.nodePosition,
-                        relativeTo: center
-                    )
-                    // newly created, no need to dispose
-                    // childrenBufferPointer[direction].disposeNodeIndices()
-                    childrenBufferPointer[direction] = .init(
-                        nodeIndices: newTreeNode.pointee.nodeIndices,
-                        childrenBufferPointer: childrenBufferPointer[direction]
-                            .childrenBufferPointer,
-                        delegate: newTreeNode.pointee.delegate,
-                        box: childrenBufferPointer[direction].box,
-                        nodePosition: newTreeNode.pointee.nodePosition
-                    )
-
-                    newTreeNode.pointee.nodeIndices = nil
-                    newTreeNode.pointee.nodePosition = .zero
                 }
 
-                let directionOfNewNode = getIndexInChildren(point, relativeTo: center)
+                let obsoletePtr = self.rootPointer + validCount + j
 
-                // This add might also resize this buffer!
-                addWithoutCover(
-                    onTreeNode: newTreeNode.pointee.childrenBufferPointer! + directionOfNewNode,
-                    nodeOf: nodeIndex,
-                    at: point
+                obsoletePtr.pointee.disposeNodeIndices()
+                obsoletePtr.pointee = TreeNode(
+                    nodeIndices: nil,
+                    childrenBufferPointer: nil,
+                    delegate: spawnedDelegate,
+                    box: __box
                 )
 
-                rootPointer[treeNodeOffset].delegate.didAddNode(nodeIndex, at: point)
-                return
-            } else {
-                treeNode.pointee.nodeIndices!.append(nodeIndex: nodeIndex)
-
-                treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
-                return
             }
+            newTreeNode.pointee.childrenBufferPointer = rootPointer + validCount
+            validCount += Self.directionCount
+
+            if let childrenBufferPointer = newTreeNode.pointee.childrenBufferPointer {
+                let direction = getIndexInChildren(
+                    newTreeNode.pointee.nodePosition,
+                    relativeTo: center
+                )
+                // newly created, no need to dispose
+                // childrenBufferPointer[direction].disposeNodeIndices()
+                childrenBufferPointer[direction] = .init(
+                    nodeIndices: newTreeNode.pointee.nodeIndices,
+                    childrenBufferPointer: childrenBufferPointer[direction]
+                        .childrenBufferPointer,
+                    delegate: newTreeNode.pointee.delegate,
+                    box: childrenBufferPointer[direction].box,
+                    nodePosition: newTreeNode.pointee.nodePosition
+                )
+
+                newTreeNode.pointee.nodeIndices = nil
+                newTreeNode.pointee.nodePosition = .zero
+            }
+
+            let directionOfNewNode = getIndexInChildren(point, relativeTo: center)
+
+            // This add might also resize this buffer!
+            addWithoutCover(
+                onTreeNode: newTreeNode.pointee.childrenBufferPointer! + directionOfNewNode,
+                nodeOf: nodeIndex,
+                at: point
+            )
+
+            rootPointer[treeNodeOffset].delegate.didAddNode(nodeIndex, at: point)
+            return
+        } else {
+            // filled leaf and within cluster distance
+            treeNode.pointee.nodeIndices!.append(nodeIndex: nodeIndex)
+
+            treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
+            return
         }
 
-        let directionOfNewNode = getIndexInChildren(point, relativeTo: treeNode.pointee.box.center)
-        let treeNodeOffset = (consume treeNode) - rootPointer
-        self.addWithoutCover(
-            onTreeNode: treeNode.pointee.childrenBufferPointer! + directionOfNewNode,
-            nodeOf: nodeIndex,
-            at: point
-        )
-
-        rootPointer[treeNodeOffset].delegate.didAddNode(nodeIndex, at: point)
-        return
     }
 
     @inlinable
@@ -299,8 +303,7 @@ where
                     box: __box,
                     nodePosition: .zero
                 )
-            }
-            else {
+            } else {
                 self.treeNodeBuffer[validCount + j] = TreeNode(
                     nodeIndices: _rootValue.nodeIndices,
                     childrenBufferPointer: _rootValue.childrenBufferPointer,
@@ -363,5 +366,4 @@ extension BufferedKDTree {
     ) {
         rootPointer.pointee.visit(shouldVisitChildren: shouldVisitChildren)
     }
-
 }
