@@ -210,8 +210,7 @@ extension Kinetics {
         /// Called when `Simulation` is deinitialized.
         @inlinable
         public func dispose() {
-            self.tree.deinitialize(count: 1)
-            self.tree.deallocate()
+            self.tree.dispose()
         }
 
     }

@@ -8,7 +8,7 @@ protocol LayoutEngine {
 }
 
 //@Observable
-public class ForceDirectedGraph2DLayoutEngine: LayoutEngine & Observation.Observable {
+public class ForceDirectedGraph2DLayoutEngine: LayoutEngine & Observation.Observable & ObservableObject {
     
     public var simulation: Simulation2D<SealedForce2D>
     

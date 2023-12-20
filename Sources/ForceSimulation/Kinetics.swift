@@ -1,6 +1,6 @@
 /// A class that holds the state of the simulation, which
 /// includes the positions, velocities of the nodes.
-public struct Kinetics<Vector>
+public struct Kinetics<Vector>: Disposable
 where Vector: SimulatableVector & L2NormCalculatable {
 
     /// The position of points stored in simulation.
@@ -168,7 +168,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
     }
 
     @inlinable
-    internal func dispose() {
+    public func dispose() {
         self.randomGenerator.deinitialize(count: 1)
         self.randomGenerator.deallocate()
     }

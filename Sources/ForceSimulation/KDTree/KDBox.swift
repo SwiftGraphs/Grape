@@ -5,10 +5,11 @@
 //  Created by li3zhen1 on 10/14/23.
 //
 import simd
+
 /// A box in N-dimensional space.
 ///
 /// - Note: `p0` is the minimum point of the box, `p1` is the maximum point of the box.
-public struct KDBox<V> where V: SIMD, V.Scalar: FloatingPoint & ExpressibleByFloatLiteral {
+public struct KDBox<V>: Equatable where V: SIMD, V.Scalar: FloatingPoint & ExpressibleByFloatLiteral {
     /// the minimum anchor of the box
     public var p0: V
 
@@ -51,14 +52,22 @@ public struct KDBox<V> where V: SIMD, V.Scalar: FloatingPoint & ExpressibleByFlo
     /// - Note: Please make sure `pMin` is the minimum point of the box and `pMax` is the
     ///        maximum point of the box.
     @inlinable
+    @available(*, deprecated, renamed: "init(uncheckedP0:uncheckedP1:)")
     internal init(pMin: V, pMax: V) {
         assert(pMin != pMax, "NdBox was initialized with 2 same anchor")
         self.p0 = pMin
         self.p1 = pMax
     }
 
+    @inlinable
+    internal init(uncheckedP0: V, uncheckedP1: V) {
+        self.p0 = uncheckedP0
+        self.p1 = uncheckedP1
+    }
+
     /// Create a box with 2 zero anchors.
     @inlinable
+    @available(*, deprecated, renamed: "zero")
     public init() {
         p0 = .zero
         p1 = .zero
@@ -83,6 +92,11 @@ extension KDBox {
     @inlinable
     var diagnalVector: V {
         return p1 - p0
+    }
+
+    @inlinable
+    static var zero: Self {
+        return Self(uncheckedP0: .zero, uncheckedP1: .zero)
     }
 
     @inlinable var center: V { (p1 + p0) / 2.0 }
@@ -168,7 +182,6 @@ extension KDBox {
         return Self(_p0, _p1)
     }
 
-
     @inlinable public static func cover(of points: UnsafeArray<V>) -> Self {
 
         var _p0 = points[0]
@@ -177,34 +190,24 @@ extension KDBox {
         for pi in 0..<points.header {
             let p = points[pi]
 
-            let mask1 = p .< _p0
-            let mask2 = p .>= _p1
-
-
-            _p0 = _p0.replacing(with: p, where: mask1)
-            _p1 = _p1.replacing(with: p + 1, where: mask2)
-
-            // for i in points[pi].indices {
-            //     if p[i] < _p0[i] {
-            //         _p0[i] = p[i]
-            //     }
-            //     if p[i] >= _p1[i] {
-            //         _p1[i] = p[i] + 1
-            //     }
-            // }
+            for i in points[pi].indices {
+                if p[i] < _p0[i] {
+                    _p0[i] = p[i]
+                }
+                if p[i] >= _p1[i] {
+                    _p1[i] = p[i] + 1
+                }
+            }
         }
+
         #if DEBUG
-        let testBox = Self(_p0, _p1)
-        for i in points.range {
-            assert(testBox.contains(points[i]))
-        }
+            let testBox = Self(_p0, _p1)
+            for i in points.range {
+                assert(testBox.contains(points[i]))
+            }
         #endif
 
         return Self(_p0, _p1)
     }
-    
-}
 
-extension KDBox: Equatable {
-    
 }

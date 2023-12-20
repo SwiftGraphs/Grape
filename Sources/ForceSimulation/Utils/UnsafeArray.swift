@@ -29,12 +29,17 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
     class func createBuffer(
         withHeader header: Int, 
         count: Int, 
-        moving: UnsafeMutablePointer<Element>, 
-        movingCount: Int
+        moving: consuming UnsafeMutablePointer<Element>, 
+        movingCount: Int,
+        fillingExcessiveBufferWith initialValue: consuming Element
     ) -> UnsafeArray {
         let buffer = self.create(minimumCapacity: count) { _ in header }
         buffer.withUnsafeMutablePointerToElements {
             $0.moveInitialize(from: moving, count: movingCount)
+            $0.advanced(by: movingCount).initialize(
+                repeating: initialValue, 
+                count: count - movingCount
+            )
         }
         return unsafeDowncast(buffer, to: UnsafeArray.self)
     }
@@ -75,12 +80,9 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
 
     @inlinable
     deinit {
-        _ = withUnsafeMutablePointerToElements { buffer in
-            buffer.deinitialize(count: self.header)
-        }
-        
-        _ = withUnsafeMutablePointerToHeader { headPtr in
-            headPtr.deinitialize(count: 1)
+        withUnsafeMutablePointers { headerPtr, elementPtr in
+            elementPtr.deinitialize(count: self.header)
+            headerPtr.deinitialize(count: 1)
         }
     }
 
