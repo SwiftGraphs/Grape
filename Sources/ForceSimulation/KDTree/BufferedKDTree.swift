@@ -1,9 +1,13 @@
-public struct KDTreeNode<Vector, Delegate>
+protocol Disposable {
+    consuming func dispose()
+}
+
+public struct KDTreeNode<Vector, Delegate>: Disposable
 where
     Vector: SimulatableVector & L2NormCalculatable,
     Delegate: KDTreeDelegate<Int, Vector>
 {
-    public struct NodeIndex {
+    public struct NodeIndex: Disposable {
 
         @usableFromInline
         var index: Int
@@ -34,6 +38,10 @@ where
         self.nodePosition = consume nodePosition
     }
 
+    @inlinable
+    consuming internal func dispose() {
+        nodeIndices?.dispose()
+    }
 }
 
 public struct BufferedKDTree<Vector, Delegate>
@@ -358,6 +366,7 @@ where
     @inlinable
     internal func deinitializeBuffer() {
         _ = treeNodeBuffer.withUnsafeMutablePointerToElements {
+
             $0.deinitialize(count: Self.directionCount)
         }
     }
@@ -417,9 +426,9 @@ extension KDTreeNode.NodeIndex {
     }
 
     @inlinable
-    internal func deinitialize() {
+    consuming internal func dispose() {
         if let next {
-            next.pointee.deinitialize()
+            next.pointee.dispose()
             next.deallocate()
         }
     }
