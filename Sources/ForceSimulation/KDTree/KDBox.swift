@@ -190,21 +190,16 @@ extension KDBox {
         for pi in 0..<points.header {
             let p = points[pi]
 
-            let mask1 = p .< _p0
-            let mask2 = p .>= _p1
-
-            _p0 = _p0.replacing(with: p, where: mask1)
-            _p1 = _p1.replacing(with: p + 1, where: mask2)
-
-            // for i in points[pi].indices {
-            //     if p[i] < _p0[i] {
-            //         _p0[i] = p[i]
-            //     }
-            //     if p[i] >= _p1[i] {
-            //         _p1[i] = p[i] + 1
-            //     }
-            // }
+            for i in points[pi].indices {
+                if p[i] < _p0[i] {
+                    _p0[i] = p[i]
+                }
+                if p[i] >= _p1[i] {
+                    _p1[i] = p[i] + 1
+                }
+            }
         }
+
         #if DEBUG
             let testBox = Self(_p0, _p1)
             for i in points.range {

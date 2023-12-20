@@ -76,4 +76,37 @@ class BufferedKDTreeTests: XCTestCase {
         t.add(nodeIndex: 1, at: [0.1251, 0.1251])
     }
 
+    func testExpand() {
+        var t = buildTree(box: .init(p0: [0,0], p1: [1,1]), points: [SIMD2<Double>(0.5, 0.5)])
+        t.add(nodeIndex: 1, at: [1.5, 1.5])
+        
+        XCTAssert(t.root.box.p1 == [2, 2])
+        XCTAssert(Array(1..<5).reduce(0, { partialResult, n in
+            partialResult + t.treeNodeBuffer[n].delegate.count
+        }) == 2)
+        
+        
+        t.add(nodeIndex: 2, at: [1.5, 0.5])
+        XCTAssert(t.root.box.p1 == [2, 2])
+        XCTAssert(Array(1..<5).reduce(0, { partialResult, n in
+            partialResult + t.treeNodeBuffer[n].delegate.count
+        }) == 3)
+        
+        
+        
+        t.add(nodeIndex: 3, at: [0.51, 0.51])
+        XCTAssert(t.root.box.p1 == [2, 2])
+        XCTAssert(Array(1..<5).reduce(0, { partialResult, n in
+            partialResult + t.treeNodeBuffer[n].delegate.count
+        }) == 4)
+        XCTAssert(Array(5..<9).reduce(0, { partialResult, n in
+            partialResult + t.treeNodeBuffer[n].delegate.count
+        }) == 2)
+        XCTAssert(Array(0..<t.validCount).reduce(0, { partialResult, n in
+            partialResult + t.treeNodeBuffer[n].containedIndices.count
+        }) == 4)
+        
+        
+        t.add(nodeIndex: 4, at: [3,3])
+    }
 }

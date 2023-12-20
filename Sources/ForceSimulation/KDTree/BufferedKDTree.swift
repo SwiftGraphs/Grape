@@ -1,4 +1,3 @@
-
 public struct BufferedKDTree<Vector, Delegate>: Disposable
 where
     Vector: SimulatableVector & L2NormCalculatable,
@@ -55,7 +54,7 @@ where
     }
 
     @usableFromInline
-    internal var rootDelegate: Delegate 
+    internal var rootDelegate: Delegate
 
     @inlinable
     public mutating func reset(
@@ -66,7 +65,7 @@ where
 
         treeNodeBuffer.withUnsafeMutablePointerToElements {
             for i in 0..<validCount {
-                $0[i].dispose()
+                $0[i].disposeNodeIndices()
             }
         }
         rootPointer.pointee = .init(
@@ -116,7 +115,7 @@ where
         #endif
     }
 
-    /// Extend the size of the buffer. 
+    /// Extend the size of the buffer.
     /// - Parameter count: the number of elements to extend
     /// - Returns: true if the buffer is resized
     @inlinable
@@ -124,7 +123,7 @@ where
     internal mutating func resizeIfNeededBeforeAllocation(for count: Int) -> Bool {
         if validCount + count > treeNodeBuffer.count {
             let factor = (count / self.treeNodeBuffer.count) + 2
-            
+
             resize(to: treeNodeBuffer.count * factor)
 
             assert(treeNodeBuffer.count >= validCount + count)
@@ -173,21 +172,11 @@ where
                 let center = treeNode.pointee.box.center
 
                 let newTreeNode = self.rootPointer + treeNodeOffset
-
-                //                if (resized) {
-                //                    print("\(__treeNode) => \(newTreeNode)")
-                //                    assert(__rootPointer != rootPointer)
-                //                }
-                //                else {
-                //                    print("no need to resize")
-                //                }
-
+                let _box = newTreeNode.pointee.box
                 for j in 0..<Self.directionCount {
-                    var __box = newTreeNode.pointee.box
-
+                    var __box = _box
                     for i in 0..<Vector.scalarCount {
                         let isOnTheHigherRange = (j >> i) & 0b1
-                        // TODO: use simd mask
                         if isOnTheHigherRange != 0 {
                             __box.p0[i] = center[i]
                         } else {
@@ -195,7 +184,10 @@ where
                         }
                     }
 
-                    self.treeNodeBuffer[validCount + j] = .init(
+                    let obsoletePtr = self.rootPointer + validCount + j
+
+                    obsoletePtr.pointee.disposeNodeIndices()
+                    obsoletePtr.pointee = TreeNode(
                         nodeIndices: nil,
                         childrenBufferPointer: nil,
                         delegate: spawnedDelegate,
@@ -211,19 +203,17 @@ where
                         newTreeNode.pointee.nodePosition,
                         relativeTo: center
                     )
-
+                    // newly created, no need to dispose
+                    // childrenBufferPointer[direction].disposeNodeIndices()
                     childrenBufferPointer[direction] = .init(
-                        nodeIndices: newTreeNode.pointee.nodeIndices, 
-                        childrenBufferPointer: childrenBufferPointer[direction].childrenBufferPointer, 
-                        delegate: newTreeNode.pointee.delegate, 
+                        nodeIndices: newTreeNode.pointee.nodeIndices,
+                        childrenBufferPointer: childrenBufferPointer[direction]
+                            .childrenBufferPointer,
+                        delegate: newTreeNode.pointee.delegate,
                         box: childrenBufferPointer[direction].box,
                         nodePosition: newTreeNode.pointee.nodePosition
                     )
-                    // childrenBufferPointer[direction].nodePosition = newTreeNode.pointee.nodePosition
 
-                    // childrenBufferPointer[direction].nodeIndices = newTreeNode.pointee.nodeIndices
-                    // childrenBufferPointer[direction].nodePosition = newTreeNode.pointee.nodePosition
-                    // childrenBufferPointer[direction].delegate = newTreeNode.pointee.delegate
                     newTreeNode.pointee.nodeIndices = nil
                     newTreeNode.pointee.nodePosition = .zero
                 }
@@ -248,13 +238,14 @@ where
         }
 
         let directionOfNewNode = getIndexInChildren(point, relativeTo: treeNode.pointee.box.center)
+        let treeNodeOffset = (consume treeNode) - rootPointer
         self.addWithoutCover(
             onTreeNode: treeNode.pointee.childrenBufferPointer! + directionOfNewNode,
             nodeOf: nodeIndex,
             at: point
         )
 
-        treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
+        rootPointer[treeNodeOffset].delegate.didAddNode(nodeIndex, at: point)
         return
     }
 
@@ -299,16 +290,29 @@ where
                     __box.p1[i] = _corner[i]
                 }
             }
-
-            self.treeNodeBuffer[validCount + j] = .init(
-                nodeIndices: nil,
-                childrenBufferPointer: nil,
-                delegate: j != nailedDirection ? _rootValue.delegate : spawned,
-                box: __box
-            )
+            // newly allocated, no need to dispose
+            if j != nailedDirection {
+                self.treeNodeBuffer[validCount + j] = TreeNode(
+                    nodeIndices: nil,
+                    childrenBufferPointer: nil,
+                    delegate: spawned,
+                    box: __box,
+                    nodePosition: .zero
+                )
+            }
+            else {
+                self.treeNodeBuffer[validCount + j] = TreeNode(
+                    nodeIndices: _rootValue.nodeIndices,
+                    childrenBufferPointer: _rootValue.childrenBufferPointer,
+                    delegate: _rootValue.delegate,
+                    box: __box,
+                    nodePosition: _rootValue.nodePosition
+                )
+            }
         }
         self.validCount += Self.directionCount
 
+        // don't dispose, they are used in treeNodeBuffer[validCount + j]
         self.rootPointer.pointee = .init(
             nodeIndices: nil,
             childrenBufferPointer: newChildrenPointer,
@@ -324,7 +328,7 @@ where
     public func dispose() {
         treeNodeBuffer.withUnsafeMutablePointerToElements {
             for i in 0..<validCount {
-                $0[i].dispose()
+                $0[i].disposeNodeIndices()
             }
         }
     }

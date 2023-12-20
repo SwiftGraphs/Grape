@@ -1,4 +1,4 @@
-public struct KDTreeNode<Vector, Delegate>: Disposable
+public struct KDTreeNode<Vector, Delegate>
 where
     Vector: SimulatableVector & L2NormCalculatable,
     Delegate: KDTreeDelegate<Int, Vector>
@@ -27,7 +27,7 @@ where
     }
 
     @inlinable
-    mutating public func dispose() {
+    mutating public func disposeNodeIndices() {
         nodeIndices?.dispose()
         nodeIndices = nil
     }
