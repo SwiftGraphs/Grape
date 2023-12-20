@@ -3,16 +3,6 @@ where
     Vector: SimulatableVector & L2NormCalculatable,
     Delegate: KDTreeDelegate<Int, Vector>
 {
-    @usableFromInline
-    struct NodeIndex: Disposable {
-
-        @usableFromInline
-        var index: Int
-
-        @usableFromInline
-        var next: UnsafeMutablePointer<NodeIndex>?
-
-    }
     public var box: KDBox<Vector>
     public var nodePosition: Vector
     public var childrenBufferPointer: UnsafeMutablePointer<KDTreeNode>?
@@ -37,8 +27,22 @@ where
     }
 
     @inlinable
-    public func dispose() {
+    mutating public func dispose() {
         nodeIndices?.dispose()
+        nodeIndices = nil
+    }
+}
+
+extension KDTreeNode {
+    @usableFromInline
+    struct NodeIndex: Disposable {
+
+        @usableFromInline
+        var index: Int
+
+        @usableFromInline
+        var next: UnsafeMutablePointer<NodeIndex>?
+
     }
 }
 
@@ -51,6 +55,15 @@ extension KDTreeNode.NodeIndex {
         self.index = nodeIndex
         self.next = nil
     }
+
+    @inlinable
+    internal init(
+        _ nodeIndex: Int
+    ) {
+        self.index = nodeIndex
+        self.next = nil
+    }
+
 
     @inlinable
     internal mutating func append(nodeIndex: Int) {
@@ -121,7 +134,6 @@ extension KDTreeNode {
         }
     }
 
-
     /// Returns an array of point indices in the tree node.
     @inlinable
     public var containedIndices: [Int] {
@@ -131,5 +143,15 @@ extension KDTreeNode {
         return result
     }
 
+    @inlinable
+    static func zeroWithDelegate(_ delegate: consuming Delegate) -> Self {
+        return Self(
+            nodeIndices: nil,
+            childrenBufferPointer: nil,
+            delegate: delegate,
+            box: .zero,
+            nodePosition: .zero
+        )
+    }
 
 }

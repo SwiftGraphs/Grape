@@ -1,9 +1,9 @@
 public protocol Disposable {
     @inlinable
-    func dispose()
+    mutating func dispose()
 }
 
-extension UnsafeMutablePointer: Disposable where Pointee: Disposable {
+extension UnsafeMutablePointer where Pointee: Disposable {
 
     /// Disposes the underlying memory block and 
     /// deallocates the memory block previously allocated at this pointer.

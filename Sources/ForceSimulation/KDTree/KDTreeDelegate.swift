@@ -39,4 +39,5 @@ public protocol KDTreeDelegate<NodeID, Vector> {
     /// However, you can still carry something like a closure to get information from outside.
     /// This method is called when a leaf box is splited due to the insertion of a new node in this box.
     @inlinable func spawn() -> Self
+    
 }

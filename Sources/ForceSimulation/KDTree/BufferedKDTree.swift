@@ -38,37 +38,41 @@ where
         // 2 additions very close but not clustered in the same box
         // In this case there's no upperbound for addition so `resize` is needed
         let maxBufferCount = (nodeCapacity << Vector.scalarCount) + 1
-        let zeroNode: TreeNode = .init(
-            nodeIndices: nil,
-            childrenBufferPointer: nil,
-            delegate: rootDelegate(),
-            box: rootBox
-        )
+        self.rootDelegate = rootDelegate()
+
         treeNodeBuffer = .createBuffer(
             withHeader: maxBufferCount,
             count: maxBufferCount,
-            initialValue: zeroNode
+            initialValue: .zeroWithDelegate(self.rootDelegate)
         )
-        // rootPointer = treeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
-
-        rootPointer.pointee = .init(
+        rootPointer.pointee = TreeNode(
             nodeIndices: nil,
             childrenBufferPointer: nil,
-            delegate: rootDelegate(),
+            delegate: self.rootDelegate,
             box: rootBox
         )
         self.validCount = 1
     }
+
+    @usableFromInline
+    internal var rootDelegate: Delegate 
 
     @inlinable
     public mutating func reset(
         rootBox: Box,
         rootDelegate: @autoclosure () -> Delegate
     ) {
+        self.rootDelegate = rootDelegate()
+
+        treeNodeBuffer.withUnsafeMutablePointerToElements {
+            for i in 0..<validCount {
+                $0[i].dispose()
+            }
+        }
         rootPointer.pointee = .init(
             nodeIndices: nil,
             childrenBufferPointer: nil,
-            delegate: rootDelegate(),
+            delegate: self.rootDelegate,
             box: rootBox
         )
         self.validCount = 1
@@ -90,7 +94,8 @@ where
             withHeader: newTreeNodeBufferSize,
             count: newTreeNodeBufferSize,
             moving: treeNodeBuffer.mutablePointer,
-            movingCount: validCount
+            movingCount: validCount,
+            fillingExcessiveBufferWith: .zeroWithDelegate(self.rootDelegate)
         )
 
         let newRootPointer = newTreeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
@@ -152,18 +157,15 @@ where
 
         guard treeNode.pointee.childrenBufferPointer != nil else {
             if treeNode.pointee.nodeIndices == nil {
-                treeNode.pointee.nodeIndices = .init(nodeIndex: nodeIndex)
-                treeNode.pointee.nodePosition = point
 
+                treeNode.pointee.nodeIndices = TreeNode.NodeIndex(nodeIndex)
+                treeNode.pointee.nodePosition = point
                 treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
 
                 return
             } else if treeNode.pointee.nodePosition.distanceSquared(to: point)
                 > Self.clusterDistanceSquared
             {
-
-                //                let __treeNode = copy treeNode
-                //                let __rootPointer = copy rootPointer
                 let treeNodeOffset = (consume treeNode) - rootPointer
                 resizeIfNeededBeforeAllocation(for: Self.directionCount)
 
