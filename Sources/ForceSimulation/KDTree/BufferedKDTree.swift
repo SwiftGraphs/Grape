@@ -1,50 +1,5 @@
-protocol Disposable {
-    consuming func dispose()
-}
 
-public struct KDTreeNode<Vector, Delegate>: Disposable
-where
-    Vector: SimulatableVector & L2NormCalculatable,
-    Delegate: KDTreeDelegate<Int, Vector>
-{
-    public struct NodeIndex: Disposable {
-
-        @usableFromInline
-        var index: Int
-
-        @usableFromInline
-        var next: UnsafeMutablePointer<NodeIndex>?
-
-    }
-    public var box: KDBox<Vector>
-    public var nodePosition: Vector
-    public var childrenBufferPointer: UnsafeMutablePointer<KDTreeNode>?
-
-    public var nodeIndices: NodeIndex?
-    public var delegate: Delegate
-
-    @inlinable
-    init(
-        nodeIndices: consuming NodeIndex?,
-        childrenBufferPointer: consuming UnsafeMutablePointer<KDTreeNode>?,
-        delegate: consuming Delegate,
-        box: consuming KDBox<Vector>,
-        nodePosition: consuming Vector = .zero
-    ) {
-        self.childrenBufferPointer = consume childrenBufferPointer
-        self.nodeIndices = consume nodeIndices
-        self.delegate = consume delegate
-        self.box = consume box
-        self.nodePosition = consume nodePosition
-    }
-
-    @inlinable
-    consuming internal func dispose() {
-        nodeIndices?.dispose()
-    }
-}
-
-public struct BufferedKDTree<Vector, Delegate>
+public struct BufferedKDTree<Vector, Delegate>: Disposable
 where
     Vector: SimulatableVector & L2NormCalculatable,
     Delegate: KDTreeDelegate<Int, Vector>
@@ -364,9 +319,11 @@ where
     static internal var directionCount: Int { 1 << Vector.scalarCount }
 
     @inlinable
-    internal func deinitializeBuffer() {
+    public func dispose() {
         _ = treeNodeBuffer.withUnsafeMutablePointerToElements {
-
+            for i in 0..<validCount {
+                $0[i].dispose()
+            }
             $0.deinitialize(count: Self.directionCount)
         }
     }
@@ -402,84 +359,4 @@ extension BufferedKDTree {
         rootPointer.pointee.visit(shouldVisitChildren: shouldVisitChildren)
     }
 
-}
-
-extension KDTreeNode.NodeIndex {
-
-    @inlinable
-    internal init(
-        nodeIndex: Int
-    ) {
-        self.index = nodeIndex
-        self.next = nil
-    }
-
-    @inlinable
-    internal mutating func append(nodeIndex: Int) {
-        if let next {
-            next.pointee.append(nodeIndex: nodeIndex)
-        } else {
-            next = .allocate(capacity: 1)
-            next!.initialize(to: .init(nodeIndex: nodeIndex))
-            // next!.pointee = .init(nodeIndex: nodeIndex)
-        }
-    }
-
-    @inlinable
-    consuming internal func dispose() {
-        if let next {
-            next.pointee.dispose()
-            next.deallocate()
-        }
-    }
-
-    @inlinable
-    internal func contains(_ nodeIndex: Int) -> Bool {
-        if index == nodeIndex { return true }
-        if let next {
-            return next.pointee.contains(nodeIndex)
-        } else {
-            return false
-        }
-    }
-
-    @inlinable
-    internal func forEach(_ body: (Int) -> Void) {
-        body(index)
-        if let next {
-            next.pointee.forEach(body)
-        }
-    }
-}
-
-extension KDTreeNode {
-    /// Returns true is the current tree node is leaf.
-    ///
-    /// Does not guarantee that the tree node has point in it.
-    @inlinable public var isLeaf: Bool { childrenBufferPointer == nil }
-
-    /// Returns true is the current tree node is internal.
-    ///
-    /// Internal tree node are always empty and do not contain any points.
-    @inlinable public var isInternalNode: Bool { childrenBufferPointer != nil }
-
-    /// Returns true is the current tree node is leaf and has point in it.
-    @inlinable public var isFilledLeaf: Bool { nodeIndices != nil }
-
-    /// Returns true is the current tree node is leaf and does not have point in it.
-    @inlinable public var isEmptyLeaf: Bool { nodeIndices == nil }
-
-    /// Visit the tree in pre-order.
-    ///
-    /// - Parameter shouldVisitChildren: a closure that returns a boolean value indicating whether should continue to visit children.
-    @inlinable public mutating func visit(
-        shouldVisitChildren: (inout KDTreeNode<Vector, Delegate>) -> Bool
-    ) {
-        if shouldVisitChildren(&self) && childrenBufferPointer != nil {
-            // this is an internal node
-            for i in 0..<BufferedKDTree<Vector, Delegate>.directionCount {
-                childrenBufferPointer![i].visit(shouldVisitChildren: shouldVisitChildren)
-            }
-        }
-    }
 }
