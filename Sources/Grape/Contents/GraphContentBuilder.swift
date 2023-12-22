@@ -1,3 +1,5 @@
+import SwiftUI
+
 public final class PartialGraphMark<NodeID: Hashable>: GraphContent & GraphProtocol {
     @usableFromInline var nodes: [NodeMark<NodeID>]
     @usableFromInline var links: [LinkMark<NodeID>]
@@ -37,7 +39,7 @@ public final class PartialGraphMark<NodeID: Hashable>: GraphContent & GraphProto
 }
 
 public struct FullyConnected<NodeID: Hashable>: GraphContent {
-    
+
     public var connectedPartial: PartialGraphMark<NodeID>
 
     @inlinable
@@ -69,6 +71,10 @@ public struct GraphContentBuilder<NodeID: Hashable> {
         return PartialGraph(nodes: [], links: [content])
     }
 
+    public static func buildPartialBlock<T: GraphContent>(first content: T) -> PartialGraph {
+        return PartialGraph(nodes: [], links: [])
+    }
+
     public static func buildPartialBlock(first content: PartialGraph) -> PartialGraph {
         return content
     }
@@ -77,11 +83,17 @@ public struct GraphContentBuilder<NodeID: Hashable> {
         return accumulated.with(link: next)
     }
 
+    public static func buildPartialBlock<T: GraphContent>(accumulated: PartialGraph, next: T) -> PartialGraph {
+        return accumulated
+    }
+
     public static func buildPartialBlock(accumulated: PartialGraph, next: Node) -> PartialGraph {
         return accumulated.with(node: next)
     }
 
-    public static func buildPartialBlock(accumulated: PartialGraph, next: PartialGraph) -> PartialGraph {
+    public static func buildPartialBlock(accumulated: PartialGraph, next: PartialGraph)
+        -> PartialGraph
+    {
         return accumulated.with(partial: next)
     }
 
@@ -103,6 +115,17 @@ public struct GraphContentBuilder<NodeID: Hashable> {
 
     public static func buildExpression(_ expression: FullyConnected<NodeID>) -> PartialGraph {
         return expression.connectedPartial
+    }
+
+    // public static func buildExpression<T>(_ expression: T) -> T where T: GraphContent {
+    //     return expression
+    // }
+
+    public static func buildExpression<D, ID, GC>(
+        _ expression: ForEach<D, ID, GraphContentWrapper<GC>>
+    ) -> ForEach<D, ID, GraphContentWrapper<GC>>
+    where GC: GraphContent, GC.NodeID == NodeID {
+        return expression
     }
 
     public static func buildArray(_ components: [PartialGraph]) -> PartialGraph {

@@ -1,7 +1,9 @@
 import SwiftUI
 import ForceSimulation
 
-public protocol GraphContent {}
+public protocol GraphContent<NodeID> {
+    associatedtype NodeID: Hashable
+}
 
 extension GraphContent {
     @inlinable
@@ -14,3 +16,11 @@ extension GraphContent {
         return self
     }
 }
+
+
+
+// extension ForEach {
+//     struct GraphContentWrapper: GraphContent {
+
+//     }
+// }

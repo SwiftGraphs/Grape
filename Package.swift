@@ -27,11 +27,11 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.1.0"),
+        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.1.0")
     ],
 
     targets: [
-        
+
         .target(
             name: "ForceSimulation",
             path: "Sources/ForceSimulation"
@@ -41,8 +41,8 @@ let package = Package(
             name: "Grape",
             dependencies: ["ForceSimulation"],
             path: "Sources/Grape"
-            // link ForceSimulation in release mode
-            // swiftSettings: [.unsafeFlags(["-Xfrontend", "-disable-availability-checking"])]
+                // link ForceSimulation in release mode
+                // swiftSettings: [.unsafeFlags(["-Xfrontend", "-disable-availability-checking"])]
         ),
 
         .testTarget(
@@ -54,10 +54,10 @@ let package = Package(
             name: "ForceSimulationTests",
             dependencies: ["ForceSimulation"]
         ),
-        
-        //     .testTarget(
-        //         name: "GrapeTests",
-        //         dependencies: ["Grape"]
-        //     ),
+
+        .testTarget(
+            name: "GrapeTests",
+            dependencies: ["Grape"]
+        ),
     ]
 )

@@ -1,4 +1,5 @@
 /// A wrapper of managed buffer that stores an array of elements.
+@_eagerMove
 public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
 
     @inlinable
