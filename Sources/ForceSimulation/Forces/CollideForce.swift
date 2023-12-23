@@ -9,7 +9,7 @@ where Vector: SimulatableVector {
     @inlinable
     public mutating func didAddNode(_ node: Int, at position: Vector) {
         let p = radiusBufferPointer[node]
-        maxNodeRadius = max(maxNodeRadius, p)
+        maxNodeRadius = max(maxNodeRadius, consume p)
     }
 
     @inlinable

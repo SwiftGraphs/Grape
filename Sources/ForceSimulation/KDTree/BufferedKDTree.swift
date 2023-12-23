@@ -343,10 +343,9 @@ where
     internal func getIndexInChildren(_ point: Vector, relativeTo originalPoint: Vector) -> Int {
         var index = 0
         let mask = point .>= originalPoint
-
         for i in 0..<Vector.scalarCount {
             if mask[i] {  // isOnHigherRange in this dimension
-                index |= (1 << i)
+                index |= (1 &<< i)
             }
         }
         return index

@@ -38,9 +38,11 @@ public struct KDBox<V>: Equatable where V: SIMD, V.Scalar: FloatingPoint & Expre
         //         swap(&p0[i], &p1[i])
         //     }
         // }
-        let mask = p0 .< p1
-        self.p0 = p1.replacing(with: p0, where: mask)
-        self.p1 = p0.replacing(with: p1, where: mask)
+        // let mask = p0 .< p1
+        // self.p0 = p1.replacing(with: p0, where: mask)
+        // self.p1 = p0.replacing(with: p1, where: mask)
+        self.p0 = pointwiseMin(p0, p1)
+        self.p1 = pointwiseMax(p0, p1)
         // TODO: use Mask
     }
 
@@ -155,11 +157,14 @@ extension KDBox {
         var _p1 = points[0]
 
         for p in points {
-            let mask1 = p .< _p0
-            let mask2 = p .>= _p1
+            // let mask1 = p .< _p0
+            // let mask2 = p .>= _p1
 
-            _p0 = _p0.replacing(with: p, where: mask1)
-            _p1 = _p1.replacing(with: p + 1, where: mask2)
+            // _p0 = _p0.replacing(with: p, where: mask1)
+            // _p1 = _p1.replacing(with: p + 1, where: mask2)
+
+            _p0 = pointwiseMin(p, _p0)
+            _p1 = pointwiseMax(p, _p1)
 
             // for i in p.indices {
             //     if p[i] < _p0[i] {
@@ -184,21 +189,26 @@ extension KDBox {
 
     @inlinable public static func cover(of points: UnsafeArray<V>) -> Self {
 
+
         var _p0 = points[0]
         var _p1 = points[0]
 
         for pi in 0..<points.header {
             let p = points[pi]
 
-            for i in points[pi].indices {
-                if p[i] < _p0[i] {
-                    _p0[i] = p[i]
-                }
-                if p[i] >= _p1[i] {
-                    _p1[i] = p[i] + 1
-                }
-            }
+            _p0 = pointwiseMin(p, _p0)
+            _p1 = pointwiseMax(p, _p1)
+
+            // for i in points[pi].indices {
+            //     if p[i] < _p0[i] {
+            //         _p0[i] = p[i]
+            //     }
+            //     if p[i] > _p1[i] {
+            //         _p1[i] = p[i] + 1
+            //     }
+            // }
         }
+        
 
         #if DEBUG
             let testBox = Self(_p0, _p1)
@@ -207,7 +217,7 @@ extension KDBox {
             }
         #endif
 
-        return Self(_p0, _p1)
+        return Self(consume _p0, consume _p1+1)
     }
 
 }
