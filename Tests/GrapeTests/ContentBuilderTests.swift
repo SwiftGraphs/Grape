@@ -25,13 +25,13 @@ final class ContentBuilderTests: XCTestCase {
             ID(id: 2),
         ]
 
-        let a = ForEach(data: arr) { i in
+        let a = ForEach(arr) { i in
             NodeMark(id: i.id)
         }
 
         let b = buildGraph {
             NodeMark(id: 0)
-            ForEach(data: arr) { i in
+            ForEach(arr) { i in
                 NodeMark(id: i.id)
             }
         }
@@ -161,7 +161,7 @@ final class ContentBuilderTests: XCTestCase {
         ]
 
         let gc = buildGraph {
-            ForEach(data: arr) { i in
+            ForEach(arr) { i in
                 NodeMark(id: i.id)
             }
         }
