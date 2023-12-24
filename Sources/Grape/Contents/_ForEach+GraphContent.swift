@@ -1,11 +1,10 @@
 import SwiftUI
 
-public struct GraphContentWrapper<InnerGraphContent>: GraphContent
+public struct _GraphContentWrapper<InnerGraphContent>: GraphContent
 where InnerGraphContent: GraphContent {
     public typealias NodeID = InnerGraphContent.NodeID
 
-    @usableFromInline
-    let storage: InnerGraphContent
+    public let storage: InnerGraphContent
 
     @inlinable
     init(_ content: InnerGraphContent) {
@@ -18,7 +17,12 @@ where InnerGraphContent: GraphContent {
     }
 }
 
-extension GraphContentWrapper: View {
+public protocol _GraphContentWrappingView: View {
+    associatedtype InnerGraphContent: GraphContent
+    var storage: InnerGraphContent { get }
+}
+
+extension _GraphContentWrapper: _GraphContentWrappingView {
     public var body: some View {
         EmptyView()
     }
@@ -49,7 +53,7 @@ extension ForEach: GraphContent where Content: GraphContent {
     }
 }
 
-extension ForEach where ID == Data.Element.ID, Content: View, Data.Element: Identifiable {
+extension ForEach where ID == Data.Element.ID, Content: _GraphContentWrappingView, Data.Element: Identifiable {
 
     public init<NodeID, IG>(
         _ data: Data,
@@ -58,15 +62,15 @@ extension ForEach where ID == Data.Element.ID, Content: View, Data.Element: Iden
     where
         IG: GraphContent<NodeID>,
         NodeID: Hashable,
-        Content == GraphContentWrapper<IG>
+        Content == _GraphContentWrapper<IG>
     {
-        let pb = GraphContentWrapper.pullback(graphContent)
+        let pb = _GraphContentWrapper.pullback(graphContent)
         self.init(data, content: pb)
     }
 
 }
 
-extension ForEach where Content: View {
+extension ForEach where Content: _GraphContentWrappingView {
 
     public init<NodeID, IG>(
         _ data: Data,
@@ -76,10 +80,10 @@ extension ForEach where Content: View {
     where
         IG: GraphContent<NodeID>,
         NodeID: Hashable,
-        Content == GraphContentWrapper<IG>,
+        Content == _GraphContentWrapper<IG>,
         ID: Hashable
     {
-        let pb = GraphContentWrapper.pullback(id: id, graphContent)
+        let pb = _GraphContentWrapper.pullback(id: id, graphContent)
         self.init(data, id: id, content: pb)
     }
 

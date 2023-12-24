@@ -1,3 +1,4 @@
+/// TODO: switch to Generic packs when same type requirements are supported
 @usableFromInline
 struct _PairedGraphContent<C1, C2, NodeID>: GraphContent 
 where C1: GraphContent, C2: GraphContent, NodeID: Hashable, C1.NodeID == NodeID, C2.NodeID == NodeID {

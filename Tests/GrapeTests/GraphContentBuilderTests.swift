@@ -11,7 +11,7 @@ func buildGraph<NodeID>(
     return result
 }
 
-final class ContentBuilderTests: XCTestCase {
+final class GraphContentBuilderTests: XCTestCase {
 
     func testSyntaxes() {
 

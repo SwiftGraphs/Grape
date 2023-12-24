@@ -8,7 +8,7 @@ public protocol GraphComponent<NodeID>: GraphContent {
 
 extension GraphComponent {
 
-    public typealias NodeID = Body.NodeID
+    // public typealias NodeID = Body.NodeID
 
     public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<Body.NodeID>) {
         body._attachToGraphRenderingContext(&context)

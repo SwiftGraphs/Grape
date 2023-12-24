@@ -2,6 +2,10 @@ import SwiftUI
 
 extension ForceDirectedGraph: View {
     public var body: some View {
-        EmptyView()
+        VStack {
+            ForEach(self.graphContext.nodes, id: \.id) { node in
+                Text("\(node.label ?? "")")
+            }
+        }
     }
 }
