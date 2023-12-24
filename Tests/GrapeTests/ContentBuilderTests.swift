@@ -4,13 +4,14 @@ import simd
 
 @testable import Grape
 
+func buildGraph<NodeID>(
+    @GraphContentBuilder<NodeID> _ builder: () -> some GraphContent<NodeID>
+) -> some GraphContent<NodeID> where NodeID: Hashable {
+    let result = builder()
+    return result
+}
+
 final class ContentBuilderTests: XCTestCase {
-    func buildGraph<NodeID>(
-        @GraphContentBuilder<NodeID> _ builder: () -> some GraphContent<NodeID>
-    ) -> some GraphContent where NodeID: Hashable {
-        let result = builder()
-        return result
-    }
 
     func testSyntaxes() {
 
@@ -58,33 +59,94 @@ final class ContentBuilderTests: XCTestCase {
                 LinkMark(from: 0, to: 1)
             }
         }
+
+        var gc = _GraphRenderingContext<Int>()
+        d._attachToGraphRenderingContext(&gc)
+
+        XCTAssert(
+            gc.nodes.count == 11,
+            "Expected 1 node, got \(gc.nodes.count)"
+        )
     }
 
     func testForLoop() {
-        let _ = buildGraph {
+        let gc = buildGraph {
             for i in 0..<10 {
                 NodeMark(id: i)
             }
         }
+
+        var ctx = _GraphRenderingContext<Int>()
+
+        gc._attachToGraphRenderingContext(&ctx)
+
+        XCTAssert(
+            ctx.nodes.count == 10,
+            "Expected 10 nodes, got \(ctx.nodes.count)"
+        )
     }
 
     func testMixed() {
-        let _ = buildGraph {
+        let gc = buildGraph {
             LinkMark(from: 0, to: 1)
             NodeMark(id: 3)
             NodeMark(id: 4)
             NodeMark(id: 5)
         }
+
+        var ctx = _GraphRenderingContext<Int>()
+
+        gc._attachToGraphRenderingContext(&ctx)
+
+        XCTAssert(
+            ctx.nodes.count == 3,
+            "Expected 3 nodes, got \(ctx.nodes.count)"
+        )
+
+        XCTAssert(
+            ctx.edges.count == 1,
+            "Expected 1 edge, got \(ctx.edges.count)"
+        )
+
+        XCTAssert(
+            ctx.nodes[0].id == 3)
+
+        XCTAssert(
+            ctx.nodes[1].id == 4)
+
+        XCTAssert(
+            ctx.nodes[2].id == 5)
+
     }
 
     func testConditional() {
-        let _ = buildGraph {
+        let gc = buildGraph {
             if true {
                 NodeMark(id: 0)
             } else {
                 NodeMark(id: 1)
             }
         }
+
+        var ctx = _GraphRenderingContext<Int>()
+
+        gc._attachToGraphRenderingContext(&ctx)
+
+        XCTAssert(
+            ctx.nodes.count == 1,
+            "Expected 1 node, got \(ctx.nodes.count)"
+        )
+
+        XCTAssert(
+            ctx.nodes[0].id == 0,
+            "Expected 0 edges, got \(ctx.edges.count)"
+        )
+
+        XCTAssert(
+            ctx.edges.count == 0,
+            "Expected 0 edges, got \(ctx.edges.count)"
+        )
+
     }
 
     struct ID: Identifiable {
@@ -98,10 +160,19 @@ final class ContentBuilderTests: XCTestCase {
             ID(id: 2),
         ]
 
-        let _ = buildGraph {
+        let gc = buildGraph {
             ForEach(data: arr) { i in
                 NodeMark(id: i.id)
             }
         }
+
+        var ctx = _GraphRenderingContext<Int>()
+        gc._attachToGraphRenderingContext(&ctx)
+
+        XCTAssert(
+            ctx.nodes.count == 3,
+            "Expected 3 nodes, got \(ctx.nodes.count)"
+        )
+
     }
 }

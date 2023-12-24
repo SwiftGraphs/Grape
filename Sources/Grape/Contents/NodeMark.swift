@@ -52,6 +52,6 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     @inlinable
     public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
-        fatalError("Not implemented")
+        context.appendNode(self)
     }
 }
