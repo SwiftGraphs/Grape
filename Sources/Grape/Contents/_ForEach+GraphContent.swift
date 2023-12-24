@@ -58,35 +58,3 @@ extension ForEach where ID == Data.Element.ID, Content: View, Data.Element: Iden
     }
 
 }
-
-struct ID: Identifiable {
-    var id: Int
-}
-
-func buildGraph<NodeID>(
-    @GraphContentBuilder<NodeID> _ builder: () -> some GraphContent<NodeID>
-) -> some GraphContent where NodeID: Hashable {
-    let result = builder()
-    return result
-}
-
-func testForEach() {
-    let arr = [
-        ID(id: 0),
-        ID(id: 1),
-        ID(id: 2),
-    ]
-
-    let a = ForEach(data: arr) { i in
-        NodeMark(id: i.id)
-    }
-
-    
-
-    let _ = buildGraph {
-        NodeMark(id: 0)
-        ForEach(data: arr) { i in
-            NodeMark(id: i.id)
-        }
-    }
-}

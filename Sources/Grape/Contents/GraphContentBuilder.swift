@@ -1,3 +1,4 @@
+import Charts
 import SwiftUI
 
 public final class PartialGraphMark<NodeID: Hashable>: GraphContent & GraphProtocol {
@@ -74,51 +75,51 @@ public struct GraphContentBuilder<NodeID: Hashable> {
     public typealias Link = LinkMark<NodeID>
     public typealias Node = NodeMark<NodeID>
     public typealias PartialGraph = PartialGraphMark<NodeID>
+    public typealias Content = GraphContent<NodeID>
 
-    public static func buildPartialBlock<T: GraphContent>(first content: T) -> some GraphContent<NodeID> where T.NodeID == NodeID {
+    public static func buildPartialBlock<T: GraphContent>(first content: T) -> T
+    where T.NodeID == NodeID {
         return content
     }
 
-    public static func buildPartialBlock<T1, T2>(accumulated: T1, next: T2) -> some GraphContent<NodeID> where T1: GraphContent, T2: GraphContent, T1.NodeID == NodeID, T2.NodeID == NodeID {
+    public static func buildPartialBlock<T1, T2>(accumulated: T1, next: T2) -> some Content
+    where T1: Content, T2: Content, T1.NodeID == NodeID, T2.NodeID == NodeID, T1.NodeID == T2.NodeID
+    {
         return _PairedGraphContent(accumulated, next)
     }
 
-    public static func buildBlock() -> some GraphContent<NodeID> {
+    public static func buildBlock() -> some Content {
         return _EmptyGraphContent()
     }
 
-
-    // public static func buildExpression(_ expression: Node) -> Node {
-    //     return expression
-    // }
-
-    // public static func buildExpression(_ expression: Link) -> Link {
-    //     return expression
-    // }
-
-    // public static func buildExpression(_ expression: FullyConnected<NodeID>) -> PartialGraph {
-    //     return expression.connectedPartial
-    // }
-
-    // public static func buildExpression<T>(_ expression: T) -> T where T: GraphContent {
-    //     return expression
-    // }
-
-    // public static func buildExpression<D, ID, GC>(
-    //     _ expression: ForEach<D, ID, GraphContentWrapper<GC>>
-    // ) -> ForEach<D, ID, GraphContentWrapper<GC>>
-    // where GC: GraphContent, GC.NodeID == NodeID {
-    //     return expression
-    // }
-
-    public static func buildArray<T>(_ components: [T]) -> some GraphContent<NodeID> where T: GraphContent, T.NodeID == NodeID {
+    public static func buildArray<T>(_ components: [T]) -> some Content
+    where T: Content, T.NodeID == NodeID {
         return _ArrayGraphContent(components)
     }
 
-    // public static func buildExpression(
-    //     @GraphContentBuilder<NodeID> expression: () -> PartialGraphMark<NodeID>
-    // ) -> PartialGraph {
-    //     return PartialGraph.empty
-    // }
+    // Opaque breaks type inference?
+    public static func buildEither<T1, T2>(first component: T1) -> _ConditionalGraphContent<T1, T2>
+    where T1: Content, T1.NodeID == NodeID, T2: Content, T2.NodeID == NodeID {
+        return _ConditionalGraphContent<T1, T2>(.trueContent(component))
+    }
 
+    public static func buildEither<T1, T2>(second component: T2) -> _ConditionalGraphContent<T1, T2>
+    where T1: Content, T1.NodeID == NodeID, T2: Content, T2.NodeID == NodeID {
+        return _ConditionalGraphContent<T1, T2>(.falseContent(component))
+    }
+
+    public static func buildLimitedAvailability<T>(_ component: T?) -> some Content
+    where T: Content, T.NodeID == NodeID {
+        return _OptionalGraphContent(component)
+    }
+
+    public static func buildIf<T>(_ component: T?) -> some Content
+    where T: Content, T.NodeID == NodeID {
+        return _OptionalGraphContent(component)
+    }
+
+    public static func buildExpression<T>(_ expression: T) -> T
+    where T: Content, T.NodeID == NodeID {
+        return expression
+    }
 }

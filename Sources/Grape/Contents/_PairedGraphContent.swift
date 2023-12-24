@@ -1,4 +1,5 @@
-public struct _PairedGraphContent<C1, C2, NodeID>: GraphContent 
+@usableFromInline
+struct _PairedGraphContent<C1, C2, NodeID>: GraphContent 
 where C1: GraphContent, C2: GraphContent, NodeID: Hashable, C1.NodeID == NodeID, C2.NodeID == NodeID {
     @usableFromInline
     let first: C1

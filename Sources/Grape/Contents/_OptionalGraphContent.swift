@@ -1,21 +1,25 @@
+
 @usableFromInline
-struct _ArrayGraphContent<C>: GraphContent 
+struct _OptionalGraphContent<C>: GraphContent 
 where C: GraphContent {
     public typealias NodeID = C.NodeID
-
+    
     @usableFromInline
-    let storage: [C]
+    let storage: C?
 
     @inlinable
     public init(
-        _ storage: [C]
+        _ storage: C?
     ) {
         self.storage = storage
     }
 
     @inlinable
     public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
-        for content in storage {
+        switch storage {
+        case .none:
+            break
+        case .some(let content):
             content._attachToGraphRenderingContext(&context)
         }
     }
