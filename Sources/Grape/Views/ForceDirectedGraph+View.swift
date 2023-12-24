@@ -11,12 +11,14 @@ extension ForceDirectedGraph: View {
                 self.clickCount += 1
             } label: {
                 Text("Click \(clickCount)")
+                Text(changeMessage)
             }
             ForEach(self.graphContext.nodes, id: \.id) { node in
                 Text("\(node.debugDescription)")
             }
         }.onChange(of: self.graphContext, initial: true) { oldValue, newValue in
             print("Graph context changed from \(oldValue.nodes.count) to \(newValue.nodes.count)")
+            self.changeMessage = "Graph context changed from \(oldValue.nodes.count) to \(newValue.nodes.count)"
         }
     }
 }
