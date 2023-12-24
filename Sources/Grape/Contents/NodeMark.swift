@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     public enum LabelDisplayStrategy {
@@ -53,5 +52,19 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
     @inlinable
     public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
         context.appendNode(self)
+    }
+}
+
+extension NodeMark: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        return
+            "NodeMark(id: \(id))"
+    }
+}
+
+
+extension NodeMark: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.id == rhs.id
     }
 }

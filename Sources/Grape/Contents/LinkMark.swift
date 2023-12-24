@@ -86,3 +86,17 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
 //         return LinkMark(from: lhs, to: rhs)
 //     }
 // }
+
+
+extension LinkMark: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        return
+            "LinkMark(\(id.source) -> \(id.target))"
+    }
+}
+
+extension LinkMark: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.id == rhs.id
+    }
+}

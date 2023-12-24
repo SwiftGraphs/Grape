@@ -1,4 +1,4 @@
-public struct _GraphRenderingContext<NodeID: Hashable> {
+public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
 
     @usableFromInline var nodes: [NodeMark<NodeID>] = []
     @usableFromInline var edges: [LinkMark<NodeID>] = []
