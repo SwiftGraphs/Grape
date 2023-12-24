@@ -180,7 +180,7 @@ final class ContentBuilderTests: XCTestCase {
 
     struct MyGraphComponent: GraphComponent {
         typealias NodeID = Int
-        var body: some GraphContent<NodeID> {
+        var body: some GraphContent<Int> {
             NodeMark(id: 0)
             NodeMark(id: 1)
             NodeMark(id: 2)
@@ -190,6 +190,7 @@ final class ContentBuilderTests: XCTestCase {
     func testCustomComponent() {
         let gc = buildGraph {
             MyGraphComponent()
+                .opacity(0.2)
         }
 
         var ctx = _GraphRenderingContext<Int>()
