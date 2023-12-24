@@ -123,6 +123,7 @@ final class ContentBuilderTests: XCTestCase {
         let gc = buildGraph {
             if true {
                 NodeMark(id: 0)
+                    .opacity(0.2)
             } else {
                 NodeMark(id: 1)
             }
@@ -163,6 +164,7 @@ final class ContentBuilderTests: XCTestCase {
         let gc = buildGraph {
             ForEach(arr) { i in
                 NodeMark(id: i.id)
+                    .opacity(0.2)
             }
         }
 
@@ -174,5 +176,28 @@ final class ContentBuilderTests: XCTestCase {
             "Expected 3 nodes, got \(ctx.nodes.count)"
         )
 
+    }
+
+    struct MyGraphComponent: GraphComponent {
+        typealias NodeID = Int
+        var body: some GraphContent<NodeID> {
+            NodeMark(id: 0)
+            NodeMark(id: 1)
+            NodeMark(id: 2)
+        }
+    }
+
+    func testCustomComponent() {
+        let gc = buildGraph {
+            MyGraphComponent()
+        }
+
+        var ctx = _GraphRenderingContext<Int>()
+        gc._attachToGraphRenderingContext(&ctx)
+
+        XCTAssert(
+            ctx.nodes.count == 3,
+            "Expected 3 nodes, got \(ctx.nodes.count)"
+        )
     }
 }
