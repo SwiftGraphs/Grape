@@ -1,7 +1,11 @@
 import SwiftUI
 
-public struct _GraphRenderingContext<NodeID: Hashable> {
 
+public struct _GraphRenderingContext<NodeID: Hashable> {
+    @inlinable
+    init() {
+
+    }
 }
 
 public protocol GraphContent<NodeID> {
