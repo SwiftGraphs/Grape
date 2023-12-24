@@ -1,5 +1,4 @@
 import SwiftUI
-import ForceSimulation
 
 public struct _GraphRenderingContext<NodeID: Hashable> {
 

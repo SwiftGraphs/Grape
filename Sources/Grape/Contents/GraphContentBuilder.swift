@@ -113,9 +113,6 @@ public struct GraphContentBuilder<NodeID: Hashable> {
         return PartialGraph.empty
     }
 
-    public static func buildExpression(_ expression: (NodeID, NodeID)) -> Link {
-        return Link(from: expression.0, to: expression.1)
-    }
 
     public static func buildExpression(_ expression: Node) -> Node {
         return expression
