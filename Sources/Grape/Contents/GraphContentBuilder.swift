@@ -30,12 +30,19 @@ public final class PartialGraphMark<NodeID: Hashable>: GraphContent & GraphProto
     }
 
     @discardableResult
-    @initializes
+    @inlinable
     func with(partial: PartialGraphMark<NodeID>) -> Self {
         links.append(contentsOf: partial.links)
         nodes.append(contentsOf: partial.nodes)
         return self
     }
+
+    @inlinable
+    public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
+        links.forEach { $0._attachToGraphRenderingContext(&context) }
+        nodes.forEach { $0._attachToGraphRenderingContext(&context) }
+    }
+
 }
 
 public struct FullyConnected<NodeID: Hashable>: GraphContent {
@@ -53,6 +60,11 @@ public struct FullyConnected<NodeID: Hashable>: GraphContent {
             }
         }
         connectedPartial = result
+    }
+
+    @inlinable
+    public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
+        connectedPartial._attachToGraphRenderingContext(&context)
     }
 }
 

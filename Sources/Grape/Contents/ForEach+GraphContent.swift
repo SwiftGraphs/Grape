@@ -11,6 +11,11 @@ where InnerGraphContent: GraphContent {
     init(_ content: InnerGraphContent) {
         self.storage = content
     }
+
+    @inlinable
+    public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
+        storage._attachToGraphRenderingContext(&context)
+    }
 }
 
 extension GraphContentWrapper: View {
@@ -28,6 +33,13 @@ extension GraphContentWrapper: View {
 
 extension ForEach: GraphContent where Content: GraphContent {
     public typealias NodeID = Content.NodeID
+
+    @inlinable
+    public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
+        self.data.forEach { element in
+            self.content(element)._attachToGraphRenderingContext(&context)
+        }
+    }
 }
 
 extension ForEach where ID == Data.Element.ID, Content: View, Data.Element: Identifiable {

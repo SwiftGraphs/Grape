@@ -49,4 +49,9 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
         self.strokeColor = strokeColor
         self.strokeWidth = strokeWidth
     }
+
+    @inlinable
+    public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
+        fatalError("Not implemented")
+    }
 }

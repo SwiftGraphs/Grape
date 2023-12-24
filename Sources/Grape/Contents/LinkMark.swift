@@ -64,20 +64,25 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
         }
         return _self
     }
-}
 
-infix operator --> : AssignmentPrecedence
-infix operator <-- : AssignmentPrecedence
-
-extension Hashable {
-
-    @inlinable
-    public static func --> (lhs: Self, rhs: Self) -> LinkMark<Self> {
-        return LinkMark(from: lhs, to: rhs)
-    }
-
-    @inlinable
-    public static func <-- (lhs: Self, rhs: Self) -> LinkMark<Self> {
-        return LinkMark(from: lhs, to: rhs)
+        @inlinable
+    public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
+        fatalError("Not implemented")
     }
 }
+
+// infix operator --> : AssignmentPrecedence
+// infix operator <-- : AssignmentPrecedence
+
+// extension Hashable {
+
+//     @inlinable
+//     public static func --> (lhs: Self, rhs: Self) -> LinkMark<Self> {
+//         return LinkMark(from: lhs, to: rhs)
+//     }
+
+//     @inlinable
+//     public static func <-- (lhs: Self, rhs: Self) -> LinkMark<Self> {
+//         return LinkMark(from: lhs, to: rhs)
+//     }
+// }

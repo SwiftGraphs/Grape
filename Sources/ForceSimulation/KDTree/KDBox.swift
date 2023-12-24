@@ -211,7 +211,7 @@ extension KDBox {
         
 
         #if DEBUG
-            let testBox = Self(_p0, _p1)
+            let testBox = Self(_p0, _p1+1)
             for i in points.range {
                 assert(testBox.contains(points[i]))
             }

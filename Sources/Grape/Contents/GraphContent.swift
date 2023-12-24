@@ -1,8 +1,15 @@
 import SwiftUI
 import ForceSimulation
 
+public struct _GraphRenderingContext<NodeID: Hashable> {
+
+}
+
 public protocol GraphContent<NodeID> {
     associatedtype NodeID: Hashable
+
+    @inlinable
+    func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>)
 }
 
 extension GraphContent {
