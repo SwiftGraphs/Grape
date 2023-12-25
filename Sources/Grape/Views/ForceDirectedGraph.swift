@@ -102,7 +102,7 @@ final class ForceDirectedGraphModel<NodeID: Hashable> {
 
     func revive(with newContext: _GraphRenderingContext<NodeID>) {
         self.changeMessage =
-            "graphRenderingContext update: \(graphRenderingContext.nodes.count) nodes -> \(newContext.nodes.count) nodes"
+            "gctx \(graphRenderingContext.nodes.count) -> \(newContext.nodes.count)"
         self.graphRenderingContext = newContext
     }
 
@@ -131,21 +131,9 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
         var gctx = _GraphRenderingContext<NodeID>()
         graph()._attachToGraphRenderingContext(&gctx)
         self._graphRenderingContextShadow = gctx
-
-
-        // self._isRunning = isRunning
         self._isRunning = isRunning
-
-
-
         self.model = ForceDirectedGraphModel(gctx)
 
     }
 }
 
-
-extension ForceDirectedGraph: Equatable {
-    public static func == (lhs: ForceDirectedGraph<NodeID>, rhs: ForceDirectedGraph<NodeID>) -> Bool {
-        return lhs._graphRenderingContextShadow == rhs._graphRenderingContextShadow
-    }
-}

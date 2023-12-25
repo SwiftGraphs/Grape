@@ -1,26 +1,18 @@
 import SwiftUI
 
 extension ForceDirectedGraph: View {
+
     public var body: some View {
         #if DEBUG
-        let _ = Self._printChanges()
-        let _ = print("Evaluating View: \(self.model.graphRenderingContext.nodes.count)")
+            let _ = Self._printChanges()
         #endif
-        VStack {
-            Text("Elapsed Time: \(model.currentFrame.rawValue)")
-            Button {
-                self.clickCount += 1
-            } label: {
-                Text("Click \(clickCount)")
-                Text(self.model.changeMessage)
-            }
-            ForEach(self.model.graphRenderingContext.nodes, id: \.id) { node in
-                Text("\(node.debugDescription)")
-            }
+        HStack {
+            debugView
+            canvas
         }
         .onChange(
-            of: self._graphRenderingContextShadow, 
-            initial: false // Don't trigger on initial value, keep `changeMessage` as "N/A"
+            of: self._graphRenderingContextShadow,
+            initial: false  // Don't trigger on initial value, keep `changeMessage` as "N/A"
         ) { _, newValue in
             self.model.revive(with: newValue)
         }
@@ -31,5 +23,40 @@ extension ForceDirectedGraph: View {
                 self.model.stop()
             }
         }
+    }
+
+    @ViewBuilder
+    @usableFromInline
+    var debugView: some View {
+        VStack(alignment: .leading) {
+            Text("Elapsed Time: \(model.currentFrame.rawValue)")
+
+            Button {
+                self.clickCount += 1
+            } label: {
+                Text("Click \(clickCount)")
+                Text(self.model.changeMessage)
+            }
+            ForEach(self.model.graphRenderingContext.nodes, id: \.id) { node in
+                Text("\(node.debugDescription)")
+            }
+        }
+        .frame(width: 200.0)
+    }
+
+    @ViewBuilder
+    @usableFromInline
+    var canvas: some View {
+        Canvas { context, size in
+            context.fill(Path(), with: .color(.red))
+        }
+        .border(.red, width: 1)
+    }
+}
+
+extension ForceDirectedGraph: Equatable {
+    public static func == (lhs: ForceDirectedGraph<NodeID>, rhs: ForceDirectedGraph<NodeID>) -> Bool
+    {
+        return lhs._graphRenderingContextShadow == rhs._graphRenderingContextShadow
     }
 }
