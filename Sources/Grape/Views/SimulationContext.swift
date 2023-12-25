@@ -2,17 +2,22 @@ import ForceSimulation
 
 @usableFromInline
 internal struct SimulationContext<NodeID: Hashable> {
+
+    public typealias Vector = ForceField.Vector
+    public typealias ForceField = SealedForce2D
+
+
+
     @usableFromInline
-    internal var storage: Simulation2D<SealedForce2D>
+    internal var storage: Simulation2D<ForceField>
 
     @usableFromInline
     internal var nodeIndexLookup: [NodeID: Int]
 
-    public typealias Vector = SealedForce2D.Vector
 
     @inlinable
     internal init(
-        _ storage: consuming Simulation2D<SealedForce2D>,
+        _ storage: consuming Simulation2D<ForceField>,
         nodeIndexLookup: consuming [NodeID: Int]
     ) {
         self.storage = storage
@@ -24,7 +29,7 @@ extension SimulationContext {
     @inlinable
     public static func create(
         for graphRenderingContext: _GraphRenderingContext<NodeID>,
-        with forceField: consuming SealedForce2D
+        with forceField: consuming ForceField
     ) -> Self {
         let nodes = graphRenderingContext.nodes
 
@@ -49,7 +54,7 @@ extension SimulationContext {
     @inlinable
     public func revive(
         for graphRenderingContext: _GraphRenderingContext<NodeID>,
-        with forceField: consuming SealedForce2D
+        with forceField: consuming ForceField
     ) {
 
     }
