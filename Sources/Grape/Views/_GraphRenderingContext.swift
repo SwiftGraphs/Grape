@@ -1,3 +1,5 @@
+import SwiftUI
+
 public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
 
     // @usableFromInline var nodes: [NodeMark<NodeID>] = []
@@ -20,10 +22,13 @@ public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
     }
 
     @inlinable
-    func renderGraphContent() {
+    func renderGraphContent(
+        _ simulationContext: inout SimulationContext<NodeID>, 
+        _ canvasContext: inout GraphicsContext,
+        _ cgSize: CGSize
+    ) {
 
     }
-
 
 }
 
@@ -35,10 +40,10 @@ extension _GraphRenderingContext.RenderingOperation: Equatable {
             return l == r
         case (.link(let l), .link(let r)):
             return l == r
-        case (.modifierBegin(let l), .modifierBegin(let r)):
-            return l == r
         case (.modifierEnd, .modifierEnd):
             return true
+        case (.modifierBegin(let l), .modifierBegin(let r)):
+            return l == r
         default:
             return false
         }
@@ -48,29 +53,25 @@ extension _GraphRenderingContext.RenderingOperation: Equatable {
 extension _GraphRenderingContext {
     @inlinable
     var nodes: [NodeMark<NodeID>] {
-        var nodes: [NodeMark<NodeID>] = []
-        for operation in operations {
+        operations.compactMap { operation in
             switch operation {
             case .node(let node):
-                nodes.append(node)
+                return node
             default:
-                break
+                return nil
             }
         }
-        return nodes
     }
 
     @inlinable
     var edges: [LinkMark<NodeID>] {
-        var edges: [LinkMark<NodeID>] = []
-        for operation in operations {
+        operations.compactMap { operation in
             switch operation {
-            case .link(let edge):
-                edges.append(edge)
+            case .link(let link):
+                return link
             default:
-                break
+                return nil
             }
         }
-        return edges
     }
 }

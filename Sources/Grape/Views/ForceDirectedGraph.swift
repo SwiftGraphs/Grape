@@ -8,12 +8,15 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
 
     // Some state to be retained when the graph is updated
     @State 
+    @inlinable
     var clickCount = 0
 
     @State
+    @inlinable
     var model: ForceDirectedGraphModel<NodeID>
     
     @Binding
+    @inlinable
     var isRunning: Bool
 
     public init(
