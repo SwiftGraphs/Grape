@@ -101,15 +101,7 @@ where
 
         treeNodeBuffer.deinitialize(count: validCount)
         treeNodeBuffer.deallocate()
-
-        // UnsafeArray<TreeNode>.createBuffer(
-        //     withHeader: newTreeNodeBufferSize,
-        //     count: newTreeNodeBufferSize,
-        //     moving: treeNodeBuffer,
-        //     movingCount: validCount,
-        //     fillingExcessiveBufferWith: .zeroWithDelegate(self.rootDelegate)
-        // )
-
+        
         let newRootPointer = newTreeNodeBuffer  //.withUnsafeMutablePointerToElements { $0 }
 
         for i in 0..<validCount {

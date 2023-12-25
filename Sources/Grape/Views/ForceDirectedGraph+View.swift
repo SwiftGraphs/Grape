@@ -28,18 +28,21 @@ extension ForceDirectedGraph: View {
     @ViewBuilder
     @usableFromInline
     var debugView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 8.0) {
             Text("Elapsed Time: \(model.currentFrame.rawValue)")
-
+            Divider()
+            Text(self.model.changeMessage)
+            Divider()
             Button {
                 self.clickCount += 1
             } label: {
                 Text("Click \(clickCount)")
-                Text(self.model.changeMessage)
             }
-            ForEach(self.model.graphRenderingContext.nodes, id: \.id) { node in
-                Text("\(node.debugDescription)")
-            }
+            ScrollView {
+                ForEach(self.model.graphRenderingContext.nodes, id: \.id) { node in
+                    Text("\(node.debugDescription)")
+                }
+            }.frame(maxWidth: .infinity)
         }
         .frame(width: 200.0)
     }
