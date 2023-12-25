@@ -6,7 +6,7 @@ public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
     // @usableFromInline var edges: [LinkMark<NodeID>] = []
 
     @usableFromInline
-    enum RenderingOperation {
+    internal enum RenderingOperation {
         case node(NodeMark<NodeID>)
         case link(LinkMark<NodeID>)
         case modifierBegin(AnyGraphContentModifier)
@@ -14,18 +14,18 @@ public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
     }
 
     @usableFromInline
-    var operations: [RenderingOperation] = []
+    internal var operations: [RenderingOperation] = []
 
     @inlinable
-    init() {
+    internal init() {
 
     }
-    
+
 }
 
 extension _GraphRenderingContext.RenderingOperation: Equatable {
     @inlinable
-    static func == (lhs: Self, rhs: Self) -> Bool {
+    internal static func == (lhs: Self, rhs: Self) -> Bool {
         switch (lhs, rhs) {
         case (.node(let l), .node(let r)):
             return l == r
@@ -43,7 +43,7 @@ extension _GraphRenderingContext.RenderingOperation: Equatable {
 
 extension _GraphRenderingContext {
     @inlinable
-    var nodes: [NodeMark<NodeID>] {
+    internal var nodes: [NodeMark<NodeID>] {
         operations.compactMap { operation in
             switch operation {
             case .node(let node):
@@ -55,7 +55,7 @@ extension _GraphRenderingContext {
     }
 
     @inlinable
-    var edges: [LinkMark<NodeID>] {
+    internal var edges: [LinkMark<NodeID>] {
         operations.compactMap { operation in
             switch operation {
             case .link(let link):

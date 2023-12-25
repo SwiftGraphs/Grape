@@ -1,17 +1,17 @@
 import ForceSimulation
 
 @usableFromInline
-struct SimulationContext<NodeID: Hashable> {
+internal struct SimulationContext<NodeID: Hashable> {
     @usableFromInline
-    var storage: Simulation2D<SealedForce2D>
+    internal var storage: Simulation2D<SealedForce2D>
 
     @usableFromInline
-    var nodeIndexLookup: [NodeID: Int]
+    internal var nodeIndexLookup: [NodeID: Int]
 
     public typealias Vector = SealedForce2D.Vector
 
     @inlinable
-    init(
+    internal init(
         _ storage: consuming Simulation2D<SealedForce2D>,
         nodeIndexLookup: consuming [NodeID: Int]
     ) {
@@ -51,6 +51,6 @@ extension SimulationContext {
         for graphRenderingContext: _GraphRenderingContext<NodeID>,
         with forceField: consuming SealedForce2D
     ) {
-        
+
     }
 }
