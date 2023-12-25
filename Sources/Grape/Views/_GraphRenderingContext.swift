@@ -20,16 +20,7 @@ public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
     init() {
 
     }
-
-    @inlinable
-    func renderGraphContent(
-        _ simulationContext: inout SimulationContext<NodeID>, 
-        _ canvasContext: inout GraphicsContext,
-        _ cgSize: CGSize
-    ) {
-
-    }
-
+    
 }
 
 extension _GraphRenderingContext.RenderingOperation: Equatable {

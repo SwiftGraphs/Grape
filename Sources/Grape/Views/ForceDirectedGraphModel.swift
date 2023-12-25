@@ -1,11 +1,16 @@
+import ForceSimulation
 import Foundation
 import Observation
-
+import SwiftUI
 
 public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @ObservationIgnored
     @usableFromInline
     var graphRenderingContext: _GraphRenderingContext<NodeID>
+
+    @ObservationIgnored
+    @usableFromInline
+    var simulationContext: SimulationContext<NodeID>
 
     @usableFromInline
     var changeMessage = "N/A"
@@ -13,6 +18,8 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     // @ObservationIgnored
     @usableFromInline
     var currentFrame: KeyFrame = 0
+
+    /** Observation ignored params */
 
     @ObservationIgnored
     @usableFromInline
@@ -42,6 +49,10 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     var _onSimulationStabilized: (() -> Void)? = nil
 
+    @ObservationIgnored
+    @usableFromInline
+    var _onEmitNode: ((NodeID) -> SIMD2<Double>)? = nil
+
     @inlinable
     init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
@@ -49,7 +60,9 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     ) {
         self.graphRenderingContext = graphRenderingContext
         self.ticksPerSecond = ticksPerSecond
+        self.simulationContext = .create(for: consume graphRenderingContext, with: .init([]))
     }
+
     @inlinable
     func start() {
         guard self.scheduledTimer == nil else { return }
@@ -57,7 +70,6 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
             withTimeInterval: 1.0 / ticksPerSecond,
             repeats: true
         ) { [weak self] _ in
-
             self?.tick()
         }
     }
@@ -69,6 +81,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         }
         _onTicked?(currentFrame)
     }
+
     @inlinable
     func stop() {
         self.scheduledTimer?.invalidate()
@@ -86,23 +99,17 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         self.graphRenderingContext = newContext
     }
 
-
-
-
-
-
-
     @ObservationIgnored
     @usableFromInline
     let _$observationRegistrar = Observation.ObservationRegistrar()
-    
+
     @inlinable
     nonisolated func access<Member>(
         keyPath: KeyPath<ForceDirectedGraphModel, Member>
     ) {
         _$observationRegistrar.access(self, keyPath: keyPath)
     }
-    
+
     @inlinable
     nonisolated func withMutation<Member, MutationResult>(
         keyPath: KeyPath<ForceDirectedGraphModel, Member>,
@@ -112,6 +119,14 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     }
 }
 
-extension ForceDirectedGraphModel: Observation.Observable {
+extension ForceDirectedGraphModel: Observation.Observable {}
 
+// Render related
+extension ForceDirectedGraphModel {
+    func render(
+        _ graphicsContext: inout GraphicsContext,
+        _ size: CGSize
+    ) {
+
+    }
 }

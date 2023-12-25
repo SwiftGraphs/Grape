@@ -5,28 +5,52 @@ struct SimulationContext<NodeID: Hashable> {
     @usableFromInline
     var storage: Simulation2D<SealedForce2D>
 
+    @usableFromInline
+    var nodeIndexLookup: [NodeID: Int]
+
     public typealias Vector = SealedForce2D.Vector
 
     @inlinable
-    public init(
-        nodeCount: Int,
-        links: [EdgeID<Int>],
-        forceField: consuming SealedForce2D,
-        initialAlpha: Vector.Scalar = 1,
-        alphaMin: Vector.Scalar = 1e-3,
-        alphaDecay: Vector.Scalar = 2e-3,
-        alphaTarget: Vector.Scalar = 0.0,
-        velocityDecay: Vector.Scalar = 0.6
+    init(
+        _ storage: consuming Simulation2D<SealedForce2D>,
+        nodeIndexLookup: consuming [NodeID: Int]
     ) {
-        self.storage = .init(
-            nodeCount: nodeCount,
-            links: links,
-            forceField: forceField,
-            initialAlpha: initialAlpha,
-            alphaMin: alphaMin,
-            alphaDecay: alphaDecay,
-            alphaTarget: alphaTarget,
-            velocityDecay: velocityDecay
+        self.storage = storage
+        self.nodeIndexLookup = nodeIndexLookup
+    }
+}
+
+extension SimulationContext {
+    @inlinable
+    public static func create(
+        for graphRenderingContext: _GraphRenderingContext<NodeID>,
+        with forceField: consuming SealedForce2D
+    ) -> Self {
+        let nodes = graphRenderingContext.nodes
+
+        let nodeIndexLookup = Dictionary(
+            uniqueKeysWithValues: nodes.enumerated().map { ($0.element.id, $0.offset) })
+
+        let links = graphRenderingContext.edges.map {
+            EdgeID<Int>(
+                source: nodeIndexLookup[$0.id.source]!, target: nodeIndexLookup[$0.id.target]!)
+        }
+        return .init(
+            .init(
+                nodeCount: nodes.count,
+                links: consume links,
+                forceField: consume forceField
+            ),
+            nodeIndexLookup: consume nodeIndexLookup
         )
+    }
+
+    /// reuse the same simulation context for new graph
+    @inlinable
+    public func revive(
+        for graphRenderingContext: _GraphRenderingContext<NodeID>,
+        with forceField: consuming SealedForce2D
+    ) {
+        
     }
 }
