@@ -1,0 +1,2 @@
+@usableFromInline
+enum GrapeEffect {}

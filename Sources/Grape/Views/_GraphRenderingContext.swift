@@ -4,38 +4,38 @@ public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
     @usableFromInline var edges: [LinkMark<NodeID>] = []
 
     @usableFromInline
-    enum NodeRenderingOperation: Equatable {
+    enum RenderingOperation {
         case node(NodeMark<NodeID>)
-        case modifierBegin(AnyGraphContentModifier)
-        case modifierEnd
-    }
-
-    @usableFromInline
-    enum EdgeRenderingOperation: Equatable {
         case edge(LinkMark<NodeID>)
         case modifierBegin(AnyGraphContentModifier)
         case modifierEnd
     }
 
     @usableFromInline
-    var operations: [NodeRenderingOperation] = []
-
-    @usableFromInline
-    var edgeOperations: [EdgeRenderingOperation] = []
+    var operations: [RenderingOperation] = []
 
     @inlinable
     init() {
 
     }
 
-    @inlinable
-    mutating func appendNode(_ node: NodeMark<NodeID>) {
-        nodes.append(node)
-    }
 
-    @inlinable
-    mutating func appendEdge(_ edge: LinkMark<NodeID>) {
-        edges.append(edge)
-    }
+}
 
+extension _GraphRenderingContext.RenderingOperation: Equatable {
+    @inlinable
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case (.node(let l), .node(let r)):
+            return l == r
+        case (.edge(let l), .edge(let r)):
+            return l == r
+        case (.modifierBegin(let l), .modifierBegin(let r)):
+            return l == r
+        case (.modifierEnd, .modifierEnd):
+            return true
+        default:
+            return false
+        }
+    }
 }

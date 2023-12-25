@@ -51,14 +51,13 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     @inlinable
     public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
-        context.appendNode(self)
+        context.nodes.append(self)
     }
 }
 
 extension NodeMark: CustomDebugStringConvertible {
     public var debugDescription: String {
-        return
-            "NodeMark(id: \(id))"
+        return "Node(id: \(id))"
     }
 }
 
