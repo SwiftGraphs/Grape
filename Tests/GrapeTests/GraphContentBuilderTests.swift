@@ -123,6 +123,7 @@ final class GraphContentBuilderTests: XCTestCase {
         let gc = buildGraph {
             if true {
                 NodeMark(id: 0)
+                    .foregroundStyle(.red)
                     .opacity(0.2)
             } else {
                 NodeMark(id: 1)

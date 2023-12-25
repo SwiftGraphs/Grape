@@ -51,7 +51,7 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     @inlinable
     public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
-        context.nodes.append(self)
+        context.operations.append(.node(self))
     }
 }
 

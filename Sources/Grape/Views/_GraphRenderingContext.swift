@@ -1,12 +1,12 @@
 public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
 
-    @usableFromInline var nodes: [NodeMark<NodeID>] = []
-    @usableFromInline var edges: [LinkMark<NodeID>] = []
+    // @usableFromInline var nodes: [NodeMark<NodeID>] = []
+    // @usableFromInline var edges: [LinkMark<NodeID>] = []
 
     @usableFromInline
     enum RenderingOperation {
         case node(NodeMark<NodeID>)
-        case edge(LinkMark<NodeID>)
+        case link(LinkMark<NodeID>)
         case modifierBegin(AnyGraphContentModifier)
         case modifierEnd
     }
@@ -19,6 +19,11 @@ public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
 
     }
 
+    @inlinable
+    func renderGraphContent() {
+
+    }
+
 
 }
 
@@ -28,7 +33,7 @@ extension _GraphRenderingContext.RenderingOperation: Equatable {
         switch (lhs, rhs) {
         case (.node(let l), .node(let r)):
             return l == r
-        case (.edge(let l), .edge(let r)):
+        case (.link(let l), .link(let r)):
             return l == r
         case (.modifierBegin(let l), .modifierBegin(let r)):
             return l == r
@@ -37,5 +42,35 @@ extension _GraphRenderingContext.RenderingOperation: Equatable {
         default:
             return false
         }
+    }
+}
+
+extension _GraphRenderingContext {
+    @inlinable
+    var nodes: [NodeMark<NodeID>] {
+        var nodes: [NodeMark<NodeID>] = []
+        for operation in operations {
+            switch operation {
+            case .node(let node):
+                nodes.append(node)
+            default:
+                break
+            }
+        }
+        return nodes
+    }
+
+    @inlinable
+    var edges: [LinkMark<NodeID>] {
+        var edges: [LinkMark<NodeID>] = []
+        for operation in operations {
+            switch operation {
+            case .link(let edge):
+                edges.append(edge)
+            default:
+                break
+            }
+        }
+        return edges
     }
 }

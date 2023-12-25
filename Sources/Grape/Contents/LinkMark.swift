@@ -57,7 +57,7 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     @inlinable
     public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
-        context.edges.append(self)
+        context.operations.append(.link(self))
     }
 }
 
