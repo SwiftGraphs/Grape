@@ -21,10 +21,10 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
     public var strokeColor: Color?
     public var strokeWidth: Double
     public var radius: Double
-    public var label: String?
-    public var labelColor: Color
-    public var labelDisplayStrategy: LabelDisplayStrategy
-    public var labelPositioning: LabelPositioning
+    // public var label: String?
+    // public var labelColor: Color
+    // public var labelDisplayStrategy: LabelDisplayStrategy
+    // public var labelPositioning: LabelPositioning
 
     public init(
         id: NodeID,
@@ -40,10 +40,10 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
         self.id = id
         self.fill = fill
         self.radius = radius
-        self.label = label
-        self.labelColor = labelColor
-        self.labelDisplayStrategy = labelDisplayStrategy
-        self.labelPositioning = labelPositioning
+        // self.label = label
+        // self.labelColor = labelColor
+        // self.labelDisplayStrategy = labelDisplayStrategy
+        // self.labelPositioning = labelPositioning
 
         self.strokeColor = strokeColor
         self.strokeWidth = strokeWidth

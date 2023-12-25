@@ -1,5 +1,9 @@
-public protocol GraphContentModifier {
+public protocol GraphContentModifier: Equatable {
 
+}
+ 
+public enum AnyGraphContentModifier: GraphContentModifier & Equatable {
+    case opacity(GraphContentOpacitityModifier)
 }
 
 public struct _ModifiedGraphContent<C, M> where C: GraphContent, M: GraphContentModifier {

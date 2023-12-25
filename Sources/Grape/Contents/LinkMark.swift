@@ -21,10 +21,10 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     public var id: EdgeID<NodeID>
 
-    public var label: String?
-    public var labelColor: Color
-    public var labelDisplayStrategy: LabelDisplayStrategy
-    public var labelPositioning: LabelPositioning
+    // public var label: String?
+    // public var labelColor: Color
+    // public var labelDisplayStrategy: LabelDisplayStrategy
+    // public var labelPositioning: LabelPositioning
 
     public var strokeColor: Color
     public var strokeWidth: Double
@@ -46,10 +46,10 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
         arrowStyle: ArrowStyle = .none
     ) {
         self.id = .init(source: from, target: to)
-        self.label = label
-        self.labelColor = labelColor
-        self.labelDisplayStrategy = labelDisplayStrategy
-        self.labelPositioning = labelPositioning
+        // self.label = label
+        // self.labelColor = labelColor
+        // self.labelDisplayStrategy = labelDisplayStrategy
+        // self.labelPositioning = labelPositioning
         self.strokeColor = strokeColor
         self.strokeWidth = strokeWidth
         self.strokeDashArray = strokeDashArray
