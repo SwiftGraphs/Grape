@@ -8,6 +8,9 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
     @usableFromInline
     let _graphRenderingContextShadow: _GraphRenderingContext<NodeID> 
 
+    @usableFromInline
+    let _forceDescriptors: [SealedForce2D.ForceEntry]
+
     // TBD: Some state to be retained when the graph is updated
     @State
     @inlinable
@@ -40,9 +43,11 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
         graph()._attachToGraphRenderingContext(&gctx)
         self._graphRenderingContextShadow = gctx
         self._isRunning = _isRunning
+
+        self._forceDescriptors = force()
         self.model = ForceDirectedGraphModel(
             gctx,
-            SealedForce2D(force())
+            SealedForce2D(self._forceDescriptors)
         )
     }
 }

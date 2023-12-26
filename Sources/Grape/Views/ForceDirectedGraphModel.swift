@@ -12,6 +12,15 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     var simulationContext: SimulationContext<NodeID>
 
+    @usableFromInline
+    var modelTransform: ViewportTransform = .identity
+
+    @usableFromInline
+    var _$changeMessage = "N/A"
+
+    @usableFromInline
+    var _$currentFrame: KeyFrame = 0
+
     @inlinable
     var changeMessage: String {
         @storageRestrictions(initializes: _$changeMessage)
@@ -30,12 +39,6 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
             }
         }
     }
-
-    @usableFromInline
-    var _$changeMessage = "N/A"
-
-    @usableFromInline
-    var _$currentFrame: KeyFrame = 0
 
     @inlinable
     var currentFrame: KeyFrame = 0
@@ -106,8 +109,6 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
 
 }
 
-
-
 // Render related
 extension ForceDirectedGraphModel {
 
@@ -125,6 +126,7 @@ extension ForceDirectedGraphModel {
     @inlinable
     func tick() {
         withMutation(keyPath: \.currentFrame) {
+            simulationContext.storage.tick()
             currentFrame.advance()
         }
         _onTicked?(currentFrame)
@@ -141,14 +143,49 @@ extension ForceDirectedGraphModel {
         _ graphicsContext: inout GraphicsContext,
         _ size: CGSize
     ) {
+        // should not invoke `access`, but actually does now ?
         print("Rendering frame \(_$currentFrame.rawValue)")
+
+        let transform = modelTransform.translate(by: size.simd / 2)
+
+        for op in graphRenderingContext.operations {
+            switch op {
+            case .node(let node):
+                let id = simulationContext.nodeIndexLookup[node.id]!
+                let pos = transform.apply(to: simulationContext.storage.kinetics.position[id])
+                let rect = CGRect(
+                    origin: pos.cgPoint,
+                    size: CGSize(
+                        width: node.radius * 2, height: node.radius * 2
+                    )
+                )
+
+                graphicsContext.fill(
+                    Path(ellipseIn: rect), with: .color(node.fill))
+
+            case .link(let link):
+                break
+            case .modifierBegin(let modifier):
+                break
+            case .modifierEnd:
+                break
+            }
+        }
+
     }
 
     @inlinable
-    func revive(with newContext: _GraphRenderingContext<NodeID>) {
+    func revive(
+        for newContext: _GraphRenderingContext<NodeID>,
+        with newForceField: consuming SealedForce2D
+    ) {
         self.changeMessage =
             "gctx \(graphRenderingContext.nodes.count) -> \(newContext.nodes.count)"
+
+
+        self.simulationContext.revive(for: newContext, with: newForceField)
         self.graphRenderingContext = newContext
+        debugPrint("[REVIVED]")
     }
 
 }

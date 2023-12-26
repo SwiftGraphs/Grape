@@ -1,7 +1,8 @@
 import SwiftUI
+import ForceSimulation
 
 extension ForceDirectedGraph: View {
-
+    
     @inlinable
     public var body: some View {
         HStack {
@@ -12,7 +13,7 @@ extension ForceDirectedGraph: View {
             of: self._graphRenderingContextShadow,
             initial: false  // Don't trigger on initial value, keep `changeMessage` as "N/A"
         ) { _, newValue in
-            self.model.revive(with: newValue)
+            self.model.revive(for: newValue, with: .init(self._forceDescriptors))
         }
         .onChange(of: self.isRunning, initial: false) { oldValue, newValue in
             guard oldValue != newValue else { return }
@@ -23,7 +24,7 @@ extension ForceDirectedGraph: View {
             }
         }
     }
-
+    
     @ViewBuilder
     @inlinable
     var debugView: some View {
@@ -47,12 +48,12 @@ extension ForceDirectedGraph: View {
         }
         .frame(width: 200.0)
     }
-
+    
     @ViewBuilder
     @inlinable
     var canvas: some View {
 #if DEBUG
-    let _ = Self._printChanges()
+        let _ = Self._printChanges()
 #endif
         Canvas { context, size in
             self.model.render(&context, size)

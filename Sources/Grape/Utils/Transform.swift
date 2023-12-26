@@ -1,8 +1,14 @@
 public protocol TransformProtocol {
     associatedtype Scalar: FloatingPoint & ExpressibleByFloatLiteral
     associatedtype Vector: SIMD where Vector.Scalar == Scalar
+
+    @inlinable
     var translate: Vector { get set }
+
+    @inlinable
     var scale: Scalar { get set }
+
+    @inlinable
     init(translate: Vector, scale: Scalar)
 }
 
@@ -76,7 +82,6 @@ extension TransformProtocol {
 
 public struct ViewportTransform: TransformProtocol {
     public typealias Scalar = Double
-
     public var translate: SIMD2<Scalar>
 
     public var scale: Scalar
