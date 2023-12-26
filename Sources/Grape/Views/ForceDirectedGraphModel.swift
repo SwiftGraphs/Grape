@@ -89,6 +89,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         self.scheduledTimer?.invalidate()
         self.scheduledTimer = nil
     }
+    
     @inlinable
     deinit {
         stop()
@@ -125,10 +126,11 @@ extension ForceDirectedGraphModel: Observation.Observable {}
 
 // Render related
 extension ForceDirectedGraphModel {
+    @inlinable
     func render(
         _ graphicsContext: inout GraphicsContext,
         _ size: CGSize
     ) {
-        
+        print("Rendering frame \(currentFrame.rawValue)")
     }
 }

@@ -51,7 +51,7 @@ extension ForceDirectedGraph: View {
     @usableFromInline
     var canvas: some View {
         Canvas { context, size in
-            context.fill(Path(), with: .color(.red))
+            self.model.render(&context, size)
         }
         .border(.red, width: 1)
     }
