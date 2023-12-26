@@ -3,75 +3,61 @@ import Foundation
 import Observation
 import SwiftUI
 
-
 //@Observable
 public final class ForceDirectedGraphModel<NodeID: Hashable> {
 
-    
-    @ObservationIgnored // this should have no effect without `@Observable`?
+    @ObservationIgnored  // this should have no effect without `@Observable`?
     @usableFromInline
     var graphRenderingContext: _GraphRenderingContext<NodeID>
 
     @ObservationIgnored
     @usableFromInline
     var simulationContext: SimulationContext<NodeID>
-    
-    
 
     @inlinable
     var changeMessage: String {
-        @storageRestrictions(initializes: _changeMessage )
+        @storageRestrictions(initializes: _changeMessage)
         init(initialValue) {
-          _changeMessage  = initialValue
+            _changeMessage = initialValue
         }
 
         get {
-          access(keyPath: \.changeMessage )
-          return _changeMessage
+            access(keyPath: \.changeMessage)
+            return _changeMessage
         }
 
         set {
-          withMutation(keyPath: \.changeMessage ) {
-            _changeMessage  = newValue
-          }
+            withMutation(keyPath: \.changeMessage) {
+                _changeMessage = newValue
+            }
         }
     }
-    
-    
+
     @usableFromInline
     var _changeMessage = "N/A"
 
-    
-    
-    
-    
+    @usableFromInline
+    var _currentFrame: KeyFrame = 0
 
-//    @usableFromInline
+    @inlinable
     var currentFrame: KeyFrame = 0
+    {
 
-//    @inlinable
-//    var currentFrame: KeyFrame = 0
-//    {
-//        
-//        @storageRestrictions(initializes: _currentFrame )
-//        init(initialValue) {
-//            _currentFrame  = initialValue
-//        }
-//        
-//        get {
-//            access(keyPath: \._currentFrame)
-//            return _currentFrame
-//        }
-//        set {
-//            withMutation(keyPath: \._currentFrame) {
-//                _currentFrame = newValue
-//            }
-//        }
-//    }
-    
-    
-    
-    
+        @storageRestrictions(initializes: _currentFrame)
+        init(initialValue) {
+            _currentFrame = initialValue
+        }
+
+        get {
+            access(keyPath: \.currentFrame)
+            return _currentFrame
+        }
+        set {
+            withMutation(keyPath: \.currentFrame) {
+                _currentFrame = newValue
+            }
+        }
+    }
 
     /** Observation ignored params */
     @ObservationIgnored
@@ -106,7 +92,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     var _onEmitNode: ((NodeID) -> SIMD2<Double>)? = nil
 
-//    @inlinable
+    //    @inlinable
     init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
         _ forceField: consuming SealedForce2D,
@@ -120,8 +106,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         )
     }
 
-
-//    @inlinable
+    //    @inlinable
     deinit {
         stop()
     }
@@ -149,12 +134,10 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
 extension ForceDirectedGraphModel: Observation.Observable {
 }
 
-
 // Render related
 extension ForceDirectedGraphModel {
-    
-    
-//    @inlinable
+
+    @inlinable
     func start() {
         guard self.scheduledTimer == nil else { return }
         self.scheduledTimer = Timer.scheduledTimer(
@@ -165,7 +148,7 @@ extension ForceDirectedGraphModel {
         }
     }
 
-//    @inlinable
+    @inlinable
     func tick() {
         withMutation(keyPath: \.currentFrame) {
             currentFrame.advance()
@@ -173,24 +156,21 @@ extension ForceDirectedGraphModel {
         _onTicked?(currentFrame)
     }
 
-//    @inlinable
+    @inlinable
     func stop() {
         self.scheduledTimer?.invalidate()
         self.scheduledTimer = nil
     }
-    
-//    @inlinable
+
+    @inlinable
     func render(
         _ graphicsContext: inout GraphicsContext,
         _ size: CGSize
     ) {
         print("Rendering frame \(currentFrame.rawValue)")
     }
-    
-    
-    
-    
-//    @inlinable
+
+    @inlinable
     func revive(with newContext: _GraphRenderingContext<NodeID>) {
         self.changeMessage =
             "gctx \(graphRenderingContext.nodes.count) -> \(newContext.nodes.count)"
