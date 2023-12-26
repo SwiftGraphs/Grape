@@ -17,20 +17,29 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
     @inlinable
     var model: ForceDirectedGraphModel<NodeID>
     
-    @Binding
     @inlinable
-    var isRunning: Bool
+    var isRunning: Bool {
+        get {
+            _isRunning.wrappedValue
+        }
+        set {
+            _isRunning.wrappedValue = newValue
+        }
+    }
 
-    
+    @usableFromInline
+    var _isRunning: Binding<Bool>
+
+    @inlinable
     public init(
-        _ isRunning: Binding<Bool> = .constant(true),
+        _ _isRunning: Binding<Bool> = .constant(true),
         @GraphContentBuilder<NodeID> _ graph: () -> some GraphContent<NodeID>,
         @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = { [] }
     ) {
         var gctx = _GraphRenderingContext<NodeID>()
         graph()._attachToGraphRenderingContext(&gctx)
         self._graphRenderingContextShadow = gctx
-        self._isRunning = isRunning
+        self._isRunning = _isRunning
         self.model = ForceDirectedGraphModel(
             gctx,
             SealedForce2D(force())
