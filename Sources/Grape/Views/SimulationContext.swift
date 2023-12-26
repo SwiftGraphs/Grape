@@ -6,19 +6,16 @@ internal struct SimulationContext<NodeID: Hashable> {
     public typealias Vector = ForceField.Vector
     public typealias ForceField = SealedForce2D
 
-
-
     @usableFromInline
     internal var storage: Simulation2D<ForceField>
 
     @usableFromInline
     internal var nodeIndexLookup: [NodeID: Int]
 
-
     @inlinable
     internal init(
         _ storage: consuming Simulation2D<ForceField>,
-        nodeIndexLookup: consuming [NodeID: Int]
+        _ nodeIndexLookup: consuming [NodeID: Int]
     ) {
         self.storage = storage
         self.nodeIndexLookup = nodeIndexLookup
@@ -34,11 +31,16 @@ extension SimulationContext {
         let nodes = graphRenderingContext.nodes
 
         let nodeIndexLookup = Dictionary(
-            uniqueKeysWithValues: nodes.enumerated().map { ($0.element.id, $0.offset) })
+            uniqueKeysWithValues: nodes.enumerated().map {
+                ($0.element.id, $0.offset)
+            }
+        )
 
         let links = graphRenderingContext.edges.map {
             EdgeID<Int>(
-                source: nodeIndexLookup[$0.id.source]!, target: nodeIndexLookup[$0.id.target]!)
+                source: nodeIndexLookup[$0.id.source]!,
+                target: nodeIndexLookup[$0.id.target]!
+            )
         }
         return .init(
             .init(
@@ -46,16 +48,72 @@ extension SimulationContext {
                 links: consume links,
                 forceField: consume forceField
             ),
-            nodeIndexLookup: consume nodeIndexLookup
+            consume nodeIndexLookup
         )
     }
 
     /// reuse the same simulation context for new graph
     @inlinable
-    public func revive(
-        for graphRenderingContext: _GraphRenderingContext<NodeID>,
-        with forceField: consuming ForceField
+    public mutating func revive(
+        for newContext: _GraphRenderingContext<NodeID>,
+        with newForceField: consuming ForceField,
+        emittingNewNodesFrom position: (NodeID) -> Vector = { _ in .zero },
+        emittingNewNodesWith fixation: (NodeID) -> Vector = { _ in .zero }
     ) {
+        let newNodes = newContext.nodes
 
+        let newNodeIndexLookup = Dictionary(
+            uniqueKeysWithValues: newNodes.enumerated().map {
+                ($0.element.id, $0.offset)
+            }
+        )
+
+        let newLinks = newContext.edges.map {
+            EdgeID<Int>(
+                source: nodeIndexLookup[$0.id.source]!,
+                target: nodeIndexLookup[$0.id.target]!
+            )
+        }
+
+        let newPosition = newNodes.map {
+            if let index = self.nodeIndexLookup[$0.id] {
+                return storage.kinetics.position[index]
+            }
+            else {
+                return position($0.id)
+            }
+        }
+
+        let newVelocity = newNodes.map {
+            if let index = self.nodeIndexLookup[$0.id] {
+                return storage.kinetics.velocity[index]
+            }
+            else {
+                return .zero
+            }
+        }
+
+        let newFixation = newNodes.map {
+            if let index = self.nodeIndexLookup[$0.id] {
+                return storage.kinetics.fixation[index]
+            }
+            else {
+                return fixation($0.id)
+            }
+        }
+
+        let newStorage = Simulation2D<SealedForce2D>(
+            nodeCount: newNodes.count,
+            links: consume newLinks,
+            forceField: consume newForceField,
+            position: consume newPosition,
+            velocity: consume newVelocity,
+            fixation: consume newFixation
+        )
+
+        self = .init(
+            newStorage,
+            consume newNodeIndexLookup
+        )
     }
 }

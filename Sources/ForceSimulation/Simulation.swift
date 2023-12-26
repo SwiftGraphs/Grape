@@ -21,18 +21,16 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
     ///   - alphaTarget: The alpha value the simulation converges to.
     ///   - velocityDecay: A multiplier for the velocity of the nodes in Velocity Verlet integration. The position of the nodes is updated by the formula `x += v * velocityDecay`.
     @inlinable
-    public
-        init(
-            nodeCount: Int,
-            links: [EdgeID<Int>],
-            forceField: consuming ForceField,
-            initialAlpha: Vector.Scalar = 1,
-            alphaMin: Vector.Scalar = 1e-3,
-            alphaDecay: Vector.Scalar = 2e-3,
-            alphaTarget: Vector.Scalar = 0.0,
-            velocityDecay: Vector.Scalar = 0.6
-        )
-    {
+    public init(
+        nodeCount: Int,
+        links: [EdgeID<Int>],
+        forceField: consuming ForceField,
+        initialAlpha: Vector.Scalar = 1,
+        alphaMin: Vector.Scalar = 1e-3,
+        alphaDecay: Vector.Scalar = 2e-3,
+        alphaTarget: Vector.Scalar = 0.0,
+        velocityDecay: Vector.Scalar = 0.6
+    ) {
         self.kinetics = .createZeros(
             links: links,
             initialAlpha: initialAlpha,
@@ -42,7 +40,48 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
             velocityDecay: velocityDecay,
             count: nodeCount
         )
-        self.kinetics.jigglePosition()
+        // self.kinetics.jigglePosition()
+        forceField.bindKinetics(self.kinetics)
+        self.forceField = forceField
+    }
+
+    /// Create a new simulation.
+    ///
+    /// - Parameters:
+    ///   - nodeCount: Count of the nodes. Force simulation calculate them by order once created.
+    ///   - links: The links between nodes.
+    ///   - forceField: The force field that drives the simulation. The simulation takes ownership of the force field.
+    ///   - alpha: Initial alpha value, determines how "active" the simulation is.
+    ///   - alphaMin: The minimum alpha value. The simulation stops when alpha is less than this value.
+    ///   - alphaDecay: The larger the value, the faster the simulation converges to the final result.
+    ///   - alphaTarget: The alpha value the simulation converges to.
+    ///   - velocityDecay: A multiplier for the velocity of the nodes in Velocity Verlet integration. The position of the nodes is updated by the formula `x += v * velocityDecay`.
+    @inlinable
+    public init(
+        nodeCount: Int,
+        links: [EdgeID<Int>],
+        forceField: consuming ForceField,
+        initialAlpha: Vector.Scalar = 1,
+        alphaMin: Vector.Scalar = 1e-3,
+        alphaDecay: Vector.Scalar = 2e-3,
+        alphaTarget: Vector.Scalar = 0.0,
+        velocityDecay: Vector.Scalar = 0.6,
+        position: [Vector],
+        velocity: [Vector],
+        fixation: [Vector?]
+    ) {
+        self.kinetics = Kinetics(
+            links: links,
+            initialAlpha: initialAlpha,
+            alphaMin: alphaMin,
+            alphaDecay: alphaDecay,
+            alphaTarget: alphaTarget,
+            velocityDecay: velocityDecay,
+            position: position,
+            velocity: velocity,
+            fixation: fixation
+        )
+        // self.kinetics.jigglePosition()
         forceField.bindKinetics(self.kinetics)
         self.forceField = forceField
     }
@@ -56,8 +95,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
             self.kinetics.updatePositions()
         }
     }
-    
-    
+
     deinit {
         self.forceField.dispose()
     }
