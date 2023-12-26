@@ -8,17 +8,14 @@ where
 
     @usableFromInline
     internal var rootPointer: UnsafeMutablePointer<TreeNode> {
-        treeNodeBuffer
+        treeNodeBuffer.mutablePointer
     }
 
     @usableFromInline
     internal var validCount: Int = 0
 
     @usableFromInline
-    internal var treeNodeBuffer: UnsafeMutablePointer<TreeNode>
-
-    @usableFromInline
-    internal var bufferSize: Int
+    internal var treeNodeBuffer: UnsafeArray<TreeNode>
 
     @inlinable
     static internal var clusterDistanceSquared: Vector.Scalar {
@@ -39,16 +36,14 @@ where
         // But It's possible to exceed this limit:
         // 2 additions very close but not clustered in the same box
         // In this case there's no upperbound for addition so `resize` is needed
-        bufferSize = (nodeCapacity << Vector.scalarCount) + 1
+        let maxBufferCount = (nodeCapacity << Vector.scalarCount) + 1
         self.rootDelegate = rootDelegate()
 
-        treeNodeBuffer = .allocate(capacity: bufferSize)
-
-        // .createBuffer(
-        //     withHeader: maxBufferCount,
-        //     count: maxBufferCount,
-        //     initialValue: .zeroWithDelegate(self.rootDelegate)
-        // )
+        treeNodeBuffer = .createBuffer(
+            withHeader: maxBufferCount,
+            count: maxBufferCount,
+            initialValue: .zeroWithDelegate(self.rootDelegate)
+        )
         rootPointer.pointee = TreeNode(
             nodeIndices: nil,
             childrenBufferPointer: nil,
@@ -68,12 +63,12 @@ where
     ) {
         self.rootDelegate = rootDelegate()
 
-        // treeNodeBuffer.withUnsafeMutablePointerToElements {
-        for i in 0..<validCount {
-            treeNodeBuffer[i].disposeNodeIndices()
+        treeNodeBuffer.withUnsafeMutablePointerToElements {
+            for i in 0..<validCount {
+                $0[i].disposeNodeIndices()
+            }
         }
-        // }
-        rootPointer.pointee = TreeNode(
+        rootPointer.pointee = .init(
             nodeIndices: nil,
             childrenBufferPointer: nil,
             delegate: self.rootDelegate,
@@ -89,20 +84,20 @@ where
 
         #if DEBUG
 
-            assert(newTreeNodeBufferSize > bufferSize)
+            assert(newTreeNodeBufferSize > treeNodeBuffer.header)
             let rootCopy = root
         #endif
         let oldRootPointer = rootPointer
 
-        let newTreeNodeBuffer = UnsafeMutablePointer<TreeNode>.allocate(
-            capacity: newTreeNodeBufferSize
+        let newTreeNodeBuffer = UnsafeArray<TreeNode>.createBuffer(
+            withHeader: newTreeNodeBufferSize,
+            count: newTreeNodeBufferSize,
+            moving: treeNodeBuffer.mutablePointer,
+            movingCount: validCount,
+            fillingExcessiveBufferWith: .zeroWithDelegate(self.rootDelegate)
         )
-        newTreeNodeBuffer.moveInitialize(from: treeNodeBuffer, count: validCount)
 
-        treeNodeBuffer.deinitialize(count: validCount)
-        treeNodeBuffer.deallocate()
-        
-        let newRootPointer = newTreeNodeBuffer  //.withUnsafeMutablePointerToElements { $0 }
+        let newRootPointer = newTreeNodeBuffer.withUnsafeMutablePointerToElements { $0 }
 
         for i in 0..<validCount {
             if newTreeNodeBuffer[i].childrenBufferPointer != nil {
@@ -113,7 +108,6 @@ where
 
         // self.rootPointer = newRootPointer
         self.treeNodeBuffer = newTreeNodeBuffer
-        self.bufferSize = newTreeNodeBufferSize
 
         #if DEBUG
             assert(rootCopy.box == root.box)
@@ -127,12 +121,12 @@ where
     @inlinable
     @discardableResult
     internal mutating func resizeIfNeededBeforeAllocation(for count: Int) -> Bool {
-        if validCount + count > bufferSize {
-            let factor = (count / bufferSize) + 2
+        if validCount + count > treeNodeBuffer.count {
+            let factor = (count / self.treeNodeBuffer.count) + 2
 
-            resize(to: bufferSize * factor)
+            resize(to: treeNodeBuffer.count * factor)
 
-            assert(bufferSize >= validCount + count)
+            assert(treeNodeBuffer.count >= validCount + count)
 
             return true
         }
@@ -196,7 +190,7 @@ where
             for j in 0..<Self.directionCount {
                 var __box = _box
                 for i in 0..<Vector.scalarCount {
-                    let isOnTheHigherRange = (j &>> i) & 0b1
+                    let isOnTheHigherRange = (j >> i) & 0b1
                     if isOnTheHigherRange != 0 {
                         __box.p0[i] = center[i]
                     } else {
@@ -206,7 +200,7 @@ where
 
                 let obsoletePtr = self.rootPointer + validCount + j
 
-                // obsoletePtr.pointee.disposeNodeIndices()
+                obsoletePtr.pointee.disposeNodeIndices()
                 obsoletePtr.pointee = TreeNode(
                     nodeIndices: nil,
                     childrenBufferPointer: nil,
@@ -216,7 +210,7 @@ where
 
             }
             newTreeNode.pointee.childrenBufferPointer = rootPointer + validCount
-            validCount &+= Self.directionCount
+            validCount += Self.directionCount
 
             if let childrenBufferPointer = newTreeNode.pointee.childrenBufferPointer {
                 let direction = getIndexInChildren(
@@ -224,6 +218,7 @@ where
                     relativeTo: center
                 )
                 // newly created, no need to dispose
+                // childrenBufferPointer[direction].disposeNodeIndices()
                 childrenBufferPointer[direction] = .init(
                     nodeIndices: newTreeNode.pointee.nodeIndices,
                     childrenBufferPointer: childrenBufferPointer[direction]
@@ -251,6 +246,7 @@ where
         } else {
             // filled leaf and within cluster distance
             treeNode.pointee.nodeIndices!.append(nodeIndex: nodeIndex)
+
             treeNode.pointee.delegate.didAddNode(nodeIndex, at: point)
             return
         }
@@ -290,7 +286,7 @@ where
             var __box = newRootBox
 
             for i in 0..<Vector.scalarCount {
-                let isOnTheHigherRange = (j &>> i) & 0b1
+                let isOnTheHigherRange = (j >> i) & 0b1
                 // TODO: use simd mask
                 if isOnTheHigherRange != 0 {
                     __box.p0[i] = _corner[i]
@@ -300,7 +296,7 @@ where
             }
             // newly allocated, no need to dispose
             if j != nailedDirection {
-                self.treeNodeBuffer[validCount &+ j] = TreeNode(
+                self.treeNodeBuffer[validCount + j] = TreeNode(
                     nodeIndices: nil,
                     childrenBufferPointer: nil,
                     delegate: spawned,
@@ -308,7 +304,7 @@ where
                     nodePosition: .zero
                 )
             } else {
-                self.treeNodeBuffer[validCount &+ j] = TreeNode(
+                self.treeNodeBuffer[validCount + j] = TreeNode(
                     nodeIndices: _rootValue.nodeIndices,
                     childrenBufferPointer: _rootValue.childrenBufferPointer,
                     delegate: _rootValue.delegate,
@@ -317,10 +313,10 @@ where
                 )
             }
         }
-        self.validCount &+= Self.directionCount
+        self.validCount += Self.directionCount
 
         // don't dispose, they are used in treeNodeBuffer[validCount + j]
-        self.rootPointer.pointee = TreeNode(
+        self.rootPointer.pointee = .init(
             nodeIndices: nil,
             childrenBufferPointer: newChildrenPointer,
             delegate: _rootValue.delegate,
@@ -329,15 +325,15 @@ where
     }
 
     @inlinable
-    static internal var directionCount: Int { 1 &<< Vector.scalarCount }
+    static internal var directionCount: Int { 1 << Vector.scalarCount }
 
     @inlinable
     public func dispose() {
-        for i in 0..<validCount {
-            treeNodeBuffer[i].disposeNodeIndices()
+        treeNodeBuffer.withUnsafeMutablePointerToElements {
+            for i in 0..<validCount {
+                $0[i].disposeNodeIndices()
+            }
         }
-        treeNodeBuffer.deinitialize(count: validCount)
-        treeNodeBuffer.deallocate()
     }
 
     /// Get the index of the child that contains the point.
@@ -347,9 +343,10 @@ where
     internal func getIndexInChildren(_ point: Vector, relativeTo originalPoint: Vector) -> Int {
         var index = 0
         let mask = point .>= originalPoint
+
         for i in 0..<Vector.scalarCount {
             if mask[i] {  // isOnHigherRange in this dimension
-                index |= (1 &<< i)
+                index |= (1 << i)
             }
         }
         return index
