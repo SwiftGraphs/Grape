@@ -12,11 +12,39 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     var simulationContext: SimulationContext<NodeID>
 
+    // @ObservationTracked
     @usableFromInline
-    var changeMessage = "N/A"
+    var _changeMessage = "N/A"
 
+    @inlinable
+    var changeMessage: String {
+        get {
+            access(keyPath: \._changeMessage)
+            return _changeMessage
+        }
+        set {
+            withMutation(keyPath: \.changeMessage) {
+                _changeMessage = newValue
+            }
+        }
+    }
+
+    // @ObservationTracked
     @usableFromInline
-    var currentFrame: KeyFrame = 0
+    var _currentFrame: KeyFrame = 0
+
+    @inlinable
+    var currentFrame: KeyFrame {
+        get {
+            access(keyPath: \._currentFrame)
+            return _currentFrame
+        }
+        set {
+            withMutation(keyPath: \._currentFrame) {
+                _currentFrame = newValue
+            }
+        }
+    }
 
     /** Observation ignored params */
     @ObservationIgnored
@@ -60,7 +88,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         self.graphRenderingContext = graphRenderingContext
         self.ticksPerSecond = ticksPerSecond
         self.simulationContext = .create(
-            for: consume graphRenderingContext, 
+            for: consume graphRenderingContext,
             with: consume forceField
         )
     }
@@ -89,7 +117,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         self.scheduledTimer?.invalidate()
         self.scheduledTimer = nil
     }
-    
+
     @inlinable
     deinit {
         stop()
