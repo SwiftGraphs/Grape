@@ -3,8 +3,11 @@ import Foundation
 import Observation
 import SwiftUI
 
+
 public final class ForceDirectedGraphModel<NodeID: Hashable> {
-    @ObservationIgnored
+
+    
+    @ObservationIgnored // this should have no effect without `@Observable`?
     @usableFromInline
     var graphRenderingContext: _GraphRenderingContext<NodeID>
 
@@ -12,7 +15,6 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     var simulationContext: SimulationContext<NodeID>
 
-    // @ObservationTracked
     @usableFromInline
     var _changeMessage = "N/A"
 
@@ -29,7 +31,6 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         }
     }
 
-    // @ObservationTracked
     @usableFromInline
     var _currentFrame: KeyFrame = 0
 
