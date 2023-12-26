@@ -1,4 +1,5 @@
 import SwiftUI
+import ForceSimulation
 
 public struct ForceDirectedGraph<NodeID: Hashable> {
  
@@ -21,13 +22,17 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
 
     public init(
         _ isRunning: Binding<Bool> = .constant(true),
-        @GraphContentBuilder<NodeID> _ graph: () -> some GraphContent<NodeID>
+        @GraphContentBuilder<NodeID> _ graph: () -> some GraphContent<NodeID>,
+        @SealedForce2DBuilder forceField: () -> [SealedForce2D.ForceEntry] = { [] }
     ) {
         var gctx = _GraphRenderingContext<NodeID>()
         graph()._attachToGraphRenderingContext(&gctx)
         self._graphRenderingContextShadow = gctx
         self._isRunning = isRunning
-        self.model = ForceDirectedGraphModel(gctx)
+        self.model = ForceDirectedGraphModel(
+            gctx,
+            SealedForce2D(forceField())
+        )
     }
 }
 

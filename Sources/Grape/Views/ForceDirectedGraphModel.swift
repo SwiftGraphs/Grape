@@ -56,11 +56,15 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @inlinable
     init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
+        _ forceField: consuming SealedForce2D,
         ticksPerSecond: Double = 60.0
     ) {
         self.graphRenderingContext = graphRenderingContext
         self.ticksPerSecond = ticksPerSecond
-        self.simulationContext = .create(for: consume graphRenderingContext, with: .init([]))
+        self.simulationContext = .create(
+            for: consume graphRenderingContext, 
+            with: consume forceField
+        )
     }
 
     @inlinable
