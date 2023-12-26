@@ -4,9 +4,6 @@ extension ForceDirectedGraph: View {
 
     @inlinable
     public var body: some View {
-        #if DEBUG
-            let _ = Self._printChanges()
-        #endif
         HStack {
             debugView
             canvas
@@ -18,6 +15,7 @@ extension ForceDirectedGraph: View {
             self.model.revive(with: newValue)
         }
         .onChange(of: self.isRunning, initial: false) { oldValue, newValue in
+            guard oldValue != newValue else { return }
             if newValue {
                 self.model.start()
             } else {
@@ -39,11 +37,13 @@ extension ForceDirectedGraph: View {
             } label: {
                 Text("Click \(clickCount)")
             }
+            
             ScrollView {
                 ForEach(self.model.graphRenderingContext.nodes, id: \.id) { node in
                     Text("\(node.debugDescription)")
                 }
             }.frame(maxWidth: .infinity)
+            
         }
         .frame(width: 200.0)
     }
@@ -51,6 +51,9 @@ extension ForceDirectedGraph: View {
     @ViewBuilder
     @inlinable
     var canvas: some View {
+#if DEBUG
+    let _ = Self._printChanges()
+#endif
         Canvas { context, size in
             self.model.render(&context, size)
         }

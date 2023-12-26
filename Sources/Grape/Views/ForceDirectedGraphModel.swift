@@ -40,7 +40,6 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @inlinable
     var currentFrame: KeyFrame = 0
     {
-
         @storageRestrictions(initializes: _$currentFrame)
         init(initialValue) {
             _$currentFrame = initialValue
@@ -142,7 +141,7 @@ extension ForceDirectedGraphModel {
         _ graphicsContext: inout GraphicsContext,
         _ size: CGSize
     ) {
-        print("Rendering frame \(currentFrame.rawValue)")
+        print("Rendering frame \(_$currentFrame.rawValue)")
     }
 
     @inlinable

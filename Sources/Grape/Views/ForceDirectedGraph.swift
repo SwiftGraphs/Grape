@@ -8,8 +8,8 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
     @usableFromInline
     let _graphRenderingContextShadow: _GraphRenderingContext<NodeID> 
 
-    // Some state to be retained when the graph is updated
-    @State 
+    // TBD: Some state to be retained when the graph is updated
+    @State
     @inlinable
     var clickCount = 0
 
