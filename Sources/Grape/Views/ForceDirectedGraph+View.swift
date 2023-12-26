@@ -2,6 +2,7 @@ import SwiftUI
 
 extension ForceDirectedGraph: View {
 
+    @inlinable
     public var body: some View {
         #if DEBUG
             let _ = Self._printChanges()
@@ -26,7 +27,7 @@ extension ForceDirectedGraph: View {
     }
 
     @ViewBuilder
-    @usableFromInline
+    @inlinable
     var debugView: some View {
         VStack(alignment: .leading, spacing: 8.0) {
             Text("Elapsed Time: \(model.currentFrame.rawValue)")
@@ -48,7 +49,7 @@ extension ForceDirectedGraph: View {
     }
 
     @ViewBuilder
-    @usableFromInline
+    @inlinable
     var canvas: some View {
         Canvas { context, size in
             self.model.render(&context, size)
@@ -58,6 +59,7 @@ extension ForceDirectedGraph: View {
 }
 
 extension ForceDirectedGraph: Equatable {
+    @inlinable
     public static func == (lhs: ForceDirectedGraph<NodeID>, rhs: ForceDirectedGraph<NodeID>) -> Bool
     {
         return lhs._graphRenderingContextShadow == rhs._graphRenderingContextShadow

@@ -17,8 +17,8 @@ internal struct SimulationContext<NodeID: Hashable> {
         _ storage: consuming Simulation2D<ForceField>,
         _ nodeIndexLookup: consuming [NodeID: Int]
     ) {
-        self.storage = storage
-        self.nodeIndexLookup = nodeIndexLookup
+        self.storage = consume storage
+        self.nodeIndexLookup = consume nodeIndexLookup
     }
 }
 
@@ -112,7 +112,7 @@ extension SimulationContext {
         )
 
         self = .init(
-            newStorage,
+            consume newStorage,
             consume newNodeIndexLookup
         )
     }

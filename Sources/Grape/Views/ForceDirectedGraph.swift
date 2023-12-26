@@ -18,6 +18,7 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
     var model: ForceDirectedGraphModel<NodeID>
     
     @Binding
+    @inlinable
     var isRunning: Bool
 
     

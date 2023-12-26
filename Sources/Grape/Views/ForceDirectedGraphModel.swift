@@ -6,93 +6,84 @@ import SwiftUI
 //@Observable
 public final class ForceDirectedGraphModel<NodeID: Hashable> {
 
-    @ObservationIgnored  // this should have no effect without `@Observable`?
     @usableFromInline
     var graphRenderingContext: _GraphRenderingContext<NodeID>
 
-    @ObservationIgnored
     @usableFromInline
     var simulationContext: SimulationContext<NodeID>
 
     @inlinable
     var changeMessage: String {
-        @storageRestrictions(initializes: _changeMessage)
+        @storageRestrictions(initializes: _$changeMessage)
         init(initialValue) {
-            _changeMessage = initialValue
+            _$changeMessage = initialValue
         }
 
         get {
             access(keyPath: \.changeMessage)
-            return _changeMessage
+            return _$changeMessage
         }
 
         set {
             withMutation(keyPath: \.changeMessage) {
-                _changeMessage = newValue
+                _$changeMessage = newValue
             }
         }
     }
 
     @usableFromInline
-    var _changeMessage = "N/A"
+    var _$changeMessage = "N/A"
 
     @usableFromInline
-    var _currentFrame: KeyFrame = 0
+    var _$currentFrame: KeyFrame = 0
 
     @inlinable
     var currentFrame: KeyFrame = 0
     {
 
-        @storageRestrictions(initializes: _currentFrame)
+        @storageRestrictions(initializes: _$currentFrame)
         init(initialValue) {
-            _currentFrame = initialValue
+            _$currentFrame = initialValue
         }
 
         get {
             access(keyPath: \.currentFrame)
-            return _currentFrame
+            return _$currentFrame
         }
         set {
             withMutation(keyPath: \.currentFrame) {
-                _currentFrame = newValue
+                _$currentFrame = newValue
             }
         }
     }
 
     /** Observation ignored params */
-    @ObservationIgnored
+
     @usableFromInline
     let ticksPerSecond: Double
 
-    @ObservationIgnored
     @usableFromInline
     var scheduledTimer: Timer? = nil
 
-    @ObservationIgnored
     @usableFromInline
     var _onTicked: ((KeyFrame) -> Void)? = nil
 
-    @ObservationIgnored
     @usableFromInline
     var _onNodeDragStateChanged: (() -> Void)? = nil
 
-    @ObservationIgnored
     @usableFromInline
     var _onNodeFocusStateChanged: (() -> Void)? = nil
 
-    @ObservationIgnored
     @usableFromInline
     var _onViewportTransformChanged: ((ViewportTransform, Bool) -> Void)? = nil
 
-    @ObservationIgnored
     @usableFromInline
     var _onSimulationStabilized: (() -> Void)? = nil
 
-    @ObservationIgnored
     @usableFromInline
     var _onEmitNode: ((NodeID) -> SIMD2<Double>)? = nil
 
-    //    @inlinable
+    @inlinable
     init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
         _ forceField: consuming SealedForce2D,
@@ -106,33 +97,17 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         )
     }
 
-    //    @inlinable
+    @inlinable
     deinit {
         stop()
     }
 
-    @ObservationIgnored
     @usableFromInline
     let _$observationRegistrar = Observation.ObservationRegistrar()
 
-    @inlinable
-    nonisolated func access<Member>(
-        keyPath: KeyPath<ForceDirectedGraphModel, Member>
-    ) {
-        _$observationRegistrar.access(self, keyPath: keyPath)
-    }
-
-    @inlinable
-    nonisolated func withMutation<Member, MutationResult>(
-        keyPath: KeyPath<ForceDirectedGraphModel, Member>,
-        _ mutation: () throws -> MutationResult
-    ) rethrows -> MutationResult {
-        try _$observationRegistrar.withMutation(of: self, keyPath: keyPath, mutation)
-    }
 }
 
-extension ForceDirectedGraphModel: Observation.Observable {
-}
+
 
 // Render related
 extension ForceDirectedGraphModel {
