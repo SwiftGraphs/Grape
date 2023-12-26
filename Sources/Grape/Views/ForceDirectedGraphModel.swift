@@ -15,12 +15,10 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     var changeMessage = "N/A"
 
-    // @ObservationIgnored
     @usableFromInline
     var currentFrame: KeyFrame = 0
 
     /** Observation ignored params */
-
     @ObservationIgnored
     @usableFromInline
     let ticksPerSecond: Double
@@ -131,6 +129,6 @@ extension ForceDirectedGraphModel {
         _ graphicsContext: inout GraphicsContext,
         _ size: CGSize
     ) {
-
+        
     }
 }

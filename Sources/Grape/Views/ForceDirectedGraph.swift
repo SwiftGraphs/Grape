@@ -5,6 +5,7 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
  
     // the copy of the graph context to be used for comparison in `onChange`
     // should be not used for rendering
+    @usableFromInline
     let _graphRenderingContextShadow: _GraphRenderingContext<NodeID> 
 
     // Some state to be retained when the graph is updated
@@ -20,10 +21,11 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
     @inlinable
     var isRunning: Bool
 
+    
     public init(
         _ isRunning: Binding<Bool> = .constant(true),
         @GraphContentBuilder<NodeID> _ graph: () -> some GraphContent<NodeID>,
-        @SealedForce2DBuilder forceField: () -> [SealedForce2D.ForceEntry] = { [] }
+        @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = { [] }
     ) {
         var gctx = _GraphRenderingContext<NodeID>()
         graph()._attachToGraphRenderingContext(&gctx)
@@ -31,12 +33,13 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
         self._isRunning = isRunning
         self.model = ForceDirectedGraphModel(
             gctx,
-            SealedForce2D(forceField())
+            SealedForce2D(force())
         )
     }
 }
 
 public extension ForceDirectedGraph {
+    @inlinable
     func onTicked(
         action: @escaping (KeyFrame) -> Void
     ) -> Self {
