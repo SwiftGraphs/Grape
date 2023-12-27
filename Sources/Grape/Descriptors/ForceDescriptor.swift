@@ -130,3 +130,26 @@ public struct PositionForce: ForceDescriptor {
         )
     }
 }
+
+public struct RadialForce: ForceDescriptor {
+    public var strength: Kinetics2D.RadialStrength
+    public var radius: Kinetics2D.CollideRadius = .constant(3.0)
+    public var center: SIMD2<Double> = .zero
+    public var iterationsPerTick: UInt = 1
+
+    public init(
+        center: SIMD2<Double> = .zero,
+        strength: Kinetics2D.RadialStrength = .constant(1.0),
+        radius: Kinetics2D.CollideRadius = .constant(3.0),
+        iterationsPerTick: UInt = 1
+    ) {
+        self.center = center
+        self.strength = strength
+        self.radius = radius
+        self.iterationsPerTick = iterationsPerTick
+    }
+
+    public func createForce() -> Kinetics2D.RadialForce {
+        return .init(center: center, radius: radius, strength: strength)
+    }
+}
