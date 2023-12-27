@@ -13,14 +13,14 @@ extension GrapeEffect {
 
 extension GrapeEffect.Opacity: GraphContentModifier {
     @inlinable
-    public func _prolog<NodeID>(
+    public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
         // context.opacityStack.append(value)
     }
 
     @inlinable
-    public func _epilog<NodeID>(
+    public func _exit<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
         // context.opacityStack.removeLast()

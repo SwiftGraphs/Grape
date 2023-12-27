@@ -45,8 +45,8 @@ extension ModifiedGraphContent: GraphContent {
 
     @inlinable
     public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
-        modifier._prolog(&context)
+        modifier._into(&context)
         content._attachToGraphRenderingContext(&context)
-        modifier._epilog(&context)
+        modifier._exit(&context)
     }
 }

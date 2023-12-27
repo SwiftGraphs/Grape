@@ -19,10 +19,12 @@ where InnerGraphContent: GraphContent {
 
 public protocol _GraphContentWrappingView: View {
     associatedtype InnerGraphContent: GraphContent
+    @inlinable
     var storage: InnerGraphContent { get }
 }
 
 extension _GraphContentWrapper: _GraphContentWrappingView {
+    @inlinable
     public var body: some View {
         EmptyView()
     }
@@ -54,7 +56,7 @@ extension ForEach: GraphContent where Content: GraphContent {
 }
 
 extension ForEach where ID == Data.Element.ID, Content: _GraphContentWrappingView, Data.Element: Identifiable {
-
+@inlinable
     public init<NodeID, IG>(
         _ data: Data,
         @GraphContentBuilder<NodeID> graphContent: @escaping (Data.Element) -> IG
@@ -71,7 +73,7 @@ extension ForEach where ID == Data.Element.ID, Content: _GraphContentWrappingVie
 }
 
 extension ForEach where Content: _GraphContentWrappingView {
-
+@inlinable
     public init<NodeID, IG>(
         _ data: Data,
         id: KeyPath<Data.Element, ID>,

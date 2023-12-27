@@ -1,17 +1,17 @@
 public struct AnyGraphContentModifier: GraphContentModifier {
 
     @inlinable
-    public func _prolog<NodeID>(
+    public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        storage._prolog(&context)
+        storage._into(&context)
     }
 
     @inlinable
-    public func _epilog<NodeID>(
+    public func _exit<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        storage._epilog(&context)
+        storage._exit(&context)
     }
 
     @usableFromInline

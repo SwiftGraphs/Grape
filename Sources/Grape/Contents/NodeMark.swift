@@ -25,7 +25,7 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
     // public var labelColor: Color
     // public var labelDisplayStrategy: LabelDisplayStrategy
     // public var labelPositioning: LabelPositioning
-
+    @inlinable
     public init(
         id: NodeID,
         fill: Color = .accentColor,
@@ -56,13 +56,14 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
 }
 
 extension NodeMark: CustomDebugStringConvertible {
+    @inlinable
     public var debugDescription: String {
         return "Node(id: \(id))"
     }
 }
 
-
 extension NodeMark: Equatable {
+    @inlinable
     public static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.id == rhs.id
     }

@@ -3,7 +3,11 @@ import ForceSimulation
 protocol GraphProtocol<Node, Edge> {
     associatedtype Node: Identifiable
     associatedtype Edge: Identifiable where Edge.ID == EdgeID<Node.ID>
+
+    @inlinable
     var nodes: [Node] { get set }
+
+    @inlinable
     var links: [Edge] { get set }
 }
 

@@ -108,8 +108,10 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     let _$observationRegistrar = Observation.ObservationRegistrar()
 
     @usableFromInline
-    var styleStack: [GraphicsContext.Shading] = [.color(.pink)]
+    var fillStack: [GraphicsContext.Shading] = [.color(.pink)]
 
+    @usableFromInline
+    var strokeStack: [GrapeEffect.Stroke] = [.init(.foreground)]
 }
 
 extension GraphicsContext.Shading {
@@ -160,34 +162,51 @@ extension ForceDirectedGraphModel {
 
         let transform = modelTransform.translate(by: size.simd / 2)
 
+        let viewportPositions = simulationContext.storage.kinetics.position.asArray().map {
+            transform.apply(to: $0)
+        }
+
         for op in graphRenderingContext.operations {
             switch op {
             case .node(let node):
                 let id = simulationContext.nodeIndexLookup[node.id]!
-                let pos = transform.apply(to: simulationContext.storage.kinetics.position[id])
+                let pos = viewportPositions[id] - node.radius
                 let rect = CGRect(
                     origin: pos.cgPoint,
                     size: CGSize(
                         width: node.radius * 2, height: node.radius * 2
                     )
                 )
-
                 graphicsContext.fill(
-                    Path(ellipseIn: rect), with: styleStack.last ?? .missing
+                    Path(ellipseIn: rect), with: fillStack.last ?? .missing
                 )
 
             case .link(let link):
+                let source = simulationContext.nodeIndexLookup[link.id.source]!
+                let target = simulationContext.nodeIndexLookup[link.id.target]!
+
+                let sourcePos = viewportPositions[source]
+                let targetPos = viewportPositions[target]
+
+                graphicsContext.stroke(
+                    Path { path in
+                        path.move(to: sourcePos.cgPoint)
+                        path.addLine(to: targetPos.cgPoint)
+                    },
+                    with: strokeStack.last!.shading
+                )
+
                 break
             case .modifierBegin(let modifier):
                 switch modifier.storage {
                 case let shading as GrapeEffect.Shading:
-                    styleStack.append(shading.storage)
+                    fillStack.append(shading.storage)
                 default:
                     break
                 }
                 break
-            case .modifierEnd:
-                styleStack.removeLast()
+            
+            default:
                 break
             }
         }

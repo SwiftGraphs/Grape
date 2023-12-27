@@ -8,7 +8,7 @@
 import ForceSimulation
 
 public struct SealedForceDescriptor2D {
-    public enum Entry {
+    public enum Entry: Equatable {
         case center(Grape.CenterForce)
         case link(Grape.LinkForce)
         case manyBody(Grape.ManyBodyForce)
@@ -60,10 +60,16 @@ extension SealedForceDescriptor2D: ForceDescriptor {
         }
         return ForceSimulation.SealedForce2D(result)
     }
+    
+    @inlinable
+    static public func == (lhs: SealedForceDescriptor2D, rhs: SealedForceDescriptor2D) -> Bool {
+        return lhs.storage == rhs.storage
+    }
 }
 
 @resultBuilder
 public struct SealForceDescriptor2DBuilder {
+    @inlinable
     public static func buildBlock() -> SealedForceDescriptor2D {
         return SealedForceDescriptor2D([])
     }

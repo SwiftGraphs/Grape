@@ -27,14 +27,7 @@ extension GrapeEffect {
 
 extension GrapeEffect.ForegroundStyle: GraphContentModifier {
     @inlinable
-    public func _prolog<NodeID>(
-        _ context: inout _GraphRenderingContext<NodeID>
-    ) where NodeID: Hashable {
-        
-    }
-
-    @inlinable
-    public func _epilog<NodeID>(
+    public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
         
@@ -43,16 +36,9 @@ extension GrapeEffect.ForegroundStyle: GraphContentModifier {
 
 extension GrapeEffect.Shading: GraphContentModifier {
     @inlinable
-    public func _prolog<NodeID>(
+    public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
         context.operations.append(.modifierBegin(AnyGraphContentModifier(erasing: self)))
-    }
-
-    @inlinable
-    public func _epilog<NodeID>(
-        _ context: inout _GraphRenderingContext<NodeID>
-    ) where NodeID: Hashable {
-        context.operations.append(.modifierEnd)
     }
 }

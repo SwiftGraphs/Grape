@@ -1,12 +1,11 @@
 import ForceSimulation
 import simd
 
-
 public struct CenterForce: ForceDescriptor {
     public var x: Double
     public var y: Double
     public var strength: Double
-
+    @inlinable
     public init(
         x: Double = 0.0,
         y: Double = 0.0,
@@ -24,6 +23,7 @@ public struct CenterForce: ForceDescriptor {
 }
 
 extension Kinetics.CenterForce where Vector == SIMD2<Double> {
+    @inlinable
     public init(descriptor: CenterForce) {
         self.init(center: [descriptor.x, descriptor.y], strength: descriptor.strength)
     }
@@ -34,7 +34,7 @@ public struct ManyBodyForce: ForceDescriptor {
     public var strength: Double
     public var mass: Kinetics2D.NodeMass
     public var theta: Double
-
+    @inlinable
     public init(
         strength: Double = -30.0,
         mass: Kinetics2D.NodeMass = .constant(1.0),
@@ -44,14 +44,11 @@ public struct ManyBodyForce: ForceDescriptor {
         self.mass = mass
         self.theta = theta
     }
-
+    @inlinable
     public func createForce() -> Kinetics2D.ManyBodyForce {
         return .init(strength: self.strength, nodeMass: self.mass, theta: theta)
     }
 
-    // public func attachToSimulation(_ simulation: Simulation2D<Int>) {
-    //     simulation.createManyBodyForce(strength: strength, nodeMass: mass)
-    // }
 }
 
 public struct LinkForce: ForceDescriptor {
@@ -59,7 +56,7 @@ public struct LinkForce: ForceDescriptor {
     public var originalLength: Kinetics2D.LinkLength
     public var iterationsPerTick: UInt
     @usableFromInline var links: [EdgeID<Int>]
-
+    @inlinable
     public init(
         originalLength: Kinetics2D.LinkLength = .constant(30.0),
         stiffness: Kinetics2D.LinkStiffness = .weightedByDegree { _, _ in 1.0 },
@@ -70,6 +67,7 @@ public struct LinkForce: ForceDescriptor {
         self.iterationsPerTick = iterationsPerTick
         self.links = []
     }
+    @inlinable
     public func createForce() -> Kinetics2D.LinkForce {
         return .init(
             stiffness: stiffness, originalLength: originalLength,
@@ -84,13 +82,13 @@ public struct CollideForce: ForceDescriptor {
     public var strength: Double
     public var radius: Kinetics2D.CollideRadius = .constant(3.0)
     public var iterationsPerTick: UInt = 1
-
+@inlinable
     public func createForce() -> Kinetics2D.CollideForce {
         return .init(
             radius: radius, strength: strength, iterationsPerTick: iterationsPerTick
         )
     }
-
+@inlinable
     public init(
         strength: Double = 0.5,
         radius: Kinetics2D.CollideRadius = .constant(3.0),
@@ -111,7 +109,7 @@ public struct PositionForce: ForceDescriptor {
     public var strength: Kinetics2D.PositionStrength
     public var targetOnDirection: Kinetics2D.TargetOnDirection
     public var direction: Kinetics2D.DirectionOfPositionForce
-
+@inlinable
     public init(
         direction: Kinetics2D.DirectionOfPositionForce,
         targetOnDirection: Kinetics2D.TargetOnDirection,
@@ -121,7 +119,7 @@ public struct PositionForce: ForceDescriptor {
         self.direction = direction
         self.targetOnDirection = targetOnDirection
     }
-
+@inlinable
     public func createForce() -> Kinetics2D.PositionForce {
         return .init(
             direction: direction,
@@ -136,7 +134,7 @@ public struct RadialForce: ForceDescriptor {
     public var radius: Kinetics2D.CollideRadius = .constant(3.0)
     public var center: SIMD2<Double> = .zero
     public var iterationsPerTick: UInt = 1
-
+@inlinable
     public init(
         center: SIMD2<Double> = .zero,
         strength: Kinetics2D.RadialStrength = .constant(1.0),
@@ -148,7 +146,7 @@ public struct RadialForce: ForceDescriptor {
         self.radius = radius
         self.iterationsPerTick = iterationsPerTick
     }
-
+@inlinable
     public func createForce() -> Kinetics2D.RadialForce {
         return .init(center: center, radius: radius, strength: strength)
     }

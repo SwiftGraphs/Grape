@@ -62,6 +62,7 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
 }
 
 extension LinkMark: CustomDebugStringConvertible {
+        @inlinable
     public var debugDescription: String {
         return
             "LinkMark(\(id.source) -> \(id.target))"
@@ -69,6 +70,7 @@ extension LinkMark: CustomDebugStringConvertible {
 }
 
 extension LinkMark: Equatable {
+        @inlinable
     public static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.id == rhs.id
     }
