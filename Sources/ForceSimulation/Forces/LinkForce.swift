@@ -171,3 +171,28 @@ public struct LinkLookup<NodeID: Hashable> {
     }
 
 }
+
+
+extension Kinetics.LinkStiffness: Equatable {
+    @inlinable
+    public static func == (lhs: Kinetics.LinkStiffness, rhs: Kinetics.LinkStiffness) -> Bool {
+        switch (lhs, rhs) {
+        case (.constant(let l), .constant(let r)):
+            return l == r
+        default:
+            return false
+        }
+    }
+}
+
+extension Kinetics.LinkLength: Equatable {
+    @inlinable
+    public static func == (lhs: Kinetics.LinkLength, rhs: Kinetics.LinkLength) -> Bool {
+        switch (lhs, rhs) {
+        case (.constant(let l), .constant(let r)):
+            return l == r
+        default:
+            return false
+        }
+    }
+}

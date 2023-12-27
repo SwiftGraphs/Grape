@@ -107,6 +107,18 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     let _$observationRegistrar = Observation.ObservationRegistrar()
 
+    @usableFromInline
+    var styleStack: [GraphicsContext.Shading] = [.color(.pink)]
+
+}
+
+extension GraphicsContext.Shading {
+    @inlinable
+    static var missing: Self {
+        return .color(
+            red: 1.0, green: 0.0, blue: 1.0
+        )
+    }
 }
 
 // Render related
@@ -161,13 +173,21 @@ extension ForceDirectedGraphModel {
                 )
 
                 graphicsContext.fill(
-                    Path(ellipseIn: rect), with: .color(node.fill))
+                    Path(ellipseIn: rect), with: styleStack.last ?? .missing
+                )
 
             case .link(let link):
                 break
             case .modifierBegin(let modifier):
+                switch modifier.storage {
+                case let shading as GrapeEffect.Shading:
+                    styleStack.append(shading.storage)
+                default:
+                    break
+                }
                 break
             case .modifierEnd:
+                styleStack.removeLast()
                 break
             }
         }
@@ -181,7 +201,6 @@ extension ForceDirectedGraphModel {
     ) {
         self.changeMessage =
             "gctx \(graphRenderingContext.nodes.count) -> \(newContext.nodes.count)"
-
 
         self.simulationContext.revive(for: newContext, with: newForceField)
         self.graphRenderingContext = newContext

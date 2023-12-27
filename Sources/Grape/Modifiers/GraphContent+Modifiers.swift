@@ -5,6 +5,12 @@ extension GraphContent {
         return ModifiedGraphContent(self, GrapeEffect.ForegroundStyle(style))
     }
 
+
+    @inlinable
+    public func fill(_ value: GraphicsContext.Shading) -> some GraphContent<NodeID> {
+        return ModifiedGraphContent(self, GrapeEffect.Shading(value))
+    }
+
     @inlinable
     public func opacity(_ value: Double) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(self, GrapeEffect.Opacity(value))

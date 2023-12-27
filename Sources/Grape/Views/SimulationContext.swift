@@ -57,8 +57,8 @@ extension SimulationContext {
     public mutating func revive(
         for newContext: _GraphRenderingContext<NodeID>,
         with newForceField: consuming ForceField,
-        emittingNewNodesFrom position: (NodeID) -> Vector = { _ in .zero },
-        emittingNewNodesWith fixation: (NodeID) -> Vector = { _ in .zero }
+        emittingNewNodesFrom position: (NodeID, Kinetics2D) -> Vector = { _, _ in .zero },
+        emittingNewNodesWith fixation: (NodeID, Kinetics2D) -> Vector? = { _, _ in nil }
     ) {
         let newNodes = newContext.nodes
 
@@ -70,19 +70,20 @@ extension SimulationContext {
 
         let newLinks = newContext.edges.map {
             EdgeID<Int>(
-                source: nodeIndexLookup[$0.id.source]!,
-                target: nodeIndexLookup[$0.id.target]!
+                source: newNodeIndexLookup[$0.id.source]!,
+                target: newNodeIndexLookup[$0.id.target]!
             )
         }
-
+        
         let newPosition = newNodes.map {
             if let index = self.nodeIndexLookup[$0.id] {
                 return storage.kinetics.position[index]
             }
             else {
-                return position($0.id)
+                return position($0.id, storage.kinetics)
             }
         }
+        
 
         let newVelocity = newNodes.map {
             if let index = self.nodeIndexLookup[$0.id] {
@@ -98,7 +99,7 @@ extension SimulationContext {
                 return storage.kinetics.fixation[index]
             }
             else {
-                return fixation($0.id)
+                return fixation($0.id, storage.kinetics)
             }
         }
 

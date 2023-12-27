@@ -11,6 +11,17 @@ extension GrapeEffect {
             self.style = style
         }
     }
+
+    @usableFromInline
+    internal struct Shading {
+        @usableFromInline
+        let storage: GraphicsContext.Shading
+
+        @inlinable
+        public init(_ storage: GraphicsContext.Shading) {
+            self.storage = storage
+        }
+    }
 }
 
 
@@ -27,5 +38,21 @@ extension GrapeEffect.ForegroundStyle: GraphContentModifier {
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
         
+    }
+}
+
+extension GrapeEffect.Shading: GraphContentModifier {
+    @inlinable
+    public func _prolog<NodeID>(
+        _ context: inout _GraphRenderingContext<NodeID>
+    ) where NodeID: Hashable {
+        context.operations.append(.modifierBegin(AnyGraphContentModifier(erasing: self)))
+    }
+
+    @inlinable
+    public func _epilog<NodeID>(
+        _ context: inout _GraphRenderingContext<NodeID>
+    ) where NodeID: Hashable {
+        context.operations.append(.modifierEnd)
     }
 }

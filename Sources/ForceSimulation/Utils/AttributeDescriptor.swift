@@ -3,6 +3,19 @@ public enum AttributeDescriptor<T> {
     case constant(T)
 }
 
+extension AttributeDescriptor: Equatable where T: Equatable {
+    
+    @inlinable
+    public static func == (lhs: AttributeDescriptor<T>, rhs: AttributeDescriptor<T>) -> Bool {
+        switch (lhs, rhs) {
+        case (.constant(let l), .constant(let r)):
+            return l == r
+        default:
+            return false
+        }
+    }
+}
+
 extension AttributeDescriptor {
     @inlinable
     func calculate(for count: Int) -> [T] {

@@ -1,7 +1,7 @@
 extension Kinetics {
 
     public typealias TargetOnDirection = AttributeDescriptor<Vector.Scalar>
-    public enum DirectionOfPositionForce {
+    public enum DirectionOfPositionForce: Equatable {
         case x
         case y
         case z

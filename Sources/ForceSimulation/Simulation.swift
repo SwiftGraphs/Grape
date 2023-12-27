@@ -77,9 +77,9 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
             alphaDecay: alphaDecay,
             alphaTarget: alphaTarget,
             velocityDecay: velocityDecay,
-            position: position,
-            velocity: velocity,
-            fixation: fixation
+            position: consume position,
+            velocity: consume velocity,
+            fixation: consume fixation
         )
         // self.kinetics.jigglePosition()
         forceField.bindKinetics(self.kinetics)

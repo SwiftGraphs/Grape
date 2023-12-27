@@ -41,7 +41,7 @@ extension Kinetics3D.RadialForce: Force3D {}
 extension Kinetics3D.EmptyForce: Force3D {}
 extension CompositedForce: Force3D where Vector == SIMD3<Float> {}
 
-public protocol ForceDescriptor {
+public protocol ForceDescriptor: Equatable {
     associatedtype ConcreteForce: ForceProtocol
     func createForce() -> ConcreteForce
 }

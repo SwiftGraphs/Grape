@@ -69,26 +69,13 @@ where Vector: SimulatableVector & L2NormCalculatable {
         self.alphaDecay = alphaDecay
         self.alphaTarget = alphaTarget
         self.velocityDecay = velocityDecay
+        
+        let count = position.count
+        self.validCount = count
 
-        // self.validRanges = 0..<position.count
-        self.validCount = position.count
-
-        self.position = UnsafeArray<Vector>.createBuffer(
-            withHeader: position.count,
-            count: position.count,
-            initialValue: .zero
-        )
-        self.velocity = UnsafeArray<Vector>.createBuffer(
-            withHeader: position.count,
-            count: position.count,
-            initialValue: .zero
-        )
-        self.fixation = UnsafeArray<Vector?>.createBuffer(
-            withHeader: position.count,
-            count: position.count,
-            initialValue: nil
-        )
-
+        self.position = .createBuffer(moving: position, fillingWithIfFailed: .zero)
+        self.velocity = .createBuffer(moving: velocity, fillingWithIfFailed: .zero)
+        self.fixation = .createBuffer(moving: fixation, fillingWithIfFailed: nil)
         self.randomGenerator = .allocate(capacity: 1)
         self.randomGenerator.initialize(to: .init())
     }

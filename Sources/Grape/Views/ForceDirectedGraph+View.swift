@@ -67,5 +67,6 @@ extension ForceDirectedGraph: Equatable {
     public static func == (lhs: ForceDirectedGraph<NodeID>, rhs: ForceDirectedGraph<NodeID>) -> Bool
     {
         return lhs._graphRenderingContextShadow == rhs._graphRenderingContextShadow
+//        && lhs._forceDescriptors == rhs._forceDescriptors
     }
 }
