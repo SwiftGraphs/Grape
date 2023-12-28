@@ -65,6 +65,6 @@ extension NodeMark: CustomDebugStringConvertible {
 extension NodeMark: Equatable {
     @inlinable
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        return lhs.id == rhs.id
+        return lhs.id == rhs.id && lhs.radius == rhs.radius
     }
 }

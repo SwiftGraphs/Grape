@@ -47,10 +47,15 @@ extension GraphContentEffect.Stroke: GraphContentModifier {
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
         context.states.stroke.append(self)
+        context.operations.append(.updateStroke(self))
     }
 
     @inlinable
-    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
+    where NodeID: Hashable {
         context.states.stroke.removeLast()
+        context.operations.append(
+            .updateStroke(context.states.currentStroke)
+        )
     }
 }

@@ -18,11 +18,14 @@ extension GraphContentEffect.Label: GraphContentModifier {
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        context.symbols.append(text)
+        if let currentID = context.states.currentID {
+            context.symbols[currentID] = text
+        }
     }
 
     @inlinable
-    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
-        
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
+    where NodeID: Hashable {
+
     }
 }

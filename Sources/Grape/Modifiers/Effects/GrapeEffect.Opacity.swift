@@ -17,10 +17,15 @@ extension GraphContentEffect.Opacity: GraphContentModifier {
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
         context.states.opacity.append(value)
+        context.operations.append(.updateOpacity(value))
     }
 
     @inlinable
-    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
+    where NodeID: Hashable {
         context.states.opacity.removeLast()
+        context.operations.append(
+            .updateOpacity(context.states.currentOpacity)
+        )
     }
 }

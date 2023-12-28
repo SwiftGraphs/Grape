@@ -7,14 +7,11 @@ extension _GraphRenderingContext {
         case link(LinkMark<NodeID>)
         case label(Text, id: NodeID)
 
-        case fillPush(GraphicsContext.Shading)
-        case fillPop
+        case updateShading(GraphicsContext.Shading)
 
-        case strokePush(GraphicsContext.Shading)
-        case strokePop
+        case updateStroke(GraphContentEffect.Stroke)
 
-        case opacityPush(Double)
-        case opacityPop
+        case updateOpacity(Double)
 
         case modifierBegin(AnyGraphContentModifier)
         case modifierEnd

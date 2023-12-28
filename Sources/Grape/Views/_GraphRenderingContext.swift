@@ -3,7 +3,7 @@ import SwiftUI
 public struct _GraphRenderingContext<NodeID: Hashable> {
 
     @usableFromInline
-    internal var symbols: [Text] = []
+    internal var symbols: [GraphRenderingStates<NodeID>.StateID: Text] = [:]
 
     @usableFromInline
     internal var operations: [RenderingOperation] = []

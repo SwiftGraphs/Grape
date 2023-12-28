@@ -30,12 +30,17 @@ extension GraphContentEffect.ForegroundStyle: GraphContentModifier {
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        context.states.shading.append(.style(style))
+        let shading: GraphicsContext.Shading = .style(style)
+        context.states.shading.append(shading)
+        context.operations.append(.updateShading(shading))
     }
 
     @inlinable
     public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
         context.states.shading.removeLast()
+        context.operations.append(
+            .updateShading(context.states.currentShading)
+        )
     }
 }
 
@@ -45,10 +50,14 @@ extension GraphContentEffect.Shading: GraphContentModifier {
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
         context.states.shading.append(storage)
+        context.operations.append(.updateShading(storage))
     }
 
     @inlinable
     public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
         context.states.shading.removeLast()
+        context.operations.append(
+            .updateShading(context.states.currentShading)
+        )
     }
 }
