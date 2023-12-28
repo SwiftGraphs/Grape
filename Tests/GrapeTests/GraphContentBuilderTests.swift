@@ -89,6 +89,7 @@ final class GraphContentBuilderTests: XCTestCase {
     func testMixed() {
         let gc = buildGraph {
             LinkMark(from: 0, to: 1)
+                .opacity(0.6)
             NodeMark(id: 3)
             NodeMark(id: 4)
             NodeMark(id: 5)
@@ -183,6 +184,7 @@ final class GraphContentBuilderTests: XCTestCase {
         typealias NodeID = Int
         var body: some GraphContent<Int> {
             NodeMark(id: 0)
+                .opacity(0.6)
             NodeMark(id: 1)
             NodeMark(id: 2)
         }
