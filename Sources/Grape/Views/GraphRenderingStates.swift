@@ -19,10 +19,10 @@ internal struct GraphRenderingStates<NodeID: Hashable> {
     var currentShading: GraphicsContext.Shading { shading.last ?? defaultShading }
 
     @usableFromInline
-    var stroke: [GrapeEffect.Stroke] = []
+    var stroke: [GraphContentEffect.Stroke] = []
 
     @inlinable
-    var currentStroke: GrapeEffect.Stroke { stroke.last ?? defaultStroke }
+    var currentStroke: GraphContentEffect.Stroke { stroke.last ?? defaultStroke }
 
     @usableFromInline
     var opacity: [Double] = []
@@ -34,7 +34,7 @@ internal struct GraphRenderingStates<NodeID: Hashable> {
     let defaultShading: GraphicsContext.Shading
 
     @usableFromInline
-    let defaultStroke: GrapeEffect.Stroke
+    let defaultStroke: GraphContentEffect.Stroke
 
     @usableFromInline
     let defaultOpacity: Double
@@ -42,7 +42,7 @@ internal struct GraphRenderingStates<NodeID: Hashable> {
     @inlinable
     init(
         defaultShading: GraphicsContext.Shading = .color(.blue),
-        defaultStroke: GrapeEffect.Stroke = .init(.color(.black)),
+        defaultStroke: GraphContentEffect.Stroke = .init(.color(.black)),
         defaultOpacity: Double = 1,
         reservingCapacity capacity: Int = 128
     ) {

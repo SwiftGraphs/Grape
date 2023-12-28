@@ -1,4 +1,4 @@
-extension GrapeEffect {
+extension GraphContentEffect {
     @usableFromInline
     internal struct Opacity {
         @usableFromInline
@@ -11,7 +11,7 @@ extension GrapeEffect {
     }
 }
 
-extension GrapeEffect.Opacity: GraphContentModifier {
+extension GraphContentEffect.Opacity: GraphContentModifier {
     @inlinable
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>

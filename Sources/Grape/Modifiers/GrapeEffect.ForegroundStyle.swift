@@ -1,6 +1,6 @@
 import SwiftUI
 
-extension GrapeEffect {
+extension GraphContentEffect {
     @usableFromInline
     internal struct ForegroundStyle<S> where S: ShapeStyle {
         @usableFromInline
@@ -25,7 +25,7 @@ extension GrapeEffect {
 }
 
 
-extension GrapeEffect.ForegroundStyle: GraphContentModifier {
+extension GraphContentEffect.ForegroundStyle: GraphContentModifier {
     @inlinable
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
@@ -39,7 +39,7 @@ extension GrapeEffect.ForegroundStyle: GraphContentModifier {
     }
 }
 
-extension GrapeEffect.Shading: GraphContentModifier {
+extension GraphContentEffect.Shading: GraphContentModifier {
     @inlinable
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>

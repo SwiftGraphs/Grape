@@ -1,2 +1,2 @@
 @usableFromInline
-enum GrapeEffect {}
+enum GraphContentEffect {}

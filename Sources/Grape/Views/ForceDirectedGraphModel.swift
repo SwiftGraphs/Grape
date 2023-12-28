@@ -111,7 +111,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     var fillStack: [GraphicsContext.Shading] = [.color(.pink)]
 
     @usableFromInline
-    var strokeStack: [GrapeEffect.Stroke] = [.init(.foreground)]
+    var strokeStack: [GraphContentEffect.Stroke] = [.init(.foreground)]
 }
 
 extension GraphicsContext.Shading {
@@ -199,7 +199,7 @@ extension ForceDirectedGraphModel {
                 break
             case .modifierBegin(let modifier):
                 switch modifier.storage {
-                case let shading as GrapeEffect.Shading:
+                case let shading as GraphContentEffect.Shading:
                     fillStack.append(shading.storage)
                 default:
                     break

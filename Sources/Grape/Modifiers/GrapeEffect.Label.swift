@@ -1,6 +1,6 @@
 import SwiftUI
 
-extension GrapeEffect {
+extension GraphContentEffect {
     @usableFromInline
     internal struct Label {
         @usableFromInline
@@ -13,7 +13,7 @@ extension GrapeEffect {
     }
 }
 
-extension GrapeEffect.Label: GraphContentModifier {
+extension GraphContentEffect.Label: GraphContentModifier {
     @inlinable
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
