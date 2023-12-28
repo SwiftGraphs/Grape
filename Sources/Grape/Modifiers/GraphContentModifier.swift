@@ -12,13 +12,3 @@ public protocol GraphContentModifier {
     )
 
 }
-
-extension GraphContentModifier {
-
-    @inlinable
-    public func _exit<NodeID: Hashable>(
-        _ context: inout _GraphRenderingContext<NodeID>
-    ) {
-        context.operations.append(.modifierEnd)
-    }
-}

@@ -16,13 +16,11 @@ extension GrapeEffect.Opacity: GraphContentModifier {
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        // context.opacityStack.append(value)
+        context.states.opacity.append(value)
     }
 
     @inlinable
-    public func _exit<NodeID>(
-        _ context: inout _GraphRenderingContext<NodeID>
-    ) where NodeID: Hashable {
-        // context.opacityStack.removeLast()
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
+        context.states.opacity.removeLast()
     }
 }

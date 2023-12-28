@@ -18,6 +18,11 @@ extension GrapeEffect.Label: GraphContentModifier {
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        context.operations.append(.modifierBegin(AnyGraphContentModifier(erasing: self)))
+        context.symbols.append(text)
+    }
+
+    @inlinable
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
+        
     }
 }

@@ -30,7 +30,12 @@ extension GrapeEffect.ForegroundStyle: GraphContentModifier {
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        
+        context.states.shading.append(.style(style))
+    }
+
+    @inlinable
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
+        context.states.shading.removeLast()
     }
 }
 
@@ -39,6 +44,11 @@ extension GrapeEffect.Shading: GraphContentModifier {
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        context.operations.append(.modifierBegin(AnyGraphContentModifier(erasing: self)))
+        context.states.shading.append(storage)
+    }
+
+    @inlinable
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
+        context.states.shading.removeLast()
     }
 }

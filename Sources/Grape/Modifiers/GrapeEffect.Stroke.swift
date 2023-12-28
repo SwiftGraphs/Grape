@@ -46,6 +46,11 @@ extension GrapeEffect.Stroke: GraphContentModifier {
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        context.operations.append(.modifierBegin(AnyGraphContentModifier(erasing: self)))
+        context.states.stroke.append(self)
+    }
+
+    @inlinable
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
+        context.states.stroke.removeLast()
     }
 }
