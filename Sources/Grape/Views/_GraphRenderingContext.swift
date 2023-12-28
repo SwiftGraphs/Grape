@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
+public struct _GraphRenderingContext<NodeID: Hashable> {
 
     @usableFromInline
     internal var symbols: [Text] = []
@@ -12,8 +12,25 @@ public struct _GraphRenderingContext<NodeID: Hashable>: Equatable {
     internal init() {
 
     }
+
+    @usableFromInline
+    struct States {
+        @usableFromInline
+        var shading: [GraphicsContext.Shading] = []
+    }
+
+    @usableFromInline
+    var states: States = .init()
 }
 
+
+extension _GraphRenderingContext: Equatable {
+    @inlinable
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.symbols == rhs.symbols
+            && lhs.operations == rhs.operations
+    }
+}
 
 
 extension _GraphRenderingContext {
