@@ -11,6 +11,11 @@ extension GraphContent {
         return ModifiedGraphContent(self, GraphContentEffect.Shading(shading))
     }
 
+    // @inlinable
+    // public func fill(by value: some Hashable) -> some GraphContent<NodeID> {
+    //     return ModifiedGraphContent(self, GraphContentEffect.Shading(.by(value)))
+    // }
+
     @inlinable
     public func opacity(_ alpha: Double) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(self, GraphContentEffect.Opacity(alpha))

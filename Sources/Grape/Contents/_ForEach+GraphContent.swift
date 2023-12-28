@@ -30,14 +30,16 @@ extension _GraphContentWrapper: _GraphContentWrappingView {
     }
 
     @inlinable
-    static func pullback<T>(_ content: @escaping (T) -> InnerGraphContent) -> (T) -> Self {
+    internal static func pullback<T>(_ content: @escaping (T) -> InnerGraphContent) -> (T) -> Self {
         return { element in
             return .init(content(element))
         }
     }
 
     @inlinable
-    static func pullback<T, ID>(id: KeyPath<T, ID>, _ content: @escaping (ID) -> InnerGraphContent) -> (T) -> Self where ID: Hashable {
+    internal static func pullback<T, ID>(id: KeyPath<T, ID>, _ content: @escaping (ID) -> InnerGraphContent)
+        -> (T) -> Self where ID: Hashable
+    {
         return { element in
             return .init(content(element[keyPath: id]))
         }
@@ -55,8 +57,9 @@ extension ForEach: GraphContent where Content: GraphContent {
     }
 }
 
-extension ForEach where ID == Data.Element.ID, Content: _GraphContentWrappingView, Data.Element: Identifiable {
-@inlinable
+extension ForEach
+where ID == Data.Element.ID, Content: _GraphContentWrappingView, Data.Element: Identifiable {
+    @inlinable
     public init<NodeID, IG>(
         _ data: Data,
         @GraphContentBuilder<NodeID> graphContent: @escaping (Data.Element) -> IG
@@ -73,7 +76,7 @@ extension ForEach where ID == Data.Element.ID, Content: _GraphContentWrappingVie
 }
 
 extension ForEach where Content: _GraphContentWrappingView {
-@inlinable
+    @inlinable
     public init<NodeID, IG>(
         _ data: Data,
         id: KeyPath<Data.Element, ID>,
@@ -88,5 +91,4 @@ extension ForEach where Content: _GraphContentWrappingView {
         let pb = _GraphContentWrapper.pullback(id: id, graphContent)
         self.init(data, id: id, content: pb)
     }
-
 }
