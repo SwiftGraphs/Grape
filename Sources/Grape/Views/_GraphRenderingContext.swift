@@ -10,19 +10,42 @@ public struct _GraphRenderingContext<NodeID: Hashable> {
 
     @inlinable
     internal init() {
-
+        
     }
 
     @usableFromInline
-    struct States {
-        @usableFromInline
-        var shading: [GraphicsContext.Shading] = []
-    }
-
-    @usableFromInline
-    var states: States = .init()
+    internal var states: States = .init()
 }
 
+extension _GraphRenderingContext {
+    @usableFromInline
+    enum StateID: Hashable {
+        case node(NodeID)
+        case link(NodeID, NodeID)
+    }
+    @usableFromInline
+    struct States {
+
+        @usableFromInline
+        var fill: [GraphicsContext.Shading] = []
+
+        @usableFromInline
+        var stroke: [GrapeEffect.Stroke] = []
+
+        @usableFromInline
+        var opacity: [Double] = []
+
+        @usableFromInline
+        var lastVisited: StateID? = nil
+
+        @inlinable
+        init(reservingCapacity capacity: Int = 128) {
+            fill.reserveCapacity(capacity)
+            stroke.reserveCapacity(capacity)
+            opacity.reserveCapacity(capacity)
+        }
+    }
+}
 
 extension _GraphRenderingContext: Equatable {
     @inlinable
@@ -31,7 +54,6 @@ extension _GraphRenderingContext: Equatable {
             && lhs.operations == rhs.operations
     }
 }
-
 
 extension _GraphRenderingContext {
     @inlinable

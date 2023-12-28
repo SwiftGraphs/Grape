@@ -1,12 +1,12 @@
-import SwiftUI
 import ForceSimulation
+import SwiftUI
 
 public struct ForceDirectedGraph<NodeID: Hashable> {
- 
+
     // the copy of the graph context to be used for comparison in `onChange`
     // should be not used for rendering
     @usableFromInline
-    let _graphRenderingContextShadow: _GraphRenderingContext<NodeID> 
+    let _graphRenderingContextShadow: _GraphRenderingContext<NodeID>
 
     @usableFromInline
     let _forceDescriptors: [SealedForce2D.ForceEntry]
@@ -16,10 +16,19 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
     @inlinable
     var clickCount = 0
 
-    @State
+    // @State
     @inlinable
     var model: ForceDirectedGraphModel<NodeID>
-    
+    {
+        @storageRestrictions(initializes: _model)
+        init(initialValue) { _model = .init(initialValue: initialValue) }
+        get { _model.wrappedValue }
+        set { _model.wrappedValue = newValue }
+    }
+
+    @usableFromInline
+    var _model: State<ForceDirectedGraphModel<NodeID>>
+
     @inlinable
     var isRunning: Bool {
         get {
@@ -45,16 +54,14 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
         self._isRunning = _isRunning
 
         self._forceDescriptors = force()
-        self.model = ForceDirectedGraphModel(
-            gctx,
-            SealedForce2D(self._forceDescriptors)
-        )
+        let force = SealedForce2D(self._forceDescriptors)
+        self.model = .init(gctx, force)
     }
 }
 
-public extension ForceDirectedGraph {
+extension ForceDirectedGraph {
     @inlinable
-    func onTicked(
+    public func onTicked(
         action: @escaping (KeyFrame) -> Void
     ) -> Self {
         self.model._onTicked = action
