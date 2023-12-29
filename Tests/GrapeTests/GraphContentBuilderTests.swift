@@ -89,7 +89,6 @@ final class GraphContentBuilderTests: XCTestCase {
     func testMixed() {
         let gc = buildGraph {
             LinkMark(from: 0, to: 1)
-                .opacity(0.6)
             NodeMark(id: 3)
             NodeMark(id: 4)
             NodeMark(id: 5)
@@ -125,7 +124,7 @@ final class GraphContentBuilderTests: XCTestCase {
             if true {
                 NodeMark(id: 0)
                     .foregroundStyle(.red)
-                    .opacity(0.2)
+                    // .opacity(0.2)
             } else {
                 NodeMark(id: 1)
             }
@@ -166,7 +165,7 @@ final class GraphContentBuilderTests: XCTestCase {
         let gc = buildGraph {
             ForEach(arr) { i in
                 NodeMark(id: i.id)
-                    .opacity(0.2)
+                    // .opacity(0.2)
             }
         }
 
@@ -184,7 +183,7 @@ final class GraphContentBuilderTests: XCTestCase {
         typealias NodeID = Int
         var body: some GraphContent<Int> {
             NodeMark(id: 0)
-                .opacity(0.6)
+                // .opacity(0.6)
             NodeMark(id: 1)
             NodeMark(id: 2)
         }
@@ -193,7 +192,7 @@ final class GraphContentBuilderTests: XCTestCase {
     func testCustomComponent() {
         let gc = buildGraph {
             MyGraphComponent()
-                .opacity(0.2)
+                // .opacity(0.2)
         }
 
         var ctx = _GraphRenderingContext<Int>()

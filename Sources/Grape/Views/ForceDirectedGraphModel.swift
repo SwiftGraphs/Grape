@@ -110,10 +110,20 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
 
 extension GraphicsContext.Shading {
     @inlinable
-    static var missing: Self {
-        return .color(
-            red: 1.0, green: 0.0, blue: 1.0
-        )
+    static var defaultLinkShading: Self {
+        return .color(.gray)
+    }
+
+    @inlinable
+    static var defaultNodeShading: Self {
+        return .color(.green)
+    }
+}
+
+extension StrokeStyle {
+    @inlinable
+    static var defaultLinkStyle: Self {
+        return StrokeStyle(lineWidth: 1.0)
     }
 }
 
@@ -158,7 +168,6 @@ extension ForceDirectedGraphModel {
 
         var viewportPositions = [SIMD2<Double>]()
         viewportPositions.reserveCapacity(simulationContext.storage.kinetics.position.count)
-        
         for i in simulationContext.storage.kinetics.position.range {
             viewportPositions.append(
                 transform.apply(to: simulationContext.storage.kinetics.position[i])
@@ -166,7 +175,6 @@ extension ForceDirectedGraphModel {
         }
 
         do {
-            var strokeEffect: GraphicsContext.Shading = .missing
             for op in graphRenderingContext.operations {
                 switch op {
                 case .link(let link, let shading, let strokeStyle, let pathBuilder):
@@ -185,10 +193,7 @@ extension ForceDirectedGraphModel {
                                 path.addLine(to: targetPos.cgPoint)
                             }
                         }
-                    graphicsContext.stroke(
-                        p,
-                        with: strokeEffect
-                    )
+                    graphicsContext.stroke(p, with: shading ?? .defaultLinkShading, style: strokeStyle ?? .defaultLinkStyle)
                     break
                 default:
                     break
@@ -197,7 +202,7 @@ extension ForceDirectedGraphModel {
         }
 
         do {
-            var fillShading: GraphicsContext.Shading = .missing
+            
 
             for op in graphRenderingContext.operations {
                 switch op {
@@ -211,7 +216,7 @@ extension ForceDirectedGraphModel {
                         )
                     )
                     graphicsContext.fill(
-                        Path(ellipseIn: rect), with: fillShading
+                        Path(ellipseIn: rect), with: shading ?? .defaultNodeShading
                     )
                 default:
                     break
