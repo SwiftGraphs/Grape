@@ -175,52 +175,46 @@ extension ForceDirectedGraphModel {
         }
 
         do {
-            for op in graphRenderingContext.operations {
-                switch op {
-                case .link(let link, let shading, let strokeStyle, let pathBuilder):
-                    let source = simulationContext.nodeIndexLookup[link.id.source]!
-                    let target = simulationContext.nodeIndexLookup[link.id.target]!
+            for op in graphRenderingContext.linkOperations {
+                // switch op {
+                // case .link(let link, let shading, let strokeStyle, let pathBuilder):
+                let source = simulationContext.nodeIndexLookup[op.mark.id.source]!
+                let target = simulationContext.nodeIndexLookup[op.mark.id.target]!
 
-                    let sourcePos = viewportPositions[source]
-                    let targetPos = viewportPositions[target]
+                let sourcePos = viewportPositions[source]
+                let targetPos = viewportPositions[target]
 
-                    let p =
-                        if let pathBuilder = pathBuilder {
-                            pathBuilder(sourcePos, targetPos)
-                        } else {
-                            Path { path in
-                                path.move(to: sourcePos.cgPoint)
-                                path.addLine(to: targetPos.cgPoint)
-                            }
+                let p =
+                    if let pathBuilder = op.path {
+                        pathBuilder(sourcePos, targetPos)
+                    } else {
+                        Path { path in
+                            path.move(to: sourcePos.cgPoint)
+                            path.addLine(to: targetPos.cgPoint)
                         }
-                    graphicsContext.stroke(p, with: shading ?? .defaultLinkShading, style: strokeStyle ?? .defaultLinkStyle)
-                    break
-                default:
-                    break
-                }
+                    }
+                graphicsContext.stroke(
+                    p, with: op.fill ?? .defaultLinkShading, style: op.stroke ?? .defaultLinkStyle
+                )
+
             }
         }
 
         do {
-            
 
-            for op in graphRenderingContext.operations {
-                switch op {
-                case .node(let node, let shading, let strokeStyle, let pathBuilder):
-                    let id = simulationContext.nodeIndexLookup[node.id]!
-                    let pos = viewportPositions[id] - node.radius
-                    let rect = CGRect(
-                        origin: pos.cgPoint,
-                        size: CGSize(
-                            width: node.radius * 2, height: node.radius * 2
-                        )
+            for op in graphRenderingContext.nodeOperations {
+                let id = simulationContext.nodeIndexLookup[op.mark.id]!
+                let pos = viewportPositions[id] - op.mark.radius
+                let rect = CGRect(
+                    origin: pos.cgPoint,
+                    size: CGSize(
+                        width: op.mark.radius * 2, height: op.mark.radius * 2
                     )
-                    graphicsContext.fill(
-                        Path(ellipseIn: rect), with: shading ?? .defaultNodeShading
-                    )
-                default:
-                    break
-                }
+                )
+                graphicsContext.fill(
+                    Path(ellipseIn: rect),
+                    with: op.fill ?? .defaultNodeShading
+                )
             }
         }
 
