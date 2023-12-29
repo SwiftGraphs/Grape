@@ -83,12 +83,12 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
 
 
     @inlinable
-    var count: Int {
+    public var count: Int {
         return header
     }
 
     @inlinable
-    var range: Range<Int> {
+    public var range: Range<Int> {
         return 0..<header
     }
 

@@ -1,27 +1,28 @@
+import SwiftUI
 extension GraphContentEffect {
     @usableFromInline
-    internal struct Opacity {
+    internal struct Shape {
         @usableFromInline
-        let value: Double
+        let path: Path
 
         @inlinable
-        public init(_ value: Double) {
-            self.value = value
+        public init(_ path: Path) {
+            self.path = path
         }
     }
 }
 
-extension GraphContentEffect.Opacity: GraphContentModifier {
+extension GraphContentEffect.Shape: GraphContentModifier {
     @inlinable
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        context.states.opacity.append(value)
+        context.states.shape.append(path)
     }
 
     @inlinable
     public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
     where NodeID: Hashable {
-        context.states.opacity.removeLast()
+        context.states.shape.removeLast()
     }
 }

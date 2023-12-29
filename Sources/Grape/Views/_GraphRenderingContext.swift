@@ -6,7 +6,7 @@ public struct _GraphRenderingContext<NodeID: Hashable> {
     internal var symbols: [GraphRenderingStates<NodeID>.StateID: Text] = [:]
 
     @usableFromInline
-    internal var operations: [RenderingOperation] = []
+    internal var operations: [RenderingOperation<NodeID>] = []
 
     @inlinable
     internal init() {
@@ -32,7 +32,7 @@ extension _GraphRenderingContext {
     internal var nodes: [NodeMark<NodeID>] {
         operations.compactMap { operation in
             switch operation {
-            case .node(let node):
+            case .node(let node, _, _, _):
                 return node
             default:
                 return nil
@@ -44,7 +44,7 @@ extension _GraphRenderingContext {
     internal var edges: [LinkMark<NodeID>] {
         operations.compactMap { operation in
             switch operation {
-            case .link(let link):
+            case .link(let link, _, _, _):
                 return link
             default:
                 return nil
