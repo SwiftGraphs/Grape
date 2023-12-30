@@ -11,6 +11,10 @@ public struct _GraphRenderingContext<NodeID: Hashable> {
     internal var resolvedTexts: [GraphRenderingStates<NodeID>.StateID: String] = [:]
 
     @usableFromInline
+    internal var textPositions:
+        [GraphRenderingStates<NodeID>.StateID: (alignment: Alignment, offset: CGVector)] = [:]
+
+    @usableFromInline
     internal var symbols: [String: TextResolvingStatus] = [:]
 
     @usableFromInline
@@ -33,6 +37,7 @@ extension _GraphRenderingContext: Equatable {
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.symbols == rhs.symbols
             && lhs.nodeOperations == rhs.nodeOperations
+            && lhs.linkOperations == rhs.linkOperations
     }
 }
 

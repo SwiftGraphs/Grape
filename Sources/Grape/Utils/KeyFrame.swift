@@ -1,17 +1,17 @@
 public struct KeyFrame {
     public var elapsed: UInt = 0
 
-    @_transparent
+    @inlinable @inline(__always)
     public init(rawValue: UInt) {
         self.elapsed = rawValue
     }
 
-    @_transparent
+    @inlinable @inline(__always)
     public mutating func advance(by delta: UInt = 1) {
         elapsed += delta
     }
 
-    @_transparent
+    @inlinable @inline(__always)
     public mutating func reset() {
         elapsed = 0
     }
@@ -19,12 +19,12 @@ public struct KeyFrame {
 
 extension KeyFrame: RawRepresentable, Equatable, Hashable, ExpressibleByIntegerLiteral {
 
-    @_transparent
+    @inlinable @inline(__always)
     public var rawValue: UInt {
         return elapsed
     }
 
-    @_transparent
+    @inlinable @inline(__always)
     public init(integerLiteral value: UInt) {
         self.init(rawValue: value)
     }
@@ -36,5 +36,4 @@ extension KeyFrame: CustomStringConvertible {
     public var description: String {
         return elapsed.description
     }
-
 }

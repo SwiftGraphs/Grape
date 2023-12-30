@@ -2,8 +2,7 @@ import ForceSimulation
 import SwiftUI
 
 public struct ForceDirectedGraph<NodeID: Hashable> {
-    
-    
+
     @inlinable
     @Environment(\.self)
     var environmentValues: EnvironmentValues
@@ -55,7 +54,7 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
         @GraphContentBuilder<NodeID> _ graph: () -> some GraphContent<NodeID>,
         @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = { [] }
     ) {
-        
+
         var gctx = _GraphRenderingContext<NodeID>()
         graph()._attachToGraphRenderingContext(&gctx)
         self._graphRenderingContextShadow = gctx
@@ -73,6 +72,14 @@ extension ForceDirectedGraph {
         action: @escaping (KeyFrame) -> Void
     ) -> Self {
         self.model._onTicked = action
+        return self
+    }
+
+    @inlinable
+    public func onEmitNewNodes(
+        getKineticStates: @escaping (NodeID, Kinetics2D) -> KineticState
+    ) -> Self {
+        self.model._emittingNewNodesWith = getKineticStates
         return self
     }
 }

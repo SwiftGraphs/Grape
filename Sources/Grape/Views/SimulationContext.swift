@@ -1,5 +1,22 @@
 import ForceSimulation
 
+
+public struct KineticState {
+    public let position: SIMD2<Double>
+    public let velocity: SIMD2<Double>
+    public let fixation: SIMD2<Double>?
+    @inlinable
+    public init(
+        position: SIMD2<Double>,
+        velocity: SIMD2<Double> = .zero,
+        fixation: SIMD2<Double>? = nil
+    ) {
+        self.position = position
+        self.velocity = velocity
+        self.fixation = fixation
+    }
+}
+
 @usableFromInline
 internal struct SimulationContext<NodeID: Hashable> {
 
@@ -20,6 +37,7 @@ internal struct SimulationContext<NodeID: Hashable> {
         self.storage = consume storage
         self.nodeIndexLookup = consume nodeIndexLookup
     }
+
 }
 
 extension SimulationContext {
@@ -57,8 +75,7 @@ extension SimulationContext {
     public mutating func revive(
         for newContext: _GraphRenderingContext<NodeID>,
         with newForceField: consuming ForceField,
-        emittingNewNodesFrom position: (NodeID, Kinetics2D) -> Vector = { _, _ in .zero },
-        emittingNewNodesWith fixation: (NodeID, Kinetics2D) -> Vector? = { _, _ in nil }
+        emittingNewNodesWith states: (NodeID, Kinetics2D) -> KineticState = { _, _ in .init(position: .zero) }
     ) {
         let newNodes = newContext.nodes
 
@@ -74,22 +91,37 @@ extension SimulationContext {
                 target: newNodeIndexLookup[$0.id.target]!
             )
         }
+
+        let newlyAddedNodes = newNodes.filter { newNode in
+            !nodeIndexLookup.keys.contains(newNode.id)
+        }
+
+        let newlyAddedNodeStates = Dictionary(
+            uniqueKeysWithValues: newlyAddedNodes.map {
+                ($0.id, states($0.id, storage.kinetics))
+            }
+        )
+
         
+
         let newPosition = newNodes.map {
             if let index = self.nodeIndexLookup[$0.id] {
                 return storage.kinetics.position[index]
-            }
-            else {
-                return position($0.id, storage.kinetics)
+            } else {
+                if let newState = newlyAddedNodeStates[$0.id] {
+                    return newState.position
+                }
+                return .zero
             }
         }
-        
 
         let newVelocity = newNodes.map {
             if let index = self.nodeIndexLookup[$0.id] {
                 return storage.kinetics.velocity[index]
-            }
-            else {
+            } else {
+                if let newState = newlyAddedNodeStates[$0.id] {
+                    return newState.velocity
+                }
                 return .zero
             }
         }
@@ -97,9 +129,11 @@ extension SimulationContext {
         let newFixation = newNodes.map {
             if let index = self.nodeIndexLookup[$0.id] {
                 return storage.kinetics.fixation[index]
-            }
-            else {
-                return fixation($0.id, storage.kinetics)
+            } else {
+                if let newState = newlyAddedNodeStates[$0.id] {
+                    return newState.fixation
+                }
+                return nil
             }
         }
 
@@ -116,5 +150,37 @@ extension SimulationContext {
             consume newStorage,
             consume newNodeIndexLookup
         )
+    }
+
+    @inlinable
+    public func getKineticState(nodeID: NodeID) -> KineticState? {
+        if let index = nodeIndexLookup[nodeID] {
+            return .init(
+                position: storage.kinetics.position[index],
+                velocity: storage.kinetics.velocity[index],
+                fixation: storage.kinetics.fixation[index]
+            )
+        } else {
+            return nil
+        }
+    }
+
+    @inlinable
+    public func updateKineticState(nodeID: NodeID, _ state: KineticState) {
+        if let index = nodeIndexLookup[nodeID] {
+            storage.kinetics.position[index] = state.position
+            storage.kinetics.velocity[index] = state.velocity
+            storage.kinetics.fixation[index] = state.fixation
+        }
+    }
+
+    @inlinable
+    public func updateAllKineticStates(_ states: (NodeID) -> KineticState) {
+        for (nodeID, index) in nodeIndexLookup {
+            let state = states(nodeID)
+            storage.kinetics.position[index] = state.position
+            storage.kinetics.velocity[index] = state.velocity
+            storage.kinetics.fixation[index] = state.fixation
+        }
     }
 }

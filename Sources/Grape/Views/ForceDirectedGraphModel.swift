@@ -3,7 +3,7 @@ import Foundation
 import Observation
 import SwiftUI
 
-//@Observable
+// @Observable
 public final class ForceDirectedGraphModel<NodeID: Hashable> {
 
     @usableFromInline
@@ -86,20 +86,30 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     var _onSimulationStabilized: (() -> Void)? = nil
 
     @usableFromInline
-    var _onEmitNode: ((NodeID) -> SIMD2<Double>)? = nil
+    var _emittingNewNodesWith: (NodeID, Kinetics2D) -> KineticState
 
     @inlinable
     init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
         _ forceField: consuming SealedForce2D,
+        _ emittingNewNodesWith: @escaping (NodeID, Kinetics2D) -> KineticState = { _, _ in
+            .init(position: .zero)
+        },
         ticksPerSecond: Double = 60.0
     ) {
         self.graphRenderingContext = graphRenderingContext
         self.ticksPerSecond = ticksPerSecond
-        self.simulationContext = .create(
+        self._emittingNewNodesWith = emittingNewNodesWith
+        let _simulationContext = SimulationContext.create(
             for: consume graphRenderingContext,
             with: consume forceField
         )
+        _simulationContext.updateAllKineticStates {
+            emittingNewNodesWith($0, _simulationContext.storage.kinetics)
+        }
+
+        self.simulationContext = consume _simulationContext 
+
         self.viewportPositions = .createUninitializedBuffer(
             count: self.simulationContext.storage.kinetics.position.count
         )
@@ -349,7 +359,11 @@ extension ForceDirectedGraphModel {
         self.changeMessage =
             "gctx \(graphRenderingContext.nodes.count) -> \(newContext.nodes.count)"
 
-        self.simulationContext.revive(for: newContext, with: newForceField)
+        self.simulationContext.revive(
+            for: newContext,
+            with: newForceField,
+            emittingNewNodesWith: self._emittingNewNodesWith
+        )
         self.graphRenderingContext = newContext
 
         /// Resize
