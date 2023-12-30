@@ -232,6 +232,8 @@ extension ForceDirectedGraphModel {
 
         graphicsContext.transform = .identity
         graphicsContext.withCGContext { cgContext in
+            
+            cgContext.concatenate(CGAffineTransform(scaleX: 1, y: -1))
 
             for (symbolID, resolvedTextContent) in graphRenderingContext.resolvedTexts {
 
@@ -265,7 +267,7 @@ extension ForceDirectedGraphModel {
                         rasterizedSymbol,
                         in: .init(
                             x: pos.x - physicalWidth / 2,
-                            y: pos.y,
+                            y: -pos.y - 10,
                             width: physicalWidth,
                             height: physicalHeight
                         )
@@ -284,8 +286,8 @@ extension ForceDirectedGraphModel {
                     cgContext.draw(
                         rasterizedSymbol,
                         in: .init(
-                            x: center.x,
-                            y: center.y - physicalWidth / 2,
+                            x: center.x - physicalWidth / 2,
+                            y: -center.y - 10,
                             width: physicalWidth,
                             height: physicalHeight
                         )
