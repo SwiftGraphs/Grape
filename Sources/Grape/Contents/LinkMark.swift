@@ -60,7 +60,6 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
         context.linkOperations.append(
             .init(
                 self, 
-                context.states.currentShading, 
                 context.states.currentStroke, 
                 nil
             )

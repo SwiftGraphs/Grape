@@ -10,14 +10,19 @@ extension GraphContentEffect {
         @usableFromInline
         let alignment: Alignment
 
+        @usableFromInline
+        let offset: CGSize
+
 
         @inlinable
         public init(
             _ text: Text,
-            alignment: Alignment = .bottomLeading
+            alignment: Alignment = .bottomLeading,
+            offset: CGSize = .zero
         ) {
             self.text = text
             self.alignment = alignment
+            self.offset = offset
         }
     }
 

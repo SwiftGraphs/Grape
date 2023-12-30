@@ -19,10 +19,10 @@ internal struct GraphRenderingStates<NodeID: Hashable> {
     var currentShading: GraphicsContext.Shading? { shading.last }
 
     @usableFromInline
-    var stroke: [StrokeStyle] = []
+    var stroke: [GraphContentEffect.Stroke] = []
 
     @inlinable
-    var currentStroke: StrokeStyle? { stroke.last }
+    var currentStroke: GraphContentEffect.Stroke? { stroke.last }
 
     @usableFromInline
     var opacity: [Double] = []

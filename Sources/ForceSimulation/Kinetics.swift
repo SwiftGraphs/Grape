@@ -69,7 +69,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
         self.alphaDecay = alphaDecay
         self.alphaTarget = alphaTarget
         self.velocityDecay = velocityDecay
-        
+
         let count = position.count
         self.validCount = count
 
@@ -175,10 +175,11 @@ extension Kinetics {
     }
 
     @inlinable
+    // @discardableResult
     mutating func updateAlpha() {
-        alpha += (alphaTarget - alpha) * alphaDecay
+        alpha += alphaTarget - alpha * alphaDecay
     }
-    
+
 }
 
 public typealias Kinetics2D = Kinetics<SIMD2<Double>>

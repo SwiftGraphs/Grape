@@ -68,9 +68,9 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
         return unsafeDowncast(buffer, to: UnsafeArray.self)
     }
 
-    @available(*, deprecated, renamed: "createBuffer(withHeader:count:initialValue:)")
+    // @available(*, deprecated, renamed: "createBuffer(withHeader:count:initialValue:)")
     @inlinable
-    class func createUninitializedBuffer(
+    public class func createUninitializedBuffer(
         count: Int
     ) -> UnsafeArray {
         let buffer = self.create(minimumCapacity: count) { _ in count }

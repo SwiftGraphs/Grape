@@ -65,11 +65,12 @@ extension View {
 
     @inlinable
     @MainActor
-    internal func toCGImage(with environment: EnvironmentValues) -> CGImage? {
+    internal func toCGImage(with environment: EnvironmentValues, antialias: Double = 1.5) -> CGImage? {
         let renderer = ImageRenderer(
             content: self.environment(\.self, environment)
         )
-        renderer.scale = environment.displayScale
+        renderer.scale = environment.displayScale * antialias
+        
         // guard let image = renderer.nsImage else { return nil }
         // var imageRect = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
         // let imageRef = image.cgImage(forProposedRect: &imageRect, context: nil, hints: nil)

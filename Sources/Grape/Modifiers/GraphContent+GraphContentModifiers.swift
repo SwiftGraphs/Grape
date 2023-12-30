@@ -51,52 +51,53 @@ extension GraphContent {
     }
 
     @inlinable
-    public func label(_ text: Text, alignment: Alignment = .bottom) -> some GraphContent<NodeID> {
-        return ModifiedGraphContent(self, GraphContentEffect.Label(text))
+    public func label(
+        _ text: Text, alignment: Alignment = .bottom, offset: CGSize = .zero
+    ) -> some GraphContent<NodeID> {
+
+        return ModifiedGraphContent(
+            self, GraphContentEffect.Label(text, alignment: alignment, offset: offset))
     }
 
     @inlinable
-    public func label(_ string: String, alignment: Alignment = .bottom) -> some GraphContent<NodeID>
-    {
-        return ModifiedGraphContent(self, GraphContentEffect.Label(Text(string)))
+    public func label(
+        _ string: String, alignment: Alignment = .bottom, offset: CGSize = .zero
+    ) -> some GraphContent<NodeID> {
+
+        return ModifiedGraphContent(
+            self, GraphContentEffect.Label(Text(string), alignment: alignment, offset: offset))
     }
 
     @inlinable
-    public func label(_ alignment: Alignment = .bottom, @ViewBuilder _ text: () -> Text)
-        -> some GraphContent<NodeID>
-    {
-        return ModifiedGraphContent(self, GraphContentEffect.Label(text()))
+    public func label(
+        _ alignment: Alignment = .bottom, offset: CGSize = .zero, @ViewBuilder _ text: () -> Text
+    ) -> some GraphContent<NodeID> {
+
+        return ModifiedGraphContent(
+            self, GraphContentEffect.Label(text(), alignment: alignment, offset: offset))
+    }
+
+    /// Sets the stroke style for this graph content.
+    ///
+    /// - When a `.clip` color is applied to node marks, the stroke color of the symbol
+    ///   will be **the same as the background (cliped to transparent).**
+    /// - When a `.clip` color is applied to link marks, the stroke will not be drawn.
+    /// - When a `nil` stroke style is applied to node marks, the stroke style will be the same as the default stroke style.
+    @inlinable
+    public func stroke(
+        _ color: StrokeColor = .clip,
+        _ strokeStyle: StrokeStyle? = nil
+    ) -> some GraphContent<NodeID> {
+        return ModifiedGraphContent(
+            self, GraphContentEffect.Stroke(color, strokeStyle))
     }
 
     @inlinable
     public func stroke(
-        lineWidth: CGFloat = 1,
-        lineCap: CGLineCap = .butt,
-        lineJoin: CGLineJoin = .miter,
-        miterLimit: CGFloat = 10,
-        dash: [CGFloat] = [CGFloat](),
-        dashPhase: CGFloat = 0
+        _ color: Color,
+        _ strokeStyle: StrokeStyle? = nil
     ) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(
-            self,
-            GraphContentEffect.Stroke(
-                .init(
-                    lineWidth: lineWidth,
-                    lineCap: lineCap,
-                    lineJoin: lineJoin,
-                    miterLimit: miterLimit,
-                    dash: dash,
-                    dashPhase: dashPhase
-                )
-            ))
-    }
-
-    @inlinable
-    @_disfavoredOverload
-    public func stroke<S>(
-        _ strokeStyle: StrokeStyle
-    ) -> some GraphContent<NodeID> where S: ShapeStyle {
-        return ModifiedGraphContent(
-            self, GraphContentEffect.Stroke(strokeStyle))
+            self, GraphContentEffect.Stroke(.color(color), strokeStyle))
     }
 }

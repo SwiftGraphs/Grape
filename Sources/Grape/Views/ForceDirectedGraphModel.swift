@@ -16,6 +16,9 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     var modelTransform: ViewportTransform = .identity
 
     @usableFromInline
+    var viewportPositions: UnsafeArray<SIMD2<Double>>
+
+    @usableFromInline
     var _$changeMessage = "N/A"
 
     @usableFromInline
@@ -97,6 +100,9 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
             for: consume graphRenderingContext,
             with: consume forceField
         )
+        self.viewportPositions = .createUninitializedBuffer(
+            count: self.simulationContext.storage.kinetics.position.count
+        )
     }
 
     @inlinable
@@ -167,12 +173,11 @@ extension ForceDirectedGraphModel {
 
         let transform = modelTransform.translate(by: size.simd / 2)
 
-        var viewportPositions = [SIMD2<Double>]()
-        viewportPositions.reserveCapacity(simulationContext.storage.kinetics.position.count)
+        // var viewportPositions = [SIMD2<Double>]()
+        // viewportPositions.reserveCapacity(simulationContext.storage.kinetics.position.count)
         for i in simulationContext.storage.kinetics.position.range {
-            viewportPositions.append(
-                transform.apply(to: simulationContext.storage.kinetics.position[i])
-            )
+            viewportPositions[i] = transform.apply(
+                to: simulationContext.storage.kinetics.position[i])
         }
 
         for op in graphRenderingContext.linkOperations {
@@ -195,30 +200,58 @@ extension ForceDirectedGraphModel {
                         path.addLine(to: targetPos.cgPoint)
                     }
                 }
-
-            graphicsContext.stroke(
-                p, with: op.fill ?? .defaultLinkShading, style: op.stroke ?? .defaultLinkStyle
-            )
-
-            // graphicsContext.translateBy(x: CGFloat, y: CGFloat)
+            if let strokeEffect = op.stroke {
+                switch strokeEffect.color {
+                case .color(let color):
+                    graphicsContext.stroke(
+                        p,
+                        with: .color(color),
+                        style: strokeEffect.style ?? .defaultLinkStyle
+                    )
+                case .clip:
+                    break
+                }
+            } else {
+                graphicsContext.stroke(
+                    p, with: .defaultLinkShading,
+                    style: .defaultLinkStyle
+                )
+            }
         }
 
         for op in graphRenderingContext.nodeOperations {
             guard let id = simulationContext.nodeIndexLookup[op.mark.id] else {
                 continue
             }
-            let pos = viewportPositions[id] - op.mark.radius
+            let pos = viewportPositions[id]
             if let path = op.path {
                 graphicsContext.transform = .init(translationX: pos.x, y: pos.y)
                 graphicsContext.fill(
                     path,
                     with: op.fill ?? .defaultNodeShading
                 )
-                // graphicsContext.translateBy(x: -pos.x, y: -pos.y)
+                if let strokeEffect = op.stroke {
+                    switch strokeEffect.color {
+                    case .color(let color):
+                        graphicsContext.stroke(
+                            path,
+                            with: .color(color),
+                            style: strokeEffect.style ?? .defaultLinkStyle
+                        )
+                    case .clip:
+                        graphicsContext.blendMode = .clear
+                        graphicsContext.stroke(
+                            path,
+                            with: .color(.black),
+                            style: strokeEffect.style ?? .defaultLinkStyle
+                        )
+                        graphicsContext.blendMode = .normal
+                    }
+                }
             } else {
                 graphicsContext.transform = .identity
                 let rect = CGRect(
-                    origin: pos.cgPoint,
+                    origin: (pos - op.mark.radius).cgPoint,
                     size: CGSize(
                         width: op.mark.radius * 2, height: op.mark.radius * 2
                     )
@@ -232,7 +265,7 @@ extension ForceDirectedGraphModel {
 
         graphicsContext.transform = .identity
         graphicsContext.withCGContext { cgContext in
-            
+
             cgContext.concatenate(CGAffineTransform(scaleX: 1, y: -1))
 
             for (symbolID, resolvedTextContent) in graphRenderingContext.resolvedTexts {
@@ -243,7 +276,10 @@ extension ForceDirectedGraphModel {
                 switch resolvedStatus {
                 case .pending(let text):
                     let env = graphicsContext.environment
-                    let cgImage = text.toCGImage(with: env)
+                    let cgImage = text.toCGImage(
+                        with: env,
+                        antialias: Self.textRasterizationAntialias
+                    )
                     graphRenderingContext.symbols[resolvedTextContent] = .resolved(cgImage)
                     rasterizedSymbol = cgImage
                 case .resolved(let cgImage):
@@ -260,14 +296,16 @@ extension ForceDirectedGraphModel {
                     let pos = viewportPositions[id]
                     let physicalWidth =
                         Double(rasterizedSymbol.width) / graphicsContext.environment.displayScale
+                        / Self.textRasterizationAntialias
                     let physicalHeight =
                         Double(rasterizedSymbol.height) / graphicsContext.environment.displayScale
+                        / Self.textRasterizationAntialias
 
                     cgContext.draw(
                         rasterizedSymbol,
                         in: .init(
-                            x: pos.x - physicalWidth / 2,
-                            y: -pos.y - 10,
+                            x: (pos.x - (physicalWidth / 2)),
+                            y: (-pos.y - 10),
                             width: physicalWidth,
                             height: physicalHeight
                         )
@@ -299,6 +337,11 @@ extension ForceDirectedGraphModel {
     }
 
     @inlinable
+    static var textRasterizationAntialias: Double {
+        return 1.5
+    }
+
+    @inlinable
     func revive(
         for newContext: _GraphRenderingContext<NodeID>,
         with newForceField: consuming SealedForce2D
@@ -308,6 +351,13 @@ extension ForceDirectedGraphModel {
 
         self.simulationContext.revive(for: newContext, with: newForceField)
         self.graphRenderingContext = newContext
+
+        /// Resize
+        if self.simulationContext.storage.kinetics.position.count != self.viewportPositions.count {
+            self.viewportPositions = .createUninitializedBuffer(
+                count: self.simulationContext.storage.kinetics.position.count
+            )
+        }
         debugPrint("[REVIVED]")
     }
 
