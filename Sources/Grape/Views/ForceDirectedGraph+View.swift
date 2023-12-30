@@ -1,8 +1,8 @@
-import SwiftUI
 import ForceSimulation
+import SwiftUI
 
 extension ForceDirectedGraph: View {
-    
+
     @inlinable
     public var body: some View {
         HStack {
@@ -24,7 +24,7 @@ extension ForceDirectedGraph: View {
             }
         }
     }
-    
+
     @ViewBuilder
     @inlinable
     var debugView: some View {
@@ -38,28 +38,41 @@ extension ForceDirectedGraph: View {
             } label: {
                 Text("Click \(clickCount)")
             }
-            
+
             ScrollView {
                 ForEach(self.model.graphRenderingContext.nodes, id: \.id) { node in
                     Text("\(node.debugDescription)")
                 }
             }.frame(maxWidth: .infinity)
-            
+
         }
         .frame(width: 200.0)
     }
-    
+
     @ViewBuilder
     @inlinable
     @MainActor
     var canvas: some View {
-#if DEBUG
-        let _ = Self._printChanges()
-#endif
-        
-        Canvas(rendersAsynchronously: true) { context, size in 
+        #if DEBUG
+            let _ = Self._printChanges()
+        #endif
+
+        Canvas(rendersAsynchronously: true) { context, size in
             self.model.render(&context, size)
-        }.border(.red, width: 1)
+        }
+        .gesture(
+            DragGesture(
+                minimumDistance: Self.minimumDragDistance,
+                coordinateSpace: .local
+            )
+            .onChanged(onDragChange)
+            .onEnded(onDragEnd)
+        )
+        .gesture(
+            TapGesture()
+                .onEnded(onTapEnded)
+        )
+        .border(.red, width: 1)
     }
 }
 
@@ -68,6 +81,6 @@ extension ForceDirectedGraph: Equatable {
     public static func == (lhs: ForceDirectedGraph<NodeID>, rhs: ForceDirectedGraph<NodeID>) -> Bool
     {
         return lhs._graphRenderingContextShadow == rhs._graphRenderingContextShadow
-//        && lhs._forceDescriptors == rhs._forceDescriptors
+        //        && lhs._forceDescriptors == rhs._forceDescriptors
     }
 }

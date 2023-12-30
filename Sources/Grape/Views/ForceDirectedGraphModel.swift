@@ -313,7 +313,6 @@ extension ForceDirectedGraphModel {
                     let pos = viewportPositions[id]
                     if let textOffsetParams = graphRenderingContext.textOffsets[symbolID] {
                         let offset = textOffsetParams.offset
-                    
 
                         let physicalWidth =
                             Double(rasterizedSymbol.width) / lastRasterizedScaleFactor
@@ -322,13 +321,14 @@ extension ForceDirectedGraphModel {
                             Double(rasterizedSymbol.height) / lastRasterizedScaleFactor
                             / Self.textRasterizationAntialias
 
-                        let textImageOffset = textOffsetParams.alignment.textImageOffsetInCGContext(width: physicalWidth, height: physicalHeight)
+                        let textImageOffset = textOffsetParams.alignment.textImageOffsetInCGContext(
+                            width: physicalWidth, height: physicalHeight)
 
                         cgContext.draw(
                             rasterizedSymbol,
                             in: .init(
-                                x: pos.x + offset.x + textImageOffset.x,// - physicalWidth / 2,
-                                y: -pos.y - offset.y - textImageOffset.y, // - physicalHeight
+                                x: pos.x + offset.x + textImageOffset.x,  // - physicalWidth / 2,
+                                y: -pos.y - offset.y - textImageOffset.y,  // - physicalHeight
                                 width: physicalWidth,
                                 height: physicalHeight
                             )
@@ -342,23 +342,30 @@ extension ForceDirectedGraphModel {
                         continue
                     }
                     let center = (viewportPositions[from] + viewportPositions[to]) / 2
+                    if let textOffsetParams = graphRenderingContext.textOffsets[symbolID] {
+                        let offset = textOffsetParams.offset
 
-                    let offset = graphRenderingContext.textOffsets[symbolID]?.offset ?? .zero
-                    let physicalWidth =
-                        Double(rasterizedSymbol.width) / lastRasterizedScaleFactor
-                        / Self.textRasterizationAntialias
-                    let physicalHeight =
-                        Double(rasterizedSymbol.height) / lastRasterizedScaleFactor
-                        / Self.textRasterizationAntialias
-                    cgContext.draw(
-                        rasterizedSymbol,
-                        in: .init(
-                            x: center.x - physicalWidth / 2 + offset.x,
-                            y: -center.y - offset.y,
-                            width: physicalWidth,
-                            height: physicalHeight
+                        let physicalWidth =
+                            Double(rasterizedSymbol.width) / lastRasterizedScaleFactor
+                            / Self.textRasterizationAntialias
+                        let physicalHeight =
+                            Double(rasterizedSymbol.height) / lastRasterizedScaleFactor
+                            / Self.textRasterizationAntialias
+
+                        let textImageOffset = textOffsetParams.alignment.textImageOffsetInCGContext(
+                            width: physicalWidth, height: physicalHeight)
+
+                        cgContext.draw(
+                            rasterizedSymbol,
+                            in: .init(
+                                x: center.x + offset.x + textImageOffset.x,  // - physicalWidth / 2,
+                                y: -center.y - offset.y - textImageOffset.y,  // - physicalHeight
+                                width: physicalWidth,
+                                height: physicalHeight
+                            )
                         )
-                    )
+
+                    }
                 }
             }
         }
