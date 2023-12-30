@@ -36,7 +36,7 @@ extension GraphContent {
     }
 
     @inlinable
-    public func symbolSize(_ radius: CGFloat) -> some GraphContent<NodeID> {
+    public func symbolSize(radius: CGFloat) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(
             self,
             GraphContentEffect.SymbolSize(

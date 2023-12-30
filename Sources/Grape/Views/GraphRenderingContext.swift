@@ -11,8 +11,8 @@ public struct _GraphRenderingContext<NodeID: Hashable> {
     internal var resolvedTexts: [GraphRenderingStates<NodeID>.StateID: String] = [:]
 
     @usableFromInline
-    internal var textPositions:
-        [GraphRenderingStates<NodeID>.StateID: (alignment: Alignment, offset: CGVector)] = [:]
+    internal var textOffsets:
+        [GraphRenderingStates<NodeID>.StateID: (alignment: Alignment, offset: SIMD2<Double>)] = [:]
 
     @usableFromInline
     internal var symbols: [String: TextResolvingStatus] = [:]

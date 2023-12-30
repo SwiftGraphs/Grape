@@ -18,6 +18,10 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     var viewportPositions: UnsafeArray<SIMD2<Double>>
 
+    // cache this so text size don't change on monitor switch
+    @usableFromInline
+    var lastRasterizedScaleFactor: Double = 2.0
+
     @usableFromInline
     var _$changeMessage = "N/A"
 
@@ -95,7 +99,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         },
-        ticksPerSecond: Double = 60.0
+        ticksPerSecond: Double
     ) {
         self.graphRenderingContext = graphRenderingContext
         self.ticksPerSecond = ticksPerSecond
@@ -106,7 +110,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         )
         _simulationContext.updateAllKineticStates(emittingNewNodesWith)
 
-        self.simulationContext = consume _simulationContext 
+        self.simulationContext = consume _simulationContext
 
         self.viewportPositions = .createUninitializedBuffer(
             count: self.simulationContext.storage.kinetics.position.count
@@ -120,6 +124,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
 
     @usableFromInline
     let _$observationRegistrar = Observation.ObservationRegistrar()
+
 }
 
 extension GraphicsContext.Shading {
@@ -270,16 +275,16 @@ extension ForceDirectedGraphModel {
                 )
             }
         }
-
-        graphicsContext.transform = .identity
+        // return
+        graphicsContext.transform = .identity.concatenating(CGAffineTransform(scaleX: 1, y: -1))
         graphicsContext.withCGContext { cgContext in
-
-            cgContext.concatenate(CGAffineTransform(scaleX: 1, y: -1))
 
             for (symbolID, resolvedTextContent) in graphRenderingContext.resolvedTexts {
 
                 guard let resolvedStatus = graphRenderingContext.symbols[resolvedTextContent]
                 else { continue }
+
+                // Look for rasterized symbol's image
                 var rasterizedSymbol: CGImage? = nil
                 switch resolvedStatus {
                 case .pending(let text):
@@ -288,36 +293,48 @@ extension ForceDirectedGraphModel {
                         with: env,
                         antialias: Self.textRasterizationAntialias
                     )
+                    lastRasterizedScaleFactor = env.displayScale
                     graphRenderingContext.symbols[resolvedTextContent] = .resolved(cgImage)
                     rasterizedSymbol = cgImage
                 case .resolved(let cgImage):
                     rasterizedSymbol = cgImage
                 }
+
                 guard let rasterizedSymbol = rasterizedSymbol else {
                     continue
                 }
+
+                // Start drawing
                 switch symbolID {
                 case .node(let nodeID):
                     guard let id = simulationContext.nodeIndexLookup[nodeID] else {
                         continue
                     }
                     let pos = viewportPositions[id]
-                    let physicalWidth =
-                        Double(rasterizedSymbol.width) / graphicsContext.environment.displayScale
-                        / Self.textRasterizationAntialias
-                    let physicalHeight =
-                        Double(rasterizedSymbol.height) / graphicsContext.environment.displayScale
-                        / Self.textRasterizationAntialias
+                    if let textOffsetParams = graphRenderingContext.textOffsets[symbolID] {
+                        let offset = textOffsetParams.offset
+                    
 
-                    cgContext.draw(
-                        rasterizedSymbol,
-                        in: .init(
-                            x: (pos.x - (physicalWidth / 2)),
-                            y: (-pos.y - 10),
-                            width: physicalWidth,
-                            height: physicalHeight
+                        let physicalWidth =
+                            Double(rasterizedSymbol.width) / lastRasterizedScaleFactor
+                            / Self.textRasterizationAntialias
+                        let physicalHeight =
+                            Double(rasterizedSymbol.height) / lastRasterizedScaleFactor
+                            / Self.textRasterizationAntialias
+
+                        let textImageOffset = textOffsetParams.alignment.textImageOffsetInCGContext(width: physicalWidth, height: physicalHeight)
+
+                        cgContext.draw(
+                            rasterizedSymbol,
+                            in: .init(
+                                x: pos.x + offset.x + textImageOffset.x,// - physicalWidth / 2,
+                                y: -pos.y - offset.y - textImageOffset.y, // - physicalHeight
+                                width: physicalWidth,
+                                height: physicalHeight
+                            )
                         )
-                    )
+                    }
+
                 case .link(let fromID, let toID):
                     guard let from = simulationContext.nodeIndexLookup[fromID],
                         let to = simulationContext.nodeIndexLookup[toID]
@@ -325,15 +342,19 @@ extension ForceDirectedGraphModel {
                         continue
                     }
                     let center = (viewportPositions[from] + viewportPositions[to]) / 2
+
+                    let offset = graphRenderingContext.textOffsets[symbolID]?.offset ?? .zero
                     let physicalWidth =
-                        Double(rasterizedSymbol.width) / graphicsContext.environment.displayScale
+                        Double(rasterizedSymbol.width) / lastRasterizedScaleFactor
+                        / Self.textRasterizationAntialias
                     let physicalHeight =
-                        Double(rasterizedSymbol.height) / graphicsContext.environment.displayScale
+                        Double(rasterizedSymbol.height) / lastRasterizedScaleFactor
+                        / Self.textRasterizationAntialias
                     cgContext.draw(
                         rasterizedSymbol,
                         in: .init(
-                            x: center.x - physicalWidth / 2,
-                            y: -center.y - 10,
+                            x: center.x - physicalWidth / 2 + offset.x,
+                            y: -center.y - offset.y,
                             width: physicalWidth,
                             height: physicalHeight
                         )

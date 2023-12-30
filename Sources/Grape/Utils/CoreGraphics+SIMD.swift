@@ -23,6 +23,14 @@ extension CGSize {
     }
 }
 
+
+extension CGVector {
+    @inlinable
+    internal var simd: SIMD2<Double> {
+        return SIMD2<Double>(x: dx, y: dy)
+    }
+}
+
 extension SIMD2 where Scalar == Double {
     @inlinable
     internal var cgPoint: CGPoint {
@@ -32,6 +40,11 @@ extension SIMD2 where Scalar == Double {
     @inlinable
     internal var cgSize: CGSize {
         return CGSize(width: x, height: y)
+    }
+
+    @inlinable
+    internal var cgVector: CGVector {
+        return CGVector(dx: x, dy: y)
     }
 }
 
