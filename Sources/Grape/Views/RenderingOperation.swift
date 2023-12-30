@@ -11,14 +11,14 @@ internal enum RenderOperation<NodeID: Hashable> {
         @usableFromInline
         let stroke: StrokeStyle?
         @usableFromInline
-        let path: ((SIMD2<Double>) -> Path)?
+        let path: Path?
 
         @inlinable
         init(
             _ mark: NodeMark<NodeID>,
             _ fill: GraphicsContext.Shading?,
             _ stroke: StrokeStyle?,
-            _ path: ((SIMD2<Double>) -> Path)?
+            _ path: Path?
         ) {
             self.mark = mark
             self.fill = fill

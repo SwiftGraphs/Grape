@@ -32,13 +32,22 @@ internal struct GraphRenderingStates<NodeID: Hashable> {
 
 
     @usableFromInline
-    var shape: [Path] = []
+    var symbolShape: [Path] = []
 
     @inlinable
-    var currentShape: Path? { shape.last }
+    var currentSymbolShape: Path? { symbolShape.last }
+
+    @usableFromInline
+    var symbolSize: [CGSize] = []
+
+    @inlinable
+    var currentSymbolSize: CGSize? { symbolSize.last }
 
     @usableFromInline
     let defaultShading: GraphicsContext.Shading
+
+    @usableFromInline
+    let defaultSymbolSize = CGSize(width: 6, height: 6)
 
     @inlinable
     init(

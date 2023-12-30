@@ -56,7 +56,7 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
                 self,
                 context.states.currentShading,
                 context.states.currentStroke,
-                nil
+                context.states.currentSymbolShape
             )
         )
         context.states.currentID = .node(id)

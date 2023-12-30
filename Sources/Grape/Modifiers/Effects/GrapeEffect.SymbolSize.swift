@@ -1,28 +1,29 @@
 import SwiftUI
+
 extension GraphContentEffect {
     @usableFromInline
-    internal struct Shape {
+    internal struct SymbolSize {
         @usableFromInline
-        let path: Path
+        let size: CGSize
 
         @inlinable
-        public init(_ path: Path) {
-            self.path = path
+        public init(_ size: CGSize) {
+            self.size = size
         }
     }
 }
 
-extension GraphContentEffect.Shape: GraphContentModifier {
+extension GraphContentEffect.SymbolSize: GraphContentModifier {
     @inlinable
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        context.states.shape.append(path)
+        context.states.symbolSize.append(size)
     }
 
     @inlinable
     public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
     where NodeID: Hashable {
-        context.states.shape.removeLast()
+        context.states.symbolSize.removeLast()
     }
 }

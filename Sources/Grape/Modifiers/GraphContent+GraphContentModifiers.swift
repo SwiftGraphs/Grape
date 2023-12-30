@@ -1,9 +1,11 @@
+import Charts
 import SwiftUI
 
 extension GraphContent {
     @inlinable
     @_disfavoredOverload
-    public func foregroundStyle<S>(_ style: S) -> some GraphContent<NodeID> where S: ShapeStyle {
+    public func foregroundStyle<S>(_ style: S) -> some GraphContent<NodeID>
+    where S: SwiftUI.ShapeStyle {
         return ModifiedGraphContent(self, GraphContentEffect.Shading(.style(style)))
     }
 
@@ -13,20 +15,35 @@ extension GraphContent {
     }
 
     @inlinable
-    @available(*, deprecated, renamed: "foregroundStyle(_:)")
+    @_disfavoredOverload
+    public func symbol<S>(_ shape: S) -> some GraphContent<NodeID> where S: SwiftUI.Shape {
+        return ModifiedGraphContent(self, GraphContentEffect.Symbol(shape))
+    }
+
+    @inlinable
+    public func symbol(_ shape: BasicChartSymbolShape) -> some GraphContent<NodeID> {
+        return ModifiedGraphContent(self, GraphContentEffect.Symbol(shape))
+    }
+
+    @inlinable
+    public func symbolSize(_ size: CGSize) -> some GraphContent<NodeID> {
+        return ModifiedGraphContent(self, GraphContentEffect.SymbolSize(size))
+    }
+
+    @inlinable
+    public func symbolSize(_ radius: CGFloat) -> some GraphContent<NodeID> {
+        return ModifiedGraphContent(
+            self,
+            GraphContentEffect.SymbolSize(
+                CGSize(width: radius * 2, height: radius * 2)
+            ))
+    }
+
+    @inlinable
+    @available(*, deprecated, message: "use foregroundStyle(_:)")
     public func fill(_ shading: GraphicsContext.Shading) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(self, GraphContentEffect.Shading(shading))
     }
-
-    // @inlinable
-    // public func fill(by value: some Hashable) -> some GraphContent<NodeID> {
-    //     return ModifiedGraphContent(self, GraphContentEffect.Shading(.by(value)))
-    // }
-
-    // @inlinable
-    // public func opacity(_ alpha: Double) -> some GraphContent<NodeID> {
-    //     return ModifiedGraphContent(self, GraphContentEffect.Opacity(alpha))
-    // }
 
     @inlinable
     public func label(_ text: Text, alignment: Alignment) -> some GraphContent<NodeID> {
@@ -39,7 +56,9 @@ extension GraphContent {
     }
 
     @inlinable
-    public func label(_ alignment: Alignment, @ViewBuilder _ text: () -> Text) -> some GraphContent<NodeID> {
+    public func label(_ alignment: Alignment, @ViewBuilder _ text: () -> Text) -> some GraphContent<
+        NodeID
+    > {
         return ModifiedGraphContent(self, GraphContentEffect.Label(text()))
     }
 

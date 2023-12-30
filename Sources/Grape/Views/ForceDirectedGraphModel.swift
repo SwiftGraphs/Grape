@@ -200,6 +200,7 @@ extension ForceDirectedGraphModel {
                 p, with: op.fill ?? .defaultLinkShading, style: op.stroke ?? .defaultLinkStyle
             )
 
+            // graphicsContext.translateBy(x: CGFloat, y: CGFloat)
         }
 
         for op in graphRenderingContext.nodeOperations {
@@ -207,16 +208,25 @@ extension ForceDirectedGraphModel {
                 continue
             }
             let pos = viewportPositions[id] - op.mark.radius
-            let rect = CGRect(
-                origin: pos.cgPoint,
-                size: CGSize(
-                    width: op.mark.radius * 2, height: op.mark.radius * 2
+            if let path = op.path {
+                graphicsContext.translateBy(x: pos.x, y: pos.y)
+                graphicsContext.fill(
+                    path, 
+                    with: op.fill ?? .defaultNodeShading
                 )
-            )
-            graphicsContext.fill(
-                Path(ellipseIn: rect),
-                with: op.fill ?? .defaultNodeShading
-            )
+                graphicsContext.translateBy(x: -pos.x, y: -pos.y)
+            } else {
+                let rect = CGRect(
+                    origin: pos.cgPoint,
+                    size: CGSize(
+                        width: op.mark.radius * 2, height: op.mark.radius * 2
+                    )
+                )
+                graphicsContext.fill(
+                    Path(ellipseIn: rect),
+                    with: op.fill ?? .defaultNodeShading
+                )
+            }
         }
 
         graphicsContext.withCGContext { cgContext in
