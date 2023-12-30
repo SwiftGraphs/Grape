@@ -1,5 +1,8 @@
-import Charts
 import SwiftUI
+
+#if canImport(Charts)
+    import Charts
+#endif
 
 extension GraphContent {
     @inlinable
@@ -20,10 +23,12 @@ extension GraphContent {
         return ModifiedGraphContent(self, GraphContentEffect.Symbol(shape))
     }
 
-    @inlinable
-    public func symbol(_ shape: BasicChartSymbolShape) -> some GraphContent<NodeID> {
-        return ModifiedGraphContent(self, GraphContentEffect.Symbol(shape))
-    }
+    #if canImport(Charts)
+        @inlinable
+        public func symbol(_ shape: BasicChartSymbolShape) -> some GraphContent<NodeID> {
+            return ModifiedGraphContent(self, GraphContentEffect.Symbol(shape))
+        }
+    #endif
 
     @inlinable
     public func symbolSize(_ size: CGSize) -> some GraphContent<NodeID> {
@@ -46,19 +51,20 @@ extension GraphContent {
     }
 
     @inlinable
-    public func label(_ text: Text, alignment: Alignment) -> some GraphContent<NodeID> {
+    public func label(_ text: Text, alignment: Alignment = .bottom) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(self, GraphContentEffect.Label(text))
     }
 
     @inlinable
-    public func label(_ string: String, alignment: Alignment) -> some GraphContent<NodeID> {
+    public func label(_ string: String, alignment: Alignment = .bottom) -> some GraphContent<NodeID>
+    {
         return ModifiedGraphContent(self, GraphContentEffect.Label(Text(string)))
     }
 
     @inlinable
-    public func label(_ alignment: Alignment, @ViewBuilder _ text: () -> Text) -> some GraphContent<
-        NodeID
-    > {
+    public func label(_ alignment: Alignment = .bottom, @ViewBuilder _ text: () -> Text)
+        -> some GraphContent<NodeID>
+    {
         return ModifiedGraphContent(self, GraphContentEffect.Label(text()))
     }
 

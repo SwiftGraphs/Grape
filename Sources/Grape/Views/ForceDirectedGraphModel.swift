@@ -209,13 +209,14 @@ extension ForceDirectedGraphModel {
             }
             let pos = viewportPositions[id] - op.mark.radius
             if let path = op.path {
-                graphicsContext.translateBy(x: pos.x, y: pos.y)
+                graphicsContext.transform = .init(translationX: pos.x, y: pos.y)
                 graphicsContext.fill(
-                    path, 
+                    path,
                     with: op.fill ?? .defaultNodeShading
                 )
-                graphicsContext.translateBy(x: -pos.x, y: -pos.y)
+                // graphicsContext.translateBy(x: -pos.x, y: -pos.y)
             } else {
+                graphicsContext.transform = .identity
                 let rect = CGRect(
                     origin: pos.cgPoint,
                     size: CGSize(
@@ -229,6 +230,7 @@ extension ForceDirectedGraphModel {
             }
         }
 
+        graphicsContext.transform = .identity
         graphicsContext.withCGContext { cgContext in
 
             for (symbolID, resolvedTextContent) in graphRenderingContext.resolvedTexts {

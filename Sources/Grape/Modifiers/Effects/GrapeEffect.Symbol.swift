@@ -1,4 +1,3 @@
-import Charts
 import SwiftUI
 
 extension GraphContentEffect {
