@@ -51,11 +51,13 @@ extension ForceDirectedGraph: View {
     
     @ViewBuilder
     @inlinable
+    @MainActor
     var canvas: some View {
 #if DEBUG
         let _ = Self._printChanges()
 #endif
-        Canvas(rendersAsynchronously: true) { context, size in
+        
+        Canvas(rendersAsynchronously: true) { context, size in 
             self.model.render(&context, size)
         }.border(.red, width: 1)
     }

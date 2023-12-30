@@ -2,22 +2,22 @@ import CoreGraphics
 import SwiftUI
 
 #if canImport(AppKit)
-import AppKit
-@inlinable
-internal func getDisplayScale() -> CGFloat {
-    return NSScreen.main?.backingScaleFactor ?? 2.0
-}
+    import AppKit
+    @inlinable
+    internal func getDisplayScale() -> CGFloat {
+        return NSScreen.main?.backingScaleFactor ?? 2.0
+    }
 #elseif canImport(UIKit)
-import UIKit
-@inlinable
-internal func getDisplayScale() -> CGFloat {
-    return UIScreen.main.scale
-}
+    import UIKit
+    @inlinable
+    internal func getDisplayScale() -> CGFloat {
+        return UIScreen.main.scale
+    }
 #else
-@inlinable
-internal func getDisplayScale() -> CGFloat {
-    return 2.0
-}
+    @inlinable
+    internal func getDisplayScale() -> CGFloat {
+        return 2.0
+    }
 #endif
 
 // #if os(macOS)
@@ -53,10 +53,35 @@ extension View {
     @inlinable
     @MainActor
     internal func toCGImage(scaledBy factor: CGFloat) -> CGImage? {
-        let renderer = ImageRenderer(content: self)
+        let renderer = ImageRenderer(
+            content: self
+        )
         renderer.scale = factor
+        // guard let image = renderer.nsImage else { return nil }
+        // var imageRect = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        // let imageRef = image.cgImage(forProposedRect: &imageRect, context: nil, hints: nil)
         return renderer.cgImage
     }
+
+    @inlinable
+    @MainActor
+    internal func toCGImage(with environment: EnvironmentValues) -> CGImage? {
+        let renderer = ImageRenderer(
+            content: self.environment(\.self, environment)
+        )
+        renderer.scale = environment.displayScale
+        // guard let image = renderer.nsImage else { return nil }
+        // var imageRect = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        // let imageRef = image.cgImage(forProposedRect: &imageRect, context: nil, hints: nil)
+        return renderer.cgImage
+    }
+
+    // @inlinable
+    // @MainActor
+    // internal func toCGImage() -> CGImage? {
+    //     let uicont
+    //     return renderer.cgImage
+    // }
 
     // @inlinable
     // @MainActor
@@ -70,7 +95,6 @@ extension View {
     //     return renderer.cgImage
     // }
 }
-
 
 extension Text {
     @inlinable

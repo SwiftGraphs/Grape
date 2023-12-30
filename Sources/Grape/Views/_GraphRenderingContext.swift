@@ -1,21 +1,17 @@
 import SwiftUI
 
 public struct _GraphRenderingContext<NodeID: Hashable> {
+    @usableFromInline
+    enum TextResolvingStatus: Equatable {
+        case pending(Text)
+        case resolved(CGImage?)
+    }
 
     @usableFromInline
     internal var resolvedTexts: [GraphRenderingStates<NodeID>.StateID: String] = [:]
 
     @usableFromInline
-    internal var symbols: [String: CGImage?] = [:]
-
-    // @inlinable
-    // internal var resolvedSymbol: some View {
-    //     // print("EVAL")
-    //     let enumerated = Array(self.symbols.keys)
-    //     return ForEach(enumerated, id: \.self) { 
-    //         return self.symbols[$0]!.tag($0)
-    //     }
-    // }
+    internal var symbols: [String: TextResolvingStatus] = [:]
 
     @usableFromInline
     internal var nodeOperations: [RenderOperation<NodeID>.Node] = []
@@ -25,14 +21,12 @@ public struct _GraphRenderingContext<NodeID: Hashable> {
 
     @inlinable
     internal init() {
-        
+
     }
 
     @usableFromInline
     internal var states = GraphRenderingStates<NodeID>()
 }
-
-
 
 extension _GraphRenderingContext: Equatable {
     @inlinable
@@ -46,26 +40,10 @@ extension _GraphRenderingContext {
     @inlinable
     internal var nodes: [NodeMark<NodeID>] {
         nodeOperations.map(\.mark)
-        // operations.compactMap { operation in
-        //     switch operation {
-        //     case .node(let node, _, _, _):
-        //         return node
-        //     default:
-        //         return nil
-        //     }
-        // }
     }
 
     @inlinable
     internal var edges: [LinkMark<NodeID>] {
         linkOperations.map(\.mark)
-        // operations.compactMap { operation in
-        //     switch operation {
-        //     case .link(let link, _, _, _):
-        //         return link
-        //     default:
-        //         return nil
-        //     }
-        // }
     }
 }

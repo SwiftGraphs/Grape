@@ -157,7 +157,7 @@ extension ForceDirectedGraphModel {
     }
 
     @inlinable
-    // @MainActor
+    @MainActor
     func render(
         _ graphicsContext: inout GraphicsContext,
         _ size: CGSize
@@ -218,14 +218,24 @@ extension ForceDirectedGraphModel {
                 with: op.fill ?? .defaultNodeShading
             )
         }
-        
 
         graphicsContext.withCGContext { cgContext in
-            
-            for (symbolID, resolvedText) in graphRenderingContext.resolvedTexts {
-                guard
-                    let rasterizedSymbol = graphRenderingContext.symbols[resolvedText, default: nil]
-                else {
+
+            for (symbolID, resolvedTextContent) in graphRenderingContext.resolvedTexts {
+
+                guard let resolvedStatus = graphRenderingContext.symbols[resolvedTextContent]
+                else { continue }
+                var rasterizedSymbol: CGImage? = nil
+                switch resolvedStatus {
+                case .pending(let text):
+                    let env = graphicsContext.environment
+                    let cgImage = text.toCGImage(with: env)
+                    graphRenderingContext.symbols[resolvedTextContent] = .resolved(cgImage)
+                    rasterizedSymbol = cgImage
+                case .resolved(let cgImage):
+                    rasterizedSymbol = cgImage
+                }
+                guard let rasterizedSymbol = rasterizedSymbol else {
                     continue
                 }
                 switch symbolID {
@@ -235,12 +245,10 @@ extension ForceDirectedGraphModel {
                     }
                     let pos = viewportPositions[id]
                     let physicalWidth =
-                        Double(rasterizedSymbol.width) / graphRenderingContext.states.displayScale
+                        Double(rasterizedSymbol.width) / graphicsContext.environment.displayScale
                     let physicalHeight =
-                        Double(rasterizedSymbol.height) / graphRenderingContext.states.displayScale
-                    
-                    
-                    
+                        Double(rasterizedSymbol.height) / graphicsContext.environment.displayScale
+
                     cgContext.draw(
                         rasterizedSymbol,
                         in: .init(
@@ -258,9 +266,9 @@ extension ForceDirectedGraphModel {
                     }
                     let center = (viewportPositions[from] + viewportPositions[to]) / 2
                     let physicalWidth =
-                        Double(rasterizedSymbol.width) / graphRenderingContext.states.displayScale
+                        Double(rasterizedSymbol.width) / graphicsContext.environment.displayScale
                     let physicalHeight =
-                        Double(rasterizedSymbol.height) / graphRenderingContext.states.displayScale
+                        Double(rasterizedSymbol.height) / graphicsContext.environment.displayScale
                     cgContext.draw(
                         rasterizedSymbol,
                         in: .init(

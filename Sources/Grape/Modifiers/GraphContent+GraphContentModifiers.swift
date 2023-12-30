@@ -29,32 +29,38 @@ extension GraphContent {
     // }
 
     @inlinable
-    public func label(_ text: Text) -> some GraphContent<NodeID> {
+    public func label(_ text: Text, alignment: Alignment) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(self, GraphContentEffect.Label(text))
     }
 
     @inlinable
-    public func label(_ string: String) -> some GraphContent<NodeID> {
+    public func label(_ string: String, alignment: Alignment) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(self, GraphContentEffect.Label(Text(string)))
     }
 
     @inlinable
+    public func label(_ alignment: Alignment, @ViewBuilder _ text: () -> Text) -> some GraphContent<NodeID> {
+        return ModifiedGraphContent(self, GraphContentEffect.Label(text()))
+    }
+
+    @inlinable
     public func stroke(
-        lineWidth: CGFloat = 1, 
-        lineCap: CGLineCap = .butt, 
-        lineJoin: CGLineJoin = .miter, 
-        miterLimit: CGFloat = 10, 
-        dash: [CGFloat] = [CGFloat](), 
+        lineWidth: CGFloat = 1,
+        lineCap: CGLineCap = .butt,
+        lineJoin: CGLineJoin = .miter,
+        miterLimit: CGFloat = 10,
+        dash: [CGFloat] = [CGFloat](),
         dashPhase: CGFloat = 0
     ) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(
-            self, GraphContentEffect.Stroke(
+            self,
+            GraphContentEffect.Stroke(
                 .init(
-                    lineWidth: lineWidth, 
-                    lineCap: lineCap, 
-                    lineJoin: lineJoin, 
-                    miterLimit: miterLimit, 
-                    dash: dash, 
+                    lineWidth: lineWidth,
+                    lineCap: lineCap,
+                    lineJoin: lineJoin,
+                    miterLimit: miterLimit,
+                    dash: dash,
                     dashPhase: dashPhase
                 )
             ))

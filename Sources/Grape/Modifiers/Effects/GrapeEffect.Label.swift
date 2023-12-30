@@ -3,15 +3,23 @@ import SwiftUI
 extension GraphContentEffect {
     @usableFromInline
     internal struct Label {
+
         @usableFromInline
         let text: Text
 
+        @usableFromInline
+        let alignment: Alignment
+
+
         @inlinable
-        public init(_ text: Text) {
+        public init(
+            _ text: Text,
+            alignment: Alignment = .bottomLeading
+        ) {
             self.text = text
+            self.alignment = alignment
         }
     }
-
 
 }
 
@@ -30,7 +38,7 @@ extension GraphContentEffect.Label: GraphContentModifier {
         if let currentID = context.states.currentID {
             let resolvedText = text.resolved()
             context.resolvedTexts[currentID] = resolvedText
-            context.symbols[resolvedText] = text.toCGImage(scaledBy: context.states.displayScale)
+            context.symbols[resolvedText] = .pending(text)
         }
     }
 }
