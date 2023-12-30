@@ -75,7 +75,7 @@ extension SimulationContext {
     public mutating func revive(
         for newContext: _GraphRenderingContext<NodeID>,
         with newForceField: consuming ForceField,
-        emittingNewNodesWith states: (NodeID, Kinetics2D) -> KineticState = { _, _ in .init(position: .zero) }
+        emittingNewNodesWith states: (NodeID) -> KineticState = { _ in .init(position: .zero) }
     ) {
         let newNodes = newContext.nodes
 
@@ -98,7 +98,7 @@ extension SimulationContext {
 
         let newlyAddedNodeStates = Dictionary(
             uniqueKeysWithValues: newlyAddedNodes.map {
-                ($0.id, states($0.id, storage.kinetics))
+                ($0.id, states($0.id))
             }
         )
 

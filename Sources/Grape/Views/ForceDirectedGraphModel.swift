@@ -86,13 +86,13 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     var _onSimulationStabilized: (() -> Void)? = nil
 
     @usableFromInline
-    var _emittingNewNodesWith: (NodeID, Kinetics2D) -> KineticState
+    var _emittingNewNodesWith: (NodeID) -> KineticState
 
     @inlinable
     init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
         _ forceField: consuming SealedForce2D,
-        _ emittingNewNodesWith: @escaping (NodeID, Kinetics2D) -> KineticState = { _, _ in
+        emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         },
         ticksPerSecond: Double = 60.0
@@ -104,9 +104,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
             for: consume graphRenderingContext,
             with: consume forceField
         )
-        _simulationContext.updateAllKineticStates {
-            emittingNewNodesWith($0, _simulationContext.storage.kinetics)
-        }
+        _simulationContext.updateAllKineticStates(emittingNewNodesWith)
 
         self.simulationContext = consume _simulationContext 
 

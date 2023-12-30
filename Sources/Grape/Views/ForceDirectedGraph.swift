@@ -51,8 +51,12 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
     @inlinable
     public init(
         _ _isRunning: Binding<Bool> = .constant(true),
+        ticksPerSecond: Double = 60.0,
         @GraphContentBuilder<NodeID> _ graph: () -> some GraphContent<NodeID>,
-        @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = { [] }
+        @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = { [] },
+        emittingNewNodesWithStates state: @escaping (NodeID) -> KineticState = { _ in
+            .init(position: .zero)
+        }
     ) {
 
         var gctx = _GraphRenderingContext<NodeID>()
@@ -62,7 +66,12 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
 
         self._forceDescriptors = force()
         let force = SealedForce2D(self._forceDescriptors)
-        self.model = .init(gctx, force)
+        self.model = .init(
+            gctx, 
+            force, 
+            emittingNewNodesWith: state, 
+            ticksPerSecond: ticksPerSecond
+        )
     }
 }
 
@@ -72,14 +81,6 @@ extension ForceDirectedGraph {
         action: @escaping (KeyFrame) -> Void
     ) -> Self {
         self.model._onTicked = action
-        return self
-    }
-
-    @inlinable
-    public func onEmitNewNodes(
-        getKineticStates: @escaping (NodeID, Kinetics2D) -> KineticState
-    ) -> Self {
-        self.model._emittingNewNodesWith = getKineticStates
         return self
     }
 }
