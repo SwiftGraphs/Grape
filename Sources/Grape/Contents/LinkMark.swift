@@ -65,6 +65,7 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
                 nil
             )
         )
+        context.states.currentID = .link(id.source, id.target)
     }
 }
 

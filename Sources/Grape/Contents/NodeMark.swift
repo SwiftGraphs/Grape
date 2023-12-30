@@ -59,6 +59,7 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
                 nil
             )
         )
+        context.states.currentID = .node(id)
     }
 }
 

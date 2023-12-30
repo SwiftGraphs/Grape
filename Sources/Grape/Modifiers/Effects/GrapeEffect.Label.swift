@@ -11,6 +11,8 @@ extension GraphContentEffect {
             self.text = text
         }
     }
+
+
 }
 
 extension GraphContentEffect.Label: GraphContentModifier {
@@ -18,14 +20,17 @@ extension GraphContentEffect.Label: GraphContentModifier {
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        if let currentID = context.states.currentID {
-            context.symbols[currentID] = text
-        }
+
     }
 
     @inlinable
+    @MainActor
     public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
     where NodeID: Hashable {
-
+        if let currentID = context.states.currentID {
+            let resolvedText = text.resolved()
+            context.resolvedTexts[currentID] = resolvedText
+            context.symbols[resolvedText] = text.toCGImage(scaledBy: context.states.displayScale)
+        }
     }
 }

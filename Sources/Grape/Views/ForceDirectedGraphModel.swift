@@ -157,6 +157,7 @@ extension ForceDirectedGraphModel {
     }
 
     @inlinable
+    // @MainActor
     func render(
         _ graphicsContext: inout GraphicsContext,
         _ size: CGSize
@@ -174,47 +175,102 @@ extension ForceDirectedGraphModel {
             )
         }
 
-        do {
-            for op in graphRenderingContext.linkOperations {
-                // switch op {
-                // case .link(let link, let shading, let strokeStyle, let pathBuilder):
-                let source = simulationContext.nodeIndexLookup[op.mark.id.source]!
-                let target = simulationContext.nodeIndexLookup[op.mark.id.target]!
+        for op in graphRenderingContext.linkOperations {
 
-                let sourcePos = viewportPositions[source]
-                let targetPos = viewportPositions[target]
-
-                let p =
-                    if let pathBuilder = op.path {
-                        pathBuilder(sourcePos, targetPos)
-                    } else {
-                        Path { path in
-                            path.move(to: sourcePos.cgPoint)
-                            path.addLine(to: targetPos.cgPoint)
-                        }
-                    }
-                graphicsContext.stroke(
-                    p, with: op.fill ?? .defaultLinkShading, style: op.stroke ?? .defaultLinkStyle
-                )
-
+            guard let source = simulationContext.nodeIndexLookup[op.mark.id.source],
+                let target = simulationContext.nodeIndexLookup[op.mark.id.target]
+            else {
+                continue
             }
+
+            let sourcePos = viewportPositions[source]
+            let targetPos = viewportPositions[target]
+
+            let p =
+                if let pathBuilder = op.path {
+                    pathBuilder(sourcePos, targetPos)
+                } else {
+                    Path { path in
+                        path.move(to: sourcePos.cgPoint)
+                        path.addLine(to: targetPos.cgPoint)
+                    }
+                }
+
+            graphicsContext.stroke(
+                p, with: op.fill ?? .defaultLinkShading, style: op.stroke ?? .defaultLinkStyle
+            )
+
         }
 
-        do {
+        for op in graphRenderingContext.nodeOperations {
+            guard let id = simulationContext.nodeIndexLookup[op.mark.id] else {
+                continue
+            }
+            let pos = viewportPositions[id] - op.mark.radius
+            let rect = CGRect(
+                origin: pos.cgPoint,
+                size: CGSize(
+                    width: op.mark.radius * 2, height: op.mark.radius * 2
+                )
+            )
+            graphicsContext.fill(
+                Path(ellipseIn: rect),
+                with: op.fill ?? .defaultNodeShading
+            )
+        }
+        
 
-            for op in graphRenderingContext.nodeOperations {
-                let id = simulationContext.nodeIndexLookup[op.mark.id]!
-                let pos = viewportPositions[id] - op.mark.radius
-                let rect = CGRect(
-                    origin: pos.cgPoint,
-                    size: CGSize(
-                        width: op.mark.radius * 2, height: op.mark.radius * 2
+        graphicsContext.withCGContext { cgContext in
+            
+            for (symbolID, resolvedText) in graphRenderingContext.resolvedTexts {
+                guard
+                    let rasterizedSymbol = graphRenderingContext.symbols[resolvedText, default: nil]
+                else {
+                    continue
+                }
+                switch symbolID {
+                case .node(let nodeID):
+                    guard let id = simulationContext.nodeIndexLookup[nodeID] else {
+                        continue
+                    }
+                    let pos = viewportPositions[id]
+                    let physicalWidth =
+                        Double(rasterizedSymbol.width) / graphRenderingContext.states.displayScale
+                    let physicalHeight =
+                        Double(rasterizedSymbol.height) / graphRenderingContext.states.displayScale
+                    
+                    
+                    
+                    cgContext.draw(
+                        rasterizedSymbol,
+                        in: .init(
+                            x: pos.x - physicalWidth / 2,
+                            y: pos.y,
+                            width: physicalWidth,
+                            height: physicalHeight
+                        )
                     )
-                )
-                graphicsContext.fill(
-                    Path(ellipseIn: rect),
-                    with: op.fill ?? .defaultNodeShading
-                )
+                case .link(let fromID, let toID):
+                    guard let from = simulationContext.nodeIndexLookup[fromID],
+                        let to = simulationContext.nodeIndexLookup[toID]
+                    else {
+                        continue
+                    }
+                    let center = (viewportPositions[from] + viewportPositions[to]) / 2
+                    let physicalWidth =
+                        Double(rasterizedSymbol.width) / graphRenderingContext.states.displayScale
+                    let physicalHeight =
+                        Double(rasterizedSymbol.height) / graphRenderingContext.states.displayScale
+                    cgContext.draw(
+                        rasterizedSymbol,
+                        in: .init(
+                            x: center.x,
+                            y: center.y - physicalWidth / 2,
+                            width: physicalWidth,
+                            height: physicalHeight
+                        )
+                    )
+                }
             }
         }
 

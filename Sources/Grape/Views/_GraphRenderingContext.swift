@@ -3,10 +3,20 @@ import SwiftUI
 public struct _GraphRenderingContext<NodeID: Hashable> {
 
     @usableFromInline
-    internal var symbols: [GraphRenderingStates<NodeID>.StateID: Text] = [:]
+    internal var resolvedTexts: [GraphRenderingStates<NodeID>.StateID: String] = [:]
 
-    // @usableFromInline
-    // internal var operations: [RenderingOperation<NodeID>] = []
+    @usableFromInline
+    internal var symbols: [String: CGImage?] = [:]
+
+    // @inlinable
+    // internal var resolvedSymbol: some View {
+    //     // print("EVAL")
+    //     let enumerated = Array(self.symbols.keys)
+    //     return ForEach(enumerated, id: \.self) { 
+    //         return self.symbols[$0]!.tag($0)
+    //     }
+    // }
+
     @usableFromInline
     internal var nodeOperations: [RenderOperation<NodeID>.Node] = []
 

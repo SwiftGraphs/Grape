@@ -55,10 +55,9 @@ extension ForceDirectedGraph: View {
 #if DEBUG
         let _ = Self._printChanges()
 #endif
-        Canvas { context, size in
+        Canvas(rendersAsynchronously: true) { context, size in
             self.model.render(&context, size)
-        }
-        .border(.red, width: 1)
+        }.border(.red, width: 1)
     }
 }
 

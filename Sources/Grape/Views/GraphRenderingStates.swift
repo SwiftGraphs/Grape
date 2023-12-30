@@ -4,6 +4,9 @@ import SwiftUI
 internal struct GraphRenderingStates<NodeID: Hashable> {
 
     @usableFromInline
+    internal var displayScale: CGFloat = getDisplayScale()
+
+    @usableFromInline
     enum StateID: Hashable {
         case node(NodeID)
         case link(NodeID, NodeID)
