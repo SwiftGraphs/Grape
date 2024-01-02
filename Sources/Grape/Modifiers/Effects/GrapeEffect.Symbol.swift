@@ -18,7 +18,7 @@ extension GraphContentEffect.Symbol: GraphContentModifier {
     public func _into<NodeID>(
         _ context: inout _GraphRenderingContext<NodeID>
     ) where NodeID: Hashable {
-        let currentSize = context.states.currentSymbolSize ?? context.states.defaultSymbolSize
+        let currentSize = context.states.currentSymbolSizeOrDefault
         context.states.symbolShape.append(
             shape.path(
                 in: CGRect(

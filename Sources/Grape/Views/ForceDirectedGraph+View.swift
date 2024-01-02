@@ -68,10 +68,7 @@ extension ForceDirectedGraph: View {
             .onChanged(onDragChange)
             .onEnded(onDragEnd)
         )
-        .gesture(
-            TapGesture()
-                .onEnded(onTapEnded)
-        )
+        .onTapGesture(count: 1, perform: onTapGesture)
         .border(.red, width: 1)
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import simd
 
 public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
 
@@ -60,6 +61,8 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
             )
         )
         context.states.currentID = .node(id)
+        context.nodeRadiusSquaredLookup[id] = simd_length_squared(
+            context.states.currentSymbolSizeOrDefault.simd)
     }
 }
 

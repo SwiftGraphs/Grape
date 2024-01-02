@@ -21,6 +21,9 @@ public struct _GraphRenderingContext<NodeID: Hashable> {
     internal var nodeOperations: [RenderOperation<NodeID>.Node] = []
 
     @usableFromInline
+    internal var nodeRadiusSquaredLookup: [NodeID: Double] = [:]
+
+    @usableFromInline
     internal var linkOperations: [RenderOperation<NodeID>.Link] = []
 
     @inlinable

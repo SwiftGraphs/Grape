@@ -15,6 +15,10 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     var modelTransform: ViewportTransform = .identity
 
+    /// Moves the zero-centered simulation to final view
+    @usableFromInline
+    var finalTransform: ViewportTransform = .identity
+
     @usableFromInline
     var viewportPositions: UnsafeArray<SIMD2<Double>>
 
@@ -81,7 +85,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     var _onNodeDragStateChanged: (() -> Void)? = nil
 
     @usableFromInline
-    var _onNodeFocusStateChanged: (() -> Void)? = nil
+    var _onNodeTapped: ((NodeID?) -> Void)? = nil
 
     @usableFromInline
     var _onViewportTransformChanged: ((ViewportTransform, Bool) -> Void)? = nil
@@ -192,6 +196,8 @@ extension ForceDirectedGraphModel {
             viewportPositions[i] = transform.apply(
                 to: simulationContext.storage.kinetics.position[i])
         }
+
+        self.finalTransform = transform
 
         for op in graphRenderingContext.linkOperations {
 

@@ -29,13 +29,18 @@ internal struct SimulationContext<NodeID: Hashable> {
     @usableFromInline
     internal var nodeIndexLookup: [NodeID: Int]
 
+    @usableFromInline
+    internal var nodeIndices: [NodeID]
+
     @inlinable
     internal init(
         _ storage: consuming Simulation2D<ForceField>,
-        _ nodeIndexLookup: consuming [NodeID: Int]
+        _ nodeIndexLookup: consuming [NodeID: Int],
+        _ nodeIndices: consuming [NodeID]
     ) {
         self.storage = consume storage
         self.nodeIndexLookup = consume nodeIndexLookup
+        self.nodeIndices = consume nodeIndices
     }
 
 }
@@ -66,7 +71,8 @@ extension SimulationContext {
                 links: consume links,
                 forceField: consume forceField
             ),
-            consume nodeIndexLookup
+            consume nodeIndexLookup,
+            nodes.map(\.id)
         )
     }
 
@@ -148,7 +154,8 @@ extension SimulationContext {
 
         self = .init(
             consume newStorage,
-            consume newNodeIndexLookup
+            consume newNodeIndexLookup,
+            newNodes.map(\.id)
         )
     }
 

@@ -30,7 +30,6 @@ internal struct GraphRenderingStates<NodeID: Hashable> {
     @inlinable
     var currentOpacity: Double? { opacity.last }
 
-
     @usableFromInline
     var symbolShape: [Path] = []
 
@@ -42,6 +41,9 @@ internal struct GraphRenderingStates<NodeID: Hashable> {
 
     @inlinable
     var currentSymbolSize: CGSize? { symbolSize.last }
+
+    @inlinable
+    var currentSymbolSizeOrDefault: CGSize { symbolSize.last ?? defaultSymbolSize }
 
     @usableFromInline
     let defaultShading: GraphicsContext.Shading
