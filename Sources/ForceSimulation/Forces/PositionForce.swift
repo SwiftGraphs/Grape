@@ -16,7 +16,7 @@ extension Kinetics {
     /// See [Position Force - D3](https://d3js.org/d3-force/position).
     public struct PositionForce: ForceProtocol {
 
-        @usableFromInline var kinetics: Kinetics! = nil
+        // @usableFromInline var kinetics: Kinetics! = nil
 
         public var strength: PositionStrength
         public var direction: Int
@@ -26,14 +26,14 @@ extension Kinetics {
 
         @inlinable
         public func apply() {
-            assert(self.kinetics != nil, "Kinetics not bound to force")
-            let alpha = kinetics.alpha
-            let lane = self.direction
-            for i in kinetics.range {
-                kinetics.velocity[i][lane] +=
-                    (self.calculatedTargetOnDirection[i] - kinetics.position[i][lane])
-                    * self.calculatedStrength[i] * alpha
-            }
+            // assert(self.kinetics != nil, "Kinetics not bound to force")
+            // let alpha = kinetics.alpha
+            // let lane = self.direction
+            // for i in kinetics.range {
+            //     kinetics.velocity[i][lane] +=
+            //         (self.calculatedTargetOnDirection[i] - kinetics.position[i][lane])
+            //         * self.calculatedStrength[i] * alpha
+            // }
         }
 
         @inlinable
@@ -49,7 +49,7 @@ extension Kinetics {
 
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
-            self.kinetics = kinetics
+            // self.kinetics = kinetics
             self.calculatedTargetOnDirection = self.targetOnDirection.calculateUnsafe(
                 for: kinetics.validCount)
             self.calculatedStrength = self.strength.calculateUnsafe(for: kinetics.validCount)

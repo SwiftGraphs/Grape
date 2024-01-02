@@ -69,19 +69,19 @@ extension Kinetics {
     /// See [Manybody Force - D3](https://d3js.org/d3-force/many-body).
     public struct ManyBodyForce: ForceProtocol {
 
-        @usableFromInline var strength: Vector.Scalar
+        @usableFromInline let strength: Vector.Scalar
         @usableFromInline var theta2: Vector.Scalar
         @usableFromInline var theta: Vector.Scalar {
             didSet {
                 theta2 = theta * theta
             }
         }
-        @usableFromInline var distanceMin: Vector.Scalar = 1
-        @usableFromInline var distanceMin2: Vector.Scalar = 1
-        @usableFromInline var distanceMax2: Vector.Scalar = .infinity
-        @usableFromInline var distanceMax: Vector.Scalar = .infinity
+        @usableFromInline let distanceMin: Vector.Scalar = 1
+        @usableFromInline let distanceMin2: Vector.Scalar = 1
+        @usableFromInline let distanceMax2: Vector.Scalar = .infinity
+        @usableFromInline let distanceMax: Vector.Scalar = .infinity
 
-        public var mass: NodeMass
+        public let mass: NodeMass
         @usableFromInline var precalculatedMass: UnsafeArray<Vector.Scalar>! = nil
 
         @inlinable
@@ -99,79 +99,80 @@ extension Kinetics {
 
         @inlinable
         public func apply() {
+            fatalError()
             
-            // Avoid capturing self
-            let alpha = self.kinetics.alpha
-            let theta2 = self.theta2
-            let distanceMin2 = self.distanceMin2
-            let distanceMax2 = self.distanceMax2
-            let strength = self.strength
-            let precalculatedMass = self.precalculatedMass.mutablePointer
-            let positionBufferPointer = kinetics.position.mutablePointer
-            let random = kinetics.randomGenerator
-            let tree = self.tree!
+            // // Avoid capturing self
+            // let alpha = self.kinetics.alpha
+            // let theta2 = self.theta2
+            // let distanceMin2 = self.distanceMin2
+            // let distanceMax2 = self.distanceMax2
+            // let strength = self.strength
+            // let precalculatedMass = self.precalculatedMass.mutablePointer
+            // let positionBufferPointer = kinetics.position.mutablePointer
+            // let random = kinetics.randomGenerator
+            // let tree = self.tree!
 
-            let coveringBox = KDBox<Vector>.cover(of: self.kinetics.position)
-            tree.pointee.reset(rootBox: coveringBox, rootDelegate: .init(massProvider: precalculatedMass))
-            for p in kinetics.range {
-                tree.pointee.add(nodeIndex: p, at: positionBufferPointer[p])
-            }
+            // let coveringBox = KDBox<Vector>.cover(of: self.kinetics.position)
+            // tree.pointee.reset(rootBox: coveringBox, rootDelegate: .init(massProvider: precalculatedMass))
+            // for p in kinetics.range {
+            //     tree.pointee.add(nodeIndex: p, at: positionBufferPointer[p])
+            // }
 
-            for i in self.kinetics.range {
-                let pos = positionBufferPointer[i]
-                var f = Vector.zero
-                tree.pointee.visit { t in
+            // for i in self.kinetics.range {
+            //     let pos = positionBufferPointer[i]
+            //     var f = Vector.zero
+            //     tree.pointee.visit { t in
 
-                    guard t.delegate.accumulatedCount > 0 else { return false }
-                    let centroid =
-                        t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
+            //         guard t.delegate.accumulatedCount > 0 else { return false }
+            //         let centroid =
+            //             t.delegate.accumulatedMassWeightedPositions / t.delegate.accumulatedMass
 
-                    let vec = centroid - pos
-                    let boxWidth = (t.box.p1 - t.box.p0)[0]
-                    var distanceSquared =
-                        (vec
-                        // .jiggled()
-                        .jiggled(by: random)).lengthSquared()
+            //         let vec = centroid - pos
+            //         let boxWidth = (t.box.p1 - t.box.p0)[0]
+            //         var distanceSquared =
+            //             (vec
+            //             // .jiggled()
+            //             .jiggled(by: random)).lengthSquared()
 
-                    let farEnough: Bool =
-                        (distanceSquared * theta2) > (boxWidth * boxWidth)
+            //         let farEnough: Bool =
+            //             (distanceSquared * theta2) > (boxWidth * boxWidth)
 
-                    if distanceSquared < distanceMin2 {
-                        distanceSquared = (distanceMin2 * distanceSquared).squareRoot()
-                    }
+            //         if distanceSquared < distanceMin2 {
+            //             distanceSquared = (distanceMin2 * distanceSquared).squareRoot()
+            //         }
 
-                    if farEnough {
+            //         if farEnough {
 
-                        guard distanceSquared < distanceMax2 else { return true }
+            //             guard distanceSquared < distanceMax2 else { return true }
 
-                        /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
-                        let k: Vector.Scalar =
-                            strength * alpha * t.delegate.accumulatedMass
-                            / distanceSquared  // distanceSquared.squareRoot()
+            //             /// Workaround for "The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions"
+            //             let k: Vector.Scalar =
+            //                 strength * alpha * t.delegate.accumulatedMass
+            //                 / distanceSquared  // distanceSquared.squareRoot()
 
-                        f += vec * k
-                        return false
+            //             f += vec * k
+            //             return false
 
-                    } else if t.childrenBufferPointer != nil {
-                        return true
-                    }
+            //         } else if t.childrenBufferPointer != nil {
+            //             return true
+            //         }
 
-                    if t.isFilledLeaf {
+            //         if t.isFilledLeaf {
 
-                        if t.nodeIndices!.contains(i) { return false }
+            //             if t.nodeIndices!.contains(i) { return false }
 
-                        let massAcc = t.delegate.accumulatedMass
+            //             let massAcc = t.delegate.accumulatedMass
 
-                        let k: Vector.Scalar = strength * alpha * massAcc / distanceSquared  // distanceSquared.squareRoot()
-                        f += vec * k
-                        return false
-                    } else {
-                        return true
-                    }
-                }
+            //             let k: Vector.Scalar = strength * alpha * massAcc / distanceSquared  // distanceSquared.squareRoot()
+            //             f += vec * k
+            //             return false
+            //         } else {
+            //             return true
+            //         }
+            //     }
 
-                positionBufferPointer[i] += f / precalculatedMass[i]
-            }
+            //     positionBufferPointer[i] += f / precalculatedMass[i]
+            // }
         }
 
 
@@ -192,7 +193,7 @@ extension Kinetics {
             let random = kinetics.randomGenerator
             let tree = self.tree!
 
-            let coveringBox = KDBox<Vector>.cover(of: self.kinetics.position)
+            let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
             tree.pointee.reset(rootBox: coveringBox, rootDelegate: .init(massProvider: precalculatedMass))
             for p in kinetics.range {
                 tree.pointee.add(nodeIndex: p, at: positionBufferPointer[p])
@@ -255,11 +256,11 @@ extension Kinetics {
             }
         }
 
-        public var kinetics: Kinetics! = nil
+        // public var kinetics: Kinetics! = nil
 
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
-            self.kinetics = kinetics
+            // self.kinetics = kinetics
             self.precalculatedMass = self.mass.calculateUnsafe(for: (kinetics.validCount))
 
             self.tree = .allocate(capacity: 1)

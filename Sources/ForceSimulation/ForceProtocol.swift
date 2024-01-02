@@ -8,7 +8,7 @@ public protocol ForceProtocol<Vector> {
 
     /// Takes a simulation state and modifies its node positions and velocities.
     /// This is executed in each tick of the simulation.
-    @inlinable func apply()
+    // @inlinable func apply()
 
 
     /// Takes a simulation state and modifies its node positions and velocities.
@@ -63,10 +63,10 @@ where Vector: SimulatableVector & L2NormCalculatable {
 }
 
 extension ForceField {
-    @inlinable
-    public func apply() {
-        self.force.apply()
-    }
+    // @inlinable
+    // public func apply() {
+    //     self.force.apply()
+    // }
 
     @inlinable
     public func apply(to kinetics: inout Kinetics<Vector>) {

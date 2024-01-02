@@ -46,8 +46,8 @@ extension Kinetics {
     /// The complexity is `O(e)`, where `e` is the number of links.
     /// See [Link Force - D3](https://d3js.org/d3-force/link).
     public struct LinkForce: ForceProtocol {
-        @usableFromInline
-        internal var kinetics: Kinetics! = nil
+        // @usableFromInline
+        // internal var kinetics: Kinetics! = nil
 
         @usableFromInline
         var linkStiffness: LinkStiffness
@@ -67,38 +67,39 @@ extension Kinetics {
 
         @inlinable
         public func apply() {
-            let positionBufferPointer = kinetics.position.mutablePointer
-            let velocityBufferPointer = kinetics.velocity.mutablePointer
-            let random = kinetics.randomGenerator
-            for _ in 0..<iterationsPerTick {
-                for i in links.indices {
+            fatalError()
+            // let positionBufferPointer = kinetics.position.mutablePointer
+            // let velocityBufferPointer = kinetics.velocity.mutablePointer
+            // let random = kinetics.randomGenerator
+            // for _ in 0..<iterationsPerTick {
+            //     for i in links.indices {
 
-                    let s = links[i].source
-                    let t = links[i].target
+            //         let s = links[i].source
+            //         let t = links[i].target
 
-                    let b = self.calculatedBias[i]
+            //         let b = self.calculatedBias[i]
 
-                    assert(b != 0)
+            //         assert(b != 0)
 
-                    var vec =
-                        (positionBufferPointer[t] + velocityBufferPointer[t] 
-                        - positionBufferPointer[s] - velocityBufferPointer[s])
-                        // .jiggled()
-                        .jiggled(by: random)
+            //         var vec =
+            //             (positionBufferPointer[t] + velocityBufferPointer[t] 
+            //             - positionBufferPointer[s] - velocityBufferPointer[s])
+            //             // .jiggled()
+            //             .jiggled(by: random)
 
-                    var l = vec.length()
+            //         var l = vec.length()
 
-                    l =
-                        (l - self.calculatedLength[i]) / l * kinetics.alpha
-                        * self.calculatedStiffness[i]
+            //         l =
+            //             (l - self.calculatedLength[i]) / l * kinetics.alpha
+            //             * self.calculatedStiffness[i]
 
-                    vec *= l
+            //         vec *= l
 
-                    // same as d3
-                    velocityBufferPointer[t] -= vec * b
-                    velocityBufferPointer[s] += vec * (1 - b)
-                }
-            }
+            //         // same as d3
+            //         velocityBufferPointer[t] -= vec * b
+            //         velocityBufferPointer[s] += vec * (1 - b)
+            //     }
+            // }
         }
 
 
@@ -147,7 +148,7 @@ extension Kinetics {
 
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
-            self.kinetics = kinetics
+            // self.kinetics = kinetics
             self.links = kinetics.links
             self.links = self.links.filter {
                 $0.source < kinetics.validCount && $0.target < kinetics.validCount

@@ -10,7 +10,7 @@ extension Kinetics {
     /// See [Position Force - D3](https://d3js.org/d3-force/position).
     public struct RadialForce: ForceProtocol {
 
-        @usableFromInline var kinetics: Kinetics! = nil
+        // @usableFromInline var kinetics: Kinetics! = nil
         public var radius: RadialBound
         public var strength: RadialStrength
         public var center: Vector
@@ -23,18 +23,18 @@ extension Kinetics {
 
         @inlinable
         public func apply() {
-            assert(self.kinetics != nil, "Kinetics not bound to force")
+            // assert(self.kinetics != nil, "Kinetics not bound to force")
 
-            let alpha = kinetics.alpha
-            for i in kinetics.range {
-                let nodeId = i
-                let deltaPosition = (kinetics.position[i] - self.center).jiggled(by: kinetics.randomGenerator) //.jiggled()
-                let r = (deltaPosition).length()
-                let k =
-                    (self.calculatedRadius[nodeId]
-                        * self.calculatedStrength[nodeId] * alpha) / r
-                kinetics.velocity[i] += deltaPosition * k
-            }
+            // let alpha = kinetics.alpha
+            // for i in kinetics.range {
+            //     let nodeId = i
+            //     let deltaPosition = (kinetics.position[i] - self.center).jiggled(by: kinetics.randomGenerator) //.jiggled()
+            //     let r = (deltaPosition).length()
+            //     let k =
+            //         (self.calculatedRadius[nodeId]
+            //             * self.calculatedStrength[nodeId] * alpha) / r
+            //     kinetics.velocity[i] += deltaPosition * k
+            // }
         }
 
         @inlinable
@@ -53,7 +53,7 @@ extension Kinetics {
 
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
-            self.kinetics = kinetics
+            // self.kinetics = kinetics
             self.calculatedRadius = self.radius.calculateUnsafe(for: kinetics.validCount)
             self.calculatedStrength = self.strength.calculateUnsafe(for: kinetics.validCount)
         }
