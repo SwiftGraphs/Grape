@@ -35,7 +35,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
     public let velocityDecay: Vector.Scalar
 
     @usableFromInline
-    var randomGenerator: UnsafeMutablePointer<Vector.Scalar.Generator>
+    var randomGenerator: Vector.Scalar.Generator
 
 
     public let links: [EdgeID<Int>]
@@ -74,8 +74,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
         self.position = .createBuffer(moving: consume position, fillingWithIfFailed: .zero)
         self.velocity = .createBuffer(moving: velocity, fillingWithIfFailed: .zero)
         self.fixation = .createBuffer(moving: fixation, fillingWithIfFailed: nil)
-        self.randomGenerator = .allocate(capacity: 1)
-        self.randomGenerator.initialize(to: .init())
+        self.randomGenerator = .init()
     }
 
     // @inlinable
@@ -155,8 +154,8 @@ where Vector: SimulatableVector & L2NormCalculatable {
 
     @inlinable
     public func dispose() {
-        self.randomGenerator.deinitialize(count: 1)
-        self.randomGenerator.deallocate()
+        // self.randomGenerator.deinitialize(count: 1)
+        // self.randomGenerator.deallocate()
     }
 }
 

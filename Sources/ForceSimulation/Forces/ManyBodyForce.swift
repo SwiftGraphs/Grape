@@ -109,7 +109,6 @@ extension Kinetics {
             // let strength = self.strength
             // let precalculatedMass = self.precalculatedMass.mutablePointer
             // let positionBufferPointer = kinetics.position.mutablePointer
-            // let random = kinetics.randomGenerator
             // let tree = self.tree!
 
             // let coveringBox = KDBox<Vector>.cover(of: self.kinetics.position)
@@ -190,7 +189,7 @@ extension Kinetics {
             let strength = self.strength
             let precalculatedMass = self.precalculatedMass.mutablePointer
             let positionBufferPointer = kinetics.position.mutablePointer
-            let random = kinetics.randomGenerator
+            // let random = kinetics.randomGenerator
             let tree = self.tree!
 
             let coveringBox = KDBox<Vector>.cover(of: kinetics.position)
@@ -212,8 +211,7 @@ extension Kinetics {
                     let boxWidth = (t.box.p1 - t.box.p0)[0]
                     var distanceSquared =
                         (vec
-                        // .jiggled()
-                        .jiggled(by: random)).lengthSquared()
+                        .jiggled(by: &kinetics.randomGenerator)).lengthSquared()
 
                     let farEnough: Bool =
                         (distanceSquared * theta2) > (boxWidth * boxWidth)

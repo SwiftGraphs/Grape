@@ -107,7 +107,7 @@ extension Kinetics {
         public func apply(to kinetics: inout Kinetics) {
             let positionBufferPointer = kinetics.position.mutablePointer
             let velocityBufferPointer = kinetics.velocity.mutablePointer
-            let random = kinetics.randomGenerator
+
             for _ in 0..<iterationsPerTick {
                 for i in links.indices {
 
@@ -122,7 +122,7 @@ extension Kinetics {
                         (positionBufferPointer[t] + velocityBufferPointer[t] 
                         - positionBufferPointer[s] - velocityBufferPointer[s])
                         // .jiggled()
-                        .jiggled(by: random)
+                        .jiggled(by: &kinetics.randomGenerator)
 
                     var l = vec.length()
 

@@ -240,7 +240,6 @@ extension Kinetics {
                     let iR = calculatedRadius[i]
                     let iR2 = iR * iR
                     let iPosition = iOriginalPosition + iOriginalVelocity
-                    let random = kinetics.randomGenerator
 
                     tree.pointee.visit { t in
 
@@ -264,7 +263,7 @@ extension Kinetics {
                                     let deltaR = iR + jR
                                     if l < deltaR * deltaR {
 
-                                        var l = /*simd_length*/ (deltaPosition.jiggled(by: random))
+                                        var l = /*simd_length*/ (deltaPosition.jiggled(by: &kinetics.randomGenerator))
                                             .length()
                                         l = (deltaR - l) / l * strength
 
