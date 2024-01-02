@@ -35,6 +35,18 @@ extension Kinetics {
                     * self.calculatedStrength[i] * alpha
             }
         }
+
+        @inlinable
+        public func apply(to kinetics: inout Kinetics) {
+            let alpha = kinetics.alpha
+            let lane = self.direction
+            for i in kinetics.range {
+                kinetics.velocity[i][lane] +=
+                    (self.calculatedTargetOnDirection[i] - kinetics.position[i][lane])
+                    * self.calculatedStrength[i] * alpha
+            }
+        }
+
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
@@ -53,7 +65,6 @@ extension Kinetics {
             self.direction = direction.lane
             self.targetOnDirection = targetOnDirection
         }
-
 
         @inlinable
         public func dispose() {}

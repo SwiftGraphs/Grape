@@ -36,6 +36,21 @@ extension Kinetics {
                 kinetics.velocity[i] += deltaPosition * k
             }
         }
+
+        @inlinable
+        public func apply(to kinetics: inout Kinetics) {
+            let alpha = kinetics.alpha
+            for i in kinetics.range {
+                let nodeId = i
+                let deltaPosition = (kinetics.position[i] - self.center).jiggled(by: kinetics.randomGenerator) //.jiggled()
+                let r = (deltaPosition).length()
+                let k =
+                    (self.calculatedRadius[nodeId]
+                        * self.calculatedStrength[nodeId] * alpha) / r
+                kinetics.velocity[i] += deltaPosition * k
+            }
+        }
+
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics

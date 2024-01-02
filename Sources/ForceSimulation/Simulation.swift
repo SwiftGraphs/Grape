@@ -91,7 +91,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
     public func tick(iterations: UInt = 1) {
         for _ in 0..<iterations {
             self.kinetics.updateAlpha()
-            self.forceField.apply()
+            self.forceField.apply(to: &self.kinetics)
             self.kinetics.updatePositions()
         }
     }

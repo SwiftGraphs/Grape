@@ -22,6 +22,21 @@ extension Kinetics {
                 positionBufferPointer[i] -= delta
             }
         }
+
+        @inlinable
+        public func apply(to kinetics: inout Kinetics) {
+            var meanPosition = Vector.zero
+            let positionBufferPointer = kinetics.position.mutablePointer
+            for i in 0..<kinetics.validCount {
+                meanPosition += positionBufferPointer[i]  //.position
+            }
+            let delta = meanPosition * (self.strength / Vector.Scalar(kinetics.validCount))
+
+            for i in kinetics.range {
+                positionBufferPointer[i] -= delta
+            }
+        }
+
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
             self.kinetics = kinetics
@@ -37,7 +52,6 @@ extension Kinetics {
             self.center = center
             self.strength = strength
         }
-
 
         @inlinable
         public func dispose() {}

@@ -10,6 +10,11 @@ public protocol ForceProtocol<Vector> {
     /// This is executed in each tick of the simulation.
     @inlinable func apply()
 
+
+    /// Takes a simulation state and modifies its node positions and velocities.
+    /// This is executed in each tick of the simulation.
+    @inlinable func apply(to kinetics: inout Kinetics<Vector>)
+
     /// Bind to a kinetic system that describes the state of all nodes in your simulation.
     /// This has to be called before `apply` is called.
     @inlinable mutating func bindKinetics(_ kinetics: Kinetics<Vector>)
@@ -61,6 +66,11 @@ extension ForceField {
     @inlinable
     public func apply() {
         self.force.apply()
+    }
+
+    @inlinable
+    public func apply(to kinetics: inout Kinetics<Vector>) {
+        self.force.apply(to: &kinetics)
     }
     
     @inlinable
