@@ -90,7 +90,7 @@ extension ExampleKind {
 
 struct ContentView: View {
     
-    @State var selection: ExampleKind = .ring
+    @State var selection: ExampleKind = .classicMiserable
     
     var body: some View {
         NavigationSplitView {

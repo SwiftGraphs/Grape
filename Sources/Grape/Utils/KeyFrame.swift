@@ -8,7 +8,7 @@ public struct KeyFrame {
 
     @inlinable @inline(__always)
     public mutating func advance(by delta: UInt = 1) {
-        elapsed += delta
+        elapsed &+= delta
     }
 
     @inlinable @inline(__always)

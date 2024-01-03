@@ -5,7 +5,7 @@ extension GraphContentEffect {
     internal struct Label {
 
         @usableFromInline
-        let text: Text
+        let text: Text?
 
         @usableFromInline
         let alignment: Alignment
@@ -15,8 +15,8 @@ extension GraphContentEffect {
 
         @inlinable
         public init(
-            _ text: Text,
-            alignment: Alignment = .bottomLeading,
+            _ text: Text?,
+            alignment: Alignment = .bottom,
             offset: CGVector = .zero
         ) {
             self.text = text
@@ -39,6 +39,7 @@ extension GraphContentEffect.Label: GraphContentModifier {
     @MainActor
     public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
     where NodeID: Hashable {
+        guard let text = text else { return }
         if let currentID = context.states.currentID {
             let resolvedText = text.resolved()
             context.resolvedTexts[currentID] = resolvedText

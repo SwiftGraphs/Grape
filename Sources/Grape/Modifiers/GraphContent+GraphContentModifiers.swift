@@ -52,7 +52,7 @@ extension GraphContent {
 
     @inlinable
     public func label(
-        _ text: Text, alignment: Alignment = .bottom, offset: CGVector = .zero
+        _ text: Text?, alignment: Alignment = .bottom, offset: CGVector = .zero
     ) -> some GraphContent<NodeID> {
 
         return ModifiedGraphContent(
@@ -61,16 +61,15 @@ extension GraphContent {
 
     @inlinable
     public func label(
-        _ string: String, alignment: Alignment = .bottom, offset: CGVector = .zero
+        _ string: String?, alignment: Alignment = .bottom, offset: CGVector = .zero
     ) -> some GraphContent<NodeID> {
-
         return ModifiedGraphContent(
-            self, GraphContentEffect.Label(Text(string), alignment: alignment, offset: offset))
+            self, GraphContentEffect.Label(nil, alignment: alignment, offset: offset))
     }
 
     @inlinable
     public func label(
-        _ alignment: Alignment = .bottom, offset: CGVector = .zero, @ViewBuilder _ text: () -> Text
+        _ alignment: Alignment = .bottom, offset: CGVector = .zero, @ViewBuilder _ text: () -> Text?
     ) -> some GraphContent<NodeID> {
 
         return ModifiedGraphContent(

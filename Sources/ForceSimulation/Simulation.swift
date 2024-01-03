@@ -62,7 +62,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
         links: [EdgeID<Int>],
         forceField: consuming ForceField,
         initialAlpha: Vector.Scalar = 1,
-        alphaMin: Vector.Scalar = 5e-2,
+        alphaMin: Vector.Scalar = 1e-3,
         alphaDecay: Vector.Scalar = 2e-3,
         alphaTarget: Vector.Scalar = 0.0,
         velocityDecay: Vector.Scalar = 0.6,

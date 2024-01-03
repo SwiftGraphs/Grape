@@ -49,7 +49,8 @@ extension SimulationContext {
     @inlinable
     public static func create(
         for graphRenderingContext: _GraphRenderingContext<NodeID>,
-        with forceField: consuming ForceField
+        with forceField: consuming ForceField,
+        velocityDecay: Vector.Scalar
     ) -> Self {
         let nodes = graphRenderingContext.nodes
 
@@ -69,7 +70,8 @@ extension SimulationContext {
             .init(
                 nodeCount: nodes.count,
                 links: consume links,
-                forceField: consume forceField
+                forceField: consume forceField,
+                velocityDecay: velocityDecay
             ),
             consume nodeIndexLookup,
             nodes.map(\.id)
@@ -81,6 +83,7 @@ extension SimulationContext {
     public mutating func revive(
         for newContext: _GraphRenderingContext<NodeID>,
         with newForceField: consuming ForceField,
+        velocityDecay: Vector.Scalar,
         emittingNewNodesWith states: (NodeID) -> KineticState = { _ in .init(position: .zero) }
     ) {
         let newNodes = newContext.nodes
@@ -147,6 +150,7 @@ extension SimulationContext {
             nodeCount: newNodes.count,
             links: consume newLinks,
             forceField: consume newForceField,
+            velocityDecay: consume velocityDecay,
             position: consume newPosition,
             velocity: consume newVelocity,
             fixation: consume newFixation

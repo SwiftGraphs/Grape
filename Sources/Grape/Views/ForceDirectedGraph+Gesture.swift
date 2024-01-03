@@ -1,10 +1,43 @@
+import ForceSimulation
 import SwiftUI
 
 extension ForceDirectedGraph {
     @inlinable
+    static var minimumAlphaAfterDrag: CGFloat { 0.5 }
+    @inlinable
     internal func onDragChange(
         _ value: SwiftUI.DragGesture.Value
     ) {
+        if model.draggingNodeID == nil {
+            if let nodeID = model.findNode(at: value.startLocation) {
+                model.draggingNodeID = nodeID
+            } else {
+                model.backgroundDragStart = value.location.simd
+            }
+        }
+        guard let nodeID = model.draggingNodeID else {
+            if let dragStart = model.backgroundDragStart {
+                let delta = value.location.simd - dragStart
+                model.modelTransform.translate += delta
+                model.backgroundDragStart = value.location.simd
+            }
+            return
+        }
+
+        if model.simulationContext.storage.kinetics.alpha > Self.minimumAlphaAfterDrag {
+            model.simulationContext.storage.kinetics.alpha = Self.minimumAlphaAfterDrag
+        }
+
+        let newLocationInSimulation = model.finalTransform.invert(value.location.simd)
+
+        if let nodeIndex = model.simulationContext.nodeIndexLookup[nodeID] {
+            model.simulationContext.storage.kinetics.fixation[
+                nodeIndex
+            ] = newLocationInSimulation
+        }
+
+        guard let action = model._onNodeDragChanged else { return }
+        action(nodeID, value.location)
 
     }
 
@@ -13,13 +46,35 @@ extension ForceDirectedGraph {
         _ value: SwiftUI.DragGesture.Value
     ) {
 
+        guard let nodeID = model.draggingNodeID else {
+            if let dragStart = model.backgroundDragStart {
+                let delta = value.location.simd - dragStart
+                model.modelTransform.translate += delta
+                model.backgroundDragStart = value.location.simd
+            }
+            return
+        }
+        if model.simulationContext.storage.kinetics.alpha > Self.minimumAlphaAfterDrag {
+            model.simulationContext.storage.kinetics.alpha = Self.minimumAlphaAfterDrag
+        }
+
+        model.draggingNodeID = nil
+
+        guard let nodeIndex = model.simulationContext.nodeIndexLookup[nodeID] else { return }
+        if model._onNodeDragEnded == nil {
+            model.simulationContext.storage.kinetics.fixation[
+                nodeIndex
+            ] = nil
+        } else if let action = model._onNodeDragEnded, action(nodeID, value.location) {
+            model.simulationContext.storage.kinetics.fixation[
+                nodeIndex
+            ] = nil
+        }
     }
 
     @inlinable
     static var minimumDragDistance: CGFloat { 3.0 }
 }
-
-
 
 extension ForceDirectedGraph {
     @inlinable
@@ -32,8 +87,76 @@ extension ForceDirectedGraph {
     }
 }
 
+extension ForceDirectedGraph {
 
+    @inlinable
+    static var minimumScaleDelta: CGFloat { 0.001 }
 
+    @inlinable
+    static var minimumScale: CGFloat { 0.25 }
+
+    @inlinable
+    static var maximumScale: CGFloat { 4.0 }
+
+    @inlinable
+    static var magnificationDecay: CGFloat { 0.1 }
+
+    @inlinable
+    internal func clamp(
+        _ value: CGFloat,
+        min: CGFloat,
+        max: CGFloat
+    ) -> CGFloat {
+        Swift.min(Swift.max(value, min), max)
+    }
+
+    @inlinable
+    internal func onMagnifyChange(
+        _ value: MagnifyGesture.Value
+    ) {
+        // print(value.magnification)
+        let alpha = -self.model.finalTransform.invert(value.startLocation.simd)
+        let oldScale = self.model.modelTransform.scale
+        let oldTranslate = self.model.modelTransform.translate
+        let newScale = clamp(
+            Darwin.cbrt(value.magnification) * oldScale,
+            min: Self.minimumScale,
+            max: Self.maximumScale)
+        let newTranslate = (oldScale - newScale) * alpha + oldTranslate
+
+        let newModelTransform = ViewportTransform(
+            translate: newTranslate,
+            scale: newScale
+        )
+        self.model.modelTransform = newModelTransform
+
+        guard let action = self.model._onGraphMagnified else { return }
+        action()
+    }
+
+    @inlinable
+    internal func onMagnifyEnd(
+        _ value: MagnifyGesture.Value
+    ) {
+        let alpha = -self.model.finalTransform.invert(value.startLocation.simd)
+        let oldScale = self.model.modelTransform.scale
+        let oldTranslate = self.model.modelTransform.translate
+        let newScale = clamp(
+            Darwin.cbrt(value.magnification) * oldScale,
+            min: Self.minimumScale,
+            max: Self.maximumScale
+        )
+        let newTranslate = (oldScale - newScale) * alpha + oldTranslate
+        let newModelTransform = ViewportTransform(
+            translate: newTranslate,
+            scale: newScale
+        )
+        // print("newModelTransform", newModelTransform)
+        self.model.modelTransform = newModelTransform
+        guard let action = self.model._onGraphMagnified else { return }
+        action()
+    }
+}
 
 extension ForceDirectedGraph {
     @inlinable
@@ -51,13 +174,28 @@ extension ForceDirectedGraph {
         self.model._onNodeTapped = action
         return self
     }
-    
+
     @inlinable
-    public func onNodeDragged(
-        perform action: @escaping () -> Void
+    public func onNodeDragChanged(
+        perform action: @escaping (NodeID, CGPoint) -> Void
     ) -> Self {
-        self.model._onNodeDragStateChanged = action
+        self.model._onNodeDragChanged = action
         return self
     }
-}
 
+    @inlinable
+    public func onNodeDragEnded(
+        shouldBeFixed action: @escaping (NodeID, CGPoint) -> Bool
+    ) -> Self {
+        self.model._onNodeDragEnded = action
+        return self
+    }
+
+    @inlinable
+    public func onGraphMagnified(
+        perform action: @escaping () -> Void
+    ) -> Self {
+        return self
+    }
+
+}

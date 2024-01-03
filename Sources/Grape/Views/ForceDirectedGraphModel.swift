@@ -22,6 +22,15 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     var viewportPositions: UnsafeArray<SIMD2<Double>>
 
+    @usableFromInline
+    var draggingNodeID: NodeID? = nil
+
+    @usableFromInline
+    var backgroundDragStart: SIMD2<Double>? = nil
+
+    @usableFromInline
+    let velocityDecay: Double
+
     // cache this so text size don't change on monitor switch
     @usableFromInline
     var lastRasterizedScaleFactor: Double = 2.0
@@ -52,8 +61,7 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     }
 
     @inlinable
-    var currentFrame: KeyFrame = 0
-    {
+    var currentFrame: KeyFrame {
         @storageRestrictions(initializes: _$currentFrame)
         init(initialValue) {
             _$currentFrame = initialValue
@@ -82,7 +90,10 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     var _onTicked: ((KeyFrame) -> Void)? = nil
 
     @usableFromInline
-    var _onNodeDragStateChanged: (() -> Void)? = nil
+    var _onNodeDragChanged: ((NodeID, CGPoint) -> Void)? = nil
+
+    @usableFromInline
+    var _onNodeDragEnded: ((NodeID, CGPoint) -> Bool)? = nil
 
     @usableFromInline
     var _onNodeTapped: ((NodeID?) -> Void)? = nil
@@ -96,6 +107,9 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
     @usableFromInline
     var _emittingNewNodesWith: (NodeID) -> KineticState
 
+    @usableFromInline
+    var _onGraphMagnified: (() -> Void)? = nil
+
     @inlinable
     init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
@@ -103,21 +117,44 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
         emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         },
-        ticksPerSecond: Double
+        ticksPerSecond: Double,
+        velocityDecay: Double
     ) {
         self.graphRenderingContext = graphRenderingContext
         self.ticksPerSecond = ticksPerSecond
         self._emittingNewNodesWith = emittingNewNodesWith
+        self.velocityDecay = velocityDecay
         let _simulationContext = SimulationContext.create(
             for: consume graphRenderingContext,
-            with: consume forceField
+            with: consume forceField,
+            velocityDecay: consume velocityDecay
         )
+
         _simulationContext.updateAllKineticStates(emittingNewNodesWith)
 
         self.simulationContext = consume _simulationContext
 
         self.viewportPositions = .createUninitializedBuffer(
             count: self.simulationContext.storage.kinetics.position.count
+        )
+        self.currentFrame = 0
+    }
+
+    @inlinable
+    convenience init(
+        _ graphRenderingContext: _GraphRenderingContext<NodeID>,
+        _ forceField: consuming SealedForce2D,
+        emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
+            .init(position: .zero)
+        },
+        ticksPerSecond: Double
+    ) {
+        self.init(
+            graphRenderingContext,
+            forceField,
+            emittingNewNodesWith: emittingNewNodesWith,
+            ticksPerSecond: ticksPerSecond,
+            velocityDecay: 30 / ticksPerSecond
         )
     }
 
@@ -134,12 +171,12 @@ public final class ForceDirectedGraphModel<NodeID: Hashable> {
 extension GraphicsContext.Shading {
     @inlinable
     static var defaultLinkShading: Self {
-        return .color(.gray)
+        return .color(.displayP3, red: 0.5, green: 0.5, blue: 0.5, opacity: 0.3)
     }
 
     @inlinable
     static var defaultNodeShading: Self {
-        return .color(.green)
+        return .color(.primary)
     }
 }
 
@@ -186,7 +223,7 @@ extension ForceDirectedGraphModel {
         _ size: CGSize
     ) {
         // should not invoke `access`, but actually does now ?
-        print("Rendering frame \(_$currentFrame.rawValue)")
+        // print("Rendering frame \(_$currentFrame.rawValue)")
 
         let transform = modelTransform.translate(by: size.simd / 2)
 
@@ -279,6 +316,25 @@ extension ForceDirectedGraphModel {
                     Path(ellipseIn: rect),
                     with: op.fill ?? .defaultNodeShading
                 )
+
+                if let strokeEffect = op.stroke {
+                    switch strokeEffect.color {
+                    case .color(let color):
+                        graphicsContext.stroke(
+                            Path(ellipseIn: rect),
+                            with: .color(color),
+                            style: strokeEffect.style ?? .defaultLinkStyle
+                        )
+                    case .clip:
+                        graphicsContext.blendMode = .clear
+                        graphicsContext.stroke(
+                            Path(ellipseIn: rect),
+                            with: .color(.black),
+                            style: strokeEffect.style ?? .defaultLinkStyle
+                        )
+                        graphicsContext.blendMode = .normal
+                    }
+                }
             }
         }
         // return
@@ -388,12 +444,13 @@ extension ForceDirectedGraphModel {
         for newContext: _GraphRenderingContext<NodeID>,
         with newForceField: consuming SealedForce2D
     ) {
-        self.changeMessage =
-            "gctx \(graphRenderingContext.nodes.count) -> \(newContext.nodes.count)"
+        //        self.changeMessage =
+        //            "gctx \(graphRenderingContext.nodes.count) -> \(newContext.nodes.count)"
 
         self.simulationContext.revive(
             for: newContext,
             with: newForceField,
+            velocityDecay: velocityDecay,
             emittingNewNodesWith: self._emittingNewNodesWith
         )
         self.graphRenderingContext = newContext
