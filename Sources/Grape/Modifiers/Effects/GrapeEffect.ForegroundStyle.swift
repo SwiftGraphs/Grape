@@ -22,8 +22,17 @@ extension GraphContentEffect {
             self.shading = shading
         }
     }
-}
 
+    @usableFromInline
+    internal struct ShadingBy {
+        @usableFromInline
+        let value: AnyHashable
+        @inlinable
+        public init<T: Hashable>(by value: T) {
+            self.value = value
+        }
+    }
+}
 
 extension GraphContentEffect.ForegroundStyle: GraphContentModifier {
     @inlinable
@@ -36,13 +45,15 @@ extension GraphContentEffect.ForegroundStyle: GraphContentModifier {
     }
 
     @inlinable
-    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
+    where NodeID: Hashable {
         context.states.shading.removeLast()
         // context.operations.append(
         //     .updateShading(context.states.currentShading)
         // )
     }
 }
+
 
 extension GraphContentEffect.Shading: GraphContentModifier {
     @inlinable
@@ -53,7 +64,8 @@ extension GraphContentEffect.Shading: GraphContentModifier {
     }
 
     @inlinable
-    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>) where NodeID : Hashable {
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
+    where NodeID: Hashable {
         context.states.shading.removeLast()
     }
 }
