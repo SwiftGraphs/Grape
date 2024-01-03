@@ -6,8 +6,8 @@ import PackageDescription
 let package = Package(
     name: "Grape",
     platforms: [
-        .macOS(.v12), 
-        .iOS(.v13),
+        .macOS(.v14),
+        .iOS(.v17),
         .watchOS(.v10),
     ],
 
@@ -15,43 +15,49 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
 
         .library(
-            name: "NDTree",
-            targets: ["NDTree"]
-        ),
-
-        .library(
             name: "ForceSimulation",
             targets: ["ForceSimulation"]
         ),
-        
+
+        .library(
+            name: "Grape",
+            targets: ["Grape"]
+        ),
+
     ],
 
     dependencies: [
-        // other dependencies
-        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.1.0"),
+        .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.1.0")
     ],
 
     targets: [
-        
-        .target(
-            name: "NDTree",
-            path: "Sources/NDTree"
-            // , swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
-        ),
-
-        .testTarget(
-            name: "NDTreeTests",
-            dependencies: ["NDTree"]),
 
         .target(
             name: "ForceSimulation",
-            dependencies: ["NDTree"],
             path: "Sources/ForceSimulation"
-            // , swiftSettings:[.unsafeFlags(["-whole-module-optimization", "-Ounchecked"])]
+        ),
+
+        .target(
+            name: "Grape",
+            dependencies: ["ForceSimulation"],
+            path: "Sources/Grape"
+                // link ForceSimulation in release mode
+                // swiftSettings: [.unsafeFlags(["-Xfrontend", "-disable-availability-checking"])]
+        ),
+
+        .testTarget(
+            name: "KDTreeTests",
+            dependencies: ["ForceSimulation"]
         ),
 
         .testTarget(
             name: "ForceSimulationTests",
-            dependencies: ["ForceSimulation", "NDTree"]),
+            dependencies: ["ForceSimulation"]
+        ),
+
+        .testTarget(
+            name: "GrapeTests",
+            dependencies: ["Grape"]
+        ),
     ]
 )

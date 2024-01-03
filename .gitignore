@@ -10,3 +10,7 @@ DerivedData/
 /.vscode
 /.swiftpm
 /Sources/_ForceSimulation
+
+/docs
+*.kts
+Package.resolved

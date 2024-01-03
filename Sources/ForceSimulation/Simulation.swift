@@ -1,125 +1,113 @@
-//
-//  Simulation.swift
-//
-//
-//  Created by li3zhen1 on 10/16/23.
-//
+/// An any-dimensional force simulation.
+/// The points are placed in a space where you use a SIMD data structure
+/// to describe their coordinates.
+public final class Simulation<Vector, ForceField>
+where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<Vector> {
 
-import NDTree
+    @usableFromInline
+    var forceField: ForceField
 
-enum SimulationError: Error {
-    case subscriptionToNonexistentNode
-}
-
-/// An N-Dimensional force simulation.
-public final class Simulation<NodeID, V> where NodeID: Hashable, V: VectorLike, V.Scalar == Double {
-
-    /// The type of the vector used in the simulation.
-    /// Usually this is `Double` if you are on Apple platforms.
-    public typealias Scalar = V.Scalar
-
-
-    public let initializedAlpha: Double
-
-    public var alpha: Double
-    public var alphaMin: Double
-    public var alphaDecay: Double
-    public var alphaTarget: Double
-    public var velocityDecay: V.Scalar
-
-    public internal(set) var forces: [any ForceLike] = []
-
-
-    public internal(set) var nodePositions: [V]
-    public internal(set) var nodeVelocities: [V]
-    public internal(set) var nodeFixations: [V?]
-
-    public private(set) var nodeIds: [NodeID]
-
-    @usableFromInline internal private(set) var nodeIdToIndexLookup: [NodeID: Int] = [:]
+    public var kinetics: Kinetics<Vector>
 
     /// Create a new simulation.
+    ///
     /// - Parameters:
-    ///   - nodeIds: Hashable identifiers for the nodes. Force simulation calculate them by order once created.
-    ///   - alpha: 
-    ///   - alphaMin: 
+    ///   - nodeCount: Count of the nodes. Force simulation calculate them by order once created.
+    ///   - links: The links between nodes.
+    ///   - forceField: The force field that drives the simulation. The simulation takes ownership of the force field.
+    ///   - alpha: Initial alpha value, determines how "active" the simulation is.
+    ///   - alphaMin: The minimum alpha value. The simulation stops when alpha is less than this value.
     ///   - alphaDecay: The larger the value, the faster the simulation converges to the final result.
-    ///   - alphaTarget: 
-    ///   - velocityDecay: 
-    ///   - getInitialPosition: The closure to set the initial position of the node. If not provided, the initial position is set to zero.
+    ///   - alphaTarget: The alpha value the simulation converges to.
+    ///   - velocityDecay: A multiplier for the velocity of the nodes in Velocity Verlet integration. The position of the nodes is updated by the formula `x += v * velocityDecay`.
+    // @inlinable
+    // public init(
+    //     nodeCount: Int,
+    //     links: [EdgeID<Int>],
+    //     forceField: consuming ForceField,
+    //     initialAlpha: Vector.Scalar = 1,
+    //     alphaMin: Vector.Scalar = 1e-2,
+    //     alphaDecay: Vector.Scalar = 2e-3,
+    //     alphaTarget: Vector.Scalar = 0.0,
+    //     velocityDecay: Vector.Scalar = 0.6
+    // ) {
+    //     self.kinetics = .createZeros(
+    //         links: links,
+    //         initialAlpha: initialAlpha,
+    //         alphaMin: alphaMin,
+    //         alphaDecay: alphaDecay,
+    //         alphaTarget: alphaTarget,
+    //         velocityDecay: velocityDecay,
+    //         count: nodeCount
+    //     )
+    //     // self.kinetics.jigglePosition()
+    //     forceField.bindKinetics(self.kinetics)
+    //     self.forceField = forceField
+    // }
+
+    /// Create a new simulation.
+    ///
+    /// - Parameters:
+    ///   - nodeCount: Count of the nodes. Force simulation calculate them by order once created.
+    ///   - links: The links between nodes.
+    ///   - forceField: The force field that drives the simulation. The simulation takes ownership of the force field.
+    ///   - alpha: Initial alpha value, determines how "active" the simulation is.
+    ///   - alphaMin: The minimum alpha value. The simulation stops when alpha is less than this value.
+    ///   - alphaDecay: The larger the value, the faster the simulation converges to the final result.
+    ///   - alphaTarget: The alpha value the simulation converges to.
+    ///   - velocityDecay: A multiplier for the velocity of the nodes in Velocity Verlet integration. The position of the nodes is updated by the formula `x += v * velocityDecay`.
+    @inlinable
     public init(
-        nodeIds: [NodeID],
-        alpha: Double = 1,
-        alphaMin: Double = 1e-3,
-        alphaDecay: Double = 2e-3,
-        alphaTarget: Double = 0.0,
-        velocityDecay: Double = 0.6,
-
-        setInitialStatus getInitialPosition: (
-            (NodeID) -> V
-        )? = nil
-
+        nodeCount: Int,
+        links: [EdgeID<Int>],
+        forceField: consuming ForceField,
+        initialAlpha: Vector.Scalar = 1,
+        alphaMin: Vector.Scalar = 1e-3,
+        alphaDecay: Vector.Scalar = 2e-3,
+        alphaTarget: Vector.Scalar = 0.0,
+        velocityDecay: Vector.Scalar = 0.6,
+        position: [Vector]? = nil,
+        velocity: [Vector]? = nil,
+        fixation: [Vector?]? = nil
     ) {
 
-        self.alpha = alpha
-        self.initializedAlpha = alpha  // record and reload this when restarted
-
-        self.alphaMin = alphaMin
-        self.alphaDecay = alphaDecay
-        self.alphaTarget = alphaTarget
-
-        self.velocityDecay = velocityDecay
-
-        if let getInitialPosition {
-            self.nodePositions = nodeIds.map(getInitialPosition)
-        } else {
-            self.nodePositions = Array(repeating: .zero, count: nodeIds.count)
-        }
-
-        self.nodeVelocities = Array(repeating: .zero, count: nodeIds.count)
-        self.nodeFixations = Array(repeating: nil, count: nodeIds.count)
-        
-        
-        self.nodeIdToIndexLookup.reserveCapacity(nodeIds.count)
-        for i in nodeIds.indices {
-            self.nodeIdToIndexLookup[nodeIds[i]] = i
-        }
-        self.nodeIds = nodeIds
-
+        self.kinetics = Kinetics(
+            links: links,
+            initialAlpha: initialAlpha,
+            alphaMin: alphaMin,
+            alphaDecay: alphaDecay,
+            alphaTarget: alphaTarget,
+            velocityDecay: velocityDecay,
+            position: consume position ?? Array(repeating: .zero, count: nodeCount),
+            velocity: consume velocity ?? Array(repeating: .zero, count: nodeCount),
+            fixation: consume fixation ?? Array(repeating: nil, count: nodeCount)
+        )
+        // self.kinetics.jigglePosition()
+        forceField.bindKinetics(self.kinetics)
+        self.forceField = forceField
     }
 
-    @inlinable internal func getIndex(of nodeId: NodeID) -> Int {
-        return nodeIdToIndexLookup[nodeId]!
-    }
-
-    /// Run the simulation for a number of iterations.
-    /// - Parameter iterationCount: Default to 1.
-    public func tick(iterationCount: UInt = 1) {
-        for _ in 0..<iterationCount {
-            alpha += (alphaTarget - alpha) * alphaDecay
-
-            for f in forces {
-                f.apply(alpha: alpha)
-            }
-
-            for i in nodePositions.indices {
-                if let fixation = nodeFixations[i] {
-                    nodePositions[i] = fixation
-                } else {
-                    nodeVelocities[i] *= velocityDecay
-                    nodePositions[i] += nodeVelocities[i]
-                }
-            }
-
+    /// Run a number of iterations of ticks.
+    @inlinable
+    public func tick(iterations: UInt = 1) {
+        // print(self.kinetics.alpha, self.kinetics.alphaMin)
+        guard self.kinetics.alpha >= self.kinetics.alphaMin else { return }
+        for _ in 0..<iterations {
+            self.kinetics.updateAlpha()
+            self.forceField.apply(to: &self.kinetics)
+            self.kinetics.updatePositions()
         }
     }
+
+    deinit {
+        self.forceField.dispose()
+    }
+
 }
 
 
-#if canImport(simd)
+public typealias Simulation2D<ForceField> = Simulation<SIMD2<Double>, ForceField>
+where ForceField: ForceProtocol<SIMD2<Double>>
 
-public typealias Simulation2D<NodeID> = Simulation<NodeID, Vector2d> where NodeID: Hashable
-
-public typealias Simulation3D<NodeID> = Simulation<NodeID, Vector3d> where NodeID: Hashable
-
-#endif
+public typealias Simulation3D<ForceField> = Simulation<SIMD3<Float>, ForceField>
+where ForceField: ForceProtocol<SIMD3<Float>>

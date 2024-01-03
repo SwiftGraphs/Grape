@@ -5,114 +5,142 @@
 //  Created by li3zhen1 on 10/4/23.
 //
 
-import NDTree
 import XCTest
+// import ForceSimulation
+import simd
 
 @testable import ForceSimulation
 
+func getLinks() -> [EdgeID<Int>] {
+    let data = getData()
+    return data.links.map { l in
+        EdgeID(
+            source: data.nodes.firstIndex { n in n.id == l.source }!,
+            target: data.nodes.firstIndex { n in n.id == l.target }!
+        )
+    }
+}
+
+struct MyForceField: ForceField2D {
+    var force = CompositedForce<Vector, _, _> {
+        Kinetics2D.ManyBodyForce(strength: -30)
+        Kinetics2D.LinkForce(
+            stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+            originalLength: .constant(35)
+        )
+        Kinetics2D.CenterForce(center: .zero, strength: 1)
+        Kinetics2D.CollideForce(radius: .constant(3))
+    }
+}
+
+struct MySealedForce: ForceField2D {
+    var force = SealedForce2D {
+        Kinetics2D.ManyBodyForce(strength: -30)
+        Kinetics2D.LinkForce(
+            stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+            originalLength: .constant(35)
+        )
+        Kinetics2D.CenterForce(center: .zero, strength: 1)
+        Kinetics2D.CollideForce(radius: .constant(3))
+
+    }
+}
+
+struct MyLatticeForce: ForceField2D {
+    var force = SealedForce2D {
+        Kinetics2D.LinkForce(
+            stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+            originalLength: .constant(1)
+        )
+        Kinetics2D.ManyBodyForce(strength: -1)
+    }
+}
+
+struct MyForceField3D: ForceField3D {
+    var force = CompositedForce<Vector, _, _> {
+        Kinetics3D.ManyBodyForce(strength: -30)
+        Kinetics3D.LinkForce(
+            stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+            originalLength: .constant(35)
+        )
+        Kinetics3D.CenterForce(center: .zero, strength: 1)
+        Kinetics3D.CollideForce(radius: .constant(3))
+    }
+}
+
 final class MiserableGraphTest: XCTestCase {
 
-    func test() {
-        let data = getData()
+    func testLattice() {
 
-        let sim = Simulation<String, Vector2d>(
-            nodeIds: data.nodes.map { n in
-                n.id
-            })
+        let myForce = SealedForce2D {
+            Kinetics2D.ManyBodyForce(strength: -30)
+            Kinetics2D.LinkForce(
+                stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
+                originalLength: .constant(35)
+            )
+            Kinetics2D.CenterForce(center: .zero, strength: 1)
+            Kinetics2D.CollideForce(radius: .constant(3))
+        }
 
-        let linkForce = sim.createLinkForce(
-            data.links.map({ l in
-                (l.source, l.target)
-            }))
-        let manybodyForce = sim.createManyBodyForce(strength: -30)
+        let width = 20
 
-        let centerForce = sim.createCenterForce(center: .zero)
-        let collideForce = sim.createCollideForce(radius: .constant(5))
+        var edge = [(Int, Int)]()
+        for i in 0..<width {
+            for j in 0..<width {
+                if j != width - 1 {
+                    edge.append((width * i + j, width * i + j + 1))
+                }
+                if i != width - 1 {
+                    edge.append((width * i + j, width * (i + 1) + j))
+                }
+            }
+        }
 
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-        //
-        ////        sim.tick()
-        //
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
+        let simulation = Simulation(
+            nodeCount: width * width,
+            links: edge.map { EdgeID(source: $0.0, target: $0.1) },
+            forceField: myForce
+        )
 
         measure {
             for _ in 0..<120 {
-                sim.tick()
+                simulation.tick()
             }
         }
-        sim.tick()
-        //        print(sim.simulationNodes)
-
     }
-    
-    
-    func test3d() {
+
+    func testMiserable2d() {
+
         let data = getData()
 
-        let sim = Simulation<String, Vector3d>(
-            nodeIds: data.nodes.map { n in
-                n.id
-            })
+        let simulation = Simulation(
+            nodeCount: data.nodes.count,
+            links: getLinks(),
+            forceField: MySealedForce()
+        )
 
-        let linkForce = sim.createLinkForce(
-            data.links.map({ l in
-                (l.source, l.target)
-            }))
-        let manybodyForce = sim.createManyBodyForce(strength: -30)
-
-        let centerForce = sim.createCenterForce(center: .zero)
-        let collideForce = sim.createCollideForce(radius: .constant(5))
-
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-        //
-        ////        sim.tick()
-        //
-        //        for _ in 0..<120{
-        //            sim.tick()
-        //        }
-        
-        
         measure {
             for _ in 0..<120 {
-                sim.tick()
+                simulation.tick()
             }
         }
-        sim.tick()
-        //        print(sim.simulationNodes)
-
     }
-    
-//    func test4d() {
-//        let data = getData()
-//
-//        let sim = Simulation<String, Vector4d>(
-//            nodeIds: data.nodes.map { n in
-//                n.id
-//            })
-//
-//        let linkForce = sim.createLinkForce(
-//            data.links.map({ l in
-//                (l.source, l.target)
-//            }))
-//        let manybodyForce = sim.createManyBodyForce(strength: -30)
-//
-//        let centerForce = sim.createCenterForce(center: .zero)
-//        let collideForce = sim.createCollideForce(radius: .constant(5))
-//        
-//        measure {
-//            for _ in 0..<120 {
-//                sim.tick()
-//            }
-//        }
-//        sim.tick()
-//        //        print(sim.simulationNodes)
-//
-//    }
+
+    func testMiserable3d() {
+
+        let data = getData()
+
+        let simulation = Simulation(
+            nodeCount: data.nodes.count,
+            links: getLinks(),
+            forceField: MyForceField3D()
+        )
+
+        measure {
+            for _ in 0..<120 {
+                simulation.tick()
+            }
+        }
+    }
 
 }

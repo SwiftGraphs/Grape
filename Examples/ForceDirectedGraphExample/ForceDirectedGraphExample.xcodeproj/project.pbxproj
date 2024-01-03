@@ -7,16 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B70B52AD2AF822FF00A1E6CD /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = B70B52AC2AF822FF00A1E6CD /* ForceSimulation */; };
+		B70B52AF2AF822FF00A1E6CD /* Grape in Frameworks */ = {isa = PBXBuildFile; productRef = B70B52AE2AF822FF00A1E6CD /* Grape */; };
+		B71759592AFBFC4B000DF006 /* Miserables.swift in Sources */ = {isa = PBXBuildFile; fileRef = B71759582AFBFC4B000DF006 /* Miserables.swift */; };
+		B717595B2AFBFDBD000DF006 /* Lattice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B717595A2AFBFDBD000DF006 /* Lattice.swift */; };
+		B719E4112AE5FBFC009D6C24 /* ForceDirectedLatticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B719E4102AE5FBFC009D6C24 /* ForceDirectedLatticeView.swift */; };
+		B780DD7A2AF84ECB001C605F /* MyRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B780DD792AF84ECB001C605F /* MyRing.swift */; };
 		B7AFA55B2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */; };
 		B7AFA55D2ADF4997009C7154 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA55C2ADF4997009C7154 /* ContentView.swift */; };
 		B7AFA55F2ADF4999009C7154 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7AFA55E2ADF4999009C7154 /* Assets.xcassets */; };
 		B7AFA5622ADF4999009C7154 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7AFA5612ADF4999009C7154 /* Preview Assets.xcassets */; };
 		B7AFA56B2ADF49AA009C7154 /* ForceSimulation in Frameworks */ = {isa = PBXBuildFile; productRef = B7AFA56A2ADF49AA009C7154 /* ForceSimulation */; };
-		B7AFA56D2ADF49AA009C7154 /* NDTree in Frameworks */ = {isa = PBXBuildFile; productRef = B7AFA56C2ADF49AA009C7154 /* NDTree */; };
 		B7AFA56F2ADF49D6009C7154 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA56E2ADF49D6009C7154 /* Data.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B71759582AFBFC4B000DF006 /* Miserables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Miserables.swift; sourceTree = "<group>"; };
+		B717595A2AFBFDBD000DF006 /* Lattice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lattice.swift; sourceTree = "<group>"; };
+		B719E4102AE5FBFC009D6C24 /* ForceDirectedLatticeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForceDirectedLatticeView.swift; sourceTree = "<group>"; };
+		B780DD792AF84ECB001C605F /* MyRing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyRing.swift; sourceTree = "<group>"; };
 		B7AFA5572ADF4997009C7154 /* ForceDirectedGraphExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForceDirectedGraphExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceDirectedGraphExampleApp.swift; sourceTree = "<group>"; };
 		B7AFA55C2ADF4997009C7154 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -31,8 +40,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B7AFA56D2ADF49AA009C7154 /* NDTree in Frameworks */,
+				B70B52AF2AF822FF00A1E6CD /* Grape in Frameworks */,
 				B7AFA56B2ADF49AA009C7154 /* ForceSimulation in Frameworks */,
+				B70B52AD2AF822FF00A1E6CD /* ForceSimulation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,12 +68,16 @@
 		B7AFA5592ADF4997009C7154 /* ForceDirectedGraphExample */ = {
 			isa = PBXGroup;
 			children = (
+				B780DD792AF84ECB001C605F /* MyRing.swift */,
+				B719E4102AE5FBFC009D6C24 /* ForceDirectedLatticeView.swift */,
 				B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */,
 				B7AFA55C2ADF4997009C7154 /* ContentView.swift */,
 				B7AFA55E2ADF4999009C7154 /* Assets.xcassets */,
 				B7AFA5632ADF4999009C7154 /* ForceDirectedGraphExample.entitlements */,
 				B7AFA5602ADF4999009C7154 /* Preview Content */,
 				B7AFA56E2ADF49D6009C7154 /* Data.swift */,
+				B71759582AFBFC4B000DF006 /* Miserables.swift */,
+				B717595A2AFBFDBD000DF006 /* Lattice.swift */,
 			);
 			path = ForceDirectedGraphExample;
 			sourceTree = "<group>";
@@ -94,7 +108,8 @@
 			name = ForceDirectedGraphExample;
 			packageProductDependencies = (
 				B7AFA56A2ADF49AA009C7154 /* ForceSimulation */,
-				B7AFA56C2ADF49AA009C7154 /* NDTree */,
+				B70B52AC2AF822FF00A1E6CD /* ForceSimulation */,
+				B70B52AE2AF822FF00A1E6CD /* Grape */,
 			);
 			productName = ForceDirectedGraphExample;
 			productReference = B7AFA5572ADF4997009C7154 /* ForceDirectedGraphExample.app */;
@@ -153,8 +168,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B717595B2AFBFDBD000DF006 /* Lattice.swift in Sources */,
+				B780DD7A2AF84ECB001C605F /* MyRing.swift in Sources */,
 				B7AFA55D2ADF4997009C7154 /* ContentView.swift in Sources */,
+				B719E4112AE5FBFC009D6C24 /* ForceDirectedLatticeView.swift in Sources */,
 				B7AFA56F2ADF49D6009C7154 /* Data.swift in Sources */,
+				B71759592AFBFC4B000DF006 /* Miserables.swift in Sources */,
 				B7AFA55B2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -289,6 +308,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ForceDirectedGraphExample/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -300,7 +320,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.lizhen.ForceDirectedGraphExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -314,6 +336,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ForceDirectedGraphExample/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -361,13 +384,17 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B7AFA56A2ADF49AA009C7154 /* ForceSimulation */ = {
+		B70B52AC2AF822FF00A1E6CD /* ForceSimulation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ForceSimulation;
 		};
-		B7AFA56C2ADF49AA009C7154 /* NDTree */ = {
+		B70B52AE2AF822FF00A1E6CD /* Grape */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = NDTree;
+			productName = Grape;
+		};
+		B7AFA56A2ADF49AA009C7154 /* ForceSimulation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ForceSimulation;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
