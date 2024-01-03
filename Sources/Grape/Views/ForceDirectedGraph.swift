@@ -5,7 +5,19 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
 
     @inlinable
     @Environment(\.self)
-    var environmentValues: EnvironmentValues
+    var environment: EnvironmentValues
+
+    @inlinable
+    @Environment(\.graphForegroundScaleEnvironment)
+    var graphForegroundScale
+
+    @inlinable
+    @Environment(\.colorScheme)
+    var colorScheme
+
+    @inlinable
+    @Environment(\.colorSchemeContrast)
+    var colorSchemeContrast
 
     // the copy of the graph context to be used for comparison in `onChange`
     // should be not used for rendering

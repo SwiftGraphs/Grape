@@ -33,6 +33,12 @@ public struct _GraphRenderingContext<NodeID: Hashable> {
 
     @usableFromInline
     internal var states = GraphRenderingStates<NodeID>()
+
+
+    @inlinable
+    func updateEnvironment(with newEnvironment: EnvironmentValues) {
+        
+    }
 }
 
 extension _GraphRenderingContext: Equatable {
