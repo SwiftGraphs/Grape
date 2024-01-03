@@ -9,6 +9,7 @@ import Foundation
 import Grape
 import SwiftUI
 import ForceSimulation
+import Charts
 
 
 //struct MyForceField: ForceField {
@@ -33,10 +34,8 @@ struct MiserableGraph: View {
     let graphData = getData(miserables)
     
     var body: some View {
-        ForceDirectedGraph(isRunning: $isRunning) {
-            for i in graphData.nodes.indices {
-                NodeMark(id: i, fill: colors[graphData.nodes[i].group % colors.count], radius: 3.0)
-            }
+        ForceDirectedGraph($isRunning) {
+            
             for l in graphData.links {
                 let fromID = graphData.nodes.firstIndex { mn in
                     mn.id == l.source
@@ -46,14 +45,34 @@ struct MiserableGraph: View {
                 }!
                 LinkMark(from: fromID, to: toID)
             }
-        } forceField: {
+            ForEach(graphData.nodes.indices, id: \.self) { i in
+                NodeMark(id: i)
+                    .symbol(.asterisk)
+                    .symbolSize(radius: 12.0)
+                    .foregroundStyle(
+                        colors[graphData.nodes[i].group % colors.count]
+                            .shadow(.inner(color:colors[graphData.nodes[i].group % colors.count].opacity(0.3), radius: 3, x:0, y: 1.5))
+                            .shadow(.drop(color:colors[graphData.nodes[i].group % colors.count].opacity(0.12), radius: 12, x:0, y: 8))
+                    )
+                    .stroke()
+                    .label(offset: CGVector(dx: 0.0, dy: 12.0)) {
+//                        if i.isMultiple(of: 5) {
+                            Text(graphData.nodes[i].id)
+                                .font(.title3)
+//                        }
+                    }
+            }
+        } force: {
             ManyBodyForce(strength: -20)
             LinkForce(
                 originalLength: .constant(35.0),
                 stiffness: .weightedByDegree(k: { _, _ in 1.0})
             )
             CenterForce()
-            CollideForce()
+//            CollideForce()
+        }
+        .onNodeTapped {
+            print($0)
         }
         .toolbar {
             Button {

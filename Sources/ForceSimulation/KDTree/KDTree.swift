@@ -68,7 +68,7 @@ where
 
         for i in 0..<Vector.scalarCount {
             if mask[i] {  // isOnHigherRange in this dimension
-                index |= (1 << i)
+                index |= (1 &<< i)
             }
         }
         return index
@@ -86,13 +86,7 @@ where
         let expandedCorner = (_corner + _corner) - nailedCorner
         let newRootBox = Box(nailedCorner, expandedCorner)
 
-        // let clusterDistanceSquared = self.clusterDistanceSquared
-        // let _delegate = delegate
         let spawned = delegate.spawn()
-
-        // Dont reference self anymore
-        //        let tempSelf = consume self
-
         var result = [KDTree<Vector, Delegate>]()
         result.reserveCapacity(Self.directionCount)
         //        let center = newRootBox.center

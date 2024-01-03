@@ -20,6 +20,13 @@ public struct SealedForce2D: Force2D {
             force.apply()
         }
     }
+
+    @inlinable
+    public func apply(to kinetics: inout Kinetics<SIMD2<Double>>) {
+        for force in self.entries {
+            force.apply(to: &kinetics)
+        }
+    }
     
     @inlinable
     public func dispose() {
@@ -107,6 +114,27 @@ public struct SealedForce2D: Force2D {
                 force.dispose()
             case .position(let force):
                 force.dispose()
+            default:
+                break
+            }
+        }
+
+
+        @inlinable
+        public func apply(to kinetics: inout Kinetics<SIMD2<Double>>) {
+            switch self {
+            case .center(let force):
+                force.apply(to: &kinetics)
+            case .radial(let force):
+                force.apply(to: &kinetics)
+            case .manyBody(let force):
+                force.apply(to: &kinetics)
+            case .link(let force):
+                force.apply(to: &kinetics)
+            case .collide(let force):
+                force.apply(to: &kinetics)
+            case .position(let force):
+                force.apply(to: &kinetics)
             default:
                 break
             }

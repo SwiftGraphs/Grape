@@ -1,16 +1,11 @@
 import SwiftUI
-import ForceSimulation
 
-public protocol GraphContent {}
 
-extension GraphContent {
-    @inlinable
-    public func foregroundStyle<S>(_ style: S) -> Self where S: ShapeStyle {
-        return self
-    }
+public protocol GraphContent<NodeID> {
+    associatedtype NodeID: Hashable
 
     @inlinable
-    func opacity(_ value: Double) -> Self {
-        return self
-    }
+    func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>)
 }
+
+

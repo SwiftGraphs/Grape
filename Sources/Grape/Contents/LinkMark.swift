@@ -1,7 +1,6 @@
 import ForceSimulation
 import SwiftUI
 
-@dynamicCallable
 public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     public enum LabelDisplayStrategy {
@@ -21,10 +20,10 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     public var id: EdgeID<NodeID>
 
-    public var label: String?
-    public var labelColor: Color
-    public var labelDisplayStrategy: LabelDisplayStrategy
-    public var labelPositioning: LabelPositioning
+    // public var label: String?
+    // public var labelColor: Color
+    // public var labelDisplayStrategy: LabelDisplayStrategy
+    // public var labelPositioning: LabelPositioning
 
     public var strokeColor: Color
     public var strokeWidth: Double
@@ -46,10 +45,10 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
         arrowStyle: ArrowStyle = .none
     ) {
         self.id = .init(source: from, target: to)
-        self.label = label
-        self.labelColor = labelColor
-        self.labelDisplayStrategy = labelDisplayStrategy
-        self.labelPositioning = labelPositioning
+        // self.label = label
+        // self.labelColor = labelColor
+        // self.labelDisplayStrategy = labelDisplayStrategy
+        // self.labelPositioning = labelPositioning
         self.strokeColor = strokeColor
         self.strokeWidth = strokeWidth
         self.strokeDashArray = strokeDashArray
@@ -57,27 +56,29 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
     }
 
     @inlinable
-    public func dynamicallyCall(withArguments: [(inout Self) -> Void]) -> Self {
-        var _self = self
-        for argument in withArguments {
-            argument(&_self)
-        }
-        return _self
+    public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
+        context.linkOperations.append(
+            .init(
+                self, 
+                context.states.currentStroke, 
+                nil
+            )
+        )
+        context.states.currentID = .link(id.source, id.target)
     }
 }
 
-infix operator --> : AssignmentPrecedence
-infix operator <-- : AssignmentPrecedence
-
-extension Hashable {
-
+extension LinkMark: CustomDebugStringConvertible {
     @inlinable
-    public static func --> (lhs: Self, rhs: Self) -> LinkMark<Self> {
-        return LinkMark(from: lhs, to: rhs)
+    public var debugDescription: String {
+        return
+            "LinkMark(\(id.source) -> \(id.target))"
     }
+}
 
+extension LinkMark: Equatable {
     @inlinable
-    public static func <-- (lhs: Self, rhs: Self) -> LinkMark<Self> {
-        return LinkMark(from: lhs, to: rhs)
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.id == rhs.id
     }
 }

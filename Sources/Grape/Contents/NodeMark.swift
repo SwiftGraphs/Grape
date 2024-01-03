@@ -1,5 +1,5 @@
 import SwiftUI
-
+import simd
 
 public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
 
@@ -22,11 +22,11 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
     public var strokeColor: Color?
     public var strokeWidth: Double
     public var radius: Double
-    public var label: String?
-    public var labelColor: Color
-    public var labelDisplayStrategy: LabelDisplayStrategy
-    public var labelPositioning: LabelPositioning
-
+    // public var label: String?
+    // public var labelColor: Color
+    // public var labelDisplayStrategy: LabelDisplayStrategy
+    // public var labelPositioning: LabelPositioning
+    @inlinable
     public init(
         id: NodeID,
         fill: Color = .accentColor,
@@ -41,12 +41,41 @@ public struct NodeMark<NodeID: Hashable>: GraphContent & Identifiable {
         self.id = id
         self.fill = fill
         self.radius = radius
-        self.label = label
-        self.labelColor = labelColor
-        self.labelDisplayStrategy = labelDisplayStrategy
-        self.labelPositioning = labelPositioning
+        // self.label = label
+        // self.labelColor = labelColor
+        // self.labelDisplayStrategy = labelDisplayStrategy
+        // self.labelPositioning = labelPositioning
 
         self.strokeColor = strokeColor
         self.strokeWidth = strokeWidth
+    }
+
+    @inlinable
+    public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
+        context.nodeOperations.append(
+            .init(
+                self,
+                context.states.currentShading,
+                context.states.currentStroke,
+                context.states.currentSymbolShape
+            )
+        )
+        context.states.currentID = .node(id)
+        context.nodeRadiusSquaredLookup[id] = simd_length_squared(
+            context.states.currentSymbolSizeOrDefault.simd)
+    }
+}
+
+extension NodeMark: CustomDebugStringConvertible {
+    @inlinable
+    public var debugDescription: String {
+        return "Node(id: \(id))"
+    }
+}
+
+extension NodeMark: Equatable {
+    @inlinable
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.id == rhs.id && lhs.radius == rhs.radius
     }
 }

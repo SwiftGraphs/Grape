@@ -1,7 +1,7 @@
 extension Kinetics {
 
     public typealias TargetOnDirection = AttributeDescriptor<Vector.Scalar>
-    public enum DirectionOfPositionForce {
+    public enum DirectionOfPositionForce: Equatable {
         case x
         case y
         case z
@@ -16,7 +16,7 @@ extension Kinetics {
     /// See [Position Force - D3](https://d3js.org/d3-force/position).
     public struct PositionForce: ForceProtocol {
 
-        @usableFromInline var kinetics: Kinetics! = nil
+        // @usableFromInline var kinetics: Kinetics! = nil
 
         public var strength: PositionStrength
         public var direction: Int
@@ -26,7 +26,18 @@ extension Kinetics {
 
         @inlinable
         public func apply() {
-            assert(self.kinetics != nil, "Kinetics not bound to force")
+            // assert(self.kinetics != nil, "Kinetics not bound to force")
+            // let alpha = kinetics.alpha
+            // let lane = self.direction
+            // for i in kinetics.range {
+            //     kinetics.velocity[i][lane] +=
+            //         (self.calculatedTargetOnDirection[i] - kinetics.position[i][lane])
+            //         * self.calculatedStrength[i] * alpha
+            // }
+        }
+
+        @inlinable
+        public func apply(to kinetics: inout Kinetics) {
             let alpha = kinetics.alpha
             let lane = self.direction
             for i in kinetics.range {
@@ -35,9 +46,10 @@ extension Kinetics {
                     * self.calculatedStrength[i] * alpha
             }
         }
+
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
-            self.kinetics = kinetics
+            // self.kinetics = kinetics
             self.calculatedTargetOnDirection = self.targetOnDirection.calculateUnsafe(
                 for: kinetics.validCount)
             self.calculatedStrength = self.strength.calculateUnsafe(for: kinetics.validCount)
@@ -53,7 +65,6 @@ extension Kinetics {
             self.direction = direction.lane
             self.targetOnDirection = targetOnDirection
         }
-
 
         @inlinable
         public func dispose() {}

@@ -6,14 +6,18 @@ extension Kinetics {
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
     public struct CenterForce: ForceProtocol {
 
-        @usableFromInline var kinetics: Kinetics! = nil
+        // @usableFromInline var kinetics: Kinetics! = nil
 
         @inlinable
         public func apply() {
-            assert(self.kinetics != nil, "Kinetics not bound to force")
+            fatalError()
+        }
+
+        @inlinable
+        public func apply(to kinetics: inout Kinetics) {
             var meanPosition = Vector.zero
             let positionBufferPointer = kinetics.position.mutablePointer
-            for i in kinetics.range {
+            for i in 0..<kinetics.validCount {
                 meanPosition += positionBufferPointer[i]  //.position
             }
             let delta = meanPosition * (self.strength / Vector.Scalar(kinetics.validCount))
@@ -22,9 +26,10 @@ extension Kinetics {
                 positionBufferPointer[i] -= delta
             }
         }
+
         @inlinable
         public mutating func bindKinetics(_ kinetics: Kinetics) {
-            self.kinetics = kinetics
+            // self.kinetics = kinetics
         }
 
         public var center: Vector
@@ -37,7 +42,6 @@ extension Kinetics {
             self.center = center
             self.strength = strength
         }
-
 
         @inlinable
         public func dispose() {}

@@ -14,10 +14,16 @@ where
         self.force1 = force1
         self.force2 = force2
     }
+    // @inlinable
+    // public func apply() {
+    //     self.force1?.apply()
+    //     self.force2.apply()
+    // }
+
     @inlinable
-    public func apply() {
-        self.force1?.apply()
-        self.force2.apply()
+    public func apply(to kinetics: inout Kinetics<Vector>) {
+        self.force1?.apply(to: &kinetics)
+        self.force2.apply(to: &kinetics)
     }
     
     @inlinable

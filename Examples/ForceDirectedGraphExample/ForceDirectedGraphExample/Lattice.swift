@@ -32,20 +32,21 @@ struct Lattice: View {
     
     @inlinable
     var body: some View {
-        ForceDirectedGraph(isRunning: $isRunning) {
-            for i in 0..<(width*width) {
+        ForceDirectedGraph($isRunning) {
+            ForEach(Array(0..<(width*width)), id:\.self) { i in
                 
                 let _i = Double(i / width) / Double(width)
                 let _j = Double(i % width) / Double(width)
                 
-                
-                NodeMark(id: i, fill: .init(red: 1, green: _i, blue: _j), radius: 3.0, strokeColor: .white, strokeWidth: 0.5)
+                NodeMark(id: i, radius: 3.0)
+                    .foregroundStyle(Color(red: 1, green: _i, blue: _j))
+                    .stroke()
             }
             for l in edge {
                 
                 LinkMark(from: l.0, to: l.1)
             }
-        } forceField: {
+        } force: {
             LinkForce(
                 originalLength: .constant(0.8),
                 stiffness: .weightedByDegree(k: { _, _ in 1})

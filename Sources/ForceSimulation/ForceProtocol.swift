@@ -8,7 +8,12 @@ public protocol ForceProtocol<Vector> {
 
     /// Takes a simulation state and modifies its node positions and velocities.
     /// This is executed in each tick of the simulation.
-    @inlinable func apply()
+    // @inlinable func apply()
+
+
+    /// Takes a simulation state and modifies its node positions and velocities.
+    /// This is executed in each tick of the simulation.
+    @inlinable func apply(to kinetics: inout Kinetics<Vector>)
 
     /// Bind to a kinetic system that describes the state of all nodes in your simulation.
     /// This has to be called before `apply` is called.
@@ -41,7 +46,7 @@ extension Kinetics3D.RadialForce: Force3D {}
 extension Kinetics3D.EmptyForce: Force3D {}
 extension CompositedForce: Force3D where Vector == SIMD3<Float> {}
 
-public protocol ForceDescriptor {
+public protocol ForceDescriptor: Equatable {
     associatedtype ConcreteForce: ForceProtocol
     func createForce() -> ConcreteForce
 }
@@ -58,9 +63,14 @@ where Vector: SimulatableVector & L2NormCalculatable {
 }
 
 extension ForceField {
+    // @inlinable
+    // public func apply() {
+    //     self.force.apply()
+    // }
+
     @inlinable
-    public func apply() {
-        self.force.apply()
+    public func apply(to kinetics: inout Kinetics<Vector>) {
+        self.force.apply(to: &kinetics)
     }
     
     @inlinable
