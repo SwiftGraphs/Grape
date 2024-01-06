@@ -1,5 +1,5 @@
 public struct Repeated<NodeID, Data, Content>
-where Data: RandomAccessCollection, Content: GraphContent<NodeID> {
+where Data: RandomAccessCollection, Content: GraphContent<NodeID>, NodeID: Hashable {
 
     @usableFromInline
     let data: Data
