@@ -17,12 +17,13 @@ struct MiserableGraph: View {
     
     @State private var isRunning = false
     @State private var opacity: Double = 0
+    @State private var inspectorPresented = false
     
     var body: some View {
         
         ForceDirectedGraph($isRunning) {
             
-            ForEach(graphData.nodes) { node in
+            Repeated(graphData.nodes) { node in
                 NodeMark(id: node.id)
                     .symbol(.asterisk)
                     .symbolSize(radius: 9.0)
@@ -44,10 +45,10 @@ struct MiserableGraph: View {
                     }
             }
             
-            ForEach(graphData.links) { l in
+            Repeated(graphData.links) { l in
                 LinkMark(from: l.source, to: l.target)
             }
-            
+//            
         } force: {
             ManyBodyForce(strength: -20)
             LinkForce(
@@ -56,9 +57,15 @@ struct MiserableGraph: View {
             )
             CenterForce()
         }
-        
+        .onNodeTapped { node in
+            inspectorPresented = true
+        }
         .opacity(opacity)
         .animation(.easeInOut, value: opacity)
+        .inspector(isPresented: $inspectorPresented) {
+            Text("Hello")
+        }
+
         .toolbar {
             Button {
                 isRunning.toggle()

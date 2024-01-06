@@ -62,7 +62,7 @@ extension ForEach: GraphContent where Content: GraphContent {
 extension ForEach
 where ID == Data.Element.ID, Content: _GraphContentWrappingView, Data.Element: Identifiable {
     @inlinable
-    @_disfavoredOverload
+    // @_disfavoredOverload
     public init<NodeID, IG>(
         _ data: Data,
         @GraphContentBuilder<NodeID> graphContent: @escaping (Data.Element) -> IG
@@ -93,41 +93,40 @@ extension ForEach where Content: _GraphContentWrappingView {
         let pb = _GraphContentWrapper.pullback(id: id, graphContent)
         self.init(data, id: id, content: pb)
     }
-
 }
 
-// extension ForEach {
-//     @inlinable
-//     public init<NodeID, IG>(
-//         _ range: Range<Int>,
-//         @GraphContentBuilder<NodeID> content: @escaping (Int) -> IG
-//     )
-//     where
-//         Data == Swift.Range<Swift.Int>, ID == Swift.Int, IG: GraphContent<NodeID>, NodeID: Hashable,
-//         Content == _GraphContentWrapper<IG>
-//     {
-//         self.init(range, id: \.self, content: _GraphContentWrapper.pullback(content))
-//     }
-// }
-
-extension ForEach
-where
-    Data == Swift.Range<Swift.Int>, ID == Swift.Int, Content: _GraphContentWrappingView
-{
+extension ForEach {
     @inlinable
-    public init<RawData, NodeID, IG>(
-        _ data: RawData,
-        @GraphContentBuilder<NodeID> graphContent: @escaping (RawData.Element) -> IG
+    public init<NodeID, IG>(
+        _ range: Range<Int>,
+        @GraphContentBuilder<NodeID> content: @escaping (Int) -> IG
     )
     where
-        IG: GraphContent<NodeID>, NodeID: Hashable,
-        RawData: RandomAccessCollection,
-        RawData.Indices == Swift.Range<Swift.Int>,
+        Data == Swift.Range<Swift.Int>, ID == Swift.Int, IG: GraphContent<NodeID>, NodeID: Hashable,
         Content == _GraphContentWrapper<IG>
     {
-
-        self.init(data.indices, id: \.self) { index in
-            graphContent(data[index])
-        }
+        self.init(range, id: \.self, content: _GraphContentWrapper.pullback(content))
     }
 }
+
+// extension ForEach
+// where
+//     Data == Swift.Range<Swift.Int>, ID == Swift.Int, Content: _GraphContentWrappingView
+// {
+//     @inlinable
+//     public init<RawData, NodeID, IG>(
+//         _ data: RawData,
+//         @GraphContentBuilder<NodeID> graphContent: @escaping (RawData.Element) -> IG
+//     )
+//     where
+//         IG: GraphContent<NodeID>, NodeID: Hashable,
+//         RawData: RandomAccessCollection,
+//         RawData.Indices == Swift.Range<Swift.Int>,
+//         Content == _GraphContentWrapper<IG>
+//     {
+
+//         self.init(data.indices, id: \.self) { index in
+//             graphContent(data[index])
+//         }
+//     }
+// }
