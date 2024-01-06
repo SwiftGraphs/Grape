@@ -25,6 +25,29 @@ extension GraphContentEffect {
         }
     }
 
+    @usableFromInline
+    internal struct RichLabel {
+
+        @usableFromInline
+        let view: AnyView
+
+        @usableFromInline
+        let alignment: Alignment
+
+        @usableFromInline
+        let offset: CGVector
+
+        @inlinable
+        public init(
+            _ view: some View,
+            alignment: Alignment = .bottom,
+            offset: CGVector = .zero
+        ) {
+            self.view = .init(erasing: view)
+            self.alignment = alignment
+            self.offset = offset
+        }
+    }
 }
 
 extension GraphContentEffect.Label: GraphContentModifier {
@@ -57,6 +80,23 @@ extension GraphContentEffect.Label: GraphContentModifier {
                 context.textOffsets[currentID] = (alignment, offset.simd)
             }
         }
+    }
+}
+
+
+extension GraphContentEffect.RichLabel: GraphContentModifier {
+    @inlinable
+    public func _into<NodeID>(
+        _ context: inout _GraphRenderingContext<NodeID>
+    ) where NodeID: Hashable {
+
+    }
+
+    @inlinable
+    @MainActor
+    public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
+    where NodeID: Hashable {
+        
     }
 }
 

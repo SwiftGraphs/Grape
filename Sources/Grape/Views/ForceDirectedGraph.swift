@@ -1,7 +1,9 @@
 import ForceSimulation
 import SwiftUI
 
-public struct ForceDirectedGraph<NodeID: Hashable> {
+public struct ForceDirectedGraph<NodeID: Hashable, Content: GraphContent> where NodeID == Content.NodeID {
+
+    // public typealias NodeID = Content.NodeID
 
     @inlinable
     @Environment(\.self)
@@ -34,7 +36,7 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
 
     // @State
     @inlinable
-    var model: ForceDirectedGraphModel<NodeID>
+    var model: ForceDirectedGraphModel<Content>
     {
         @storageRestrictions(initializes: _model)
         init(initialValue) {
@@ -45,7 +47,7 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
     }
 
     @usableFromInline
-    var _model: State<ForceDirectedGraphModel<NodeID>>
+    var _model: State<ForceDirectedGraphModel<Content>>
 
     @inlinable
     var isRunning: Bool {
@@ -64,7 +66,8 @@ public struct ForceDirectedGraph<NodeID: Hashable> {
     public init(
         _ _isRunning: Binding<Bool> = .constant(true),
         ticksPerSecond: Double = 60.0,
-        @GraphContentBuilder<NodeID> _ graph: () -> some GraphContent<NodeID>,
+        initialViewportTransform: ViewportTransform = .identity,
+        @GraphContentBuilder<NodeID> _ graph: () -> Content,
         @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = { [] },
         emittingNewNodesWithStates state: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)

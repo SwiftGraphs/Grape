@@ -4,7 +4,7 @@ public struct _GraphRenderingContext<NodeID: Hashable> {
     @usableFromInline
     enum TextResolvingStatus: Equatable {
         case pending(Text)
-        case resolved(CGImage?)
+        case resolved(Text, CGImage?)
     }
 
     @usableFromInline

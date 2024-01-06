@@ -4,7 +4,9 @@ import Observation
 import SwiftUI
 
 // @Observable
-public final class ForceDirectedGraphModel<NodeID: Hashable> {
+public final class ForceDirectedGraphModel<Content: GraphContent> {
+
+    public typealias NodeID = Content.NodeID
 
     @usableFromInline
     var graphRenderingContext: _GraphRenderingContext<NodeID>
@@ -356,9 +358,9 @@ extension ForceDirectedGraphModel {
                         antialias: Self.textRasterizationAntialias
                     )
                     lastRasterizedScaleFactor = env.displayScale
-                    graphRenderingContext.symbols[resolvedTextContent] = .resolved(cgImage)
+                    graphRenderingContext.symbols[resolvedTextContent] = .resolved(consume text, cgImage)
                     rasterizedSymbol = cgImage
-                case .resolved(let cgImage):
+                case .resolved(_, let cgImage):
                     rasterizedSymbol = cgImage
                 }
 

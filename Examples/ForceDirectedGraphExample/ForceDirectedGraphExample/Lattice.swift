@@ -43,7 +43,6 @@ struct Lattice: View {
                     .stroke()
             }
             for l in edge {
-                
                 LinkMark(from: l.0, to: l.1)
             }
         } force: {
@@ -52,6 +51,8 @@ struct Lattice: View {
                 stiffness: .weightedByDegree(k: { _, _ in 1})
             )
             ManyBodyForce(strength: -0.8)
+//            CenterForce()
+//            CollideForce(strength: 0.01, radius: .constant(1.0))
 
         }
         .toolbar {

@@ -35,7 +35,7 @@ struct MyRing: View {
 
 
         ForceDirectedGraph($isRunning) {
-            ForEach(Array(0..<20), id: \.self) { i in
+            ForEach(0..<20) { i in
                 NodeMark(id: 3 * i + 0)
                     .symbol(.circle)
                     .symbolSize(radius:4.0)
@@ -49,12 +49,15 @@ struct MyRing: View {
                     .symbolSize(radius:6.0)
                     .foregroundStyle(.yellow)
 
+                
+                
                 LinkMark(from: 3 * i + 0, to: 3 * i + 1)
                 LinkMark(from: 3 * i + 1, to: 3 * i + 2)
-
-                for j in 0..<3 {
-                    LinkMark(from: 3 * i + j, to: 3 * ((i + 1) % 20) + j)
-                }
+                
+                LinkMark(from: 3 * i + 0, to: 3 * ((i + 1) % 20) + 0)
+                LinkMark(from: 3 * i + 1, to: 3 * ((i + 1) % 20) + 1)
+                LinkMark(from: 3 * i + 2, to: 3 * ((i + 1) % 20) + 2)
+                
             }
         } force: {
             ManyBodyForce(strength: -15)
