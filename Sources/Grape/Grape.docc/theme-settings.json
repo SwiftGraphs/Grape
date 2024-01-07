@@ -1,0 +1,8 @@
+{
+    "theme": {
+        "typography": {
+            "html-font": "system-ui, -apple-system, \"InterVar\"",
+            "html-font-mono": "ui-monospace, \"JetBrains Mono\", \"IBM Plex Mono\", monospace"
+        }
+    }
+}

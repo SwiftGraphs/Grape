@@ -29,10 +29,11 @@ let singleNodeRegex = Regex {
 }
 
 let mermaidLinkRegex = Regex {
-    ChoiceOf {
-        singleNodeRegex
-        multipleNodeRegex
-    }
+    singleNodeRegex
+//    ChoiceOf {
+//        singleNodeRegex
+//        multipleNodeRegex
+//    }
     OneOrMore(.whitespace)
     ChoiceOf {
         "-->"
@@ -44,10 +45,7 @@ let mermaidLinkRegex = Regex {
     }
 
     OneOrMore(.whitespace)
-    ChoiceOf {
-        singleNodeRegex
-        multipleNodeRegex
-    }
+    singleNodeRegex
 }
 
 func parseMermaid(
