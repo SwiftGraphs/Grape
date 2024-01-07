@@ -44,7 +44,7 @@ func buildSimulation() -> Simulation3D<My3DForce> {
         forceField: My3DForce()
     )
     
-    for i in 0..<720 {
+    for _ in 0..<720 {
         sim.tick()
     }
     return sim

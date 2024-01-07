@@ -25,18 +25,6 @@ extension Kinetics {
         public var calculatedTargetOnDirection: UnsafeArray<Vector.Scalar>! = nil
 
         @inlinable
-        public func apply() {
-            // assert(self.kinetics != nil, "Kinetics not bound to force")
-            // let alpha = kinetics.alpha
-            // let lane = self.direction
-            // for i in kinetics.range {
-            //     kinetics.velocity[i][lane] +=
-            //         (self.calculatedTargetOnDirection[i] - kinetics.position[i][lane])
-            //         * self.calculatedStrength[i] * alpha
-            // }
-        }
-
-        @inlinable
         public func apply(to kinetics: inout Kinetics) {
             let alpha = kinetics.alpha
             let lane = self.direction

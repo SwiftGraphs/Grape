@@ -22,7 +22,7 @@ final class ForceTests: XCTestCase {
             forceField: myForce
         )
 
-        for i in 0...10 {
+        for _ in 0...10 {
             simulation.tick()
         }
 
