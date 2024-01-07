@@ -101,7 +101,6 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
 
     deinit {
         self.forceField.dispose()
-        self.kinetics.dispose()
     }
 
 }
