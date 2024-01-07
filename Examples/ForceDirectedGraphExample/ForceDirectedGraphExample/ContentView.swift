@@ -11,6 +11,7 @@
 //import CoreGraphics
 //
 //
+import Grape
 
 
 //
@@ -96,25 +97,42 @@ struct ContentView: View {
     @State var selection: ExampleKind = .classicMiserable
     
     var body: some View {
-        NavigationSplitView {
-            List(ExampleKind.list, id:\.self, selection: $selection) { kind in
-                Text(kind.description)
-            }
-        } detail: {
-            switch selection {
-            case .ring:
-                MyRing()
-            case .classicMiserable:
-                MiserableGraph()
-            case .lattice:
-                Lattice()
-            case .mermaid:
-                MermaidVisualization()
-            }
-        }
+        MyGraph()
+//        NavigationSplitView {
+//            List(ExampleKind.list, id:\.self, selection: $selection) { kind in
+//                Text(kind.description)
+//            }
+//        } detail: {
+//            switch selection {
+//            case .ring:
+//                MyRing()
+//            case .classicMiserable:
+//                MiserableGraph()
+//            case .lattice:
+//                Lattice()
+//            case .mermaid:
+//                MermaidVisualization()
+//            }
+//        }
     }
 }
 
 #Preview {
     ContentView()
+}
+
+struct MyGraph: View {
+    let myNodes = ["A", "B", "C"]
+    let myLinks = [("A", "B"), ("B", "C")]
+
+    var body: some View {
+        ForceDirectedGraph {
+            Series(myNodes) { id in
+                NodeMark(id: id)
+            }
+            Series(myLinks) { from, to in
+                LinkMark(from: from, to: to)
+            }
+        }
+    }
 }

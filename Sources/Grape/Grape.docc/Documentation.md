@@ -15,9 +15,6 @@ If you’re looking for a more detailed control of force-directed layouts, pleas
 
 
 * <doc:CreatingAForceDirectedGraph>
-* <doc:DescribingForces>
-* <doc:CustomizingAppearances>
-* <doc:RespondingToInteractionsAndEvents>
 
 * ``ForceDirectedGraph``
 

@@ -1,7 +1,8 @@
 import ForceSimulation
 import SwiftUI
 
-public struct ForceDirectedGraph<NodeID: Hashable, Content: GraphContent> where NodeID == Content.NodeID {
+public struct ForceDirectedGraph<NodeID: Hashable, Content: GraphContent>
+where NodeID == Content.NodeID {
 
     // public typealias NodeID = Content.NodeID
 
@@ -72,6 +73,13 @@ public struct ForceDirectedGraph<NodeID: Hashable, Content: GraphContent> where 
     //     }
     // }
 
+    @SealedForce2DBuilder
+    @inlinable
+    static public func defaulForce() -> [SealedForce2D.ForceEntry] {
+        ManyBodyForce()
+        LinkForce()
+    }
+
     @inlinable
     public init(
         _ isRunning: Binding<Bool> = .constant(true),
@@ -79,7 +87,7 @@ public struct ForceDirectedGraph<NodeID: Hashable, Content: GraphContent> where 
         ticksPerSecond: Double = 60.0,
         initialViewportTransform: ViewportTransform = .identity,
         @GraphContentBuilder<NodeID> _ graph: () -> Content,
-        @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = { [] },
+        @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = Self.defaulForce,
         emittingNewNodesWithStates state: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         }
@@ -90,15 +98,15 @@ public struct ForceDirectedGraph<NodeID: Hashable, Content: GraphContent> where 
 
         self._graphRenderingContextShadow = gctx
         self._isRunning = isRunning
-        
+
         self._forceDescriptors = force()
 
         let force = SealedForce2D(self._forceDescriptors)
         self.model = .init(
-            gctx, 
-            force, 
+            gctx,
+            force,
             modelTransform: modelTransform,
-            emittingNewNodesWith: state, 
+            emittingNewNodesWith: state,
             ticksPerSecond: ticksPerSecond
         )
     }

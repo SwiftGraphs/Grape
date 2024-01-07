@@ -1,6 +1,0 @@
-# Describing Forces
-
-
-
-## Overview
-
