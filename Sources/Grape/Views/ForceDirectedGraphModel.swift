@@ -193,8 +193,11 @@ extension StrokeStyle {
 extension ForceDirectedGraphModel {
 
     @inlinable
-    func start() {
+    func start(minAlpha: Double = 0.6) {
         guard self.scheduledTimer == nil else { return }
+        if simulationContext.storage.kinetics.alpha < minAlpha {
+            simulationContext.storage.kinetics.alpha = minAlpha
+        }
         self.scheduledTimer = Timer.scheduledTimer(
             withTimeInterval: 1.0 / ticksPerSecond,
             repeats: true

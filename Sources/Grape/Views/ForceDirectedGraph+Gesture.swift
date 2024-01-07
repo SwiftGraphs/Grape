@@ -24,7 +24,7 @@ extension ForceDirectedGraph {
             return
         }
 
-        if model.simulationContext.storage.kinetics.alpha > Self.minimumAlphaAfterDrag {
+        if model.simulationContext.storage.kinetics.alpha < Self.minimumAlphaAfterDrag {
             model.simulationContext.storage.kinetics.alpha = Self.minimumAlphaAfterDrag
         }
 
@@ -54,7 +54,7 @@ extension ForceDirectedGraph {
             }
             return
         }
-        if model.simulationContext.storage.kinetics.alpha > Self.minimumAlphaAfterDrag {
+        if model.simulationContext.storage.kinetics.alpha < Self.minimumAlphaAfterDrag {
             model.simulationContext.storage.kinetics.alpha = Self.minimumAlphaAfterDrag
         }
 

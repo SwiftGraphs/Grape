@@ -48,7 +48,7 @@ public struct GraphContentBuilder<NodeID: Hashable> {
     ///        MyComponent(i)
     ///    }
     /// }
-    @available(*, deprecated, message: "Use ForEach instead. Swift cannot infer types when nested elements is decorated with a modifier. ")
+    @available(*, deprecated, message: "Use `Repeated` instead. ")
     @inlinable
     public static func buildArray<T>(_ components: [T]) -> some Content
     where T: Content, T.NodeID == NodeID {

@@ -26,6 +26,11 @@ extension ForceDirectedGraph: View {
                     self.model.stop()
                 }
             }
+            .onAppear {
+                if self.isRunning {
+                    self.model.start()
+                }
+            }
     }
 
     // #if DEBUG
