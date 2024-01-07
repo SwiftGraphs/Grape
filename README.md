@@ -52,6 +52,23 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 
 <br/>
 
+
+### Mermaid Visualization
+
+Instant visualization for simple mermaid syntaxes.
+
+
+
+
+https://github.com/li3zhen1/Grape/assets/45376537/80d933c1-8b5b-4b1a-9062-9628577bd2e0
+
+
+
+Source code: [MermaidVisualization.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MermaidVisualization.swift)
+
+<br/>
+
+
 ### Lattice Simulation
 
 This is a 36x36 force directed lattice like [Force Directed Lattice](https://observablehq.com/@d3/force-directed-lattice):
@@ -65,6 +82,7 @@ https://github.com/li3zhen1/Grape/assets/45376537/5b76fddc-dd5c-4d35-bced-29c012
 Source code: [Lattice.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Lattice.swift)
 
 <br/>
+
 <br/>
 
 
