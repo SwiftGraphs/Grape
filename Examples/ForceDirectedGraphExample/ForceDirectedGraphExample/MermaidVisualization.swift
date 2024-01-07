@@ -8,6 +8,7 @@
 import SwiftUI
 import RegexBuilder
 import Grape
+import simd
 
 let mermaidLinkRegex = Regex {
     Capture(
@@ -43,6 +44,14 @@ func parseMermaid(
     return (nodes, links)
 }
 
+func getInitialPosition(id: String, r: Double) -> SIMD2<Double> {
+    if let firstLetter = id.first?.unicodeScalars.first {
+        let deg = Double(firstLetter.value % 26) / 26 * 2 * .pi
+        return [cos(deg) * r, sin(deg) * r]
+    }
+    return .zero
+}
+
 struct MermaidVisualization: View {
     
     @State private var text: String = """
@@ -51,6 +60,9 @@ struct MermaidVisualization: View {
     Alice --> Dan
     Alice --> Cindy
     Tom --> Bob
+    Tom --> Kate
+    Kate --> Cindy
+    
     """
     
     var parsedGraph: ([String], [(String, String)]) {
@@ -61,7 +73,9 @@ struct MermaidVisualization: View {
         ForceDirectedGraph {
             Repeated(parsedGraph.0) { node in
                 NodeMark(id: node)
-                    .label(alignment: .bottom) {
+                    .symbol(RoundedRectangle(cornerSize: CGSize(width: 3, height: 3)))
+                    .symbolSize(radius: 6)
+                    .label(alignment: .bottom, offset: [0, 4]) {
                         Text(node)
                     }
             }
@@ -72,6 +86,8 @@ struct MermaidVisualization: View {
             ManyBodyForce()
             LinkForce(originalLength: .constant(70))
             CenterForce()
+        } emittingNewNodesWithStates: { id in
+            KineticState(position: getInitialPosition(id: id, r: 100))
         }
         .inspector(isPresented: .constant(true)) {
             VStack {
