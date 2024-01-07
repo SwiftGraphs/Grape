@@ -4,7 +4,9 @@ import Observation
 import SwiftUI
 
 // @Observable
-public final class ForceDirectedGraphModel<NodeID: Hashable> {
+public final class ForceDirectedGraphModel<Content: GraphContent> {
+
+    public typealias NodeID = Content.NodeID
 
     @usableFromInline
     var graphRenderingContext: _GraphRenderingContext<NodeID>
@@ -191,8 +193,11 @@ extension StrokeStyle {
 extension ForceDirectedGraphModel {
 
     @inlinable
-    func start() {
+    func start(minAlpha: Double = 0.6) {
         guard self.scheduledTimer == nil else { return }
+        if simulationContext.storage.kinetics.alpha < minAlpha {
+            simulationContext.storage.kinetics.alpha = minAlpha
+        }
         self.scheduledTimer = Timer.scheduledTimer(
             withTimeInterval: 1.0 / ticksPerSecond,
             repeats: true
@@ -356,9 +361,9 @@ extension ForceDirectedGraphModel {
                         antialias: Self.textRasterizationAntialias
                     )
                     lastRasterizedScaleFactor = env.displayScale
-                    graphRenderingContext.symbols[resolvedTextContent] = .resolved(cgImage)
+                    graphRenderingContext.symbols[resolvedTextContent] = .resolved(consume text, cgImage)
                     rasterizedSymbol = cgImage
-                case .resolved(let cgImage):
+                case .resolved(_, let cgImage):
                     rasterizedSymbol = cgImage
                 }
 

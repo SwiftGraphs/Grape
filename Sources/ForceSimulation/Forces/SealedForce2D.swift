@@ -15,13 +15,6 @@ public struct SealedForce2D: Force2D {
     public var entries: [ForceEntry] = []
 
     @inlinable
-    public func apply() {
-        for force in self.entries {
-            force.apply()
-        }
-    }
-
-    @inlinable
     public func apply(to kinetics: inout Kinetics<SIMD2<Double>>) {
         for force in self.entries {
             force.apply(to: &kinetics)
@@ -79,26 +72,6 @@ public struct SealedForce2D: Force2D {
         case position(Kinetics2D.PositionForce)
         case empty
 
-        @inlinable
-        public func apply() {
-            switch self {
-            case .center(let force):
-                force.apply()
-            case .radial(let force):
-                force.apply()
-            case .manyBody(let force):
-                force.apply()
-            case .link(let force):
-                force.apply()
-            case .collide(let force):
-                force.apply()
-            case .position(let force):
-                force.apply()
-            default:
-                break
-            }
-        }
-        
         @inlinable
         public func dispose() {
             switch self {

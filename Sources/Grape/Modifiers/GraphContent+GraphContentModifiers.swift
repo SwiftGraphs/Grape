@@ -36,6 +36,11 @@ extension GraphContent {
     }
 
     @inlinable
+    public func symbolSize(_ size: SIMD2<Double>) -> some GraphContent<NodeID> {
+        return ModifiedGraphContent(self, GraphContentEffect.SymbolSize(size.cgSize))
+    }
+
+    @inlinable
     public func symbolSize(radius: CGFloat) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(
             self,
@@ -61,6 +66,14 @@ extension GraphContent {
 
     @inlinable
     public func label(
+        _ text: Text?, alignment: Alignment = .bottom, offset: SIMD2<Double> = .zero
+    ) -> some GraphContent<NodeID> {
+
+        return label(text, alignment: alignment, offset: offset.cgVector)
+    }
+
+    @inlinable
+    public func label(
         _ string: String?, alignment: Alignment = .bottom, offset: CGVector = .zero
     ) -> some GraphContent<NodeID> {
         return ModifiedGraphContent(
@@ -69,11 +82,45 @@ extension GraphContent {
 
     @inlinable
     public func label(
-        _ alignment: Alignment = .bottom, offset: CGVector = .zero, @ViewBuilder _ text: () -> Text?
+        _ string: String?, alignment: Alignment = .bottom, offset: SIMD2<Double> = .zero
+    ) -> some GraphContent<NodeID> {
+        return label(string, alignment: alignment, offset: offset.cgVector)
+    }
+
+    @inlinable
+    public func label(
+        _ alignment: Alignment = .bottom, offset: CGVector = .zero,
+        @ViewBuilder _ content: () -> Text?
     ) -> some GraphContent<NodeID> {
 
         return ModifiedGraphContent(
-            self, GraphContentEffect.Label(text(), alignment: alignment, offset: offset))
+            self, GraphContentEffect.Label(content(), alignment: alignment, offset: offset))
+    }
+
+    @inlinable
+    public func label(
+        alignment: Alignment = .bottom, offset: SIMD2<Double> = .zero,
+        @ViewBuilder _ content: () -> Text?
+    ) -> some GraphContent<NodeID> {
+        return label(alignment, offset: offset.cgVector, content)
+    }
+
+    @inlinable
+    public func richLabel(
+        _ alignment: Alignment = .bottom, offset: CGVector = .zero,
+        @ViewBuilder _ content: () -> some View
+    ) -> some GraphContent<NodeID> {
+
+        return ModifiedGraphContent(
+            self, GraphContentEffect.RichLabel(content(), alignment: alignment, offset: offset))
+    }
+
+    @inlinable
+    public func richLabel(
+        alignment: Alignment = .bottom, offset: SIMD2<Double> = .zero,
+        @ViewBuilder _ content: () -> some View
+    ) -> some GraphContent<NodeID> {
+        return richLabel(alignment, offset: offset.cgVector, content)
     }
 
     /// Sets the stroke style for this graph content.

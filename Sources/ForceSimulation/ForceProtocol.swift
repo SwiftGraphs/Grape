@@ -4,13 +4,6 @@
 public protocol ForceProtocol<Vector> {
     associatedtype Vector where Vector: SimulatableVector & L2NormCalculatable
 
-
-
-    /// Takes a simulation state and modifies its node positions and velocities.
-    /// This is executed in each tick of the simulation.
-    // @inlinable func apply()
-
-
     /// Takes a simulation state and modifies its node positions and velocities.
     /// This is executed in each tick of the simulation.
     @inlinable func apply(to kinetics: inout Kinetics<Vector>)

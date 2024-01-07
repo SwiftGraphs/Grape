@@ -26,6 +26,11 @@ extension ForceDirectedGraph: View {
                     self.model.stop()
                 }
             }
+            .onAppear {
+                if self.isRunning {
+                    self.model.start()
+                }
+            }
     }
 
     // #if DEBUG
@@ -87,7 +92,7 @@ extension ForceDirectedGraph: View {
 
 extension ForceDirectedGraph: Equatable {
     @inlinable
-    public static func == (lhs: ForceDirectedGraph<NodeID>, rhs: ForceDirectedGraph<NodeID>) -> Bool
+    public static func == (lhs: Self, rhs: Self) -> Bool
     {
         return lhs._graphRenderingContextShadow == rhs._graphRenderingContextShadow
         //        && lhs._forceDescriptors == rhs._forceDescriptors

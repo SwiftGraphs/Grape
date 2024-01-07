@@ -25,20 +25,20 @@ final class GraphContentBuilderTests: XCTestCase {
             ID(id: 2),
         ]
 
-        let a = ForEach(arr) { i in
+        let a = Repeated(arr) { i in
             NodeMark(id: i.id)
         }
 
         let b = buildGraph {
             NodeMark(id: 0)
-            ForEach(arr) { i in
+            Repeated(arr) { i in
                 NodeMark(id: i.id)
             }
         }
 
         let c = buildGraph {
             NodeMark(id: 0)
-            for i in 0..<10 {
+            Repeated(0..<10) { i in
                 NodeMark(id: 0)
             }
         }

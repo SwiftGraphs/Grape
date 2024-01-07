@@ -66,44 +66,6 @@ extension Kinetics {
         var calculatedBias: [Vector.Scalar] = []
 
         @inlinable
-        public func apply() {
-            fatalError()
-            // let positionBufferPointer = kinetics.position.mutablePointer
-            // let velocityBufferPointer = kinetics.velocity.mutablePointer
-            // let random = kinetics.randomGenerator
-            // for _ in 0..<iterationsPerTick {
-            //     for i in links.indices {
-
-            //         let s = links[i].source
-            //         let t = links[i].target
-
-            //         let b = self.calculatedBias[i]
-
-            //         assert(b != 0)
-
-            //         var vec =
-            //             (positionBufferPointer[t] + velocityBufferPointer[t] 
-            //             - positionBufferPointer[s] - velocityBufferPointer[s])
-            //             // .jiggled()
-            //             .jiggled(by: random)
-
-            //         var l = vec.length()
-
-            //         l =
-            //             (l - self.calculatedLength[i]) / l * kinetics.alpha
-            //             * self.calculatedStiffness[i]
-
-            //         vec *= l
-
-            //         // same as d3
-            //         velocityBufferPointer[t] -= vec * b
-            //         velocityBufferPointer[s] += vec * (1 - b)
-            //     }
-            // }
-        }
-
-
-        @inlinable
         public func apply(to kinetics: inout Kinetics) {
             let positionBufferPointer = kinetics.position.mutablePointer
             let velocityBufferPointer = kinetics.velocity.mutablePointer

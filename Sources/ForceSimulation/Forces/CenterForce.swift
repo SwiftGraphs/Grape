@@ -6,13 +6,6 @@ extension Kinetics {
     /// See [Collide Force - D3](https://d3js.org/d3-force/collide).
     public struct CenterForce: ForceProtocol {
 
-        // @usableFromInline var kinetics: Kinetics! = nil
-
-        @inlinable
-        public func apply() {
-            fatalError()
-        }
-
         @inlinable
         public func apply(to kinetics: inout Kinetics) {
             var meanPosition = Vector.zero

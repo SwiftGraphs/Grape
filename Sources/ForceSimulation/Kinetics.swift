@@ -1,6 +1,6 @@
 /// A class that holds the state of the simulation, which
 /// includes the positions, velocities of the nodes.
-public struct Kinetics<Vector>: Disposable
+public struct Kinetics<Vector>
 where Vector: SimulatableVector & L2NormCalculatable {
 
     /// The position of points stored in simulation.
@@ -77,86 +77,6 @@ where Vector: SimulatableVector & L2NormCalculatable {
         self.randomGenerator = .init()
     }
 
-    // @inlinable
-    // init(
-    //     links: [EdgeID<Int>],
-    //     initialAlpha: Vector.Scalar,
-    //     alphaMin: Vector.Scalar,
-    //     alphaDecay: Vector.Scalar,
-    //     alphaTarget: Vector.Scalar,
-    //     velocityDecay: Vector.Scalar,
-    //     position: consuming [Vector],
-    //     velocity: consuming [Vector],
-    //     fixation: consuming [Vector?],
-    //     randomSeed: Vector.Scalar.Generator.OverflowingInteger
-    // ) {
-    //     self.links = links
-    //     self.initializedAlpha = initialAlpha
-    //     self.alpha = initialAlpha
-    //     self.alphaMin = alphaMin
-    //     self.alphaDecay = alphaDecay
-    //     self.alphaTarget = alphaTarget
-    //     self.velocityDecay = velocityDecay
-    //     let count = position.count
-    //     self.validCount = count
-
-    //     self.position = UnsafeArray<Vector>.createBuffer(
-    //         withHeader: count,
-    //         count: count,
-    //         initialValue: .zero
-    //     )
-
-    //     self.velocity = UnsafeArray<Vector>.createBuffer(
-    //         withHeader: count,
-    //         count: count,
-    //         initialValue: .zero
-    //     )
-    //     self.fixation = UnsafeArray<Vector?>.createBuffer(
-    //         withHeader: count,
-    //         count: count,
-    //         initialValue: nil
-    //     )
-
-    //     self.randomGenerator = .allocate(capacity: 1)
-    //     self.randomGenerator.initialize(to: .init(seed: randomSeed))
-    // }
-
-    // @inlinable
-    // internal func jigglePosition() {
-    //     for i in range {
-    //         position[i] = position[i].jiggled(by: self.randomGenerator)
-    //     }
-    // }
-
-    // @inlinable
-    // static func createZeros(
-    //     links: [EdgeID<Int>],
-    //     initialAlpha: Vector.Scalar,
-    //     alphaMin: Vector.Scalar,
-    //     alphaDecay: Vector.Scalar,
-    //     alphaTarget: Vector.Scalar,
-    //     velocityDecay: Vector.Scalar,
-    //     count: Int
-    // ) -> Kinetics<Vector> {
-    //     return Kinetics(
-    //         links: links,
-    //         initialAlpha: initialAlpha,
-    //         alphaMin: alphaMin,
-    //         alphaDecay: alphaDecay,
-    //         alphaTarget: alphaTarget,
-    //         velocityDecay: velocityDecay,
-
-    //         position: Array(repeating: .zero, count: count),
-    //         velocity: Array(repeating: .zero, count: count),
-    //         fixation: Array(repeating: nil, count: count)
-    //     )
-    // }
-
-    @inlinable
-    public func dispose() {
-        // self.randomGenerator.deinitialize(count: 1)
-        // self.randomGenerator.deallocate()
-    }
 }
 
 extension Kinetics {

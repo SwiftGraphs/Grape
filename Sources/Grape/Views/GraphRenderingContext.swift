@@ -4,7 +4,7 @@ public struct _GraphRenderingContext<NodeID: Hashable> {
     @usableFromInline
     enum TextResolvingStatus: Equatable {
         case pending(Text)
-        case resolved(CGImage?)
+        case resolved(Text, CGImage?)
     }
 
     @usableFromInline
@@ -33,6 +33,12 @@ public struct _GraphRenderingContext<NodeID: Hashable> {
 
     @usableFromInline
     internal var states = GraphRenderingStates<NodeID>()
+
+
+    @inlinable
+    func updateEnvironment(with newEnvironment: EnvironmentValues) {
+        
+    }
 }
 
 extension _GraphRenderingContext: Equatable {

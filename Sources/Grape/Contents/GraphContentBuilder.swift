@@ -21,7 +21,7 @@ public struct GraphContentBuilder<NodeID: Hashable> {
     /// Creates a list of graph contents from a for-loop.
     ///
     /// **Known issue**:
-    /// Type inference failes when the nested element is decorated with a modifier.
+    /// Type inference fails when the nested element is decorated with a modifier.
     ///
     /// **Workaround**:
     ///  - Use `ForEach` like in SwiftUI. This is the recommended way.
@@ -48,6 +48,7 @@ public struct GraphContentBuilder<NodeID: Hashable> {
     ///        MyComponent(i)
     ///    }
     /// }
+    @available(*, deprecated, message: "Use `Repeated` instead. ")
     @inlinable
     public static func buildArray<T>(_ components: [T]) -> some Content
     where T: Content, T.NodeID == NodeID {

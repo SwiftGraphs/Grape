@@ -71,8 +71,14 @@ enum ExampleKind {
     case ring
     case classicMiserable
     case lattice
+<<<<<<< HEAD
+    case mermaid
+    
+    static let list: [ExampleKind] = [.ring, .classicMiserable, .lattice, .mermaid]
+=======
     
     static let list: [ExampleKind] = [.ring, .classicMiserable, .lattice]
+>>>>>>> main
 }
 
 extension ExampleKind {
@@ -84,6 +90,11 @@ extension ExampleKind {
             return "Miserables"
         case .lattice:
             return "Lattice"
+<<<<<<< HEAD
+        case .mermaid:
+            return "Mermaid visualization"
+=======
+>>>>>>> main
         }
     }
 }
@@ -105,6 +116,11 @@ struct ContentView: View {
                 MiserableGraph()
             case .lattice:
                 Lattice()
+<<<<<<< HEAD
+            case .mermaid:
+                MermaidVisualization()
+=======
+>>>>>>> main
             }
         }
     }

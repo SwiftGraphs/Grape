@@ -86,6 +86,19 @@ struct MyGraph: View {
     @State var isRunning = true // start moving once appeared.
     
     var body: some View {
+<<<<<<< HEAD
+        ForceDirectedGraph(isRunning: $isRunning) {
+            
+            // Declare nodes and links like you would do in Swift Charts.
+            NodeMark(id: 0, fill: .green)
+            NodeMark(id: 1, fill: .blue)
+            NodeMark(id: 2, fill: .yellow)
+            for i in 0..<2 {
+                LinkMark(from: i, to: i+1)
+            }
+            
+        } forceField: {
+=======
         ForceDirectedGraph($isRunning) {
             
             // Declare nodes and links like you would do in Swift Charts.
@@ -98,6 +111,7 @@ struct MyGraph: View {
             }
             
         } force: {
+>>>>>>> main
             LinkForce()
             CenterForce()
             ManyBodyForce()
