@@ -17,7 +17,7 @@ final class ContentBuilderTests: XCTestCase {
 
     func testForLoop() {
         let _ = buildGraph {
-            Repeated(0..<10) { i in
+            Series(0..<10) { i in
                 NodeMark(id: i)
             }
         }

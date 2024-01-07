@@ -46,7 +46,6 @@ extension TransformProtocol {
 
     @inlinable
     public mutating func translating(by delta: Vector) {
-        // self = Self(translate: translate + delta, scale: scale)
         self.translate = translate + delta
     }
 
@@ -57,13 +56,13 @@ extension TransformProtocol {
     }
 
     @inlinable
-    public func scale(by delta: Scalar) -> Self {
-        return Self(translate: translate, scale: scale + delta)
+    public func scale(by factor: Scalar) -> Self {
+        return Self(translate: translate, scale: scale * factor)
     }
 
     @inlinable
-    public func scale(to factor: Scalar) -> Self {
-        return Self(translate: translate, scale: factor)
+    public func scale(to newScale: Scalar) -> Self {
+        return Self(translate: translate, scale: newScale)
     }
 
     @inlinable

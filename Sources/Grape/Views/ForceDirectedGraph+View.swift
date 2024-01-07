@@ -16,7 +16,11 @@ extension ForceDirectedGraph: View {
                 of: self._graphRenderingContextShadow,
                 initial: false  // Don't trigger on initial value, keep `changeMessage` as "N/A"
             ) { _, newValue in
-                self.model.revive(for: newValue, with: .init(self._forceDescriptors))
+                self.model.revive(
+                    for: newValue, 
+                    with: .init(self._forceDescriptors),
+                    alpha: self.model.simulationContext.storage.kinetics.alpha
+                )
             }
             .onChange(of: self.isRunning, initial: false) { oldValue, newValue in
                 guard oldValue != newValue else { return }
@@ -44,9 +48,9 @@ extension ForceDirectedGraph: View {
             Text(self.model.changeMessage)
             Divider()
             Button {
-                self.clickCount += 1
+                // self.clickCount += 1
             } label: {
-                Text("Click \(clickCount)")
+                Text("Click")
             }
 
             ScrollView {

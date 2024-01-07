@@ -1,4 +1,4 @@
-public struct Repeated<NodeID, Data, Content>
+public struct Series<NodeID, Data, Content>
 where Data: RandomAccessCollection, Content: GraphContent<NodeID>, NodeID: Hashable {
 
     @usableFromInline
@@ -17,7 +17,7 @@ where Data: RandomAccessCollection, Content: GraphContent<NodeID>, NodeID: Hasha
     }
 }
 
-extension Repeated: GraphContent {
+extension Series: GraphContent {
     @inlinable
     public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
         self.data.forEach { element in

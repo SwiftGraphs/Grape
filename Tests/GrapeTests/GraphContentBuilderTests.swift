@@ -25,20 +25,20 @@ final class GraphContentBuilderTests: XCTestCase {
             ID(id: 2),
         ]
 
-        let a = Repeated(arr) { i in
+        let a = Series(arr) { i in
             NodeMark(id: i.id)
         }
 
         let b = buildGraph {
             NodeMark(id: 0)
-            Repeated(arr) { i in
+            Series(arr) { i in
                 NodeMark(id: i.id)
             }
         }
 
         let c = buildGraph {
             NodeMark(id: 0)
-            Repeated(0..<10) { i in
+            Series(0..<10) { i in
                 NodeMark(id: 0)
             }
         }

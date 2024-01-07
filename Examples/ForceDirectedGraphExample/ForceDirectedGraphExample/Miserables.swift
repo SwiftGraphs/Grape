@@ -19,11 +19,30 @@ struct MiserableGraph: View {
     @State private var opacity: Double = 0
     @State private var inspectorPresented = false
     
+    @State private var modelTransform: ViewportTransform = .identity.scale(by: 2.0)
+    
+    @ViewBuilder
+    func getLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.caption2)
+            .padding(.vertical, 2.0)
+            .padding(.horizontal, 6.0)
+            .background(alignment: .center) {
+                RoundedRectangle(cornerSize: .init(width: 12, height: 12))
+                    .fill(.white)
+                    .shadow(radius: 1.5, y: 1.0)
+            } 
+            .padding()
+    }
+    
     var body: some View {
         
-        ForceDirectedGraph($isRunning) {
+        ForceDirectedGraph(
+            $isRunning,
+            $modelTransform
+        ) {
             
-            Repeated(graphData.nodes) { node in
+            Series(graphData.nodes) { node in
                 NodeMark(id: node.id)
                     .symbol(.asterisk)
                     .symbolSize(radius: 9.0)
@@ -39,23 +58,22 @@ struct MiserableGraph: View {
                                 )
                             )
                     )
-                    .label(offset: [0.0, 12.0]) {
-                        Text(node.id)
-                            .font(.caption2)
+                    .richLabel(node.id, offset: .zero) {
+                        self.getLabel(node.id)
                     }
             }
             
-            Repeated(graphData.links) { l in
+            Series(graphData.links) { l in
                 LinkMark(from: l.source, to: l.target)
             }
 //            
         } force: {
             ManyBodyForce(strength: -20)
+            CenterForce()
             LinkForce(
                 originalLength: .constant(35.0),
                 stiffness: .weightedByDegree(k: { _, _ in 1.0})
             )
-            CenterForce()
         }
         .onNodeTapped { node in
             inspectorPresented = true
@@ -67,6 +85,7 @@ struct MiserableGraph: View {
         }
 
         .toolbar {
+            Text("\(modelTransform.scale)")
             Button {
                 isRunning.toggle()
                 if opacity < 1 {

@@ -34,7 +34,7 @@ struct Lattice: View {
     var body: some View {
         ForceDirectedGraph($isRunning) {
             
-            Repeated(0..<(width*width)) { i in
+            Series(0..<(width*width)) { i in
                 let _i = Double(i / width) / Double(width)
                 let _j = Double(i % width) / Double(width)
                 NodeMark(id: i, radius: 3.0)
@@ -42,7 +42,7 @@ struct Lattice: View {
                     .stroke()
             }
             
-            Repeated(edge) {
+            Series(edge) {
                 LinkMark(from: $0.0, to: $0.1)
             }
             

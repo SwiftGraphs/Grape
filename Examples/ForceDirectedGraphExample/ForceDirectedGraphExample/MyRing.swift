@@ -35,7 +35,7 @@ struct MyRing: View {
 
 
         ForceDirectedGraph($isRunning) {
-            Repeated(0..<20) { i in
+            Series(0..<20) { i in
                 NodeMark(id: 3 * i + 0)
                     .symbol(.circle)
                     .symbolSize(radius:4.0)

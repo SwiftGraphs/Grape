@@ -48,7 +48,7 @@ public struct GraphContentBuilder<NodeID: Hashable> {
     ///        MyComponent(i)
     ///    }
     /// }
-    @available(*, deprecated, message: "Use `Repeated` instead. ")
+    @available(*, deprecated, message: "Use `Series` instead. ")
     @inlinable
     public static func buildArray<T>(_ components: [T]) -> some Content
     where T: Content, T.NodeID == NodeID {

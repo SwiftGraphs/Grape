@@ -93,7 +93,7 @@ struct MyGraph: View {
             NodeMark(id: 1).foregroundStyle(.blue)
             NodeMark(id: 2).foregroundStyle(.yellow)
 
-            Repeated(0..<2) { i in
+            Series(0..<2) { i in
                 LinkMark(from: i, to: i+1)
             }
             

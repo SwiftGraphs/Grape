@@ -27,8 +27,7 @@ If you’re looking for a more detailed control of force-directed layouts, pleas
 * ``GraphContent``
 * ``NodeMark``
 * ``LinkMark``
-* ``Repeated``
-* ``GraphContent/foregroundStyle(_:)``
+* ``Series``
 
 ### Handling gestures and events
 

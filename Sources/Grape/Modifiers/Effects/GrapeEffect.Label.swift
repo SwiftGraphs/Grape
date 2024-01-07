@@ -1,5 +1,6 @@
 import SwiftUI
 
+
 extension GraphContentEffect {
     @usableFromInline
     internal struct Label {
@@ -32,6 +33,9 @@ extension GraphContentEffect {
         let view: AnyView
 
         @usableFromInline
+        let tag: String
+
+        @usableFromInline
         let alignment: Alignment
 
         @usableFromInline
@@ -39,15 +43,18 @@ extension GraphContentEffect {
 
         @inlinable
         public init(
+            _ tag: String,
             _ view: some View,
             alignment: Alignment = .bottom,
             offset: CGVector = .zero
         ) {
+            self.tag = tag
             self.view = .init(erasing: view)
             self.alignment = alignment
             self.offset = offset
         }
     }
+
 }
 
 extension GraphContentEffect.Label: GraphContentModifier {
@@ -83,7 +90,6 @@ extension GraphContentEffect.Label: GraphContentModifier {
     }
 }
 
-
 extension GraphContentEffect.RichLabel: GraphContentModifier {
     @inlinable
     public func _into<NodeID>(
@@ -96,7 +102,22 @@ extension GraphContentEffect.RichLabel: GraphContentModifier {
     @MainActor
     public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
     where NodeID: Hashable {
-        
+        if let currentID = context.states.currentID {
+
+            context.resolvedViews[currentID] = .pending(self.view)
+
+            switch currentID {
+            case .node(_):
+                if let currentSymbolSize = context.states.currentSymbolSize {
+                    let anchorOffset = alignment.anchorOffset(for: currentSymbolSize)
+                    context.textOffsets[currentID] = (alignment, offset.simd + anchorOffset)
+                } else {
+                    context.textOffsets[currentID] = (alignment, offset.simd)
+                }
+            case .link(_, _):
+                context.textOffsets[currentID] = (alignment, offset.simd)
+            }
+        }
     }
 }
 
@@ -113,7 +134,7 @@ extension Alignment {
                 return SIMD2(Double(size.width) / 2, 0)
             case .trailing:
                 return SIMD2(-Double(size.width) / 2, 0)
-            default:    
+            default:
                 return .zero
             }
         case .bottom:

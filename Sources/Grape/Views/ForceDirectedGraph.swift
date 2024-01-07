@@ -7,36 +7,36 @@ public struct ForceDirectedGraph<NodeID: Hashable, Content: GraphContent> where 
 
     @inlinable
     @Environment(\.self)
-    var environment: EnvironmentValues
+    internal var environment: EnvironmentValues
 
     @inlinable
     @Environment(\.graphForegroundScaleEnvironment)
-    var graphForegroundScale
+    internal var graphForegroundScale
 
     @inlinable
     @Environment(\.colorScheme)
-    var colorScheme
+    internal var colorScheme
 
     @inlinable
     @Environment(\.colorSchemeContrast)
-    var colorSchemeContrast
+    internal var colorSchemeContrast
 
     // the copy of the graph context to be used for comparison in `onChange`
     // should be not used for rendering
     @usableFromInline
-    let _graphRenderingContextShadow: _GraphRenderingContext<NodeID>
+    internal let _graphRenderingContextShadow: _GraphRenderingContext<NodeID>
 
     @usableFromInline
-    let _forceDescriptors: [SealedForce2D.ForceEntry]
+    internal let _forceDescriptors: [SealedForce2D.ForceEntry]
 
-    // TBD: Some state to be retained when the graph is updated
-    @State
-    @inlinable
-    var clickCount = 0
+    // // TBD: Some state to be retained when the graph is updated
+    // @State
+    // @inlinable
+    // internal var clickCount = 0
 
     // @State
     @inlinable
-    var model: ForceDirectedGraphModel<Content>
+    internal var model: ForceDirectedGraphModel<Content>
     {
         @storageRestrictions(initializes: _model)
         init(initialValue) {
@@ -47,10 +47,10 @@ public struct ForceDirectedGraph<NodeID: Hashable, Content: GraphContent> where 
     }
 
     @usableFromInline
-    var _model: State<ForceDirectedGraphModel<Content>>
+    internal var _model: State<ForceDirectedGraphModel<Content>>
 
     @inlinable
-    var isRunning: Bool {
+    internal var isRunning: Bool {
         get {
             _isRunning.wrappedValue
         }
@@ -60,11 +60,22 @@ public struct ForceDirectedGraph<NodeID: Hashable, Content: GraphContent> where 
     }
 
     @usableFromInline
-    var _isRunning: Binding<Bool>
+    internal var _isRunning: Binding<Bool>
+
+    // @inlinable
+    // internal var modelTransform: ViewportTransform {
+    //     get {
+    //         _modelTransform.wrappedValue
+    //     }
+    //     set {
+    //         _modelTransform.wrappedValue = newValue
+    //     }
+    // }
 
     @inlinable
     public init(
-        _ _isRunning: Binding<Bool> = .constant(true),
+        _ isRunning: Binding<Bool> = .constant(true),
+        _ modelTransform: Binding<ViewportTransform> = .constant(.identity),
         ticksPerSecond: Double = 60.0,
         initialViewportTransform: ViewportTransform = .identity,
         @GraphContentBuilder<NodeID> _ graph: () -> Content,
@@ -76,14 +87,17 @@ public struct ForceDirectedGraph<NodeID: Hashable, Content: GraphContent> where 
 
         var gctx = _GraphRenderingContext<NodeID>()
         graph()._attachToGraphRenderingContext(&gctx)
-        self._graphRenderingContextShadow = gctx
-        self._isRunning = _isRunning
 
+        self._graphRenderingContextShadow = gctx
+        self._isRunning = isRunning
+        
         self._forceDescriptors = force()
+
         let force = SealedForce2D(self._forceDescriptors)
         self.model = .init(
             gctx, 
             force, 
+            modelTransform: modelTransform,
             emittingNewNodesWith: state, 
             ticksPerSecond: ticksPerSecond
         )

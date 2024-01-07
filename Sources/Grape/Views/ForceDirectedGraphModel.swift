@@ -15,7 +15,27 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     var simulationContext: SimulationContext<NodeID>
 
     @usableFromInline
-    var modelTransform: ViewportTransform = .identity
+    internal var _modelTransform: ViewportTransform
+
+    @usableFromInline
+    internal var _modelTransformExtenalBinding: Binding<ViewportTransform>
+
+    @inlinable
+    internal var modelTransform: ViewportTransform {
+        @storageRestrictions(initializes: _modelTransform)
+        init(initialValue) {
+            _modelTransform = initialValue
+        }
+
+        get {
+            return _modelTransform
+        }
+
+        set {
+            _modelTransform = newValue
+            _modelTransformExtenalBinding.wrappedValue = newValue
+        }
+    }
 
     /// Moves the zero-centered simulation to final view
     @usableFromInline
@@ -116,6 +136,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
         _ forceField: consuming SealedForce2D,
+        modelTransform: Binding<ViewportTransform>,
         emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         },
@@ -140,12 +161,15 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
             count: self.simulationContext.storage.kinetics.position.count
         )
         self.currentFrame = 0
+        self._modelTransformExtenalBinding = modelTransform
+        self.modelTransform = modelTransform.wrappedValue
     }
 
     @inlinable
     convenience init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
         _ forceField: consuming SealedForce2D,
+        modelTransform: Binding<ViewportTransform>,
         emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         },
@@ -154,6 +178,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         self.init(
             graphRenderingContext,
             forceField,
+            modelTransform: modelTransform,
             emittingNewNodesWith: emittingNewNodesWith,
             ticksPerSecond: ticksPerSecond,
             velocityDecay: 30 / ticksPerSecond
@@ -221,6 +246,7 @@ extension ForceDirectedGraphModel {
         self.scheduledTimer = nil
     }
 
+
     @inlinable
     @MainActor
     func render(
@@ -231,6 +257,7 @@ extension ForceDirectedGraphModel {
         // print("Rendering frame \(_$currentFrame.rawValue)")
 
         let transform = modelTransform.translate(by: size.simd / 2)
+        // debugPrint(transform.scale)
 
         // var viewportPositions = [SIMD2<Double>]()
         // viewportPositions.reserveCapacity(simulationContext.storage.kinetics.position.count)
@@ -361,7 +388,8 @@ extension ForceDirectedGraphModel {
                         antialias: Self.textRasterizationAntialias
                     )
                     lastRasterizedScaleFactor = env.displayScale
-                    graphRenderingContext.symbols[resolvedTextContent] = .resolved(consume text, cgImage)
+                    graphRenderingContext.symbols[resolvedTextContent] = .resolved(
+                        consume text, cgImage)
                     rasterizedSymbol = cgImage
                 case .resolved(_, let cgImage):
                     rasterizedSymbol = cgImage
@@ -431,7 +459,88 @@ extension ForceDirectedGraphModel {
                                 height: physicalHeight
                             )
                         )
+                    }
+                }
+            }
 
+            for (symbolID, viewResolvingResult) in graphRenderingContext.resolvedViews {
+
+                // Look for rasterized symbol's image
+                var rasterizedSymbol: CGImage? = nil
+                switch viewResolvingResult {
+                case .pending(let view):
+                    let resolved = viewResolvingResult.resolve(in: graphicsContext.environment)
+                    graphRenderingContext.resolvedViews[symbolID] = .resolved(view, resolved)
+                    rasterizedSymbol = resolved
+                case .resolved(_, let cgImage):
+                    
+                    rasterizedSymbol = cgImage
+                }
+
+                guard let rasterizedSymbol = rasterizedSymbol else {
+                    continue
+                }
+
+                // Start drawing
+                switch symbolID {
+                case .node(let nodeID):
+                    guard let id = simulationContext.nodeIndexLookup[nodeID] else {
+                        continue
+                    }
+                    let pos = viewportPositions[id]
+                    if let textOffsetParams = graphRenderingContext.textOffsets[symbolID] {
+                        let offset = textOffsetParams.offset
+
+                        let physicalWidth =
+                            Double(rasterizedSymbol.width) / lastRasterizedScaleFactor
+                            / Self.textRasterizationAntialias
+                        let physicalHeight =
+                            Double(rasterizedSymbol.height) / lastRasterizedScaleFactor
+                            / Self.textRasterizationAntialias
+
+                        let textImageOffset = textOffsetParams.alignment.textImageOffsetInCGContext(
+                            width: physicalWidth, height: physicalHeight)
+
+                        cgContext.draw(
+                            rasterizedSymbol,
+                            in: .init(
+                                x: pos.x + offset.x + textImageOffset.x,  // - physicalWidth / 2,
+                                y: -pos.y - offset.y - textImageOffset.y,  // - physicalHeight
+                                width: physicalWidth,
+                                height: physicalHeight
+                            )
+                        )
+                    }
+
+                case .link(let fromID, let toID):
+                    guard let from = simulationContext.nodeIndexLookup[fromID],
+                        let to = simulationContext.nodeIndexLookup[toID]
+                    else {
+                        continue
+                    }
+                    let center = (viewportPositions[from] + viewportPositions[to]) / 2
+                    if let textOffsetParams = graphRenderingContext.textOffsets[symbolID] {
+                        let offset = textOffsetParams.offset
+
+                        let physicalWidth =
+                            Double(rasterizedSymbol.width) / lastRasterizedScaleFactor
+                            / Self.textRasterizationAntialias
+                        let physicalHeight =
+                            Double(rasterizedSymbol.height) / lastRasterizedScaleFactor
+                            / Self.textRasterizationAntialias
+
+                        let textImageOffset = textOffsetParams.alignment.textImageOffsetInCGContext(
+                            width: physicalWidth, height: physicalHeight)
+
+                        cgContext.draw(
+                            rasterizedSymbol,
+                            in: .init(
+                                x: center.x + offset.x + textImageOffset.x,  // - physicalWidth / 2,
+                                y: -center.y - offset.y - textImageOffset.y,  // - physicalHeight
+                                width: physicalWidth,
+                                height: physicalHeight
+                            )
+                        )
                     }
                 }
             }
@@ -447,17 +556,36 @@ extension ForceDirectedGraphModel {
     @inlinable
     func revive(
         for newContext: _GraphRenderingContext<NodeID>,
-        with newForceField: consuming SealedForce2D
+        with newForceField: consuming SealedForce2D,
+        alpha: Double
     ) {
-        //        self.changeMessage =
-        //            "gctx \(graphRenderingContext.nodes.count) -> \(newContext.nodes.count)"
-
+        var newContext = newContext
         self.simulationContext.revive(
             for: newContext,
             with: newForceField,
             velocityDecay: velocityDecay,
             emittingNewNodesWith: self._emittingNewNodesWith
         )
+        self.simulationContext.storage.kinetics.alpha = alpha
+
+        newContext.resolvedTexts = self.graphRenderingContext.resolvedTexts.merging(
+            newContext.resolvedTexts
+        ) { old, new in
+            new
+        }
+
+        newContext.resolvedViews = self.graphRenderingContext.resolvedViews.merging(
+            newContext.resolvedViews
+        ) { old, new in
+            old
+        }
+
+        newContext.symbols = self.graphRenderingContext.symbols.merging(
+            newContext.symbols
+        ) { old, new in
+            old
+        }
+
         self.graphRenderingContext = newContext
 
         /// Resize

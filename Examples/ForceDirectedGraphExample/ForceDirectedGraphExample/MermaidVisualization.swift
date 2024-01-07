@@ -42,6 +42,7 @@ let mermaidLinkRegex = Regex {
         "<—"
         "->"
         "<-"
+        "→"
     }
 
     OneOrMore(.whitespace)
@@ -73,15 +74,61 @@ func getInitialPosition(id: String, r: Double) -> SIMD2<Double> {
 struct MermaidVisualization: View {
     
     @State private var text: String = """
-    Alice --> Bob
-    Bob --> Cindy
-    Alice --> Dan
-    Alice --> Cindy
-    Tom --> Bob
-    Tom --> Kate
-    Kate --> Cindy
-    
+    Alice → Bob
+    Bob → Cindy
+    Cindy → David
+    David → Emily
+    Emily → Frank
+    Frank → Grace
+    Grace → Henry
+    Henry → Isabella
+    Isabella → Jack
+    Jack → Karen
+    Karen → Liam
+    Liam → Monica
+    Monica → Nathan
+    Nathan → Olivia
+    Olivia → Peter
+    Peter → Quinn
+    Quinn → Rachel
+    Rachel → Steve
+    Steve → Tiffany
+    Tiffany → Umar
+    Umar → Violet
+    Violet → William
+    William → Xavier
+    Xavier → Yolanda
+    Yolanda → Zack
+    Zack → Alice
+    Jack -> Rachel
+    Xavier -> José
+    José -> アキラ
+    アキラ -> Liam
     """
+    
+    @State private var tappedNode: String? = nil
+    
+    @ViewBuilder
+    func getLabel(_ text: String) -> some View {
+        
+        let accentColor = colors[Int(UInt(truncatingIfNeeded: text.hashValue) % UInt(colors.count))]
+        
+        Text(text)
+            .font(.caption)
+            .foregroundStyle(.foreground)
+            .padding(.vertical, 4.0)
+            .padding(.horizontal, 8.0)
+            .background(alignment: .center) {
+                ZStack {
+                    RoundedRectangle(cornerSize: .init(width: 12, height: 12))
+                        .fill(.background)
+                        .shadow(radius: 1.5, y: 1.0)
+                    RoundedRectangle(cornerSize: .init(width: 12, height: 12))
+                        .stroke(accentColor, style: .init(lineWidth: 2.0))
+                }
+            }
+            .padding()
+    }
     
     var parsedGraph: ([String], [(String, String)]) {
         parseMermaid(text)
@@ -89,15 +136,17 @@ struct MermaidVisualization: View {
     
     var body: some View {
         ForceDirectedGraph {
-            Repeated(parsedGraph.0) { node in
+            Series(parsedGraph.0) { node in
+                
                 NodeMark(id: node)
-                    .symbol(RoundedRectangle(cornerSize: CGSize(width: 3, height: 3)))
-                    .symbolSize(radius: 6)
-                    .label(alignment: .bottom, offset: [0, 4]) {
-                        Text(node)
+                    .symbol(.circle)
+                    .symbolSize(radius: 8)
+                    .foregroundStyle(Color(white: 1.0, opacity: 0.0))
+                    .richLabel(node, alignment: .center, offset: .zero) {
+                        getLabel(node)
                     }
             }
-            Repeated(parsedGraph.1) { link in
+            Series(parsedGraph.1) { link in
                 LinkMark(from: link.0, to: link.1)
             }
         } force: {
@@ -107,13 +156,20 @@ struct MermaidVisualization: View {
         } emittingNewNodesWithStates: { id in
             KineticState(position: getInitialPosition(id: id, r: 100))
         }
+        .onNodeTapped {
+            tappedNode = $0
+        }
         .inspector(isPresented: .constant(true)) {
             VStack {
+                Text("Tapped: \(tappedNode ?? "nil")")
+                    .font(.title2)
+                Divider()
+                
                 Text("Edit the mermaid syntaxes to update the graph")
-                    .font(.title)
+                    .font(.title2)
                 TextEditor(text: $text)
                     .fontDesign(.monospaced)
-                    
+                
             }.padding(.top)
         }
 

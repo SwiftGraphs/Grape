@@ -107,20 +107,24 @@ extension GraphContent {
 
     @inlinable
     public func richLabel(
-        _ alignment: Alignment = .bottom, offset: CGVector = .zero,
+        _ tag: String,
+        _ alignment: Alignment = .bottom,
+        offset: CGVector = .zero,
         @ViewBuilder _ content: () -> some View
     ) -> some GraphContent<NodeID> {
-
         return ModifiedGraphContent(
-            self, GraphContentEffect.RichLabel(content(), alignment: alignment, offset: offset))
+            self, GraphContentEffect.RichLabel(tag, content(), alignment: alignment, offset: offset)
+        )
     }
 
     @inlinable
     public func richLabel(
-        alignment: Alignment = .bottom, offset: SIMD2<Double> = .zero,
+        _ tag: String,
+        alignment: Alignment = .bottom,
+        offset: SIMD2<Double> = .zero,
         @ViewBuilder _ content: () -> some View
     ) -> some GraphContent<NodeID> {
-        return richLabel(alignment, offset: offset.cgVector, content)
+        return richLabel(tag, alignment, offset: offset.cgVector, content)
     }
 
     /// Sets the stroke style for this graph content.
