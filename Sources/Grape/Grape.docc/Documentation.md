@@ -6,7 +6,7 @@ Visualize force-directed graphs in SwiftUI.
 
 The `Grape` framework enables you to create a force simulation and visualize it in SwiftUI. It provides a set of handy interactions and styling options to help you visualize your graph-structured data.
 
-If you’re looking for a more detailed control of force-directed laouts, please refer to [ForceSimulation | Documentation](https://li3zhen1.github.io/Grape/ForceSimulation/documentation/ForceSimulation/).
+If you’re looking for a more detailed control of force-directed layouts, please refer to [ForceSimulation | Documentation](https://li3zhen1.github.io/Grape/ForceSimulation/documentation/ForceSimulation/).
 
 
 ## Topics
