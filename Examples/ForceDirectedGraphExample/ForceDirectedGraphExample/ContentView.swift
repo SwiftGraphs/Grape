@@ -97,23 +97,23 @@ struct ContentView: View {
     @State var selection: ExampleKind = .classicMiserable
     
     var body: some View {
-        MyGraph()
-//        NavigationSplitView {
-//            List(ExampleKind.list, id:\.self, selection: $selection) { kind in
-//                Text(kind.description)
-//            }
-//        } detail: {
-//            switch selection {
-//            case .ring:
-//                MyRing()
-//            case .classicMiserable:
-//                MiserableGraph()
-//            case .lattice:
-//                Lattice()
-//            case .mermaid:
-//                MermaidVisualization()
-//            }
-//        }
+//        MyGraph()
+        NavigationSplitView {
+            List(ExampleKind.list, id:\.self, selection: $selection) { kind in
+                Text(kind.description)
+            }
+        } detail: {
+            switch selection {
+            case .ring:
+                MyRing()
+            case .classicMiserable:
+                MiserableGraph()
+            case .lattice:
+                Lattice()
+            case .mermaid:
+                MermaidVisualization()
+            }
+        }
     }
 }
 
