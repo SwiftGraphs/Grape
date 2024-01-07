@@ -10,10 +10,29 @@ import RegexBuilder
 import Grape
 import simd
 
+let multipleNodeRegex = Regex {
+    "{"
+    ZeroOrMore(.whitespace)
+    ZeroOrMore {
+        Capture (OneOrMore(.word))
+        ZeroOrMore(.whitespace)
+        ","
+        ZeroOrMore(.whitespace)
+    }
+    Capture (OneOrMore(.word))
+    ZeroOrMore(.whitespace)
+    "}"
+}
+
+let singleNodeRegex = Regex {
+    Capture( OneOrMore(.word) )
+}
+
 let mermaidLinkRegex = Regex {
-    Capture(
-        OneOrMore(.word)
-    )
+    ChoiceOf {
+        singleNodeRegex
+        multipleNodeRegex
+    }
     OneOrMore(.whitespace)
     ChoiceOf {
         "-->"
@@ -25,9 +44,10 @@ let mermaidLinkRegex = Regex {
     }
 
     OneOrMore(.whitespace)
-    Capture(
-        OneOrMore(.word)
-    )
+    ChoiceOf {
+        singleNodeRegex
+        multipleNodeRegex
+    }
 }
 
 func parseMermaid(
