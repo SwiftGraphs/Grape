@@ -13,7 +13,14 @@ If you’re looking for a more detailed control of force-directed laouts, please
 
 ### Creating a graph visualization
 
+
+* <doc:CreatingAForceDirectedGraph>
+* <doc:DescribingForces>
+* <doc:CustomizingAppearances>
+* <doc:RespondingToInteractionsAndEvents>
+
 * ``ForceDirectedGraph``
+
 
 
 ### Describing a graph
