@@ -22,7 +22,6 @@ extension Kinetics {
         var calculatedStrength: UnsafeArray<Vector.Scalar>! = nil
 
 
-
         @inlinable
         public func apply(to kinetics: inout Kinetics) {
             let alpha = kinetics.alpha

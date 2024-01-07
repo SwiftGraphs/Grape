@@ -33,25 +33,44 @@ struct Lattice: View {
     @inlinable
     var body: some View {
         ForceDirectedGraph($isRunning) {
+<<<<<<< HEAD
             
             Repeated(0..<(width*width)) { i in
                 let _i = Double(i / width) / Double(width)
                 let _j = Double(i % width) / Double(width)
+=======
+            ForEach(Array(0..<(width*width)), id:\.self) { i in
+                
+                let _i = Double(i / width) / Double(width)
+                let _j = Double(i % width) / Double(width)
+                
+>>>>>>> main
                 NodeMark(id: i, radius: 3.0)
                     .foregroundStyle(Color(red: 1, green: _i, blue: _j))
                     .stroke()
             }
+<<<<<<< HEAD
             
             Repeated(edge) {
                 LinkMark(from: $0.0, to: $0.1)
             }
             
+=======
+            for l in edge {
+                
+                LinkMark(from: l.0, to: l.1)
+            }
+>>>>>>> main
         } force: {
             LinkForce(
                 originalLength: .constant(0.8),
                 stiffness: .weightedByDegree(k: { _, _ in 1})
             )
             ManyBodyForce(strength: -0.8)
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
         }
         .toolbar {
             Button {
@@ -61,6 +80,9 @@ struct Lattice: View {
                 Text(isRunning ? "Pause" : "Start")
             }
         }
+<<<<<<< HEAD
         
+=======
+>>>>>>> main
     }
 }

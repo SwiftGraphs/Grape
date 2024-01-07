@@ -54,7 +54,6 @@ extension GraphContentEffect.ForegroundStyle: GraphContentModifier {
     }
 }
 
-
 extension GraphContentEffect.Shading: GraphContentModifier {
     @inlinable
     public func _into<NodeID>(
