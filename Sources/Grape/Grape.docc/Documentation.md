@@ -1,12 +1,19 @@
 # ``Grape``
 
-Visualize force-directed graphs in SwiftUI.
+Construct and visualize graphs on Apple platforms.
 
 ## Overview
 
-The `Grape` framework enables you to create a force simulation and visualize it in SwiftUI. It provides a set of handy interactions and styling options to help you visualize your graph-structured data.
+The Grape framework enables you to create a graph visualization it in SwiftUI. With Grape, you can build effective and customizable force-directed graphs with minimal code. This framework provides nodes, links and forces as building blocks for constructing graphs. 
 
-If you’re looking for a more detailed control of force-directed layouts, please refer to [ForceSimulation | Documentation](https://li3zhen1.github.io/Grape/ForceSimulation/documentation/ForceSimulation/).
+@Image(source: "GrapeOverview.png", alt: "A force-directed graph visualization of a small graph.")
+
+
+
+
+Grape supports localization features. You can localize the labels in the graph visualization by providing a localized string key.
+
+> If you’re looking for a more detailed control of force-directed layouts, please refer to [ForceSimulation | Documentation](https://li3zhen1.github.io/Grape/ForceSimulation/documentation/forcesimulation/).
 
 
 ## Topics
@@ -21,12 +28,50 @@ If you’re looking for a more detailed control of force-directed layouts, pleas
 
 
 ### Describing a graph
+
 * ``GraphContent``
+* ``GraphContentBuilder``
+
 * ``NodeMark``
 * ``LinkMark``
 * ``Series``
+* ``GraphComponent``
 
-### Handling gestures and events
 
 
-### Managing the states
+### Managing the view state
+
+* ``ForceDirectedGraphModel``
+* ``GraphRenderingContext``
+* ``GraphRenderingStates``
+* ``SimulationContext``
+* ``KeyFrame``
+* ``KineticState`` 
+* ``TransformProtocol``
+* ``ViewportTransform``
+
+### Describing forces
+
+* ``CenterForce``
+* ``CollideForce``
+* ``LinkForce``
+* ``ManyBodyForce``
+* ``PositionForce``
+* ``RadialForce``
+* ``SealedForceDescriptor2D``
+* ``SealForceDescriptor2DBuilder``
+
+### Decorating marks
+
+* ``GraphContentModifier``
+* ``ModifiedGraphContent``
+* ``AnyGraphContentModifier``
+* ``StrokeColor``
+* ``LinkShape``
+* ``StraightLineLinkShape``
+* ``PlainLineLink``
+* ``ArrowLineLink``
+
+
+
+

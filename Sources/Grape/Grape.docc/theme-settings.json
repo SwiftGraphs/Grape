@@ -1,4 +1,5 @@
 {
+    "$schema": "https://raw.githubusercontent.com/apple/swift-docc/main/Sources/SwiftDocC/SwiftDocC.docc/Resources/ThemeSettings.spec.json",
     "theme": {
         "typography": {
             "html-font": "system-ui, -apple-system, \"InterVar\"",
