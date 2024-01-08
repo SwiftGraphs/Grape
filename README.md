@@ -96,7 +96,9 @@ Grape ships 2 modules:
 
 <br/>
 
-### `Grape`
+### The `Grape` module
+
+Please refer to [documentation](https://li3zhen1.github.io/Grape/Grape/documentation/grape) to get started.
 
 ```swift
 import Grape
@@ -130,16 +132,10 @@ Below is another [example](https://github.com/li3zhen1/Grape/blob/main/Examples/
 https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e58355045d2
 
 
-
-
-
-> [!IMPORTANT]
-> `ForceDirectedGraph` is only a minimal working example. Please refer to the next section to create a more complex view.
-
 <br/>
 
 
-### `ForceSimulation`
+### The `ForceSimulation` module
 <details>
   <summary>Refer to the <a href="https://li3zhen1.github.io/Grape/ForceSimulation/documentation/forcesimulation/">documentation</a> or expand this section to find more about this module.
   </summary>
@@ -226,7 +222,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 | &emsp;CollideForce | ✅ | ✅ |  |
 | &emsp;PositionForce | ✅ | ✅ |  |
 | &emsp;RadialForce | ✅ | ✅ |  |
-| **SwiftUI View** | 🚧 |  |  |
+| **SwiftUI View** | ✅ |  |  |
 
 
 <br/>
