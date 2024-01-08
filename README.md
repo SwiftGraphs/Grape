@@ -56,7 +56,7 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 
 ### Mermaid Visualization
 
-Dynamical graph structure based on your input, with tap and drag gesture supports, all within 100 lines of code.
+Dynamical graph structure based on your input, with tap and drag gesture supports, all within 100 lines of view body.
 
 https://github.com/li3zhen1/Grape/assets/45376537/7c75d367-d5a8-4316-813b-288b375f513b
 
