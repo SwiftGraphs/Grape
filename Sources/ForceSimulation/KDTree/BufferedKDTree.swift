@@ -181,11 +181,12 @@ where
 
             let treeNodeOffset = (consume treeNode) - rootPointer
             resizeIfNeededBeforeAllocation(for: Self.directionCount)
-
-            let spawnedDelegate = treeNode.pointee.delegate.spawn()
-            let center = treeNode.pointee.box.center
-
+            
             let newTreeNode = self.rootPointer + treeNodeOffset
+            
+            let spawnedDelegate = newTreeNode.pointee.delegate.spawn()
+            let center = newTreeNode.pointee.box.center
+
             let _box = newTreeNode.pointee.box
             for j in 0..<Self.directionCount {
                 var __box = _box

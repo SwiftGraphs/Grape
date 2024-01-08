@@ -22,7 +22,10 @@ extension ForceDirectedGraph: View {
                     alpha: self.model.simulationContext.storage.kinetics.alpha
                 )
             }
-            .onChange(of: self.isRunning, initial: false) { oldValue, newValue in
+            .onChange(
+                of: self.isRunning, 
+                initial: false
+            ) { oldValue, newValue in
                 guard oldValue != newValue else { return }
                 if newValue {
                     self.model.start()
@@ -65,9 +68,9 @@ extension ForceDirectedGraph: View {
     
     // #endif
     
+    @inlinable
     @MainActor
     @ViewBuilder
-    @inlinable
     var canvas: some View {
         // #if DEBUG
         //     let _ = Self._printChanges()
