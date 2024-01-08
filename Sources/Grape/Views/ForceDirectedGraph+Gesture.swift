@@ -1,6 +1,7 @@
 import ForceSimulation
 import SwiftUI
 
+#if !os(tvOS)
 extension ForceDirectedGraph {
     @inlinable
     static var minimumAlphaAfterDrag: CGFloat { 0.5 }
@@ -86,7 +87,9 @@ extension ForceDirectedGraph {
         action(nodeID)
     }
 }
+#endif
 
+#if os(iOS) || os(macOS)
 extension ForceDirectedGraph {
 
     @inlinable
@@ -157,6 +160,7 @@ extension ForceDirectedGraph {
         action()
     }
 }
+#endif
 
 extension ForceDirectedGraph {
     @inlinable

@@ -2,7 +2,7 @@ import ForceSimulation
 import SwiftUI
 
 extension ForceDirectedGraph: View {
-
+    
     @inlinable
     public var body: some View {
         // HStack {
@@ -17,7 +17,7 @@ extension ForceDirectedGraph: View {
                 initial: false  // Don't trigger on initial value, keep `changeMessage` as "N/A"
             ) { _, newValue in
                 self.model.revive(
-                    for: newValue, 
+                    for: newValue,
                     with: .init(self._forceDescriptors),
                     alpha: self.model.simulationContext.storage.kinetics.alpha
                 )
@@ -36,9 +36,9 @@ extension ForceDirectedGraph: View {
                 }
             }
     }
-
+    
     // #if DEBUG
-
+    
     @ViewBuilder
     @inlinable
     var debugView: some View {
@@ -52,17 +52,17 @@ extension ForceDirectedGraph: View {
             } label: {
                 Text("Click")
             }
-
+            
             ScrollView {
                 ForEach(self.model.graphRenderingContext.nodes, id: \.id) { node in
                     Text("\(node.debugDescription)")
                 }
             }.frame(maxWidth: .infinity)
-
+            
         }
         .frame(width: 200.0)
     }
-
+    
     // #endif
     
     @MainActor
@@ -72,11 +72,19 @@ extension ForceDirectedGraph: View {
         // #if DEBUG
         //     let _ = Self._printChanges()
         // #endif
-
+        
         Canvas { context, size in
             let _ = model.currentFrame
             self.model.render(&context, size)
         }
+#if os(iOS) || os(macOS)
+        .gesture(
+            MagnifyGesture(minimumScaleDelta: Self.minimumScaleDelta)
+                .onChanged(onMagnifyChange)
+                .onEnded(onMagnifyEnd)
+        )
+#endif
+#if !os(tvOS)
         .gesture(
             DragGesture(
                 minimumDistance: Self.minimumDragDistance,
@@ -85,12 +93,8 @@ extension ForceDirectedGraph: View {
             .onChanged(onDragChange)
             .onEnded(onDragEnd)
         )
-        .gesture(
-            MagnifyGesture(minimumScaleDelta: Self.minimumScaleDelta)
-                .onChanged(onMagnifyChange)
-                .onEnded(onMagnifyEnd)
-        )
         .onTapGesture(count: 1, perform: onTapGesture)
+#endif
     }
 }
 

@@ -159,10 +159,13 @@ struct MermaidVisualization: View {
         .onNodeTapped {
             tappedNode = $0
         }
+        .ignoresSafeArea()
+        #if !os(xrOS)
         .inspector(isPresented: .constant(true)) {
             VStack {
                 Text("Tapped: \(tappedNode ?? "nil")")
                     .font(.title2)
+                
                 Divider()
                 
                 Text("Edit the mermaid syntaxes to update the graph")
@@ -172,6 +175,7 @@ struct MermaidVisualization: View {
                 
             }.padding(.top)
         }
+        #endif
 
             
     }

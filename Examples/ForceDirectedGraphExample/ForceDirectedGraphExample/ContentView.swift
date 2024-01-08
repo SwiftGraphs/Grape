@@ -68,11 +68,15 @@ let colors: [Color] = [
 //
 //
 import SwiftUI
-enum ExampleKind {
+enum ExampleKind: Identifiable, Hashable {
     case ring
     case classicMiserable
     case lattice
     case mermaid
+    
+    var id: ExampleKind {
+        self
+    }
     
     static let list: [ExampleKind] = [.ring, .classicMiserable, .lattice, .mermaid]
 }
@@ -94,12 +98,13 @@ extension ExampleKind {
 
 struct ContentView: View {
     
-    @State var selection: ExampleKind = .classicMiserable
+    @State var selection: ExampleKind? = .classicMiserable
     
     var body: some View {
 //        MyGraph()
         NavigationSplitView {
-            List(ExampleKind.list, id:\.self, selection: $selection) { kind in
+            
+            List(ExampleKind.list, selection: $selection) { kind in
                 Text(kind.description)
             }
         } detail: {
@@ -111,6 +116,8 @@ struct ContentView: View {
             case .lattice:
                 Lattice()
             case .mermaid:
+                MermaidVisualization()
+            case .none:
                 MermaidVisualization()
             }
         }

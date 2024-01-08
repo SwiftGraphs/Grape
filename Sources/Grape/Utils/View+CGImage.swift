@@ -1,24 +1,29 @@
 import CoreGraphics
 import SwiftUI
 
-#if canImport(AppKit)
-    import AppKit
-    @inlinable
-    internal func getDisplayScale() -> CGFloat {
-        return NSScreen.main?.backingScaleFactor ?? 2.0
-    }
-#elseif canImport(UIKit)
-    import UIKit
-    @inlinable
-    internal func getDisplayScale() -> CGFloat {
-        return UIScreen.main.scale
-    }
-#else
-    @inlinable
-    internal func getDisplayScale() -> CGFloat {
-        return 2.0
-    }
-#endif
+//#if canImport(AppKit)
+//    import AppKit
+//    @inlinable
+//    internal func getDisplayScale() -> CGFloat {
+//        return NSScreen.main?.backingScaleFactor ?? 2.0
+//    }
+//#elseif os(xrOS)
+//    @inlinable
+//    internal func getDisplayScale() -> CGFloat {
+//        return 2.0
+//    }
+//#elseif canImport(UIKit)
+//    import UIKit
+//    @inlinable
+//    internal func getDisplayScale() -> CGFloat {
+//        return UIScreen.main.scale
+//    }
+//#else
+//    @inlinable
+//    internal func getDisplayScale() -> CGFloat {
+//        return 2.0
+//    }
+//#endif
 
 // #if os(macOS)
 //     import AppKit

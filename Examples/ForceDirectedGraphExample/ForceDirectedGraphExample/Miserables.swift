@@ -80,10 +80,8 @@ struct MiserableGraph: View {
         }
         .opacity(opacity)
         .animation(.easeInOut, value: opacity)
-        .inspector(isPresented: $inspectorPresented) {
-            Text("Hello")
-        }
-
+        
+        .ignoresSafeArea()
         .toolbar {
             Text("\(modelTransform.scale)")
             Button {
