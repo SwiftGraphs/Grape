@@ -56,12 +56,9 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 
 ### Mermaid Visualization
 
-Instant visualization for simple mermaid syntaxes.
+Dynamical graph structure based on your input, with tap and drag gesture supports, all within 100 lines of code.
 
-
-
-
-https://github.com/li3zhen1/Grape/assets/45376537/80d933c1-8b5b-4b1a-9062-9628577bd2e0
+https://github.com/li3zhen1/Grape/assets/45376537/7c75d367-d5a8-4316-813b-288b375f513b
 
 
 
@@ -130,6 +127,8 @@ struct MyGraph: View {
 Below is another [example](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift) rendering a ring with 60 vertices, with out-of-the-box dragging support:
 
 https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e58355045d2
+
+
 
 
 <br/>
