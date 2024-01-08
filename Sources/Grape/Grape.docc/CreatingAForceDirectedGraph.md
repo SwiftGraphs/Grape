@@ -92,7 +92,7 @@ struct MyGraph: View {
         ForceDirectedGraph {
             Series(myNodes) { id in
                 NodeMark(id: id)
-                    .foregroundColor(.blue)
+                    .foregroundStyle(.blue)
             }
             Series(myLinks) { from, to in
                 LinkMark(from: from, to: to)
