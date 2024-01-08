@@ -139,14 +139,18 @@ https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e5835
 <br/>
 
 
-
 ### `ForceSimulation`
+<details>
+  <summary>Refer to the <a href="https://li3zhen1.github.io/Grape/ForceSimulation/documentation/forcesimulation/">documentation</a> or expand this section to find more about this module.
+  </summary>
 
 `ForceSimulation` module mainly contains 3 concepts, `Kinetics`, `ForceProtocol` and `Simulation`.
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/li3zhen1/Grape/main/Assets/SimulationDiagram.svg" alt="A diagram showing the relationships of `Kinetics`, `ForceProtocol` and `Simulation`. A `Simulation` contains a `Kinetics` and a `ForceProtocol`.">
 </p>
 
+  
 - `Kinetics` describes all kinetic states of your system, i.e. position, velocity, link connections, and the variable `alpha` that describes how "active" your system is.
 - Forces are any types that conforms to `ForceProtocol`. This module provides most of the forces you will use in force directed graphs. And you can also create your own forces. They should be responsible for 2 tasks:
     - `bindKinetics(_ kinetics: Kinetics<Vector>)`: binding to a `Kinetics`. In most cases the force should keep a reference of the `Kinetics` so they know what to mutate when `apply` is called.
@@ -163,7 +167,8 @@ import simd
 import ForceSimulation
 
 // assuming you’re simulating 4 nodes
-let nodeCount = 4 
+let nodeCount = 4
+
 
 // Connect them
 let links = [(0, 1), (1, 2), (2, 3), (3, 0)] 
@@ -199,6 +204,10 @@ for mySimulation in 0..<120 {
 ```
 
 See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details. 
+
+</details>
+
+
 
 <br/>
 
