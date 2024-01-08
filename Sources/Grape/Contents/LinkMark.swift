@@ -3,20 +3,20 @@ import SwiftUI
 
 public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
 
-    public enum LabelDisplayStrategy {
-        case auto
-        case specified(Bool)
-        case byPageRank((Double, Double) -> Bool)
-    }
+    // public enum LabelDisplayStrategy {
+    //     case auto
+    //     case specified(Bool)
+    //     case byPageRank((Double, Double) -> Bool)
+    // }
 
-    public enum LabelPositioning {
-        case auto
-    }
+    // public enum LabelPositioning {
+    //     case auto
+    // }
 
-    public enum ArrowStyle {
-        case none
-        case triangle
-    }
+    // public enum ArrowStyle {
+    //     case none
+    //     case triangle
+    // }
 
     public var id: EdgeID<NodeID>
 
@@ -25,34 +25,34 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
     // public var labelDisplayStrategy: LabelDisplayStrategy
     // public var labelPositioning: LabelPositioning
 
-    public var strokeColor: Color
-    public var strokeWidth: Double
-    public var strokeDashArray: [Double]?
+    // public var strokeColor: Color
+    // public var strokeWidth: Double
+    // public var strokeDashArray: [Double]?
 
-    public var arrowStyle: ArrowStyle
+    // public var arrowStyle: ArrowStyle
 
     @inlinable
     public init(
         from: NodeID,
-        to: NodeID,
-        label: String? = nil,
-        labelColor: Color = .gray,
-        labelDisplayStrategy: LabelDisplayStrategy = .auto,
-        labelPositioning: LabelPositioning = .auto,
-        strokeColor: Color = .gray.opacity(0.2),
-        strokeWidth: Double = 1.0,
-        strokeDashArray: [Double]? = nil,
-        arrowStyle: ArrowStyle = .none
+        to: NodeID
+        // label: String? = nil,
+        // labelColor: Color = .gray,
+        // labelDisplayStrategy: LabelDisplayStrategy = .auto,
+        // labelPositioning: LabelPositioning = .auto,
+        // strokeColor: Color = .gray.opacity(0.2),
+        // strokeWidth: Double = 1.0,
+        // strokeDashArray: [Double]? = nil,
+        // arrowStyle: ArrowStyle = .none
     ) {
         self.id = .init(source: from, target: to)
         // self.label = label
         // self.labelColor = labelColor
         // self.labelDisplayStrategy = labelDisplayStrategy
         // self.labelPositioning = labelPositioning
-        self.strokeColor = strokeColor
-        self.strokeWidth = strokeWidth
-        self.strokeDashArray = strokeDashArray
-        self.arrowStyle = arrowStyle
+        // self.strokeColor = strokeColor
+        // self.strokeWidth = strokeWidth
+        // self.strokeDashArray = strokeDashArray
+        // self.arrowStyle = arrowStyle
     }
 
     @inlinable
