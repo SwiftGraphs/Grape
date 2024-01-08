@@ -10,15 +10,16 @@
   <a href="https://swiftpackageindex.com/li3zhen1/Grape"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fli3zhen1%2FGrape%2Fbadge%3Ftype%3Dplatforms" alt="swift package index"></a>
 </p>
 
-<p align="center">A Swift library for force simulation and graph visualization.
-  <img width="712" alt="ForceDirected" src="https://github.com/li3zhen1/Grape/assets/45376537/1cbc938e-55a8-438e-b20b-3e52577ac30a">
-</p>
+<p align="center">A Swift library for force simulation and graph visualization.</p>
+  
+<picture alt="example of grape">
+  <source srcset="https://github.com/li3zhen1/Grape/assets/45376537/6703480d-5737-4a8e-bc08-92d8676456da" media="(prefers-color-scheme: dark)">
+  <source srcset="https://github.com/li3zhen1/Grape/assets/45376537/22988cfb-8e01-49b7-a55b-b476fcd9de7c" media="(prefers-color-scheme: light)">
+  <img src="https://github.com/li3zhen1/Grape/assets/45376537/22988cfb-8e01-49b7-a55b-b476fcd9de7c">
+</picture>
 
-
-
-
-
-
+<br/>
+<br/>
 
 ## Examples
 
