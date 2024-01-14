@@ -1,32 +1,13 @@
-////
-////  ContentView.swift
-////  GrapeView
-////
-////  Created by li3zhen1 on 10/8/23.
-////
 //
-//import SwiftUI
-//import simd
-//import ForceSimulation
-//import CoreGraphics
+//  ContentView.swift
+//  GrapeView
 //
+//  Created by li3zhen1 on 10/8/23.
 //
+
 import Grape
 
 
-//
-//func getLinks() -> [EdgeID<Int>] {
-//    let data = getData(miserables)
-//    return data.links.map { l in
-//        EdgeID(
-//            data.nodes.firstIndex { n in n.id == l.source }!,
-//            data.nodes.firstIndex { n in n.id == l.target }!
-//        )
-//    }
-//}
-//
-//
-//
 import SwiftUI
 let colors: [Color] = [
     .init(red: 17.0/255, green: 181.0/255, blue: 174.0/255),
@@ -42,32 +23,7 @@ let colors: [Color] = [
     .init(red: 0.0/255, green: 143.0/255, blue: 93.0/255),
     .init(red: 188.0/255, green: 233.0/255, blue: 49.0/255),
 ]
-//
-//struct MiserableNode: Identifiable {
-//    let id: Int
-//    let group: Int
-//    let name: String
-//}
-//
-//struct MyForceField: ForceField {
-//    
-//    typealias Vector = SIMD2<Double>
-//    
-//    public var force = CompositedForce {
-//        Kinetics<Vector>.ManyBodyForce(strength: -12)
-//        Kinetics<Vector>.LinkForce(
-//            getLinks(),
-//            stiffness: .weightedByDegree(k: { _, _ in 1.0 }),
-//            originalLength: .constant(35)
-//        )
-//        Kinetics<Vector>.CenterForce(center: 0, strength: 0.4)
-//        Kinetics<Vector>.CollideForce(radius: .constant(3))
-//        
-//    }
-//}
-//
-//
-import SwiftUI
+
 enum ExampleKind: Identifiable, Hashable {
     case ring
     case classicMiserable
@@ -86,12 +42,12 @@ extension ExampleKind {
         switch self {
         case .ring:
             return "My Ring"
-        case .classicMiserable:
-            return "Miserables"
-        case .lattice:
-            return "Lattice"
         case .mermaid:
             return "Mermaid visualization"
+        case .classicMiserable:
+            return "Les Misérables"
+        case .lattice:
+            return "Lattice"
         }
     }
 }
@@ -101,9 +57,8 @@ struct ContentView: View {
     @State var selection: ExampleKind? = .classicMiserable
     
     var body: some View {
-//        MyGraph()
+        
         NavigationSplitView {
-            
             List(ExampleKind.list, selection: $selection) { kind in
                 Text(kind.description)
             }
@@ -127,6 +82,7 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
 
 struct MyGraph: View {
     let myNodes = ["A", "B", "C"]

@@ -12,6 +12,7 @@ struct ForceDirectedGraphExampleApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+//            MyGraph()
         }
     }
 }

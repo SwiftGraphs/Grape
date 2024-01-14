@@ -10,67 +10,6 @@ import RegexBuilder
 import Grape
 import simd
 
-let multipleNodeRegex = Regex {
-    "{"
-    ZeroOrMore(.whitespace)
-    ZeroOrMore {
-        Capture (OneOrMore(.word))
-        ZeroOrMore(.whitespace)
-        ","
-        ZeroOrMore(.whitespace)
-    }
-    Capture (OneOrMore(.word))
-    ZeroOrMore(.whitespace)
-    "}"
-}
-
-let singleNodeRegex = Regex {
-    Capture( OneOrMore(.word) )
-}
-
-let mermaidLinkRegex = Regex {
-    singleNodeRegex
-//    ChoiceOf {
-//        singleNodeRegex
-//        multipleNodeRegex
-//    }
-    OneOrMore(.whitespace)
-    ChoiceOf {
-        "-->"
-        "<--"
-        "—>"
-        "<—"
-        "->"
-        "<-"
-        "→"
-    }
-
-    OneOrMore(.whitespace)
-    singleNodeRegex
-}
-
-func parseMermaid(
-    _ text: String
-) -> ([String], [(String, String)]) {
-    let links = text.split(separator: "\n")
-        .compactMap {
-            if let results = $0.matches(of: mermaidLinkRegex).first {
-                return (String(results.output.1), String(results.output.2))
-            }
-            return nil
-        }
-    let nodes = Array(Set(links.flatMap { [$0.0, $0.1] }))
-    return (nodes, links)
-}
-
-func getInitialPosition(id: String, r: Double) -> SIMD2<Double> {
-    if let firstLetter = id.first?.unicodeScalars.first {
-        let deg = Double(firstLetter.value % 26) / 26 * 2 * .pi
-        return [cos(deg) * r, sin(deg) * r]
-    }
-    return .zero
-}
-
 struct MermaidVisualization: View {
     
     @State private var text: String = """
@@ -108,6 +47,7 @@ struct MermaidVisualization: View {
     
     @State private var tappedNode: String? = nil
     
+    // the view for label
     @ViewBuilder
     func getLabel(_ text: String) -> some View {
         
@@ -181,3 +121,63 @@ struct MermaidVisualization: View {
     }
 }
 
+
+
+
+let multipleNodeRegex = Regex {
+    "{"
+    ZeroOrMore(.whitespace)
+    ZeroOrMore {
+        Capture (OneOrMore(.word))
+        ZeroOrMore(.whitespace)
+        ","
+        ZeroOrMore(.whitespace)
+    }
+    Capture (OneOrMore(.word))
+    ZeroOrMore(.whitespace)
+    "}"
+}
+
+let singleNodeRegex = Regex {
+    Capture( OneOrMore(.word) )
+}
+
+let mermaidLinkRegex = Regex {
+    singleNodeRegex
+    OneOrMore(.whitespace)
+    ChoiceOf {
+        "-->"
+        "<--"
+        "—>"
+        "<—"
+        "->"
+        "<-"
+        "→"
+    }
+
+    OneOrMore(.whitespace)
+    singleNodeRegex
+}
+
+func parseMermaid(
+    _ text: String
+) -> ([String], [(String, String)]) {
+    let links = text.split(separator: "\n")
+        .compactMap {
+            if let results = $0.matches(of: mermaidLinkRegex).first {
+                return (String(results.output.1), String(results.output.2))
+            }
+            return nil
+        }
+    let nodes = Array(Set(links.flatMap { [$0.0, $0.1] }))
+    return (nodes, links)
+}
+
+
+func getInitialPosition(id: String, r: Double) -> SIMD2<Double> {
+    if let firstLetter = id.first?.unicodeScalars.first {
+        let deg = Double(firstLetter.value % 26) / 26 * 2 * .pi
+        return [cos(deg) * r, sin(deg) * r]
+    }
+    return .zero
+}

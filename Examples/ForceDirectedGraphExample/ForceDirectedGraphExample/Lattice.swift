@@ -42,14 +42,14 @@ struct Lattice: View {
                     .stroke()
             }
             
-            Series(edge) {
-                LinkMark(from: $0.0, to: $0.1)
+            Series(edge) { from, to in
+                LinkMark(from: from, to: to)
             }
             
         } force: {
             LinkForce(
                 originalLength: .constant(0.8),
-                stiffness: .weightedByDegree(k: { _, _ in 1})
+                stiffness: .weightedByDegree { _, _ in 1.0 }
             )
             ManyBodyForce(strength: -0.8)
         }

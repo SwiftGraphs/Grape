@@ -51,7 +51,7 @@ extension _GraphRenderingContext.ViewResolvingState {
         switch self {
         case .pending(let view):
             let cgImage = view.environment(\.self, environment).toCGImage(with: environment)
-            debugPrint("[RESOLVE VIEW]")
+            // debugPrint("[RESOLVE VIEW]")
             return cgImage
         case .resolved(_, let cgImage):
             return cgImage
