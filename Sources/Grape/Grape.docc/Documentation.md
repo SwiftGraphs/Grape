@@ -4,7 +4,7 @@ Construct and visualize graphs on Apple platforms.
 
 ## Overview
 
-The Grape framework enables you to create a graph visualization it in SwiftUI. With Grape, you can build effective and customizable force-directed graphs with minimal code. This framework provides nodes, links and forces as building blocks for constructing graphs. 
+The Grape framework enables you to create a graph visualization in SwiftUI. With Grape, you can build effective and customizable force-directed graphs with minimal code. This framework provides nodes, links and forces as building blocks for constructing graphs. 
 
 @Image(source: "GrapeOverview.png", alt: "A force-directed graph visualization of a small graph.")
 

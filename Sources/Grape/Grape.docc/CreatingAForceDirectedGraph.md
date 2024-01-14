@@ -9,7 +9,6 @@ A graph is a collection of nodes and links. Each node is connected to other node
 Grape provides a `ForceDirectedGraph` view to visualize a graph. You can easily initialize it like you would do in SwiftUI. 
 
 ```swift
-
 struct MyGraph: View {
     var body: some View {
         ForceDirectedGraph {
