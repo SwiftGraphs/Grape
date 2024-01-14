@@ -24,7 +24,7 @@
 ## Examples
 
 ### Force Directed Graph
-This is a force directed graph visualizing the data from [Force Directed Graph Component](https://observablehq.com/@d3/force-directed-graph-component). Take a closer look at the animation:
+This is a force directed graph visualizing [the network of character co-occurence in _Les Misérables_](https://observablehq.com/@d3/force-directed-graph-component). Take a closer look at the animation:
 
 
 
@@ -95,7 +95,8 @@ Grape ships 2 modules:
 
 ### The `Grape` module
 
-Please refer to [documentation](https://li3zhen1.github.io/Grape/Grape/documentation/grape) to get started.
+> [!TIP]
+> For detailed usage, please refer to [documentation](https://li3zhen1.github.io/Grape/Grape/documentation/grape) to get started.
 
 ```swift
 import Grape
