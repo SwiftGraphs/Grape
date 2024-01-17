@@ -79,10 +79,46 @@ https://github.com/li3zhen1/Grape/assets/45376537/5b76fddc-dd5c-4d35-bced-29c012
 
 Source code: [Lattice.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Lattice.swift)
 
-<br/>
+<details>
+  <summary>
+Here is another <a href="https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift">example</a> rendering a ring with 60 vertices, with out-of-the-box dragging support.
+
+</summary>
+
+https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e58355045d2
+
+</details>
 
 <br/>
 
+<br/>
+
+
+## Installation
+
+To use Grape in an Xcode project by adding it to your project as a package:
+
+```
+https://github.com/li3zhen1/Grape
+```
+
+To use Grape in a [SwiftPM](https://swift.org/package-manager/) project, add this to your `Package.swift`:
+
+``` swift
+dependencies: [
+    .package(url: "https://github.com/li3zhen1/Grape", from: "0.6.1")
+]
+```
+
+Add to products, and then adding the product to any target that needs access to the library.
+
+```swift
+.product(name: "Grape", package: "Grape"),
+```
+
+<br/>
+
+<br/>
 
 ## Get started
 
@@ -95,8 +131,8 @@ Grape ships 2 modules:
 
 ### The `Grape` module
 
-> [!TIP]
-> For detailed usage, please refer to [documentation](https://li3zhen1.github.io/Grape/Grape/documentation/grape) to get started.
+
+For detailed usage, please refer to [documentation](https://li3zhen1.github.io/Grape/Grape/documentation/grape). A quick example here:
 
 ```swift
 import Grape
@@ -124,12 +160,6 @@ struct MyGraph: View {
     }
 }
 ```
-
-Below is another [example](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift) rendering a ring with 60 vertices, with out-of-the-box dragging support:
-
-https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e58355045d2
-
-
 
 
 <br/>
