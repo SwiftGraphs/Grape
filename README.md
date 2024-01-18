@@ -110,8 +110,6 @@ dependencies: [
 ]
 ```
 
-Add to products, and then adding the product to any target that needs access to the library.
-
 ```swift
 .product(name: "Grape", package: "Grape"),
 ```
