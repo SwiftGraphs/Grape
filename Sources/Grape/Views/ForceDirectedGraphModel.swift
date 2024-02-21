@@ -6,6 +6,12 @@ import SwiftUI
 // @Observable
 public final class ForceDirectedGraphModel<Content: GraphContent> {
 
+    @usableFromInline
+    internal struct ObsoleteState {
+        @usableFromInline
+        var cgSize: CGSize
+    }
+
     public typealias NodeID = Content.NodeID
 
     @usableFromInline
@@ -55,9 +61,9 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         return draggingNodeID != nil || backgroundDragStart != nil 
     }
 
-    // records the scale right before a magnification gesture starts
+    // records the transform right before a magnification gesture starts
     @usableFromInline
-    var lastScaleRecord: Double? = nil
+    var lastTransformRecord: ViewportTransform? = nil
 
 
     @usableFromInline
@@ -142,6 +148,11 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     @usableFromInline
     var _onGraphMagnified: (() -> Void)? = nil
 
+
+    // // records the transform right before a magnification gesture starts
+    @usableFromInline
+    var obsoleteState = ObsoleteState(cgSize: .zero)
+
     @inlinable
     init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
@@ -171,6 +182,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
             count: self.simulationContext.storage.kinetics.position.count
         )
         self.currentFrame = 0
+//        self.lastViewportSize = .zero
         self._modelTransformExtenalBinding = modelTransform
         self.modelTransform = modelTransform.wrappedValue
     }
@@ -265,6 +277,7 @@ extension ForceDirectedGraphModel {
     ) {
         // should not invoke `access`, but actually does now ?
         // print("Rendering frame \(_$currentFrame.rawValue)")
+        obsoleteState.cgSize = size
 
         let transform = modelTransform.translate(by: size.simd / 2)
         // debugPrint(transform.scale)
