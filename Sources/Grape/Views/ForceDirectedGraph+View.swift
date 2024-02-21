@@ -80,13 +80,6 @@ extension ForceDirectedGraph: View {
             let _ = model.currentFrame
             self.model.render(&context, size)
         }
-#if os(iOS) || os(macOS)
-        .gesture(
-            MagnifyGesture(minimumScaleDelta: Self.minimumScaleDelta)
-                .onChanged(onMagnifyChange)
-                .onEnded(onMagnifyEnd)
-        )
-#endif
 #if !os(tvOS)
         .gesture(
             DragGesture(
@@ -97,6 +90,14 @@ extension ForceDirectedGraph: View {
             .onEnded(onDragEnd)
         )
         .onTapGesture(count: 1, perform: onTapGesture)
+#endif
+
+#if os(iOS) || os(macOS)
+        .gesture(
+            MagnifyGesture(minimumScaleDelta: Self.minimumScaleDelta)
+                .onChanged(onMagnifyChange)
+                .onEnded(onMagnifyEnd)
+        )
 #endif
     }
 }
