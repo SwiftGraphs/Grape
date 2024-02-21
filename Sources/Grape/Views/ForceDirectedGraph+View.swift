@@ -22,21 +22,8 @@ extension ForceDirectedGraph: View {
                     alpha: self.model.simulationContext.storage.kinetics.alpha
                 )
             }
-            .onChange(
-                of: self.isRunning, 
-                initial: false
-            ) { oldValue, newValue in
-                guard oldValue != newValue else { return }
-                if newValue {
-                    self.model.start()
-                } else {
-                    self.model.stop()
-                }
-            }
             .onAppear {
-                if self.isRunning {
-                    self.model.start()
-                }
+                self.model.trackStateMixin()
             }
     }
     

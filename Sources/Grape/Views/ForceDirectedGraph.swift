@@ -84,6 +84,7 @@ where NodeID == Content.NodeID {
     public init(
         _ isRunning: Binding<Bool> = .constant(true),
         _ modelTransform: Binding<ViewportTransform> = .constant(.identity),
+        stateMixin: ForceDirectedGraphState = ForceDirectedGraphState(),
         ticksPerSecond: Double = 60.0,
         initialViewportTransform: ViewportTransform = .identity,
         @GraphContentBuilder<NodeID> _ graph: () -> Content,
@@ -105,9 +106,13 @@ where NodeID == Content.NodeID {
         self.model = .init(
             gctx,
             force,
+            stateMixin: stateMixin,
             modelTransform: modelTransform,
             emittingNewNodesWith: state,
             ticksPerSecond: ticksPerSecond
         )
+
+
     }
+
 }

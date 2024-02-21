@@ -16,10 +16,12 @@ struct MiserableGraph: View {
     private let graphData = getData(miserables)
     
     @State private var isRunning = false
-    @State private var opacity: Double = 0
+    @State private var opacity: Double = 0.6
     @State private var inspectorPresented = false
     
     @State private var modelTransform: ViewportTransform = .identity.scale(by: 2.0)
+    
+    @State private var stateMixin = ForceDirectedGraphState(initialIsRunning: false)
     
     @ViewBuilder
     func getLabel(_ text: String) -> some View {
@@ -39,7 +41,8 @@ struct MiserableGraph: View {
         
         ForceDirectedGraph(
             $isRunning,
-            $modelTransform
+            $modelTransform,
+            stateMixin: stateMixin
         ) {
             
             Series(graphData.nodes) { node in
@@ -47,20 +50,20 @@ struct MiserableGraph: View {
                     .symbol(.asterisk)
                     .symbolSize(radius: 9.0)
                     .stroke()
-                    .foregroundStyle(
-                        colors[node.group % colors.count]
-                            .shadow(
-                                .inner(
-                                    color: colors[node.group % colors.count].opacity(0.3),
-                                    radius: 3,
-                                    x: 0,
-                                    y: 1.5
-                                )
-                            )
-                    )
-                    .richLabel(node.id, offset: .zero) {
-                        self.getLabel(node.id)
-                    }
+//                    .foregroundStyle(
+//                        colors[node.group % colors.count]
+//                            .shadow(
+//                                .inner(
+//                                    color: colors[node.group % colors.count].opacity(0.3),
+//                                    radius: 3,
+//                                    x: 0,
+//                                    y: 1.5
+//                                )
+//                            )
+//                    )
+//                    .richLabel(node.id, offset: .zero) {
+//                        self.getLabel(node.id)
+//                    }
             }
             
             Series(graphData.links) { l in
@@ -83,16 +86,38 @@ struct MiserableGraph: View {
         
         .ignoresSafeArea()
         .toolbar {
-            Text("\(modelTransform.scale)")
-            Button {
-                isRunning.toggle()
-                if opacity < 1 {
-                    opacity = 1
-                }
-            } label: {
-                Image(systemName: isRunning ? "pause.fill" : "play.fill")
-                Text(isRunning ? "Pause" : "Start")
+            MiserableToolbarContent(stateMixin: stateMixin, opacity: $opacity)
+        }
+    }
+}
+
+struct MiserableToolbarContent: View {
+    @Bindable var stateMixin: ForceDirectedGraphState
+    @Binding var opacity: Double
+    
+    init(stateMixin: ForceDirectedGraphState, opacity: Binding<Double>) {
+        self.stateMixin = stateMixin
+        self._opacity = opacity
+    }
+    
+    var body: some View {
+        
+        
+        Button {
+            stateMixin.modelTransform.scaling(by: 1.1)
+        } label: {
+            Text("\(stateMixin.modelTransform.scale)")
+        }
+        
+        Button {
+            stateMixin.isRunning.toggle()
+            // print(stateMixin.isRunning)
+            if opacity < 1 {
+                opacity = 1
             }
+        } label: {
+            Image(systemName: stateMixin.isRunning ? "pause.fill" : "play.fill")
+            Text(stateMixin.isRunning ? "Pause" : "Start")
         }
     }
 }

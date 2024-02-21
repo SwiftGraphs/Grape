@@ -58,13 +58,12 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
 
     @inlinable
     var isDragStartStateRecorded: Bool {
-        return draggingNodeID != nil || backgroundDragStart != nil 
+        return draggingNodeID != nil || backgroundDragStart != nil
     }
 
     // records the transform right before a magnification gesture starts
     @usableFromInline
     var lastTransformRecord: ViewportTransform? = nil
-
 
     @usableFromInline
     let velocityDecay: Double
@@ -148,15 +147,18 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     @usableFromInline
     var _onGraphMagnified: (() -> Void)? = nil
 
-
     // // records the transform right before a magnification gesture starts
     @usableFromInline
     var obsoleteState = ObsoleteState(cgSize: .zero)
 
+    @usableFromInline
+    internal var stateMixinRef: ForceDirectedGraphState
+
     @inlinable
     init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
-        _ forceField: consuming SealedForce2D,
+        _ forceField: SealedForce2D,
+        stateMixin: ForceDirectedGraphState,
         modelTransform: Binding<ViewportTransform>,
         emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
@@ -169,28 +171,30 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         self._emittingNewNodesWith = emittingNewNodesWith
         self.velocityDecay = velocityDecay
         let _simulationContext = SimulationContext.create(
-            for: consume graphRenderingContext,
-            with: consume forceField,
-            velocityDecay: consume velocityDecay
+            for: graphRenderingContext,
+            with: forceField,
+            velocityDecay: velocityDecay
         )
 
         _simulationContext.updateAllKineticStates(emittingNewNodesWith)
 
-        self.simulationContext = consume _simulationContext
+        self.simulationContext = _simulationContext
 
         self.viewportPositions = .createUninitializedBuffer(
             count: self.simulationContext.storage.kinetics.position.count
         )
         self.currentFrame = 0
-//        self.lastViewportSize = .zero
+
         self._modelTransformExtenalBinding = modelTransform
         self.modelTransform = modelTransform.wrappedValue
+        self.stateMixinRef = stateMixin
     }
 
     @inlinable
     convenience init(
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
-        _ forceField: consuming SealedForce2D,
+        _ forceField: SealedForce2D,
+        stateMixin: ForceDirectedGraphState,
         modelTransform: Binding<ViewportTransform>,
         emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
@@ -200,6 +204,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         self.init(
             graphRenderingContext,
             forceField,
+            stateMixin: stateMixin,
             modelTransform: modelTransform,
             emittingNewNodesWith: emittingNewNodesWith,
             ticksPerSecond: ticksPerSecond,
@@ -208,8 +213,53 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     }
 
     @inlinable
+    func trackStateMixin() {
+        if stateMixinRef.isRunning {
+            start()
+        } else {
+            stop()
+        }
+        continuouslyTrackingRunningStateMixin()
+    }
+
+    @inlinable
+    func continuouslyTrackingRunningStateMixin() {
+        withObservationTracking {
+            updateModelRunningState(isRunning: stateMixinRef.isRunning)
+        } onChange: {
+            Task { @MainActor [weak self] in
+                self?.continuouslyTrackingRunningStateMixin()
+            }
+        }
+    }
+
+    @inlinable
+    func continuouslyTrackingTransformStateMixin() {
+        withObservationTracking {
+            
+        } onChange: {
+            Task { @MainActor [weak self] in
+                self?.continuouslyTrackingTransformStateMixin()
+            }
+        }
+    }
+
+    @inlinable
+    func updateModelRunningState(isRunning: Bool) {
+        if stateMixinRef.isRunning {
+            DispatchQueue.main.async { [weak self] in
+                self?.start()
+            }
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                self?.stop()
+            }
+        }
+    }
+
+    @inlinable
     deinit {
-        stop()
+        self.stop()
     }
 
     @usableFromInline
@@ -240,7 +290,9 @@ extension StrokeStyle {
 extension ForceDirectedGraphModel {
 
     @inlinable
+    // @MainActor
     func start(minAlpha: Double = 0.6) {
+        print("Into start")
         guard self.scheduledTimer == nil else { return }
         if simulationContext.storage.kinetics.alpha < minAlpha {
             simulationContext.storage.kinetics.alpha = minAlpha
@@ -254,6 +306,7 @@ extension ForceDirectedGraphModel {
     }
 
     @inlinable
+    // @MainActor
     func tick() {
         withMutation(keyPath: \.currentFrame) {
             simulationContext.storage.tick()
@@ -263,11 +316,12 @@ extension ForceDirectedGraphModel {
     }
 
     @inlinable
+    // @MainActor
     func stop() {
+        print("Into stop")
         self.scheduledTimer?.invalidate()
         self.scheduledTimer = nil
     }
-
 
     @inlinable
     @MainActor
@@ -496,7 +550,7 @@ extension ForceDirectedGraphModel {
                     graphRenderingContext.resolvedViews[symbolID] = .resolved(view, resolved)
                     rasterizedSymbol = resolved
                 case .resolved(_, let cgImage):
-                    
+
                     rasterizedSymbol = cgImage
                 }
 
