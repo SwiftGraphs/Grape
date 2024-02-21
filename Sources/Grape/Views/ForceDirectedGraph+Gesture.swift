@@ -9,13 +9,15 @@ extension ForceDirectedGraph {
     internal func onDragChange(
         _ value: SwiftUI.DragGesture.Value
     ) {
-        if model.draggingNodeID == nil {
+        if !model.isDragStartStateRecorded {
             if let nodeID = model.findNode(at: value.startLocation) {
                 model.draggingNodeID = nodeID
             } else {
                 model.backgroundDragStart = value.location.simd
             }
+            assert(model.isDragStartStateRecorded == true)
         }
+        
         guard let nodeID = model.draggingNodeID else {
             if let dragStart = model.backgroundDragStart {
                 let delta = value.location.simd - dragStart
@@ -51,7 +53,7 @@ extension ForceDirectedGraph {
             if let dragStart = model.backgroundDragStart {
                 let delta = value.location.simd - dragStart
                 model.modelTransform.translate += delta
-                model.backgroundDragStart = value.location.simd
+                model.backgroundDragStart = nil
             }
             return
         }

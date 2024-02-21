@@ -50,6 +50,11 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     @usableFromInline
     var backgroundDragStart: SIMD2<Double>? = nil
 
+    @inlinable
+    var isDragStartStateRecorded: Bool {
+        return draggingNodeID != nil || backgroundDragStart != nil 
+    }
+
     @usableFromInline
     let velocityDecay: Double
 
