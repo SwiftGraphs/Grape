@@ -119,14 +119,22 @@ extension ForceDirectedGraph {
     internal func onMagnifyChange(
         _ value: MagnifyGesture.Value
     ) {
-        // print(value.magnification)
+        var oldScale: Double
+        if let _scale = self.model.lastScaleRecord {
+            oldScale = _scale
+        } else {
+            self.model.lastScaleRecord = self.model.modelTransform.scale
+            oldScale = self.model.modelTransform.scale
+        }
+        
         let alpha = -self.model.finalTransform.invert(value.startLocation.simd)
-        let oldScale = self.model.modelTransform.scale
+
         let oldTranslate = self.model.modelTransform.translate
         let newScale = clamp(
-            Darwin.cbrt(value.magnification) * oldScale,
+            value.magnification * oldScale,
             min: Self.minimumScale,
             max: Self.maximumScale)
+        
         let newTranslate = (oldScale - newScale) * alpha + oldTranslate
 
         let newModelTransform = ViewportTransform(
@@ -143,11 +151,19 @@ extension ForceDirectedGraph {
     internal func onMagnifyEnd(
         _ value: MagnifyGesture.Value
     ) {
+        var oldScale: Double
+        if let _scale = self.model.lastScaleRecord {
+            oldScale = _scale
+        } else {
+            self.model.lastScaleRecord = self.model.modelTransform.scale
+            oldScale = self.model.modelTransform.scale
+        }
+        
         let alpha = -self.model.finalTransform.invert(value.startLocation.simd)
-        let oldScale = self.model.modelTransform.scale
+        
         let oldTranslate = self.model.modelTransform.translate
         let newScale = clamp(
-            Darwin.cbrt(value.magnification) * oldScale,
+            value.magnification * oldScale,
             min: Self.minimumScale,
             max: Self.maximumScale
         )
@@ -156,7 +172,7 @@ extension ForceDirectedGraph {
             translate: newTranslate,
             scale: newScale
         )
-        // print("newModelTransform", newModelTransform)
+        self.model.lastScaleRecord = nil
         self.model.modelTransform = newModelTransform
         guard let action = self.model._onGraphMagnified else { return }
         action()

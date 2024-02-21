@@ -55,6 +55,11 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         return draggingNodeID != nil || backgroundDragStart != nil 
     }
 
+    // records the scale right before a magnification gesture starts
+    @usableFromInline
+    var lastScaleRecord: Double? = nil
+
+
     @usableFromInline
     let velocityDecay: Double
 
