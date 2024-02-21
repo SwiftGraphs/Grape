@@ -183,7 +183,7 @@ extension ForceDirectedGraph {
 extension ForceDirectedGraph {
     @inlinable
     public func onTicked(
-        perform action: @escaping (KeyFrame) -> Void
+        perform action: @escaping (UInt) -> Void
     ) -> Self {
         self.model._onTicked = action
         return self

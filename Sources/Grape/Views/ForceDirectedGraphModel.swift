@@ -71,7 +71,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     var _$changeMessage = "N/A"
 
     @usableFromInline
-    var _$currentFrame: KeyFrame = 0
+    var _$currentFrame: UInt = 0
 
     @inlinable
     var changeMessage: String {
@@ -93,7 +93,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     }
 
     @inlinable
-    var currentFrame: KeyFrame {
+    var currentFrame: UInt {
         @storageRestrictions(initializes: _$currentFrame)
         init(initialValue) {
             _$currentFrame = initialValue
@@ -119,7 +119,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     var scheduledTimer: Timer? = nil
 
     @usableFromInline
-    var _onTicked: ((KeyFrame) -> Void)? = nil
+    var _onTicked: ((UInt) -> Void)? = nil
 
     @usableFromInline
     var _onNodeDragChanged: ((NodeID, CGPoint) -> Void)? = nil
@@ -245,7 +245,7 @@ extension ForceDirectedGraphModel {
     func tick() {
         withMutation(keyPath: \.currentFrame) {
             simulationContext.storage.tick()
-            currentFrame.advance()
+            currentFrame += 1
         }
         _onTicked?(currentFrame)
     }

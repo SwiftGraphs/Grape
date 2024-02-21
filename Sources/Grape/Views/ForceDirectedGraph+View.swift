@@ -46,7 +46,7 @@ extension ForceDirectedGraph: View {
     @inlinable
     var debugView: some View {
         VStack(alignment: .leading, spacing: 8.0) {
-            Text("Elapsed Time: \(model.currentFrame.rawValue)")
+            Text("Elapsed Time: \(model.currentFrame)")
             Divider()
             Text(self.model.changeMessage)
             Divider()
