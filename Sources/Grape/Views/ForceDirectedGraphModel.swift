@@ -6,6 +6,12 @@ import SwiftUI
 // @Observable
 public final class ForceDirectedGraphModel<Content: GraphContent> {
 
+    @usableFromInline
+    internal struct ObsoleteState {
+        @usableFromInline
+        var cgSize: CGSize
+    }
+
     public typealias NodeID = Content.NodeID
 
     @usableFromInline
@@ -55,6 +61,11 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         return draggingNodeID != nil || backgroundDragStart != nil 
     }
 
+    // records the transform right before a magnification gesture starts
+    @usableFromInline
+    var lastTransformRecord: ViewportTransform? = nil
+
+
     @usableFromInline
     let velocityDecay: Double
 
@@ -66,7 +77,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     var _$changeMessage = "N/A"
 
     @usableFromInline
-    var _$currentFrame: KeyFrame = 0
+    var _$currentFrame: UInt = 0
 
     @inlinable
     var changeMessage: String {
@@ -88,7 +99,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     }
 
     @inlinable
-    var currentFrame: KeyFrame {
+    var currentFrame: UInt {
         @storageRestrictions(initializes: _$currentFrame)
         init(initialValue) {
             _$currentFrame = initialValue
@@ -114,7 +125,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     var scheduledTimer: Timer? = nil
 
     @usableFromInline
-    var _onTicked: ((KeyFrame) -> Void)? = nil
+    var _onTicked: ((UInt) -> Void)? = nil
 
     @usableFromInline
     var _onNodeDragChanged: ((NodeID, CGPoint) -> Void)? = nil
@@ -136,6 +147,11 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
 
     @usableFromInline
     var _onGraphMagnified: (() -> Void)? = nil
+
+
+    // // records the transform right before a magnification gesture starts
+    @usableFromInline
+    var obsoleteState = ObsoleteState(cgSize: .zero)
 
     @inlinable
     init(
@@ -166,6 +182,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
             count: self.simulationContext.storage.kinetics.position.count
         )
         self.currentFrame = 0
+//        self.lastViewportSize = .zero
         self._modelTransformExtenalBinding = modelTransform
         self.modelTransform = modelTransform.wrappedValue
     }
@@ -240,7 +257,7 @@ extension ForceDirectedGraphModel {
     func tick() {
         withMutation(keyPath: \.currentFrame) {
             simulationContext.storage.tick()
-            currentFrame.advance()
+            currentFrame += 1
         }
         _onTicked?(currentFrame)
     }
@@ -260,6 +277,7 @@ extension ForceDirectedGraphModel {
     ) {
         // should not invoke `access`, but actually does now ?
         // print("Rendering frame \(_$currentFrame.rawValue)")
+        obsoleteState.cgSize = size
 
         let transform = modelTransform.translate(by: size.simd / 2)
         // debugPrint(transform.scale)
