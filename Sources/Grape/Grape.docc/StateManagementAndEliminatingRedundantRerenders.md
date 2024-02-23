@@ -29,15 +29,15 @@ struct MyStatefulGraph: View {
 
 ```swift
 
-graphStates.isRunning.toggle()
+    graphStates.isRunning.toggle()
 
-graphStates.transform = .identity // reset transform to identity
+    graphStates.transform = .identity // reset transform to identity
 
 ```
 
 ## Eliminate redundant rerenders
 
-One trick to eliminate redundant rerenders is to not referencing any observed properties in the `body` of the `View`. Instead, try to reference the entire `Observable` object. This way, the `body` will not rerender when the observed properties change.
+One trick to eliminate redundant rerenders is to not referencing any observed properties in the `body` of the `View`. Instead, try to reference the entire `Observable` object. This way, the `body` will not re-evaluate when the observed properties change.
 
 ```swift
 import Grape
@@ -72,6 +72,6 @@ struct GraphStateToggle: View {
 }
 ```
 
-Although this introduces boilerplates, but `Grape` do benifit from this pattern since its re-evaluation is expensive (especially with large graphs or heavy rich text labels).
+Although this introduces boilerplates, `Grape` do benifit from this pattern since its re-evaluation is expensive (especially with large graphs or heavy rich text labels).
 
 > This might not always work for other `Observation` based state management. 
