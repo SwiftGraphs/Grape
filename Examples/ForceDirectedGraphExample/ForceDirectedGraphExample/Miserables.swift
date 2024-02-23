@@ -15,21 +15,26 @@ struct MiserableGraph: View {
     
     private let graphData = getData(miserables)
     
-    @State private var isRunning = false
-    @State private var opacity: Double = 0
     @State private var inspectorPresented = false
     
-    @State private var modelTransform: ViewportTransform = .identity.scale(by: 2.0)
+    
+    @State private var stateMixin = ForceDirectedGraphState(
+        initialIsRunning: false,
+        initialModelTransform: .identity.scale(by: 1.2)
+    )
+    
+    @State private var opacity = 0.0
     
     @ViewBuilder
     func getLabel(_ text: String) -> some View {
         Text(text)
+            .foregroundStyle(.background)
             .font(.caption2)
             .padding(.vertical, 2.0)
             .padding(.horizontal, 6.0)
             .background(alignment: .center) {
                 RoundedRectangle(cornerSize: .init(width: 12, height: 12))
-                    .fill(.white)
+                    .fill(.foreground)
                     .shadow(radius: 1.5, y: 1.0)
             } 
             .padding()
@@ -38,29 +43,17 @@ struct MiserableGraph: View {
     var body: some View {
         
         ForceDirectedGraph(
-            $isRunning,
-            $modelTransform
+            states: stateMixin
         ) {
             
             Series(graphData.nodes) { node in
                 NodeMark(id: node.id)
-                    .symbol(.asterisk)
-                    .symbolSize(radius: 9.0)
-                    .stroke()
-                    .foregroundStyle(
-                        colors[node.group % colors.count]
-                            .shadow(
-                                .inner(
-                                    color: colors[node.group % colors.count].opacity(0.3),
-                                    radius: 3,
-                                    x: 0,
-                                    y: 1.5
-                                )
-                            )
-                    )
-                    .richLabel(node.id, offset: .zero) {
-                        self.getLabel(node.id)
-                    }
+                                    .symbol(.circle)
+                                    .symbolSize(radius: 8.0)
+                                    .stroke()
+                                    .richLabel(node.id, offset: .zero) {
+                                        self.getLabel(node.id)
+                                    }
             }
             
             Series(graphData.links) { l in
@@ -75,24 +68,49 @@ struct MiserableGraph: View {
                 stiffness: .weightedByDegree(k: { _, _ in 1.0})
             )
         }
-        .onNodeTapped { node in
-            inspectorPresented = true
-        }
         .opacity(opacity)
         .animation(.easeInOut, value: opacity)
         
         .ignoresSafeArea()
         .toolbar {
-            Text("\(modelTransform.scale)")
+            MiserableToolbarContent(stateMixin: stateMixin, opacity: $opacity)
+        }
+    }
+}
+
+struct MiserableToolbarContent: View {
+    @Bindable var stateMixin: ForceDirectedGraphState
+    @Binding var opacity: Double
+    
+    var body: some View {
+        Group {
             Button {
-                isRunning.toggle()
-                if opacity < 1 {
-                    opacity = 1
-                }
+                stateMixin.modelTransform.scaling(by: 1.1)
             } label: {
-                Image(systemName: isRunning ? "pause.fill" : "play.fill")
-                Text(isRunning ? "Pause" : "Start")
+                Image(systemName: "minus")
             }
+            Button {
+                stateMixin.modelTransform.scaling(by: 1.1)
+            } label: {
+                Text(String(format:"Scale: %.2f", stateMixin.modelTransform.scale))
+                    .fontDesign(.monospaced)
+            }
+            Button {
+                stateMixin.modelTransform.scaling(by: 0.9)
+            } label: {
+                Image(systemName: "plus")
+            }
+        }
+        
+        
+        Button {
+            stateMixin.isRunning.toggle()
+            if opacity < 1 {
+                opacity = 1
+            }
+        } label: {
+            Image(systemName: stateMixin.isRunning ? "pause.fill" : "play.fill")
+            Text(stateMixin.isRunning ? "Pause" : "Start")
         }
     }
 }

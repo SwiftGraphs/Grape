@@ -13,6 +13,7 @@
 		B717595B2AFBFDBD000DF006 /* Lattice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B717595A2AFBFDBD000DF006 /* Lattice.swift */; };
 		B762092F2B49FCD000476B93 /* MermaidVisualization.swift in Sources */ = {isa = PBXBuildFile; fileRef = B762092E2B49FCD000476B93 /* MermaidVisualization.swift */; };
 		B780DD7A2AF84ECB001C605F /* MyRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B780DD792AF84ECB001C605F /* MyRing.swift */; };
+		B79012AE2B88474F008F4C03 /* GraphStateToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79012AD2B88474F008F4C03 /* GraphStateToolbar.swift */; };
 		B7AFA55B2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */; };
 		B7AFA55D2ADF4997009C7154 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AFA55C2ADF4997009C7154 /* ContentView.swift */; };
 		B7AFA55F2ADF4999009C7154 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7AFA55E2ADF4999009C7154 /* Assets.xcassets */; };
@@ -26,6 +27,7 @@
 		B717595A2AFBFDBD000DF006 /* Lattice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lattice.swift; sourceTree = "<group>"; };
 		B762092E2B49FCD000476B93 /* MermaidVisualization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidVisualization.swift; sourceTree = "<group>"; };
 		B780DD792AF84ECB001C605F /* MyRing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyRing.swift; sourceTree = "<group>"; };
+		B79012AD2B88474F008F4C03 /* GraphStateToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphStateToolbar.swift; sourceTree = "<group>"; };
 		B7AFA5572ADF4997009C7154 /* ForceDirectedGraphExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForceDirectedGraphExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7AFA55A2ADF4997009C7154 /* ForceDirectedGraphExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceDirectedGraphExampleApp.swift; sourceTree = "<group>"; };
 		B7AFA55C2ADF4997009C7154 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				B71759582AFBFC4B000DF006 /* Miserables.swift */,
 				B717595A2AFBFDBD000DF006 /* Lattice.swift */,
 				B762092E2B49FCD000476B93 /* MermaidVisualization.swift */,
+				B79012AD2B88474F008F4C03 /* GraphStateToolbar.swift */,
 			);
 			path = ForceDirectedGraphExample;
 			sourceTree = "<group>";
@@ -168,6 +171,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B79012AE2B88474F008F4C03 /* GraphStateToolbar.swift in Sources */,
 				B717595B2AFBFDBD000DF006 /* Lattice.swift in Sources */,
 				B780DD7A2AF84ECB001C605F /* MyRing.swift in Sources */,
 				B7AFA55D2ADF4997009C7154 /* ContentView.swift in Sources */,

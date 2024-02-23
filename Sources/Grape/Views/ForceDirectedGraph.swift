@@ -50,18 +50,18 @@ where NodeID == Content.NodeID {
     @usableFromInline
     internal var _model: State<ForceDirectedGraphModel<Content>>
 
-    @inlinable
-    internal var isRunning: Bool {
-        get {
-            _isRunning.wrappedValue
-        }
-        set {
-            _isRunning.wrappedValue = newValue
-        }
-    }
+//    @inlinable
+//    internal var isRunning: Bool {
+//        get {
+//            _isRunning.wrappedValue
+//        }
+//        set {
+//            _isRunning.wrappedValue = newValue
+//        }
+//    }
 
-    @usableFromInline
-    internal var _isRunning: Binding<Bool>
+//    @usableFromInline
+//    internal var _isRunning: Binding<Bool>
 
     // @inlinable
     // internal var modelTransform: ViewportTransform {
@@ -82,8 +82,9 @@ where NodeID == Content.NodeID {
 
     @inlinable
     public init(
-        _ isRunning: Binding<Bool> = .constant(true),
-        _ modelTransform: Binding<ViewportTransform> = .constant(.identity),
+//        _ isRunning: Binding<Bool> = .constant(true),
+//        _ modelTransform: Binding<ViewportTransform> = .constant(.identity),
+        states: ForceDirectedGraphState = ForceDirectedGraphState(),
         ticksPerSecond: Double = 60.0,
         initialViewportTransform: ViewportTransform = .identity,
         @GraphContentBuilder<NodeID> _ graph: () -> Content,
@@ -97,7 +98,7 @@ where NodeID == Content.NodeID {
         graph()._attachToGraphRenderingContext(&gctx)
 
         self._graphRenderingContextShadow = gctx
-        self._isRunning = isRunning
+//        self._isRunning = isRunning
 
         self._forceDescriptors = force()
 
@@ -105,9 +106,12 @@ where NodeID == Content.NodeID {
         self.model = .init(
             gctx,
             force,
-            modelTransform: modelTransform,
+            stateMixin: states,
+//            modelTransform: modelTransform,
             emittingNewNodesWith: state,
             ticksPerSecond: ticksPerSecond
         )
+        
     }
+
 }

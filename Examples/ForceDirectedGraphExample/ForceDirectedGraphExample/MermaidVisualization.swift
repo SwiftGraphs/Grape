@@ -100,7 +100,7 @@ struct MermaidVisualization: View {
             tappedNode = $0
         }
         .ignoresSafeArea()
-        #if !os(xrOS)
+        #if !os(visionOS)
         .inspector(isPresented: .constant(true)) {
             VStack {
                 Text("Tapped: \(tappedNode ?? "nil")")

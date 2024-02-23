@@ -98,10 +98,10 @@ import SwiftUI
         static var minimumScaleDelta: CGFloat { 0.001 }
 
         @inlinable
-        static var minimumScale: CGFloat { 0.25 }
+        static var minimumScale: CGFloat { 1e-4 }
 
         @inlinable
-        static var maximumScale: CGFloat { 4.0 }
+        static var maximumScale: CGFloat { .infinity }
 
         @inlinable
         static var magnificationDecay: CGFloat { 0.1 }
