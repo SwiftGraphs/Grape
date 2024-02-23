@@ -72,6 +72,6 @@ struct GraphStateToggle: View {
 }
 ```
 
-Although this introduces boilerplates, `Grape` do benifit from this pattern since its re-evaluation is expensive (especially with large graphs or heavy rich text labels).
+Although this introduces boilerplates, `Grape` do benefit from this pattern since its re-evaluation is expensive (especially with large graphs or heavy rich text labels).
 
 > This might not always work for other `Observation` based state management. 
