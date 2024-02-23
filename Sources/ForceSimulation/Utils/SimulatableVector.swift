@@ -110,6 +110,7 @@ extension SIMD2: L2NormCalculatable where Scalar == Double {
     }
 }
 
+
 extension SIMD3: L2NormCalculatable where Scalar == Float {
     @inlinable
     public func distanceSquared(to point: SIMD3<Scalar>) -> Scalar {

@@ -106,13 +106,17 @@ To use Grape in a [SwiftPM](https://swift.org/package-manager/) project, add thi
 
 ``` swift
 dependencies: [
-    .package(url: "https://github.com/li3zhen1/Grape", from: "0.6.1")
+    .package(url: "https://github.com/li3zhen1/Grape", from: "0.7.0")
 ]
 ```
 
 ```swift
 .product(name: "Grape", package: "Grape"),
 ```
+
+> [!NOTE]
+> The `Grape` module relies on [`Observation` framework](https://developer.apple.com/documentation/observation). For backdeployment, you may want to check some community shims like [`swift-perception`](https://github.com/pointfreeco/swift-perception).
+> The `Grape` module may introduce breaking API changes in minor version changes before 1.0 release. The `ForceSimulation` module is stable in terms of public API now.
 
 <br/>
 
@@ -125,6 +129,7 @@ Grape ships 2 modules:
 - The `Grape` module allows you to create force-directed graphs in SwiftUI Views.
 - The `ForceSimulation` module is the underlying mechanism of `Grape`, and it helps you to create more complicated or customized force simulations. It also contains a `KDTree` data structure built with performance in mind, which can be useful for spatial partitioning tasks.
 
+
 <br/>
 
 ### The `Grape` module
@@ -136,10 +141,13 @@ For detailed usage, please refer to [documentation](https://li3zhen1.github.io/G
 import Grape
 
 struct MyGraph: View {
-    @State var isRunning = true // start moving once appeared.
+
+    // States including running status, transformation, etc.
+    // Gives you a handle to control the states.
+    @State var graphStates = ForceDirectedGraphState() 
     
     var body: some View {
-        ForceDirectedGraph($isRunning) {
+        ForceDirectedGraph(states: graphStates) {
             
             // Declare nodes and links like you would do in Swift Charts.
             NodeMark(id: 0).foregroundStyle(.green)
@@ -158,6 +166,7 @@ struct MyGraph: View {
     }
 }
 ```
+
 
 
 <br/>

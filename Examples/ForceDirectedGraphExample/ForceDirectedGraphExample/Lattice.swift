@@ -13,7 +13,10 @@ struct Lattice: View {
     
     let width = 20
     let edge: [(Int, Int)]
-    @State var isRunning = false
+    
+    @State var graphStates = ForceDirectedGraphState(
+        initialIsRunning: true
+    )
     
     init() {
         var edge = [(Int, Int)]()
@@ -32,7 +35,7 @@ struct Lattice: View {
     
     @inlinable
     var body: some View {
-        ForceDirectedGraph($isRunning) {
+        ForceDirectedGraph(states: graphStates) {
             
             Series(0..<(width*width)) { i in
                 let _i = Double(i / width) / Double(width)
@@ -54,12 +57,7 @@ struct Lattice: View {
             ManyBodyForce(strength: -0.8)
         }
         .toolbar {
-            Button {
-                isRunning = !isRunning
-            } label: {
-                Image(systemName: isRunning ? "pause.fill" : "play.fill")
-                Text(isRunning ? "Pause" : "Start")
-            }
+            GraphStateToggle(graphStates: graphStates)
         }
         
     }

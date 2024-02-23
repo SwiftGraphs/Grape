@@ -54,7 +54,7 @@ extension ExampleKind {
 
 struct ContentView: View {
     
-    @State var selection: ExampleKind? = .classicMiserable
+    @State var selection: ExampleKind? = .ring
     
     var body: some View {
         

@@ -20,27 +20,33 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     @usableFromInline
     var simulationContext: SimulationContext<NodeID>
 
-    @usableFromInline
-    internal var _modelTransform: ViewportTransform
+    // @usableFromInline
+    // internal var _modelTransform: ViewportTransform
+    //  {
+    //     didSet {
+    //         stateMixinRef.modelTransform = modelTransform
+    //     }
+    // }
 
-    @usableFromInline
-    internal var _modelTransformExtenalBinding: Binding<ViewportTransform>
+//    @usableFromInline
+//    internal var _modelTransformExtenalBinding: Binding<ViewportTransform>
 
     @inlinable
     internal var modelTransform: ViewportTransform {
-        @storageRestrictions(initializes: _modelTransform)
-        init(initialValue) {
-            _modelTransform = initialValue
-        }
+        // @storageRestrictions(initializes: _modelTransform)
+        // init(initialValue) {
+        //     _modelTransform = initialValue
+        // }
 
         get {
-            return _modelTransform
+            stateMixinRef.modelTransform
         }
 
         set {
-            _modelTransform = newValue
-            _modelTransformExtenalBinding.wrappedValue = newValue
+            // _modelTransform = newValue
+            stateMixinRef.modelTransform = newValue
         }
+
     }
 
     /// Moves the zero-centered simulation to final view
@@ -159,7 +165,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
         _ forceField: SealedForce2D,
         stateMixin: ForceDirectedGraphState,
-        modelTransform: Binding<ViewportTransform>,
+//        modelTransform: Binding<ViewportTransform>,
         emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         },
@@ -184,10 +190,8 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
             count: self.simulationContext.storage.kinetics.position.count
         )
         self.currentFrame = 0
-
-        self._modelTransformExtenalBinding = modelTransform
-        self.modelTransform = modelTransform.wrappedValue
         self.stateMixinRef = stateMixin
+        // self._modelTransform = stateMixin.modelTransform
     }
 
     @inlinable
@@ -195,7 +199,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
         _ forceField: SealedForce2D,
         stateMixin: ForceDirectedGraphState,
-        modelTransform: Binding<ViewportTransform>,
+//        modelTransform: Binding<ViewportTransform>,
         emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         },
@@ -205,7 +209,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
             graphRenderingContext,
             forceField,
             stateMixin: stateMixin,
-            modelTransform: modelTransform,
+//            modelTransform: modelTransform,
             emittingNewNodesWith: emittingNewNodesWith,
             ticksPerSecond: ticksPerSecond,
             velocityDecay: 30 / ticksPerSecond
@@ -219,27 +223,30 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         } else {
             stop()
         }
-        continuouslyTrackingRunningStateMixin()
+        continuouslyTrackingRunning()
+        continuouslyTrackingTransform()
     }
 
     @inlinable
-    func continuouslyTrackingRunningStateMixin() {
+    func continuouslyTrackingRunning() {
         withObservationTracking {
             updateModelRunningState(isRunning: stateMixinRef.isRunning)
         } onChange: {
             Task { @MainActor [weak self] in
-                self?.continuouslyTrackingRunningStateMixin()
+                self?.continuouslyTrackingRunning()
             }
         }
     }
 
     @inlinable
-    func continuouslyTrackingTransformStateMixin() {
+    func continuouslyTrackingTransform() {
         withObservationTracking {
-            
+            // FIXME: mutation cycle?
+            _ = stateMixinRef.modelTransform
+            // stateMixinRef.access(keyPath: \.modelTransform)
         } onChange: {
             Task { @MainActor [weak self] in
-                self?.continuouslyTrackingTransformStateMixin()
+                self?.continuouslyTrackingTransform()
             }
         }
     }

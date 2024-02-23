@@ -1,24 +1,37 @@
 import Observation
 
+// public typealias ForceDirectedGraphState = ForceDirectedGraphMixedState<Void>
+
+// extension ForceDirectedGraphMixedState where Mixin == Void {
+//     @inlinable
+//     convenience init(
+//         initialIsRunning: Bool = true,
+//         initialModelTransform: ViewportTransform = .identity
+//     ) {
+//         self.init(
+//             initialMixin: (),
+//             initialIsRunning: initialIsRunning,
+//             initialModelTransform: initialModelTransform
+//         )
+//     }
+// }
+
 public class ForceDirectedGraphState: Observation.Observable {
 
     @usableFromInline
     internal var _$modelTransform: ViewportTransform
 
-
     @usableFromInline
     internal var _$isRunning: Bool
-
-
 
     @inlinable
     public var modelTransform: ViewportTransform {
         get {
-            access(keyPath: \.modelTransform)
+            _reg.access(self, keyPath: \.modelTransform)
             return _$modelTransform
         }
         set {
-            withMutation(keyPath: \.modelTransform) {
+            _reg.withMutation(of: self, keyPath: \.modelTransform) {
                 _$modelTransform = newValue
             }
         }
@@ -27,11 +40,11 @@ public class ForceDirectedGraphState: Observation.Observable {
     @inlinable
     public var isRunning: Bool {
         get {
-            access(keyPath: \.isRunning)
+            _reg.access(self, keyPath: \.isRunning)
             return _$isRunning
         }
         set {
-            withMutation(keyPath: \.isRunning) {
+            _reg.withMutation(of: self, keyPath: \.isRunning) {
                 _$isRunning = newValue
             }
         }
@@ -42,6 +55,7 @@ public class ForceDirectedGraphState: Observation.Observable {
         initialIsRunning: Bool = true,
         initialModelTransform: ViewportTransform = .identity
     ) {
+        self._reg = Observation.ObservationRegistrar()
         self._$modelTransform = initialModelTransform
         self._$isRunning = initialIsRunning
     }
@@ -49,20 +63,5 @@ public class ForceDirectedGraphState: Observation.Observable {
     // MARK: - Observation
 
     @usableFromInline
-    let _$observationRegistrar = Observation.ObservationRegistrar()
-
-    @inlinable
-    nonisolated func access<Member>(
-        keyPath: KeyPath<ForceDirectedGraphState, Member>
-    ) {
-        _$observationRegistrar.access(self, keyPath: keyPath)
-    }
-
-    @inlinable
-    nonisolated func withMutation<Member, MutationResult>(
-        keyPath: KeyPath<ForceDirectedGraphState, Member>,
-        _ mutation: () throws -> MutationResult
-    ) rethrows -> MutationResult {
-        try _$observationRegistrar.withMutation(of: self, keyPath: keyPath, mutation)
-    }
+    let _reg: Observation.ObservationRegistrar
 }

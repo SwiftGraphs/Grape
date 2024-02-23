@@ -10,15 +10,13 @@ import Grape
 import SwiftUI
 import ForceSimulation
 
-
-
 struct MyRing: View {
     
-    @State var isRunning = false
+    @State var graphStates = ForceDirectedGraphState()
     
     var body: some View {
 
-        ForceDirectedGraph($isRunning) {
+        ForceDirectedGraph(states: graphStates) {
             Series(0..<20) { i in
                 NodeMark(id: 3 * i + 0)
                     .symbol(.circle)
@@ -51,12 +49,7 @@ struct MyRing: View {
             CollideForce()
         }
         .toolbar {
-            Button {
-                isRunning = !isRunning
-            } label: {
-                Image(systemName: isRunning ? "pause.fill" : "play.fill")
-                Text(isRunning ? "Pause" : "Start")
-            }
+            GraphStateToggle(graphStates: graphStates)
         }
     }
 }
