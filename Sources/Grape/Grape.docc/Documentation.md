@@ -22,6 +22,7 @@ Grape supports localization features. You can localize the labels in the graph v
 
 
 * <doc:CreatingAForceDirectedGraph>
+* <doc:StateManagementAndEliminatingRedundantRerenders>
 
 * ``ForceDirectedGraph``
 
