@@ -115,8 +115,11 @@ dependencies: [
 ```
 
 > [!NOTE]
-> The `Grape` module relies on [`Observation` framework](https://developer.apple.com/documentation/observation). For backdeployment, you may want to check some community shims like [`swift-perception`](https://github.com/pointfreeco/swift-perception).
-> The `Grape` module may introduce breaking API changes in minor version changes before 1.0 release. The `ForceSimulation` module is stable in terms of public API now.
+> The `Grape` module relies on the [`Observation` framework](https://developer.apple.com/documentation/observation). It’s possible to backdeploy with community shims like [`swift-perception`](https://github.com/pointfreeco/swift-perception).
+> 
+> The `Grape` module may introduce breaking API changes in minor version changes before 1.0 release.
+>
+> The `ForceSimulation` module is stable in terms of public API now.
 
 <br/>
 
