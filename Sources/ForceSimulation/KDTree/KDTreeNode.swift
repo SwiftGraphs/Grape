@@ -13,17 +13,17 @@ where
 
     @inlinable
     init(
-        nodeIndices: consuming NodeIndex?,
-        childrenBufferPointer: consuming UnsafeMutablePointer<KDTreeNode>?,
-        delegate: consuming Delegate,
-        box: consuming KDBox<Vector>,
-        nodePosition: consuming Vector = .zero
+        nodeIndices: NodeIndex?,
+        childrenBufferPointer: UnsafeMutablePointer<KDTreeNode>?,
+        delegate: Delegate,
+        box: KDBox<Vector>,
+        nodePosition: Vector = .zero
     ) {
-        self.childrenBufferPointer = consume childrenBufferPointer
-        self.nodeIndices = consume nodeIndices
-        self.delegate = consume delegate
-        self.box = consume box
-        self.nodePosition = consume nodePosition
+        self.childrenBufferPointer = childrenBufferPointer
+        self.nodeIndices = nodeIndices
+        self.delegate = delegate
+        self.box = box
+        self.nodePosition = nodePosition
     }
 
     @inlinable
@@ -79,7 +79,7 @@ extension KDTreeNode.NodeIndex {
     }
 
     @inlinable
-    consuming internal func dispose() {
+    internal func dispose() {
         if let next {
             next.pointee.dispose()
             next.deallocate()
@@ -146,7 +146,7 @@ extension KDTreeNode {
     }
 
     @inlinable
-    static func zeroWithDelegate(_ delegate: consuming Delegate) -> Self {
+    static func zeroWithDelegate(_ delegate: Delegate) -> Self {
         return Self(
             nodeIndices: nil,
             childrenBufferPointer: nil,

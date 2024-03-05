@@ -25,30 +25,30 @@ final class GraphContentBuilderTests: XCTestCase {
             ID(id: 2),
         ]
 
-        let a = Series(arr) { i in
+        let _ = Series(arr) { i in
             NodeMark(id: i.id)
         }
 
-        let b = buildGraph {
+        let _ = buildGraph {
             NodeMark(id: 0)
             Series(arr) { i in
                 NodeMark(id: i.id)
             }
         }
 
-        let c = buildGraph {
+        let _ = buildGraph {
             NodeMark(id: 0)
             Series(0..<10) { i in
                 NodeMark(id: 0)
             }
         }
 
-        var t = 1
+        let t = 1
         let d = buildGraph {
             if true {
                 NodeMark(id: 0)
-                for i in 0..<10 {
-                    NodeMark(id: 0)
+                Series(0..<10) {
+                    NodeMark(id: $0)
                 }
             } else {
                 LinkMark(from: 0, to: 1)
@@ -71,7 +71,7 @@ final class GraphContentBuilderTests: XCTestCase {
 
     func testForLoop() {
         let gc = buildGraph {
-            for i in 0..<10 {
+            Series(0..<10) { i in
                 NodeMark(id: i)
             }
         }

@@ -473,7 +473,7 @@ extension ForceDirectedGraphModel {
                     )
                     lastRasterizedScaleFactor = env.displayScale
                     graphRenderingContext.symbols[resolvedTextContent] = .resolved(
-                        consume text, cgImage)
+                        text, cgImage)
                     rasterizedSymbol = cgImage
                 case .resolved(_, let cgImage):
                     rasterizedSymbol = cgImage
@@ -640,7 +640,7 @@ extension ForceDirectedGraphModel {
     @inlinable
     func revive(
         for newContext: _GraphRenderingContext<NodeID>,
-        with newForceField: consuming SealedForce2D,
+        with newForceField: SealedForce2D,
         alpha: Double
     ) {
         var newContext = newContext

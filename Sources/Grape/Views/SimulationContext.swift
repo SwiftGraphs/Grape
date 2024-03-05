@@ -34,13 +34,13 @@ internal struct SimulationContext<NodeID: Hashable> {
 
     @inlinable
     internal init(
-        _ storage: consuming Simulation2D<ForceField>,
-        _ nodeIndexLookup: consuming [NodeID: Int],
-        _ nodeIndices: consuming [NodeID]
+        _ storage: Simulation2D<ForceField>,
+        _ nodeIndexLookup: [NodeID: Int],
+        _ nodeIndices: [NodeID]
     ) {
-        self.storage = consume storage
-        self.nodeIndexLookup = consume nodeIndexLookup
-        self.nodeIndices = consume nodeIndices
+        self.storage = storage
+        self.nodeIndexLookup = nodeIndexLookup
+        self.nodeIndices = nodeIndices
     }
 
 }
@@ -49,7 +49,7 @@ extension SimulationContext {
     @inlinable
     public static func create(
         for graphRenderingContext: _GraphRenderingContext<NodeID>,
-        with forceField: consuming ForceField,
+        with forceField: ForceField,
         velocityDecay: Vector.Scalar
     ) -> Self {
         let nodes = graphRenderingContext.nodes
@@ -69,11 +69,11 @@ extension SimulationContext {
         return .init(
             .init(
                 nodeCount: nodes.count,
-                links: consume links,
-                forceField: consume forceField,
+                links: links,
+                forceField: forceField,
                 velocityDecay: velocityDecay
             ),
-            consume nodeIndexLookup,
+            nodeIndexLookup,
             nodes.map(\.id)
         )
     }
@@ -82,7 +82,7 @@ extension SimulationContext {
     @inlinable
     public mutating func revive(
         for newContext: _GraphRenderingContext<NodeID>,
-        with newForceField: consuming ForceField,
+        with newForceField: ForceField,
         velocityDecay: Vector.Scalar,
         emittingNewNodesWith states: (NodeID) -> KineticState = { _ in .init(position: .zero) }
     ) {
@@ -148,17 +148,17 @@ extension SimulationContext {
 
         let newStorage = Simulation2D<SealedForce2D>(
             nodeCount: newNodes.count,
-            links: consume newLinks,
-            forceField: consume newForceField,
-            velocityDecay: consume velocityDecay,
-            position: consume newPosition,
-            velocity: consume newVelocity,
-            fixation: consume newFixation
+            links: newLinks,
+            forceField: newForceField,
+            velocityDecay: velocityDecay,
+            position: newPosition,
+            velocity: newVelocity,
+            fixation: newFixation
         )
 
         self = .init(
-            consume newStorage,
-            consume newNodeIndexLookup,
+            newStorage,
+            newNodeIndexLookup,
             newNodes.map(\.id)
         )
     }

@@ -24,7 +24,7 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
     // public init(
     //     nodeCount: Int,
     //     links: [EdgeID<Int>],
-    //     forceField: consuming ForceField,
+    //     forceField: ForceField,
     //     initialAlpha: Vector.Scalar = 1,
     //     alphaMin: Vector.Scalar = 1e-2,
     //     alphaDecay: Vector.Scalar = 2e-3,
@@ -78,9 +78,9 @@ where Vector: SimulatableVector & L2NormCalculatable, ForceField: ForceProtocol<
             alphaDecay: alphaDecay,
             alphaTarget: alphaTarget,
             velocityDecay: velocityDecay,
-            position: consume position ?? Array(repeating: .zero, count: nodeCount),
-            velocity: consume velocity ?? Array(repeating: .zero, count: nodeCount),
-            fixation: consume fixation ?? Array(repeating: nil, count: nodeCount)
+            position: position ?? Array(repeating: .zero, count: nodeCount),
+            velocity: velocity ?? Array(repeating: .zero, count: nodeCount),
+            fixation: fixation ?? Array(repeating: nil, count: nodeCount)
         )
         // self.kinetics.jigglePosition()
         forceField.bindKinetics(self.kinetics)

@@ -57,8 +57,8 @@ where Vector: SimulatableVector & L2NormCalculatable {
         alphaTarget: Vector.Scalar,
         velocityDecay: Vector.Scalar,
         position: [Vector],
-        velocity: consuming [Vector],
-        fixation: consuming [Vector?]
+        velocity: [Vector],
+        fixation: [Vector?]
     ) {
         self.links = links
         // self.initializedAlpha = initialAlpha
@@ -71,7 +71,7 @@ where Vector: SimulatableVector & L2NormCalculatable {
         let count = position.count
         self.validCount = count
 
-        self.position = .createBuffer(moving: consume position, fillingWithIfFailed: .zero)
+        self.position = .createBuffer(moving: position, fillingWithIfFailed: .zero)
         self.velocity = .createBuffer(moving: velocity, fillingWithIfFailed: .zero)
         self.fixation = .createBuffer(moving: fixation, fillingWithIfFailed: nil)
         self.randomGenerator = .init()

@@ -157,7 +157,7 @@ where
 
             let directionOfNewNode = getIndexInChildren(
                 point, relativeTo: treeNode.pointee.box.center)
-            let treeNodeOffset = (consume treeNode) - rootPointer
+            let treeNodeOffset = (treeNode) - rootPointer
             self.addWithoutCover(
                 onTreeNode: treeNode.pointee.childrenBufferPointer! + directionOfNewNode,
                 nodeOf: nodeIndex,
@@ -179,7 +179,7 @@ where
         {
             // filled leaf
 
-            let treeNodeOffset = (consume treeNode) - rootPointer
+            let treeNodeOffset = (treeNode) - rootPointer
             resizeIfNeededBeforeAllocation(for: Self.directionCount)
             
             let newTreeNode = self.rootPointer + treeNodeOffset
