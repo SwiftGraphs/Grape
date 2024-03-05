@@ -26,23 +26,23 @@ where
     public init(
         box: Box,
         // clusterDistanceSquared: Vector.Scalar,
-        spawnedDelegateBeingConsumed: consuming Delegate
+        spawnedDelegateBeingConsumed: Delegate
     ) {
         self.box = box
         self.nodeIndices = []
-        self.delegate = consume spawnedDelegateBeingConsumed
+        self.delegate = spawnedDelegateBeingConsumed
     }
 
     @inlinable
     init(
         box: Box,
-        spawnedDelegateBeingConsumed: consuming Delegate,
-        childrenBeingConsumed: consuming [KDTree<Vector, Delegate>]
+        spawnedDelegateBeingConsumed: Delegate,
+        childrenBeingConsumed: [KDTree<Vector, Delegate>]
     ) {
         self.box = box
         self.nodeIndices = []
-        self.delegate = consume spawnedDelegateBeingConsumed
-        self.children = consume childrenBeingConsumed
+        self.delegate = spawnedDelegateBeingConsumed
+        self.children = childrenBeingConsumed
     }
 
     @inlinable
@@ -113,12 +113,12 @@ where
             )
         }
 
-        //        result[nailedDirection] = consume tempSelf
+        //        result[nailedDirection] = tempSelf
 
         self = Self(
             box: newRootBox,
             spawnedDelegateBeingConsumed: self.delegate,
-            childrenBeingConsumed: consume result
+            childrenBeingConsumed: result
         )
 
     }

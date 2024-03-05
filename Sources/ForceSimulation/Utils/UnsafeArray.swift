@@ -30,9 +30,9 @@ public final class UnsafeArray<Element>: ManagedBuffer<Int, Element> {
     class func createBuffer(
         withHeader header: Int, 
         count: Int, 
-        moving: consuming UnsafeMutablePointer<Element>, 
+        moving: UnsafeMutablePointer<Element>, 
         movingCount: Int,
-        fillingExcessiveBufferWith initialValue: consuming Element
+        fillingExcessiveBufferWith initialValue: Element
     ) -> UnsafeArray {
         let buffer = self.create(minimumCapacity: count) { _ in header }
         buffer.withUnsafeMutablePointerToElements {

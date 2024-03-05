@@ -217,7 +217,7 @@ extension KDBox {
             }
         #endif
 
-        return Self(consume _p0, consume _p1+1)
+        return Self(_p0, _p1+1)
     }
 
 }
