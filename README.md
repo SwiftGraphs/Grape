@@ -1,13 +1,13 @@
-<p align="center">
+<div align="center">
   <img alt="grape-icon" src="https://github.com/li3zhen1/Grape/assets/45376537/4ab08ea1-22e6-4fe8-ab2b-99ae325b46a6" height="96">
   <h1 align="center">Grape</h1>
 
-</p>
+</div>
 
 <p align="center">
-  <img src="https://github.com/li3zhen1/Grape/actions/workflows/swift.yml/badge.svg" alt="swift workflow">
-  <a href="https://swiftpackageindex.com/li3zhen1/Grape"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fli3zhen1%2FGrape%2Fbadge%3Ftype%3Dswift-versions" alt="swift package index"></a>
-  <a href="https://swiftpackageindex.com/li3zhen1/Grape"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fli3zhen1%2FGrape%2Fbadge%3Ftype%3Dplatforms" alt="swift package index"></a>
+  <img src="https://lizhen.me/grape/swift-ci.svg" alt="swift workflow">&thinsp;
+  <a href="https://swiftpackageindex.com/li3zhen1/Grape"><img src="https://lizhen.me/grape/swift-versions.svg" alt="swift package index"></a>&thinsp;
+  <a href="https://swiftpackageindex.com/li3zhen1/Grape"><img src="https://lizhen.me/grape/swift-platforms.svg" alt="swift package index"></a>
 </p>
 
 <p align="center">A Swift library for force simulation and graph visualization.</p>
