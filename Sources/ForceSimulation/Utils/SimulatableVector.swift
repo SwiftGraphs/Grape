@@ -106,7 +106,7 @@ extension SIMD2: L2NormCalculatable where Scalar == Double {
 
     @inlinable
     public func length() -> Scalar {
-        return simd_length(self)
+        return simd_fast_length(self)
     }
 }
 
@@ -129,7 +129,7 @@ extension SIMD3: L2NormCalculatable where Scalar == Float {
 
     @inlinable
     public func length() -> Scalar {
-        return simd_length(self)
+        return simd_fast_length(self)
     }
 }
 

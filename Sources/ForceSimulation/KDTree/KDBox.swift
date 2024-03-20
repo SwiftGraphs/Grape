@@ -9,7 +9,8 @@ import simd
 /// A box in N-dimensional space.
 ///
 /// - Note: `p0` is the minimum point of the box, `p1` is the maximum point of the box.
-public struct KDBox<V>: Equatable where V: SIMD, V.Scalar: FloatingPoint & ExpressibleByFloatLiteral {
+public struct KDBox<V>: Equatable
+where V: SIMD, V.Scalar: FloatingPoint & ExpressibleByFloatLiteral {
     /// the minimum anchor of the box
     public var p0: V
 
@@ -92,6 +93,7 @@ public struct KDBox<V>: Equatable where V: SIMD, V.Scalar: FloatingPoint & Expre
 
 extension KDBox {
     @inlinable
+    @inline(__always)
     var diagnalVector: V {
         return p1 - p0
     }
@@ -101,16 +103,20 @@ extension KDBox {
         return Self(uncheckedP0: .zero, uncheckedP1: .zero)
     }
 
-    @inlinable var center: V { (p1 + p0) / 2.0 }
+    @inlinable 
+    @inline(__always)
+    var center: V { (p1 + p0) / 2.0 }
 
     /// Test if the box contains a point.
     /// - Parameter point: N dimensional point
     /// - Returns: `true` if the box contains the point, `false` otherwise.
     ///            The boundary test is similar to ..< operator.
-    @inlinable func contains(_ point: V) -> Bool {
-        let mask = (p0 .> point) .| (point .>= p1)
-
-        return mask == .init(repeating: false)
+    @inlinable 
+    @inline(__always)
+    func contains(_ point: V) -> Bool {
+        // let mask = 
+        return !any((p0 .> point) .| (point .>= p1))
+        //mask == .init(repeating: false)
 
         // equivalent to:
         // for i in point.indices {
@@ -189,7 +195,6 @@ extension KDBox {
 
     @inlinable public static func cover(of points: UnsafeArray<V>) -> Self {
 
-
         var _p0 = points[0]
         var _p1 = points[0]
 
@@ -208,16 +213,15 @@ extension KDBox {
             //     }
             // }
         }
-        
 
         #if DEBUG
-            let testBox = Self(_p0, _p1+1)
+            let testBox = Self(_p0, _p1 + 1)
             for i in points.range {
                 assert(testBox.contains(points[i]))
             }
         #endif
 
-        return Self(_p0, _p1+1)
+        return Self(_p0, _p1 + 1)
     }
 
 }
