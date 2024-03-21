@@ -26,7 +26,7 @@ jobs:
     - name: Build
       run: swift build
     - name: Run tests
-      run: xcodebuild test -scheme Grape-Package -destination "Platform=OS X"
+      run: swift test # xcodebuild test -scheme Grape-Package -destination "platform=OS X"
     - name: Build DocC
       run: | # If you use docc-plugin, you might be able to use docc-plugin command instead
         mkdir -p docs &&
