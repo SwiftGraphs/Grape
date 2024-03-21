@@ -1,7 +1,6 @@
 name: Swift CI
 
 on:
-  # trigger this workflow whenever "main" branch has been pushed
   push:
     branches: [ "main" ]
 
@@ -15,7 +14,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: macos-latest  # to use the latest version that is available on  GitHub Actions
+    runs-on: macos-14
     steps:
     - name: Checkout 🛎️
       uses: actions/checkout@v3
