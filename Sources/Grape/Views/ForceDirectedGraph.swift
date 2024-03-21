@@ -82,11 +82,8 @@ where NodeID == Content.NodeID {
 
     @inlinable
     public init(
-//        _ isRunning: Binding<Bool> = .constant(true),
-//        _ modelTransform: Binding<ViewportTransform> = .constant(.identity),
         states: ForceDirectedGraphState = ForceDirectedGraphState(),
         ticksPerSecond: Double = 60.0,
-        initialViewportTransform: ViewportTransform = .identity,
         @GraphContentBuilder<NodeID> _ graph: () -> Content,
         @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = Self.defaulForce,
         emittingNewNodesWithStates state: @escaping (NodeID) -> KineticState = { _ in
@@ -98,7 +95,6 @@ where NodeID == Content.NodeID {
         graph()._attachToGraphRenderingContext(&gctx)
 
         self._graphRenderingContextShadow = gctx
-//        self._isRunning = isRunning
 
         self._forceDescriptors = force()
 
@@ -107,7 +103,6 @@ where NodeID == Content.NodeID {
             gctx,
             force,
             stateMixin: states,
-//            modelTransform: modelTransform,
             emittingNewNodesWith: state,
             ticksPerSecond: ticksPerSecond
         )
