@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  MiserableGraphTest.swift
 //
 //
 //  Created by li3zhen1 on 10/4/23.
@@ -70,6 +70,11 @@ struct MyForceField3D: ForceField3D {
 
 final class MiserableGraphTest: XCTestCase {
 
+    #if DEBUG
+        let iter = 3
+    #else
+        let iter = 120
+    #endif
     func testLattice() {
 
         let myForce = SealedForce2D {
@@ -103,7 +108,7 @@ final class MiserableGraphTest: XCTestCase {
         )
 
         measure {
-            for _ in 0..<120 {
+            for _ in 0..<iter {
                 simulation.tick()
             }
         }
@@ -120,7 +125,7 @@ final class MiserableGraphTest: XCTestCase {
         )
 
         measure {
-            for _ in 0..<120 {
+            for _ in 0..<iter {
                 simulation.tick()
             }
         }
@@ -137,7 +142,7 @@ final class MiserableGraphTest: XCTestCase {
         )
 
         measure {
-            for _ in 0..<120 {
+            for _ in 0..<iter {
                 simulation.tick()
             }
         }

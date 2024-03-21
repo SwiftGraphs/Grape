@@ -5,20 +5,14 @@ on:
   push:
     branches: [ "main" ]
 
-# Set up GITHUB_TOKEN permission for the deployment
 permissions:
   contents: read
   pages: write
   id-token: write
-# Allow workflow concurrency
-# concurrency:
-#   group: "pages"
-#   cancel-in-progress: true
 
 jobs:
   deploy:
     environment:
-      # Mandatory settings for GitHub Pages deployment
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: macos-13  # to use the latest version that is available on  GitHub Actions
@@ -26,13 +20,13 @@ jobs:
     - name: Checkout 🛎️
       uses: actions/checkout@v3
     - name: Setup Xcode version
-      uses: maxim-lobanov/setup-xcode@v1 # To set up xcode version
+      uses: maxim-lobanov/setup-xcode@v1.6.0
       with:
         xcode-version: 'latest-stable'
     - name: Build
       run: swift build
-    # - name: Run tests
-    #   run: xcodebuild test -scheme ForceSimulation
+    - name: Run tests
+      run: xcodebuild test -scheme Grape-Package -destination "Platform=OS X"
     - name: Build DocC
       run: | # If you use docc-plugin, you might be able to use docc-plugin command instead
         mkdir -p docs &&
@@ -52,7 +46,6 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
       with:
-        # Upload docs folder
         path: 'docs'
     - name: Deploy to GitHub Pages
       id: deployment

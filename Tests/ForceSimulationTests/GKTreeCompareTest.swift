@@ -7,6 +7,7 @@
 
 import XCTest
 import simd
+
 @testable import ForceSimulation
 
 // #if canImport(GameKit)
@@ -83,13 +84,35 @@ final class ManyBodyForceTests: XCTestCase {
     // #endif
 
     func testGrapeKDTree() {
-        let nodes: [simd_double2] = (0..<100000).map { _ in
+        let nodes: [simd_double2] = (0..<1000).map { _ in
             let x = Double.random(in: -100...100)
             let y = Double.random(in: -100...100)
             return simd_double2(x, y)
         }
+        #if RELEASE
+            measure {
+                var kdtree = BufferedKDTree<SIMD2<Double>, DummyQuadtreeDelegate>(
+                    rootBox: .init([-100.0, -100.0], [100.0, 100.0]),
+                    nodeCapacity: nodes.count,
+                    rootDelegate: DummyQuadtreeDelegate()
+                )
 
-        measure {
+                for (i, node) in nodes.enumerated() {
+                    kdtree.add(nodeIndex: i, at: node)
+                }
+
+                // traverse the tree
+                var count = 0
+                kdtree.visit { t in
+                    if t.isLeaf {
+                        count += t.delegate.count
+                        return false
+                    }
+                    return true
+                }
+                XCTAssertEqual(count, nodes.count)
+            }
+        #else
             var kdtree = BufferedKDTree<SIMD2<Double>, DummyQuadtreeDelegate>(
                 rootBox: .init([-100.0, -100.0], [100.0, 100.0]),
                 nodeCapacity: nodes.count,
@@ -110,6 +133,6 @@ final class ManyBodyForceTests: XCTestCase {
                 return true
             }
             XCTAssertEqual(count, nodes.count)
-        }
+        #endif
     }
 }
