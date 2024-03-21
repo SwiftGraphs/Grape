@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  Xcode:
+    strategy:
+      matrix:
+        env:
+          - platform: macOS
+            destination: "platform=macOS"
+            action: test
+    runs-on: macOS-latest
+    env:
+      ACTION: ${{ matrix.env.action }}
+      DESTINATION: ${{ matrix.env.destination }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Xcode Version
+        run: xcodebuild -version
+      - name: Build and Test
+        run: xcodebuild test -scheme Grape-Package -destination "$DESTINATION" | xcpretty
