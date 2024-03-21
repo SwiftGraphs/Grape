@@ -50,43 +50,35 @@ where NodeID == Content.NodeID {
     @usableFromInline
     internal var _model: State<ForceDirectedGraphModel<Content>>
 
-//    @inlinable
-//    internal var isRunning: Bool {
-//        get {
-//            _isRunning.wrappedValue
-//        }
-//        set {
-//            _isRunning.wrappedValue = newValue
-//        }
-//    }
-
-//    @usableFromInline
-//    internal var _isRunning: Binding<Bool>
-
-    // @inlinable
-    // internal var modelTransform: ViewportTransform {
-    //     get {
-    //         _modelTransform.wrappedValue
-    //     }
-    //     set {
-    //         _modelTransform.wrappedValue = newValue
-    //     }
-    // }
-
+    /**
+        * Create a default force field.
+        */
     @SealedForce2DBuilder
     @inlinable
-    static public func defaulForce() -> [SealedForce2D.ForceEntry] {
+    static public func defaultForce() -> [SealedForce2D.ForceEntry] {
         ManyBodyForce()
         LinkForce()
     }
 
+    /**
+        * Create a force-directed graph view.
+        *
+        * - Parameters:
+        *   - states: The initial state of the force-directed graph
+        *   - ticksPerSecond: The number of ticks per second
+        *   - graph: The graph content
+        *   - force: The forces to be applied to the graph
+        *   - emittingNewNodesWithStates: Tells the simulation where to place the new
+        *     nodes and provide their initial kinetic states. This is only applied on the
+        *     new nodes that is not seen before when the graph is created (or updated).
+        */
     @inlinable
     public init(
         states: ForceDirectedGraphState = ForceDirectedGraphState(),
         ticksPerSecond: Double = 60.0,
         @GraphContentBuilder<NodeID> _ graph: () -> Content,
-        @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = Self.defaulForce,
-        emittingNewNodesWithStates state: @escaping (NodeID) -> KineticState = { _ in
+        @SealedForce2DBuilder force: () -> [SealedForce2D.ForceEntry] = Self.defaultForce,
+        emittingNewNodesWithStates: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         }
     ) {
@@ -103,10 +95,10 @@ where NodeID == Content.NodeID {
             gctx,
             force,
             stateMixin: states,
-            emittingNewNodesWith: state,
+            emittingNewNodesWith: emittingNewNodesWithStates,
             ticksPerSecond: ticksPerSecond
         )
-        
+
     }
 
 }
