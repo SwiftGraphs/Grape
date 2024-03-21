@@ -165,7 +165,6 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
         _ forceField: SealedForce2D,
         stateMixin: ForceDirectedGraphState,
-//        modelTransform: Binding<ViewportTransform>,
         emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         },
@@ -191,7 +190,6 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         )
         self.currentFrame = 0
         self.stateMixinRef = stateMixin
-        // self._modelTransform = stateMixin.modelTransform
     }
 
     @inlinable
@@ -199,7 +197,6 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         _ graphRenderingContext: _GraphRenderingContext<NodeID>,
         _ forceField: SealedForce2D,
         stateMixin: ForceDirectedGraphState,
-//        modelTransform: Binding<ViewportTransform>,
         emittingNewNodesWith: @escaping (NodeID) -> KineticState = { _ in
             .init(position: .zero)
         },
@@ -209,7 +206,6 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
             graphRenderingContext,
             forceField,
             stateMixin: stateMixin,
-//            modelTransform: modelTransform,
             emittingNewNodesWith: emittingNewNodesWith,
             ticksPerSecond: ticksPerSecond,
             velocityDecay: 30 / ticksPerSecond
@@ -229,9 +225,11 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
 
     @inlinable
     func continuouslyTrackingRunning() {
-        withObservationTracking {
-            updateModelRunningState(isRunning: stateMixinRef.isRunning)
-        } onChange: {
+        withObservationTracking { [weak self] in
+            guard let self else { return }
+            self.updateModelRunningState(isRunning: self.stateMixinRef.isRunning)
+        } onChange: { [weak self] in
+            guard let self else { return }
             Task { @MainActor [weak self] in
                 self?.continuouslyTrackingRunning()
             }
@@ -240,11 +238,13 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
 
     @inlinable
     func continuouslyTrackingTransform() {
-        withObservationTracking {
+        withObservationTracking { [weak self] in
+            guard let self else { return }
             // FIXME: mutation cycle?
-            _ = stateMixinRef.modelTransform
+            _ = self.stateMixinRef.modelTransform
             // stateMixinRef.access(keyPath: \.modelTransform)
-        } onChange: {
+        } onChange: { [weak self] in
+            guard let self else { return }
             Task { @MainActor [weak self] in
                 self?.continuouslyTrackingTransform()
             }
@@ -299,8 +299,8 @@ extension ForceDirectedGraphModel {
     @inlinable
     // @MainActor
     func start(minAlpha: Double = 0.6) {
-        print("Into start")
         guard self.scheduledTimer == nil else { return }
+        print("Simulation started")
         if simulationContext.storage.kinetics.alpha < minAlpha {
             simulationContext.storage.kinetics.alpha = minAlpha
         }
@@ -325,7 +325,7 @@ extension ForceDirectedGraphModel {
     @inlinable
     // @MainActor
     func stop() {
-        print("Into stop")
+        print("Simulation stopped")
         self.scheduledTimer?.invalidate()
         self.scheduledTimer = nil
     }
