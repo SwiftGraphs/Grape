@@ -263,7 +263,11 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 | &emsp;PositionForce | ✅ | ✅ |  |
 | &emsp;RadialForce | ✅ | ✅ |  |
 | **SwiftUI View** | ✅ |  |  |
-
+| &emsp;Basic Visualization | ✅ |  |  |
+| &emsp;Gestures | ✅ |  |  |
+| &emsp;Node Styling | ✅ |  |  |
+| &emsp;Link Styling | 🚧 |  |  |
+| &emsp;Animatable Transition | 🚧 |  |  |
 
 <br/>
 
