@@ -11,7 +11,7 @@
     "lineBreakBeforeControlFlowKeywords": false,
     "lineBreakBeforeEachArgument": false,
     "lineBreakBeforeEachGenericRequirement": false,
-    "lineLength": 100,
+    "lineLength": 120,
     "maximumBlankLines": 1,
     "multiElementCollectionTrailingCommas": true,
     "noAssignmentInExpressions": {
@@ -64,6 +64,6 @@
         "ValidateDocumentationComments": false
     },
     "spacesAroundRangeFormationOperators": false,
-    "tabWidth": 8,
+    "tabWidth": 4,
     "version": 1
 }
