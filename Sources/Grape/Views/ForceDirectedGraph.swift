@@ -102,7 +102,7 @@ where NodeID == Content.NodeID {
     }
 
     @inlinable
-    static func defaultKineticStateProvider(nodeID: NodeID) -> KineticState {
+    public static func defaultKineticStateProvider(nodeID: NodeID) -> KineticState {
         .init(position: .zero)
     }
 
