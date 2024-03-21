@@ -15,7 +15,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: macos-13  # to use the latest version that is available on  GitHub Actions
+    runs-on: macos-latest  # to use the latest version that is available on  GitHub Actions
     steps:
     - name: Checkout 🛎️
       uses: actions/checkout@v3
@@ -26,7 +26,7 @@ jobs:
     - name: Build
       run: swift build
     - name: Run tests
-      run: swift test # xcodebuild test -scheme Grape-Package -destination "platform=OS X"
+      run: xcodebuild test -scheme Grape-Package -destination "platform=macOS"
     - name: Build DocC
       run: | # If you use docc-plugin, you might be able to use docc-plugin command instead
         mkdir -p docs &&
