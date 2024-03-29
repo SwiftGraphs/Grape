@@ -10,7 +10,7 @@
   <a href="https://swiftpackageindex.com/li3zhen1/Grape"><img src="https://lizhen.me/grape/swift-platforms.svg?" alt="swift package index"></a>
 </p>
 
-<p align="center">A Swift library for force simulation and graph visualization.</p>
+<p align="center">A Swift library for graph visualization and efficient force simulation.</p>
   
 <picture alt="example of grape">
   <source srcset="https://github.com/li3zhen1/Grape/assets/45376537/6703480d-5737-4a8e-bc08-92d8676456da" media="(prefers-color-scheme: dark)">
