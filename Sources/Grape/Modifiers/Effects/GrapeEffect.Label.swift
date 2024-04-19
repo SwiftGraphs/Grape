@@ -66,7 +66,6 @@ extension GraphContentEffect.Label: GraphContentModifier {
     }
 
     @inlinable
-    @MainActor
     public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
     where NodeID: Hashable {
         guard let text = text else { return }
@@ -99,7 +98,6 @@ extension GraphContentEffect.RichLabel: GraphContentModifier {
     }
 
     @inlinable
-    @MainActor
     public func _exit<NodeID>(_ context: inout _GraphRenderingContext<NodeID>)
     where NodeID: Hashable {
         if let currentID = context.states.currentID {
