@@ -5,17 +5,6 @@ public enum StrokeColor: Equatable, Hashable {
     case color(Color)
 }
 
-extension StrokeStyle: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(lineWidth)
-        hasher.combine(lineCap)
-        hasher.combine(lineJoin)
-        hasher.combine(miterLimit)
-        hasher.combine(dash)
-        hasher.combine(dashPhase)
-    }
-}
-
 extension GraphContentEffect {
     @usableFromInline
     internal struct Stroke: Equatable, Hashable {
@@ -27,7 +16,7 @@ extension GraphContentEffect {
 
         @usableFromInline
         let style: StrokeStyle?
-        
+
         @inlinable
         public init(
             // _ shading: GraphicsContext.Shading,
@@ -37,9 +26,21 @@ extension GraphContentEffect {
             self.color = color
             self.style = style
         }
+
+        @inlinable
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(color)
+            if let style {
+                hasher.combine(style.lineWidth)
+                hasher.combine(style.lineCap)
+                hasher.combine(style.lineJoin)
+                hasher.combine(style.miterLimit)
+                hasher.combine(style.dash)
+                hasher.combine(style.dashPhase)
+            }
+        }
     }
 }
-
 
 extension GraphContentEffect.Stroke: GraphContentModifier {
     @inlinable
