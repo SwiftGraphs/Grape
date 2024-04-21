@@ -66,27 +66,33 @@ Source code: [MermaidVisualization.swift](https://github.com/li3zhen1/Grape/blob
 
 <br/>
 
-
+<details>
+  <summary>
+    
 ### Lattice Simulation
 
-This is a 36x36 force directed lattice like [Force Directed Lattice](https://observablehq.com/@d3/force-directed-lattice):
+A 36x36 force directed lattice.
 
-
+</summary>
 
 https://github.com/li3zhen1/Grape/assets/45376537/5b76fddc-dd5c-4d35-bced-29c01269dd2b
 
-
-
 Source code: [Lattice.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Lattice.swift)
+
+</details>
 
 <details>
   <summary>
-Here is another <a href="https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift">example</a> rendering a ring with 60 vertices, with out-of-the-box dragging support.
+
+### Dragging Gesture
+
+An example rendering a ring with 60 vertices, with dragging gesture enabled.
 
 </summary>
 
 https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e58355045d2
 
+Source code: [MyRing.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift)
 </details>
 
 <br/>
