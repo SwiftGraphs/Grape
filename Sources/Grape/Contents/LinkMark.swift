@@ -57,11 +57,14 @@ public struct LinkMark<NodeID: Hashable>: GraphContent & Identifiable {
 
     @inlinable
     public func _attachToGraphRenderingContext(_ context: inout _GraphRenderingContext<NodeID>) {
+        let currentLinkShape = context.states.currentLinkShape
         context.linkOperations.append(
             .init(
                 self, 
                 context.states.currentStroke, 
-                nil
+                { 
+                    currentLinkShape.path(from: $0.cgPoint, to: $1.cgPoint)
+                }
             )
         )
         context.states.currentID = .link(id.source, id.target)

@@ -51,6 +51,15 @@ internal struct GraphRenderingStates<NodeID: Hashable> {
     @usableFromInline
     let defaultSymbolSize = CGSize(width: 6, height: 6)
 
+    @usableFromInline
+    var linkShape: [any LinkShape] = []
+
+    @inlinable
+    var currentLinkShape: any LinkShape { linkShape.last ?? self.defaultLinkShape }
+
+    @usableFromInline
+    let defaultLinkShape = PlainLineLink()
+
     @inlinable
     init(
         defaultShading: GraphicsContext.Shading = .color(.blue),

@@ -76,11 +76,11 @@ struct MermaidVisualization: View {
     
     var body: some View {
         ForceDirectedGraph {
+            
             Series(parsedGraph.0) { node in
-                
                 NodeMark(id: node)
                     .symbol(.circle)
-                    .symbolSize(radius: 8)
+                    .symbolSize(radius: 16)
                     .foregroundStyle(Color(white: 1.0, opacity: 0.0))
                     .richLabel(node, alignment: .center, offset: .zero) {
                         getLabel(node)
@@ -89,6 +89,9 @@ struct MermaidVisualization: View {
             Series(parsedGraph.1) { link in
                 LinkMark(from: link.0, to: link.1)
             }
+            .linkShape(.arrow)
+            .stroke(.black, StrokeStyle(lineWidth: 2.0, lineCap: .round, lineJoin: .round))
+            
         } force: {
             ManyBodyForce()
             LinkForce(originalLength: .constant(70))

@@ -37,6 +37,7 @@ struct MyRing: View {
                 LinkMark(from: 3 * i + 0, to: 3 * ((i + 1) % 20) + 0)
                 LinkMark(from: 3 * i + 1, to: 3 * ((i + 1) % 20) + 1)
                 LinkMark(from: 3 * i + 2, to: 3 * ((i + 1) % 20) + 2)
+                    .stroke(.black, StrokeStyle(lineWidth: 2.0, lineCap: .round, lineJoin: .round))
                 
             }
         } force: {
