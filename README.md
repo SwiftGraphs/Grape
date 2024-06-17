@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="https://lizhen.me/grape/swift-ci.svg?" alt="swift workflow">&thinsp;
-  <a href="https://swiftpackageindex.com/li3zhen1/Grape"><img src="https://lizhen.me/grape/swift-versions.svg?" alt="swift package index"></a>&thinsp;
+  <a href="https://swiftpackageindex.com/li3zhen1/Grape"><img src="https://lizhen.me/grape/swift-versions.svg" alt="swift package index"></a>&thinsp;
   <a href="https://swiftpackageindex.com/li3zhen1/Grape"><img src="https://lizhen.me/grape/swift-platforms.svg?" alt="swift package index"></a>
 </p>
 
