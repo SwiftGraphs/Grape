@@ -3,16 +3,14 @@ import SwiftUI
 @usableFromInline
 enum GrapeEnvironment { }
 
+@available(*, unavailable)
+extension AnyHashable: @unchecked Sendable { }
 
 extension GrapeEnvironment {
     @usableFromInline
-    struct GraphForegroundScale: EnvironmentKey {
-        #if swift(>=5.9)
+    struct GraphForegroundScale: EnvironmentKey, Sendable {
         @usableFromInline
-        static nonisolated(unsafe) let defaultValue: [AnyHashable: GraphicsContext.Shading] = [:]
-        #else
         static let defaultValue: [AnyHashable: GraphicsContext.Shading] = [:]
-        #endif
     }
 }
 
