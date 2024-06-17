@@ -1,0 +1,51 @@
+name: Swift5.9 CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: macos-14
+    steps:
+    - name: Checkout 🛎️
+      uses: actions/checkout@v3
+    - name: Setup Xcode version
+      uses: maxim-lobanov/setup-xcode@v1.6.0
+      with:
+        xcode-version: '15.2'
+    - name: Build
+      run: swift build
+    - name: Run tests
+      run: xcodebuild test -scheme Grape-Package -destination "platform=macOS"
+    - name: Build DocC
+      run: | # If you use docc-plugin, you might be able to use docc-plugin command instead
+        mkdir -p docs &&
+        swift package --allow-writing-to-directory docs/ForceSimulation \
+          generate-documentation --target ForceSimulation \
+          --disable-indexing \
+          --transform-for-static-hosting \
+          --hosting-base-path Grape/ForceSimulation \
+          --output-path docs/ForceSimulation &&
+        swift package --allow-writing-to-directory docs/Grape \
+          generate-documentation --target Grape \
+          --disable-indexing \
+          --transform-for-static-hosting \
+          --hosting-base-path Grape/Grape \
+          --output-path docs/Grape &&
+        swift ./DocPostprocess.swift
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: 'docs'
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
