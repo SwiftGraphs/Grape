@@ -4,7 +4,6 @@
 public protocol DeterministicRandomGenerator<Scalar> {
     associatedtype Scalar where Scalar: FloatingPoint & ExpressibleByFloatLiteral
     associatedtype OverflowingInteger: FixedWidthInteger & UnsignedInteger
-    @inlinable static func next() -> Scalar
     @inlinable mutating func next() -> Scalar
     @inlinable init(seed: OverflowingInteger)
     @inlinable init()
@@ -15,7 +14,6 @@ public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
     public typealias OverflowingInteger = UInt32
     @usableFromInline internal static let a: UInt32 = 1_664_525
     @usableFromInline internal static let c: UInt32 = 1_013_904_223
-    @usableFromInline internal static var _s: UInt32 = 1
     @usableFromInline internal var s: UInt32 = 1
     @usableFromInline internal static let m: Double = 4_294_967_296
 
@@ -27,14 +25,6 @@ public struct DoubleLinearCongruentialGenerator: DeterministicRandomGenerator {
 
         // Convert the result to Double and divide by m to normalize it.
         return Double(s) / Self.m
-    }
-
-    @inlinable public static func next() -> Double {
-
-        Self._s = (Self.a &* Self._s) &+ Self.c
-
-        // Convert the result to Double and divide by m to normalize it.
-        return Double(Self._s) / Self.m
     }
 
     @inlinable public init(seed: OverflowingInteger) {
@@ -51,7 +41,6 @@ public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
     public typealias OverflowingInteger = UInt16
     @usableFromInline internal static let a: UInt16 = 75
     @usableFromInline internal static let c: UInt16 = 74
-    @usableFromInline internal static var _s: UInt16 = 1
     @usableFromInline internal var s: UInt16 = 1
     @usableFromInline internal static let m: Float = 65537.0
 
@@ -62,13 +51,6 @@ public struct FloatLinearCongruentialGenerator: DeterministicRandomGenerator {
 
         // Convert the result to Float and divide by m to normalize it.
         return Float(s) / Self.m
-    }
-
-    @inlinable public static func next() -> Float {
-        _s = (a &* _s) &+ c
-
-        // Convert the result to Float and divide by m to normalize it.
-        return Float(_s) / Self.m
     }
 
     @inlinable public init(seed: OverflowingInteger) {
@@ -98,14 +80,6 @@ extension HasDeterministicRandomGenerator {
     @inlinable
     static var jigglingScale: Self {
         return 1e-5
-    }
-
-    @inlinable
-    public func jiggled() -> Self {
-        if self == .zero || self.isNaN {
-            return (Generator.next() - 0.5) * Self.jigglingScale
-        }
-        return self
     }
 
     @inlinable

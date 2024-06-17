@@ -34,7 +34,10 @@ let package = Package(
 
         .target(
             name: "ForceSimulation",
-            path: "Sources/ForceSimulation"
+            path: "Sources/ForceSimulation",
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
         ),
 
         .target(
