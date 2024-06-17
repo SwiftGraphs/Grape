@@ -75,6 +75,7 @@ where NodeID == Content.NodeID {
     ///     initial kinetic states. This is only applied on the new nodes that is not seen before when the
     ///     graph is created (or updated).
     @inlinable
+    @MainActor
     public init(
         states: ForceDirectedGraphState = ForceDirectedGraphState(),
         ticksPerSecond: Double = 60.0,

@@ -1,6 +1,7 @@
 import ForceSimulation
 import SwiftUI
 
+@MainActor
 extension ForceDirectedGraph: View {
     
     @inlinable

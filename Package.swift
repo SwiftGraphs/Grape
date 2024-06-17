@@ -43,7 +43,10 @@ let package = Package(
         .target(
             name: "Grape",
             dependencies: ["ForceSimulation"],
-            path: "Sources/Grape"
+            path: "Sources/Grape",
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
                 // link ForceSimulation in release mode
                 // swiftSettings: [.unsafeFlags(["-Xfrontend", "-disable-availability-checking"])]
         ),

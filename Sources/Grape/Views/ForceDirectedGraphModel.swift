@@ -4,6 +4,7 @@ import Observation
 import SwiftUI
 
 // @Observable
+@MainActor
 public final class ForceDirectedGraphModel<Content: GraphContent> {
 
     @usableFromInline
@@ -28,8 +29,8 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     //     }
     // }
 
-//    @usableFromInline
-//    internal var _modelTransformExtenalBinding: Binding<ViewportTransform>
+    //    @usableFromInline
+    //    internal var _modelTransformExtenalBinding: Binding<ViewportTransform>
 
     @inlinable
     internal var modelTransform: ViewportTransform {
@@ -127,6 +128,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     let ticksPerSecond: Double
 
     @usableFromInline
+    @MainActor
     var scheduledTimer: Timer? = nil
 
     @usableFromInline
@@ -228,7 +230,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
         withObservationTracking { [weak self] in
             guard let self else { return }
             self.updateModelRunningState(isRunning: self.stateMixinRef.isRunning)
-        } onChange: { [weak self] in
+        } onChange: { @Sendable [weak self] in
             guard let self else { return }
             Task { @MainActor [weak self] in
                 self?.continuouslyTrackingRunning()
@@ -266,7 +268,8 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
 
     @inlinable
     deinit {
-        self.stop()
+        self.scheduledTimer?.invalidate()
+        self.scheduledTimer = nil
     }
 
     @usableFromInline
@@ -294,26 +297,30 @@ extension StrokeStyle {
 }
 
 // Render related
+@MainActor
 extension ForceDirectedGraphModel {
 
     @inlinable
-    // @MainActor
     func start(minAlpha: Double = 0.6) {
         guard self.scheduledTimer == nil else { return }
         print("Simulation started")
         if simulationContext.storage.kinetics.alpha < minAlpha {
             simulationContext.storage.kinetics.alpha = minAlpha
         }
+
         self.scheduledTimer = Timer.scheduledTimer(
             withTimeInterval: 1.0 / ticksPerSecond,
             repeats: true
         ) { [weak self] _ in
-            self?.tick()
+            if let capturedSelf = self {
+                Task { @MainActor [weak capturedSelf] in
+                    capturedSelf?.tick()
+                }
+            }
         }
     }
 
     @inlinable
-    // @MainActor
     func tick() {
         withMutation(keyPath: \.currentFrame) {
             simulationContext.storage.tick()
@@ -323,7 +330,6 @@ extension ForceDirectedGraphModel {
     }
 
     @inlinable
-    // @MainActor
     func stop() {
         print("Simulation stopped")
         self.scheduledTimer?.invalidate()
@@ -331,7 +337,6 @@ extension ForceDirectedGraphModel {
     }
 
     @inlinable
-    @MainActor
     func render(
         _ graphicsContext: inout GraphicsContext,
         _ size: CGSize
