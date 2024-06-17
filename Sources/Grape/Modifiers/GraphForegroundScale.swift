@@ -7,8 +7,12 @@ enum GrapeEnvironment { }
 extension GrapeEnvironment {
     @usableFromInline
     struct GraphForegroundScale: EnvironmentKey {
+        #if swift(>=5.9)
         @usableFromInline
         static nonisolated(unsafe) let defaultValue: [AnyHashable: GraphicsContext.Shading] = [:]
+        #else
+        static let defaultValue: [AnyHashable: GraphicsContext.Shading] = [:]
+        #endif
     }
 }
 
