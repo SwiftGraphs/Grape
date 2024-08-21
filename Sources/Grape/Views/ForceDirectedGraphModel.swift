@@ -370,7 +370,22 @@ extension ForceDirectedGraphModel {
 
             let p =
                 if let pathBuilder = op.path {
-                    pathBuilder(sourcePos, targetPos)
+                    {
+                        let sourceNodeRadius = sqrt(graphRenderingContext.nodeRadiusSquaredLookup[op.mark.id.source] ?? 0) / 2
+                        let targetNodeRadius = sqrt(graphRenderingContext.nodeRadiusSquaredLookup[op.mark.id.target] ?? 0) / 2
+                        let angle = atan2(targetPos.y - sourcePos.y, targetPos.x - sourcePos.x)
+                        let sourceOffset = SIMD2<Double>(
+                            cos(angle) * sourceNodeRadius, sin(angle) * sourceNodeRadius
+                        )
+                        let targetOffset = SIMD2<Double>(
+                            cos(angle) * targetNodeRadius, sin(angle) * targetNodeRadius
+                        )
+
+                        let sourcePosWithOffset = sourcePos + sourceOffset
+                        let targetPosWithOffset = targetPos - targetOffset
+                        // return pathBuilder(sourcePosWithOffset, targetPosWithOffset)
+                        return pathBuilder(sourcePosWithOffset, targetPosWithOffset)
+                    }()
                 } else {
                     Path { path in
                         path.move(to: sourcePos.cgPoint)

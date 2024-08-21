@@ -150,4 +150,12 @@ extension GraphContent {
         return ModifiedGraphContent(
             self, GraphContentEffect.Stroke(.color(color), strokeStyle))
     }
+
+    @inlinable
+    public func linkShape(
+        _ shape: some LinkShape
+    ) -> some GraphContent<NodeID> {
+        return ModifiedGraphContent(self, GraphContentEffect._LinkShape(shape))
+    }
+    
 }
