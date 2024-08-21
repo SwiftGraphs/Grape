@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="grape-icon" src="https://github.com/li3zhen1/Grape/assets/45376537/4ab08ea1-22e6-4fe8-ab2b-99ae325b46a6" height="96">
+  <img alt="grape-icon" src="https://github.com/swiftgraphs/Grape/assets/45376537/4ab08ea1-22e6-4fe8-ab2b-99ae325b46a6" height="96">
   <h1 align="center">Grape</h1>
 
 </div>
@@ -13,9 +13,9 @@
 <p align="center">A Swift library for graph visualization and efficient force simulation.</p>
   
 <picture alt="example of grape">
-  <source srcset="https://github.com/li3zhen1/Grape/assets/45376537/6703480d-5737-4a8e-bc08-92d8676456da" media="(prefers-color-scheme: dark)">
-  <source srcset="https://github.com/li3zhen1/Grape/assets/45376537/22988cfb-8e01-49b7-a55b-b476fcd9de7c" media="(prefers-color-scheme: light)">
-  <img src="https://github.com/li3zhen1/Grape/assets/45376537/22988cfb-8e01-49b7-a55b-b476fcd9de7c">
+  <source srcset="https://github.com/swiftgraphs/Grape/assets/45376537/6703480d-5737-4a8e-bc08-92d8676456da" media="(prefers-color-scheme: dark)">
+  <source srcset="https://github.com/swiftgraphs/Grape/assets/45376537/22988cfb-8e01-49b7-a55b-b476fcd9de7c" media="(prefers-color-scheme: light)">
+  <img src="https://github.com/swiftgraphs/Grape/assets/45376537/22988cfb-8e01-49b7-a55b-b476fcd9de7c">
 </picture>
 
 <br/>
@@ -28,11 +28,11 @@ This is a force directed graph visualizing [the network of character co-occurenc
 
 
 
-https://github.com/li3zhen1/Grape/assets/45376537/d80dc797-1980-4755-85b9-18ee26e2a7ff
+https://github.com/swiftgraphs/Grape/assets/45376537/d80dc797-1980-4755-85b9-18ee26e2a7ff
 
 
 
-Source code: [Miserables.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Miserables.swift). 
+Source code: [Miserables.swift](https://github.com/swiftgraphs/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Miserables.swift). 
 
 
 
@@ -44,11 +44,11 @@ This is the same graph as the first example, rendered in `RealityView`:
 
 
 
-https://github.com/li3zhen1/Grape/assets/45376537/4585471e-2339-4aee-8f39-0c11fdfb6901
+https://github.com/swiftgraphs/Grape/assets/45376537/4585471e-2339-4aee-8f39-0c11fdfb6901
 
 
 
-Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift).
+Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/swiftgraphs/Grape/blob/main/Examples/ForceDirectedGraph3D/ForceDirectedGraph3D/ContentView.swift).
 
 
 <br/>
@@ -58,11 +58,11 @@ Source code: [ForceDirectedGraph3D/ContentView.swift](https://github.com/li3zhen
 
 Dynamical graph structure based on your input, with tap and drag gesture supports, all within 100 lines of view body.
 
-https://github.com/li3zhen1/Grape/assets/45376537/7c75d367-d5a8-4316-813b-288b375f513b
+https://github.com/swiftgraphs/Grape/assets/45376537/7c75d367-d5a8-4316-813b-288b375f513b
 
 
 
-Source code: [MermaidVisualization.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MermaidVisualization.swift)
+Source code: [MermaidVisualization.swift](https://github.com/swiftgraphs/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MermaidVisualization.swift)
 
 <br/>
 
@@ -75,9 +75,9 @@ A 36x36 force directed lattice.
 
 </summary>
 
-https://github.com/li3zhen1/Grape/assets/45376537/5b76fddc-dd5c-4d35-bced-29c01269dd2b
+https://github.com/swiftgraphs/Grape/assets/45376537/5b76fddc-dd5c-4d35-bced-29c01269dd2b
 
-Source code: [Lattice.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Lattice.swift)
+Source code: [Lattice.swift](https://github.com/swiftgraphs/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/Lattice.swift)
 
 </details>
 
@@ -90,9 +90,9 @@ An example rendering a ring with 60 vertices, with dragging gesture enabled.
 
 </summary>
 
-https://github.com/li3zhen1/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e58355045d2
+https://github.com/swiftgraphs/Grape/assets/45376537/73213e7f-73ee-44f3-9b3e-7e58355045d2
 
-Source code: [MyRing.swift](https://github.com/li3zhen1/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift)
+Source code: [MyRing.swift](https://github.com/swiftgraphs/Grape/blob/main/Examples/ForceDirectedGraphExample/ForceDirectedGraphExample/MyRing.swift)
 </details>
 
 <br/>
@@ -144,7 +144,7 @@ Grape ships 2 modules:
 ### The `Grape` module
 
 
-For detailed usage, please refer to [documentation](https://li3zhen1.github.io/Grape/Grape/documentation/grape). A quick example here:
+For detailed usage, please refer to [documentation](https://swiftgraphs.github.io/Grape/Grape/documentation/grape). A quick example here:
 
 ```swift
 import Grape
@@ -183,13 +183,13 @@ struct MyGraph: View {
 
 ### The `ForceSimulation` module
 <details>
-  <summary>Refer to the <a href="https://li3zhen1.github.io/Grape/ForceSimulation/documentation/forcesimulation/">documentation</a> or expand this section to find more about this module.
+  <summary>Refer to the <a href="https://swiftgraphs.github.io/Grape/ForceSimulation/documentation/forcesimulation/">documentation</a> or expand this section to find more about this module.
   </summary>
 
 `ForceSimulation` module mainly contains 3 concepts, `Kinetics`, `ForceProtocol` and `Simulation`.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/li3zhen1/Grape/main/Assets/SimulationDiagram.svg" alt="A diagram showing the relationships of `Kinetics`, `ForceProtocol` and `Simulation`. A `Simulation` contains a `Kinetics` and a `ForceProtocol`.">
+  <img src="https://raw.githubusercontent.com/swiftgraphs/Grape/main/Assets/SimulationDiagram.svg" alt="A diagram showing the relationships of `Kinetics`, `ForceProtocol` and `Simulation`. A `Simulation` contains a `Kinetics` and a `ForceProtocol`.">
 </p>
 
   
@@ -245,7 +245,7 @@ for mySimulation in 0..<120 {
 
 ```
 
-See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details. 
+See [Example](https://github.com/swiftgraphs/Grape/tree/main/Examples/ForceDirectedGraphExample) for more details. 
 
 </details>
 
@@ -285,7 +285,7 @@ See [Example](https://github.com/li3zhen1/Grape/tree/main/Examples/ForceDirected
 
 #### Simulation
 
-Grape uses simd to calculate position and velocity. Currently it takes **~0.005** seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, [tested](https://github.com/li3zhen1/Grape/blob/main/Tests/ForceSimulationTests/MiserableGraphTest.swift) with command `swift test -c release`)
+Grape uses simd to calculate position and velocity. Currently it takes **~0.005** seconds to iterate 120 times over the example graph(2D). (77 vertices, 254 edges, with manybody, center, collide and link forces. Release build on a M1 Max, [tested](https://github.com/swiftgraphs/Grape/blob/main/Tests/ForceSimulationTests/MiserableGraphTest.swift) with command `swift test -c release`)
 
 For 3D simulation, it takes **~0.008** seconds for the same graph and same configs.
 
@@ -295,7 +295,7 @@ For 3D simulation, it takes **~0.008** seconds for the same graph and same confi
 <br/>
 
 #### KDTree
-The `BufferedKDTree` from this package is **~22x** faster than `GKQuadtree` from Apple’s GameKit, according to this [test case](https://github.com/li3zhen1/Grape/blob/main/Tests/ForceSimulationTests/GKTreeCompareTest.swift). However, please note that comparing Swift structs with NSObjects is unfair, and their behaviors are different.
+The `BufferedKDTree` from this package is **~22x** faster than `GKQuadtree` from Apple’s GameKit, according to this [test case](https://github.com/swiftgraphs/Grape/blob/main/Tests/ForceSimulationTests/GKTreeCompareTest.swift). However, please note that comparing Swift structs with NSObjects is unfair, and their behaviors are different.
 
 
 <br/>
