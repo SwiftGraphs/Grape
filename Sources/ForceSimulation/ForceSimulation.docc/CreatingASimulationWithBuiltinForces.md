@@ -67,4 +67,4 @@ A diagram showing the relationships of `Kinetics`, `ForceProtocol` and `Simulati
 
 In this example, we run our simulation in a 2D space (`SIMD2<Double>`). We explicitly create a ``SealedForce2D`` to make sure the force is in the same dimension as the Kinetics. The `Vector` in `Simulation` is inferred from the force we pass.
 
-See [Examples](https://github.com/li3zhen1/Grape/tree/main/Examples) for example Xcode projects.
+See [Examples](https://github.com/swiftgraphs/Grape/tree/main/Examples) for example Xcode projects.
