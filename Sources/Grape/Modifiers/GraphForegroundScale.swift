@@ -2,8 +2,20 @@ import SwiftUI
 
 extension EnvironmentValues {
     @usableFromInline
-    @Entry
-    var graphForegroundScaleEnvironment: [AnyHashable: GraphicsContext.Shading] = [:]
+    var graphForegroundScaleEnvironment: [AnyHashable: GraphicsContext.Shading]
+    {
+        get {
+            self[__Key_graphForegroundScaleEnvironment.self]
+        }
+        set {
+            self[__Key_graphForegroundScaleEnvironment.self] = newValue
+        }
+    }
+    
+    private struct __Key_graphForegroundScaleEnvironment: SwiftUICore.EnvironmentKey {
+        typealias Value = [AnyHashable: GraphicsContext.Shading]
+        static var defaultValue: Value { [:] }
+    }
 }
 
 @usableFromInline
