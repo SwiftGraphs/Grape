@@ -1,32 +1,16 @@
 import SwiftUI
 
-@usableFromInline
-enum GrapeEnvironment { }
-
-@available(*, unavailable)
-extension AnyHashable: @unchecked Sendable { }
-
-extension GrapeEnvironment {
-    @usableFromInline
-    struct GraphForegroundScale: EnvironmentKey, Sendable {
-        @usableFromInline
-        static let defaultValue: [AnyHashable: GraphicsContext.Shading] = [:]
-    }
-}
-
 extension EnvironmentValues {
-    @inlinable
-    var graphForegroundScaleEnvironment: GrapeEnvironment.GraphForegroundScale.Value {
-        get { self[GrapeEnvironment.GraphForegroundScale.self] }
-        set { self[GrapeEnvironment.GraphForegroundScale.self] = newValue }
-    }
+    @usableFromInline
+    @Entry
+    var graphForegroundScaleEnvironment: [AnyHashable: GraphicsContext.Shading] = [:]
 }
 
 @usableFromInline
 struct GraphEnvironmentViewModifier: ViewModifier {
 
     @usableFromInline
-    let colorScale: Dictionary<AnyHashable, GraphicsContext.Shading>
+    let colorScale: [AnyHashable: GraphicsContext.Shading]
 
     @inlinable
     init<DataValue, S>(_ mapping: KeyValuePairs<DataValue, S>) where S: ShapeStyle, DataValue: Hashable {
