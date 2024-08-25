@@ -12,7 +12,7 @@ extension EnvironmentValues {
         }
     }
     
-    private struct __Key_graphForegroundScaleEnvironment: SwiftUICore.EnvironmentKey {
+    private struct __Key_graphForegroundScaleEnvironment: EnvironmentKey {
         typealias Value = [AnyHashable: GraphicsContext.Shading]
         static var defaultValue: Value { [:] }
     }
