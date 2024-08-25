@@ -3,7 +3,6 @@ import Foundation
 import Observation
 import SwiftUI
 
-// @Observable
 @MainActor
 public final class ForceDirectedGraphModel<Content: GraphContent> {
 
@@ -20,17 +19,6 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
 
     @usableFromInline
     var simulationContext: SimulationContext<NodeID>
-
-    // @usableFromInline
-    // internal var _modelTransform: ViewportTransform
-    //  {
-    //     didSet {
-    //         stateMixinRef.modelTransform = modelTransform
-    //     }
-    // }
-
-    //    @usableFromInline
-    //    internal var _modelTransformExtenalBinding: Binding<ViewportTransform>
 
     @inlinable
     internal var modelTransform: ViewportTransform {
@@ -128,7 +116,7 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
     let ticksPerSecond: Double
 
     @usableFromInline
-    @MainActor
+//    @MainActor
     var scheduledTimer: Timer? = nil
 
     @usableFromInline
@@ -268,8 +256,9 @@ public final class ForceDirectedGraphModel<Content: GraphContent> {
 
     @inlinable
     deinit {
-        self.scheduledTimer?.invalidate()
-        self.scheduledTimer = nil
+        _ = MainActor.assumeIsolated {
+            scheduledTimer?.invalidate()
+        }
     }
 
     @usableFromInline
