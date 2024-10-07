@@ -29,7 +29,9 @@ final class ContentBuilderTests: XCTestCase {
             
             NodeMark(id: 3)
             NodeMark(id: 4)
-            NodeMark(id: 5)
+            AnyGraphContent(
+                NodeMark(id: 5)
+            )
         }
     }
 
