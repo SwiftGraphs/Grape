@@ -43,9 +43,6 @@ Grape supports localization features. You can localize the labels in the graph v
 ### Managing the view state
 
 * ``ForceDirectedGraphModel``
-* ``GraphRenderingContext``
-* ``GraphRenderingStates``
-* ``SimulationContext``
 * ``KeyFrame``
 * ``KineticState`` 
 * ``TransformProtocol``
