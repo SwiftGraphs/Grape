@@ -8,10 +8,15 @@ public enum GraphDragState<NodeID: Hashable> {
 
 #if !os(tvOS)
 
+// NOTE: `@inlinable` annotations were removed from this file to remain source-compatible
+// with the SDK 27 change where `@State` became a macro: the macro now synthesizes a
+// `private` backing store (`_dragState`), which an `@inlinable` function may not reference
+// ("Property '_dragState' is private and cannot be referenced from an '@inlinable' function").
+// Removing `@inlinable` only disables cross-module inlining (an optimization) and does not
+// change behavior.
 @usableFromInline
 struct GraphDragModifier<NodeID: Hashable>: ViewModifier {
 
-    @inlinable
     public var dragGesture: some Gesture {
         DragGesture(
             minimumDistance: Self.minimumDragDistance,
@@ -21,12 +26,10 @@ struct GraphDragModifier<NodeID: Hashable>: ViewModifier {
         .onEnded(onEnded)
     }
 
-    @inlinable
     public func body(content: Content) -> some View {
         content.gesture(dragGesture)
     }
 
-    @inlinable
     @State
     public var dragState: GraphDragState<NodeID>?
 
@@ -36,7 +39,6 @@ struct GraphDragModifier<NodeID: Hashable>: ViewModifier {
     @usableFromInline
     let action: ((GraphDragState<NodeID>?) -> Void)?
 
-    @inlinable
     init(
         graphProxy: GraphProxy,
         action: ((GraphDragState<NodeID>?) -> Void)? = nil
@@ -45,13 +47,10 @@ struct GraphDragModifier<NodeID: Hashable>: ViewModifier {
         self.action = action
     }
 
-    @inlinable
     static var minimumDragDistance: CGFloat { 3.0 }
 
-    @inlinable
     static var minimumAlphaAfterDrag: CGFloat { 0.5 }
 
-    @inlinable
     public func onEnded(
         value: DragGesture.Value
     ) {
@@ -74,7 +73,6 @@ struct GraphDragModifier<NodeID: Hashable>: ViewModifier {
         }
     }
 
-    @inlinable
     public func onChanged(
         value: DragGesture.Value
     ) {
@@ -111,7 +109,6 @@ extension View {
     ///  - proxy: The graph proxy that provides the graph context.
     ///  - type: The type of the node ID. The drag gesture will look for the node ID of this type.
     ///  - action: The action to perform when the drag gesture changes.
-    @inlinable
     public func withGraphDragGesture<NodeID>(
         _ proxy: GraphProxy,
         of type: NodeID.Type,
